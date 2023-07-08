@@ -1,11 +1,28 @@
-import { NgAddOptions } from '../models/ng-add-options';
+import { Tree } from '@angular-devkit/schematics';
+import { isStandaloneSchematic } from '../../utils/angular-utils';
+import { ModuleInfo, NgAddOptions, StandaloneInfo } from '../models/ng-add-options';
 import { FlowType, Schema } from '../schema';
 
-const AUTH_CONFIG_MODULE = { moduleFileName: 'auth-config.module', moduleName: 'AuthConfigModule', moduleFolder: 'auth-config' };
-const AUTH_HTTP_CONFIG_MODULE = {
+const AUTH_CONFIG_MODULE: ModuleInfo = { 
+  moduleFileName: 'auth-config.module', 
+  moduleName: 'AuthConfigModule', 
+  filesFolder: 'auth-config-module' 
+};
+const AUTH_HTTP_CONFIG_MODULE: ModuleInfo = {
   moduleFileName: 'auth-http-config.module',
   moduleName: 'AuthHttpConfigModule',
-  moduleFolder: 'auth-http-config',
+  filesFolder: 'auth-http-config-module',
+};
+
+const AUTH_CONFIG_STANDALONE: StandaloneInfo = { 
+  fileName: 'auth.config',
+  configName: 'authConfig', 
+  filesFolder: 'auth-config-standalone' 
+};
+const AUTH_HTTP_CONFIG_STANDALONE: StandaloneInfo = {
+  fileName: 'auth-http.config',
+  configName: 'authHttpConfig',
+  filesFolder: 'auth-http-config-standalone',
 };
 
 function needsHttp(flowType: FlowType) {
@@ -22,7 +39,7 @@ function needsSilentRenewHtml(flowType: FlowType) {
   return optionsWithSilentRenewHtml.includes(flowType);
 }
 
-function getModuleInfo(flowType: FlowType) {
+function getModuleInfo(flowType: FlowType):ModuleInfo {
   if (needsHttp(flowType)) {
     return AUTH_HTTP_CONFIG_MODULE;
   }
@@ -30,11 +47,22 @@ function getModuleInfo(flowType: FlowType) {
   return AUTH_CONFIG_MODULE;
 }
 
-export function parseSchema(options: Schema): NgAddOptions {
+function getStandaloneInfo(flowType: FlowType):StandaloneInfo {
+  if (needsHttp(flowType)) {
+    return AUTH_HTTP_CONFIG_STANDALONE;
+  }
+
+  return AUTH_CONFIG_STANDALONE;
+}
+
+export async function parseSchema(host: Tree, options: Schema): Promise<NgAddOptions> {
   const { flowType } = options;
+  const isStandalone = await isStandaloneSchematic(host, options);
+
   return {
     ...options,
-    moduleInfo: getModuleInfo(flowType),
+    moduleInfo: isStandalone ? undefined : getModuleInfo(flowType),
+    standaloneInfo: isStandalone ? getStandaloneInfo(flowType) : undefined,
     isHttpOption: needsHttp(flowType),
     needsSilentRenewHtml: needsSilentRenewHtml(flowType),
   };

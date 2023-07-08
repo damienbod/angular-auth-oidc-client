@@ -8,7 +8,7 @@ export function addModuleToImports(options: NgAddOptions): Rule {
   return (host: Tree, context: SchematicContext) => {
     const project = getProject(host);
 
-    const { moduleFileName, moduleName } = options.moduleInfo;
+    const { moduleFileName, moduleName } = options.moduleInfo!;
 
     const modulesToImport = [
       {

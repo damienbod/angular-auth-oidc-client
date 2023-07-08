@@ -3,7 +3,13 @@ import { FlowType } from '../schema';
 export interface ModuleInfo {
   moduleFileName: string;
   moduleName: string;
-  moduleFolder: string;
+  filesFolder: string;
+}
+
+export interface StandaloneInfo {
+  fileName: string;
+  configName: string;
+  filesFolder: string;
 }
 
 export interface NgAddOptions {
@@ -11,6 +17,7 @@ export interface NgAddOptions {
   flowType: FlowType;
   isHttpOption: boolean;
   needsSilentRenewHtml: boolean;
-  moduleInfo: ModuleInfo;
+  moduleInfo: ModuleInfo|undefined;
+  standaloneInfo: StandaloneInfo|undefined;
   useLocalPackage: boolean;
 }

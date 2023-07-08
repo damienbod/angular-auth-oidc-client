@@ -16,13 +16,13 @@ import { NgAddOptions } from '../models/ng-add-options';
 import { FlowType } from '../schema';
 import { AUTH_0, AZURE_AD_REFRESH_TOKENS, AZURE_AD_SILENT_RENEW, DEFAULT_CONFIG, IFRAME_SILENT_RENEW, OAUTH_PAR, OIDC_PLAIN } from './configs';
 
-export function copyModuleFile(options: NgAddOptions): Rule {
+export function copyStandaloneFile(options: NgAddOptions): Rule {
   return (host: Tree, context: SchematicContext) => {
     const project = getProject(host);
 
-    const { moduleFileName, filesFolder } = options.moduleInfo!;
+    const { fileName, filesFolder } = options.standaloneInfo!;
 
-    const filePath = `${project.sourceRoot}/app/auth/${moduleFileName}.ts`;
+    const filePath = `${project.sourceRoot}/app/auth/${fileName}.ts`;
     if (host.exists(filePath)) {
       context.logger.info(`✅️ '${filePath}' already existing - skipping file create`);
       return host;
