@@ -13,7 +13,7 @@ import { ConfigurationService } from '../config/config.service';
 import { LoggerService } from '../logging/logger.service';
 import { ClosestMatchingRouteService } from './closest-matching-route.service';
 
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   constructor(
     private readonly authStateService: AuthStateService,
