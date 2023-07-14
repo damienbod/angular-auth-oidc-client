@@ -31,7 +31,7 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
   return new StsConfigHttpLoader(config$);
 };
 
-export const authHttpConfig: PassedInitialConfig = {
+export const authConfig: PassedInitialConfig = {
   loader: {
     provide: StsConfigLoader,
     useFactory: httpLoaderFactory,
