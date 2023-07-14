@@ -1,6 +1,5 @@
 import { JsonValue, Path } from '@angular-devkit/core';
 import { SchematicsException, Tree } from '@angular-devkit/schematics';
-import { isStandaloneApp } from '@schematics/angular/utility/ng-ast-utils';
 import { ProjectDefinition, WorkspaceDefinition, getWorkspace } from '@schematics/angular/utility/workspace';
 import { WorkspaceProject, WorkspaceSchema } from '@schematics/angular/utility/workspace-models';
 import { Schema } from '../ng-add/schema';
@@ -81,6 +80,87 @@ export async function isStandaloneSchematic(host: Tree, options: Schema): Promis
 
   return isStandaloneApp(host, getProjectMainFile(project));
 }
+
+// TODO: replace with the following when NG 15 supprt is dropped 
+// import { isStandaloneApp } from '@schematics/angular/utility/ng-ast-utils';
+function isStandaloneApp(host: Tree, mainPath: string): boolean {
+  const source = ts.createSourceFile(
+    mainPath,
+    host.readText(mainPath),
+    ts.ScriptTarget.Latest,
+    true,
+  );
+  const bootstrapCall = findBootstrapApplicationCall(source);
+
+  return bootstrapCall !== null;
+}
+
+function findBootstrapApplicationCall(sourceFile: ts.SourceFile): ts.CallExpression | null {
+  const localName = findImportLocalName(
+    sourceFile,
+    'bootstrapApplication',
+    '@angular/platform-browser',
+  );
+
+  if (!localName) {
+    return null;
+  }
+
+  let result: ts.CallExpression | null = null;
+
+  sourceFile.forEachChild(function walk(node) {
+    if (
+      ts.isCallExpression(node) &&
+      ts.isIdentifier(node.expression) &&
+      node.expression.text === localName
+    ) {
+      result = node;
+    }
+
+    if (!result) {
+      node.forEachChild(walk);
+    }
+  });
+
+  return result;
+}
+
+function findImportLocalName(
+  sourceFile: ts.SourceFile,
+  name: string,
+  moduleName: string,
+): string | null {
+  for (const node of sourceFile.statements) {
+    // Only look for top-level imports.
+    if (
+      !ts.isImportDeclaration(node) ||
+      !ts.isStringLiteral(node.moduleSpecifier) ||
+      node.moduleSpecifier.text !== moduleName
+    ) {
+      continue;
+    }
+
+    // Filter out imports that don't have the right shape.
+    if (
+      !node.importClause ||
+      !node.importClause.namedBindings ||
+      !ts.isNamedImports(node.importClause.namedBindings)
+    ) {
+      continue;
+    }
+
+    // Look through the elements of the declaration for the specific import.
+    for (const element of node.importClause.namedBindings.elements) {
+      if ((element.propertyName || element.name).text === name) {
+        // The local name is always in `name`.
+        return element.name.text;
+      }
+    }
+  }
+
+  return null;
+}
+
 
 function getProjectFromWorkspace(
   workspace: WorkspaceDefinition,
