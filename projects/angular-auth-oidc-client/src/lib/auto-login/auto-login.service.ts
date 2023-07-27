@@ -15,7 +15,7 @@ export class AutoLoginService {
   checkSavedRedirectRouteAndNavigate(config: OpenIdConfiguration): void {
     const savedRouteForRedirect = this.getStoredRedirectRoute(config);
 
-    if (savedRouteForRedirect) {
+    if (savedRouteForRedirect != null) {
       this.deleteStoredRedirectRoute(config);
       this.router.navigateByUrl(savedRouteForRedirect);
     }
