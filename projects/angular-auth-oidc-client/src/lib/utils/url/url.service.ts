@@ -796,13 +796,13 @@ export class UrlService {
   }
 
   private isAuth0Endpoint(configuration: OpenIdConfiguration): boolean {
-    const { authority } = configuration;
+    const { authority, useCustomAuth0Domain } = configuration;
 
     if (!authority) {
       return false;
     }
 
-    return authority.endsWith(AUTH0_ENDPOINT);
+    return authority.endsWith(AUTH0_ENDPOINT) || useCustomAuth0Domain;
   }
 
   private composeAuth0Endpoint(configuration: OpenIdConfiguration): string {

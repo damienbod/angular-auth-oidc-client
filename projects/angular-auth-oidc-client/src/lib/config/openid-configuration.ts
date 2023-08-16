@@ -67,6 +67,12 @@ export interface OpenIdConfiguration {
    */
   renewTimeBeforeTokenExpiresInSeconds?: number;
   /**
+   * Allows for a custom domain to be used with Auth0.
+   * With this flag set the 'authority' does not have to end with
+   * 'auth0.com' to trigger the auth0 special handling of logouts.
+   */
+  useCustomAuth0Domain?: boolean;
+  /**
    * When set to true, refresh tokens are used to renew the user session.
    * When set to false, standard silent renew is used.
    * Default value is false.
