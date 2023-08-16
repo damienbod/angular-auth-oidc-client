@@ -527,3 +527,10 @@ Default = _false_
 Disable validation for id_token. This is not recommended! You should always validate the id_token if returned.
 
 Default = _false_
+
+### `useCustomAuth0Domain`
+
+- Type: `boolean`
+- Required: `false`
+
+Allows an Auth0 custom domain to be used as the authority without losing the special handling of Auth0's logoff endpoint. If you are using a custom domain with Auth0 it is recommended to set this flag to true.
