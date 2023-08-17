@@ -54,7 +54,7 @@ export class ParLoginService {
       .queryAndStoreAuthWellKnownEndPoints(configuration)
       .pipe(
         switchMap(() =>
-          this.parService.postParRequest(configuration, customParams)
+          this.parService.postParRequest(configuration, authOptions, customParams)
         )
       )
       .subscribe((response) => {
