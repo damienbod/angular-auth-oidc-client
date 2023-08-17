@@ -300,9 +300,10 @@ export class UrlService {
 
   createBodyForParCodeFlowRequest(
     configuration: OpenIdConfiguration,
+    authOptions?: AuthOptions,
     customParamsRequest?: { [key: string]: string | number | boolean }
   ): Observable<string> {
-    const redirectUrl = this.getRedirectUrl(configuration);
+    const redirectUrl = this.getRedirectUrl(configuration, authOptions);
 
     if (!redirectUrl) {
       return of(null);
