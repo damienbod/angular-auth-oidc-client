@@ -48,13 +48,11 @@ export class ParLoginService {
       'BEGIN Authorize OIDC Flow, no auth data'
     );
 
-    const { urlHandler, customParams } = authOptions || {};
-
     this.authWellKnownService
       .queryAndStoreAuthWellKnownEndPoints(configuration)
       .pipe(
         switchMap(() =>
-          this.parService.postParRequest(configuration, customParams)
+          this.parService.postParRequest(configuration, authOptions)
         )
       )
       .subscribe((response) => {
@@ -76,8 +74,8 @@ export class ParLoginService {
           return;
         }
 
-        if (urlHandler) {
-          urlHandler(url);
+        if (authOptions.urlHandler) {
+          authOptions.urlHandler(url);
         } else {
           this.redirectService.redirectTo(url);
         }
@@ -109,13 +107,11 @@ export class ParLoginService {
       'BEGIN Authorize OIDC Flow with popup, no auth data'
     );
 
-    const { customParams } = authOptions || {};
-
     return this.authWellKnownService
       .queryAndStoreAuthWellKnownEndPoints(configuration)
       .pipe(
         switchMap(() =>
-          this.parService.postParRequest(configuration, customParams)
+          this.parService.postParRequest(configuration, authOptions)
         ),
         switchMap((response: ParResponse) => {
           this.loggerService.logDebug(

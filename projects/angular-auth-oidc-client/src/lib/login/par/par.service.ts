@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map, retry, switchMap } from 'rxjs/operators';
 import { DataService } from '../../api/data.service';
+import { AuthOptions } from '../../auth-options';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
@@ -20,7 +21,7 @@ export class ParService {
 
   postParRequest(
     configuration: OpenIdConfiguration,
-    customParams?: { [key: string]: string | number | boolean }
+    authOptions?: AuthOptions
   ): Observable<ParResponse> {
     let headers: HttpHeaders = new HttpHeaders();
 
@@ -50,7 +51,7 @@ export class ParService {
     }
 
     return this.urlService
-      .createBodyForParCodeFlowRequest(configuration, customParams)
+      .createBodyForParCodeFlowRequest(configuration, authOptions)
       .pipe(
         switchMap((data) => {
           return this.dataService
