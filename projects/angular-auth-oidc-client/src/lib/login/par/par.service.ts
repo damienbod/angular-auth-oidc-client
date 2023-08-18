@@ -21,7 +21,7 @@ export class ParService {
 
   postParRequest(
     configuration: OpenIdConfiguration,
-    authOptions: AuthOptions
+    authOptions?: AuthOptions
   ): Observable<ParResponse> {
     let headers: HttpHeaders = new HttpHeaders();
 

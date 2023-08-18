@@ -1348,7 +1348,9 @@ describe('UrlService Tests', () => {
       );
 
       const resultObs$ = service.createBodyForParCodeFlowRequest(config, {
-        any: 'otherThing',
+        customParams: {
+          any: 'otherThing',
+        },
       });
 
       resultObs$.subscribe((result) => {
