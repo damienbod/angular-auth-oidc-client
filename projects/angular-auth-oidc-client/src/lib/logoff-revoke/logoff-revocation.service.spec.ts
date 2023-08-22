@@ -8,8 +8,8 @@ import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { CheckSessionService } from '../iframe/check-session.service';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { UrlService } from '../utils/url/url.service';
 import { RedirectService } from '../utils/redirect/redirect.service';
+import { UrlService } from '../utils/url/url.service';
 import { LogoffRevocationService } from './logoff-revocation.service';
 
 describe('Logout and Revoke Service', () => {
@@ -481,6 +481,10 @@ describe('Logout and Revoke Service', () => {
         spy(url);
       };
       const redirectSpy = spyOn(redirectService, 'redirectTo');
+      const resetAuthorizationDataSpy = spyOn(
+        resetAuthDataService,
+        'resetAuthorizationData'
+      );
 
       spyOn(checkSessionService, 'serverStateChanged').and.returnValue(false);
       const config = { configId: 'configId1' };
@@ -492,6 +496,7 @@ describe('Logout and Revoke Service', () => {
       result$.subscribe(() => {
         expect(redirectSpy).not.toHaveBeenCalled();
         expect(spy).toHaveBeenCalledOnceWith('someValue');
+        expect(resetAuthorizationDataSpy).toHaveBeenCalled();
       });
     }));
 

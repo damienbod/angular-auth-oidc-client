@@ -69,6 +69,7 @@ export class LogoffRevocationService {
         `Custom UrlHandler found. Using this to handle logoff with url '${endSessionUrl}'`
       );
       urlHandler(endSessionUrl);
+      this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
 
       return of(null);
     }
