@@ -116,10 +116,7 @@ export class PopUpService {
     }, 200);
   }
 
-  sendMessageToMainWindow(
-    url: string | null,
-    config: OpenIdConfiguration
-  ): void {
+  sendMessageToMainWindow(url: string, config: OpenIdConfiguration): void {
     const windowIdentifier = this.windowInternal;
     if (!windowIdentifier) {
       return;
@@ -149,7 +146,7 @@ export class PopUpService {
   }
 
   private sendMessage(
-    url: string | null,
+    url: string,
     href: string,
     config: OpenIdConfiguration
   ): void {

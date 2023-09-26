@@ -8,7 +8,7 @@ export class IntervalService {
   constructor(private readonly zone: NgZone) {}
 
   isTokenValidationRunning(): boolean {
-    return !!this.runTokenValidationRunning;
+    return Boolean(this.runTokenValidationRunning);
   }
 
   stopPeriodicTokenCheck(): void {
@@ -22,7 +22,7 @@ export class IntervalService {
     const millisecondsDelayBetweenTokenCheck = repeatAfterSeconds * 1000;
 
     return new Observable((subscriber) => {
-      let intervalId;
+      let intervalId: NodeJS.Timeout;
 
       this.zone.runOutsideAngular(() => {
         intervalId = setInterval(

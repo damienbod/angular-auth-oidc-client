@@ -23,7 +23,7 @@ export class CallbackService {
     private readonly codeFlowCallbackService: CodeFlowCallbackService
   ) {}
 
-  isCallback(currentUrl: string | null): boolean {
+  isCallback(currentUrl: string): boolean {
     if (!currentUrl) {
       return false;
     }
@@ -32,7 +32,7 @@ export class CallbackService {
   }
 
   handleCallbackAndFireEvents(
-    currentCallbackUrl: string | null,
+    currentCallbackUrl: string,
     config: OpenIdConfiguration,
     allConfigs: OpenIdConfiguration[]
   ): Observable<CallbackContext> {

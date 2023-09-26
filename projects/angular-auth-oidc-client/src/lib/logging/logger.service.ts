@@ -111,6 +111,10 @@ export class LoggerService {
   ): boolean {
     const { logLevel } = configuration || {};
 
+    if (!logLevel) {
+      return false;
+    }
+
     return logLevel <= logLevelToCompare;
   }
 

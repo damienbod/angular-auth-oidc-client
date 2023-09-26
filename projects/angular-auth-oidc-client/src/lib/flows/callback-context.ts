@@ -6,10 +6,10 @@ export interface CallbackContext {
   refreshToken: string;
   state: string;
   sessionState: string | null;
-  authResult: AuthResult;
+  authResult: AuthResult | null;
   isRenewProcess: boolean;
-  jwtKeys: JwtKeys;
-  validationResult: StateValidationResult;
+  jwtKeys: JwtKeys | null;
+  validationResult: StateValidationResult | null;
   existingIdToken: any;
 }
 

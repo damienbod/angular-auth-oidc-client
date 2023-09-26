@@ -20,9 +20,9 @@ const IFRAME_FOR_SILENT_RENEW_IDENTIFIER = 'myiFrameForSilentRenew';
 @Injectable({ providedIn: 'root' })
 export class SilentRenewService {
   private readonly refreshSessionWithIFrameCompletedInternal$ =
-    new Subject<CallbackContext>();
+    new Subject<CallbackContext | null>();
 
-  get refreshSessionWithIFrameCompleted$(): Observable<CallbackContext> {
+  get refreshSessionWithIFrameCompleted$(): Observable<CallbackContext | null> {
     return this.refreshSessionWithIFrameCompletedInternal$.asObservable();
   }
 
@@ -54,7 +54,7 @@ export class SilentRenewService {
   isSilentRenewConfigured(configuration: OpenIdConfiguration): boolean {
     const { useRefreshToken, silentRenew } = configuration;
 
-    return !useRefreshToken && silentRenew;
+    return !useRefreshToken && Boolean(silentRenew);
   }
 
   codeFlowCallbackSilentRenewIframe(
@@ -152,7 +152,7 @@ export class SilentRenewService {
     });
   }
 
-  private getExistingIframe(): HTMLIFrameElement {
+  private getExistingIframe(): HTMLIFrameElement | null {
     return this.iFrameService.getExistingIFrame(
       IFRAME_FOR_SILENT_RENEW_IDENTIFIER
     );

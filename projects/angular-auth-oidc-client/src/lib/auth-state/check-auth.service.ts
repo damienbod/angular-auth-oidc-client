@@ -153,6 +153,24 @@ export class CheckAuthService {
     }
 
     const currentUrl = url || this.currentUrlService.getCurrentUrl();
+
+    if (!currentUrl) {
+      const errorMessage = 'No URL found!';
+
+      this.loggerService.logError(config, errorMessage);
+
+      const result: LoginResponse = {
+        isAuthenticated: false,
+        errorMessage,
+        userData: null,
+        idToken: '',
+        accessToken: '',
+        configId: '',
+      };
+
+      return of(result);
+    }
+
     const { configId, authority } = config;
 
     this.loggerService.logDebug(
@@ -179,8 +197,7 @@ export class CheckAuthService {
 
     this.loggerService.logDebug(
       config,
-      'currentUrl to check auth with: ',
-      currentUrl
+      `currentUrl to check auth with: '${currentUrl}'`
     );
 
     const callback$ = isCallback

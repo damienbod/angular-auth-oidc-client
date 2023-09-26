@@ -121,7 +121,11 @@ export class FlowsDataService {
       return false;
     }
 
-    const timeOutInMilliseconds = silentRenewTimeoutInSeconds * 1000;
+    if (storageObject.state === 'not-running') {
+      return false;
+    }
+
+    const timeOutInMilliseconds = (silentRenewTimeoutInSeconds ?? 0) * 1000;
     const dateOfLaunchedProcessUtc = Date.parse(
       storageObject.dateOfLaunchedProcessUtc
     );
@@ -175,7 +179,10 @@ export class FlowsDataService {
     );
 
     if (!storageEntry) {
-      return null;
+      return {
+        dateOfLaunchedProcessUtc: '',
+        state: 'not-running',
+      };
     }
 
     return JSON.parse(storageEntry);

@@ -80,7 +80,7 @@ export class AuthStateService {
 
   getAccessToken(configuration: OpenIdConfiguration): string {
     if (!this.isAuthenticated(configuration)) {
-      return null;
+      return '';
     }
 
     const token = this.storagePersistenceService.getAccessToken(configuration);
@@ -90,7 +90,7 @@ export class AuthStateService {
 
   getIdToken(configuration: OpenIdConfiguration): string {
     if (!this.isAuthenticated(configuration)) {
-      return null;
+      return '';
     }
 
     const token = this.storagePersistenceService.getIdToken(configuration);
@@ -100,7 +100,7 @@ export class AuthStateService {
 
   getRefreshToken(configuration: OpenIdConfiguration): string {
     if (!this.isAuthenticated(configuration)) {
-      return null;
+      return '';
     }
 
     const token = this.storagePersistenceService.getRefreshToken(configuration);
@@ -249,7 +249,9 @@ export class AuthStateService {
 
       return {
         isAuthenticated: true,
-        allConfigsAuthenticated: [{ configId, isAuthenticated: true }],
+        allConfigsAuthenticated: [
+          { configId: configId ?? '', isAuthenticated: true },
+        ],
       };
     }
 
@@ -264,7 +266,9 @@ export class AuthStateService {
 
       return {
         isAuthenticated: false,
-        allConfigsAuthenticated: [{ configId, isAuthenticated: false }],
+        allConfigsAuthenticated: [
+          { configId: configId ?? '', isAuthenticated: false },
+        ],
       };
     }
 
@@ -275,7 +279,7 @@ export class AuthStateService {
     allConfigs: OpenIdConfiguration[]
   ): AuthenticatedResult {
     const allConfigsAuthenticated = allConfigs.map((config) => ({
-      configId: config.configId,
+      configId: config.configId ?? '',
       isAuthenticated: this.isAuthenticated(config),
     }));
 
