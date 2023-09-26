@@ -84,17 +84,16 @@ export class StateValidationService {
 
     const isInRefreshTokenFlow =
       callbackContext.isRenewProcess && !!callbackContext.refreshToken;
-    const hasIdToken = !!callbackContext.authResult.id_token;
+    const hasIdToken = Boolean(callbackContext.authResult?.id_token);
 
     if (isInRefreshTokenFlow && !hasIdToken) {
       toReturn.state = ValidationResult.Ok;
-      // TODO TESTING
       toReturn.authResponseIsValid = true;
 
       return of(toReturn);
     }
 
-    if (callbackContext.authResult.id_token) {
+    if (hasIdToken) {
       const {
         clientId,
         issValidationOff,
@@ -104,7 +103,7 @@ export class StateValidationService {
         renewTimeBeforeTokenExpiresInSeconds,
       } = configuration;
 
-      toReturn.idToken = callbackContext.authResult.id_token;
+      toReturn.idToken = callbackContext.authResult?.id_token ?? '';
       toReturn.decodedIdToken = this.tokenHelperService.getPayloadFromToken(
         toReturn.idToken,
         false,
@@ -139,7 +138,7 @@ export class StateValidationService {
               !this.tokenValidationService.validateIdTokenNonce(
                 toReturn.decodedIdToken,
                 authNonce,
-                ignoreNonceAfterRefresh,
+                Boolean(ignoreNonceAfterRefresh),
                 configuration
               )
             ) {
@@ -173,8 +172,8 @@ export class StateValidationService {
               !isInRefreshTokenFlow &&
               !this.tokenValidationService.validateIdTokenIatMaxOffset(
                 toReturn.decodedIdToken,
-                maxIdTokenIatOffsetAllowedInSeconds,
-                disableIatOffsetValidation,
+                maxIdTokenIatOffsetAllowedInSeconds ?? 120,
+                Boolean(disableIatOffsetValidation),
                 configuration
               )
             ) {

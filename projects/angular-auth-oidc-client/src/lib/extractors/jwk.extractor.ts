@@ -12,7 +12,7 @@ export class JwkExtractor {
     }
 
     const foundKeys = keys
-      .filter((k) => (spec?.kid ? k['kid'] === spec.kid : true))
+      .filter((k) => (spec?.kid ? (k as any)['kid'] === spec.kid : true))
       .filter((k) => (spec?.use ? k['use'] === spec.use : true))
       .filter((k) => (spec?.kty ? k['kty'] === spec.kty : true));
 

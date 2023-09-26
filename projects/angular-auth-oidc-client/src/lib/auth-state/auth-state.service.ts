@@ -225,7 +225,7 @@ export class AuthStateService {
   }
 
   private persistAccessTokenExpirationTime(
-    authResult: any,
+    authResult: AuthResult | null,
     configuration: OpenIdConfiguration
   ): void {
     if (authResult?.expires_in) {

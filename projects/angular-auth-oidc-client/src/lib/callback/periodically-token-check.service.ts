@@ -56,11 +56,15 @@ export class PeriodicallyTokenCheckService {
       .startPeriodicTokenCheck(refreshTimeInSeconds)
       .pipe(
         switchMap(() => {
-          const objectWithConfigIdsAndRefreshEvent = {};
+          const objectWithConfigIdsAndRefreshEvent: {
+            [id: string]: Observable<boolean | CallbackContext | null>;
+          } = {};
 
           configsWithSilentRenewEnabled.forEach((config) => {
-            objectWithConfigIdsAndRefreshEvent[config.configId] =
-              this.getRefreshEvent(config, allConfigs);
+            const identifier = config.configId as string;
+            const refreshEvent = this.getRefreshEvent(config, allConfigs);
+
+            objectWithConfigIdsAndRefreshEvent[identifier] = refreshEvent;
           });
 
           return forkJoin(objectWithConfigIdsAndRefreshEvent);
@@ -101,7 +105,7 @@ export class PeriodicallyTokenCheckService {
   private getRefreshEvent(
     config: OpenIdConfiguration,
     allConfigs: OpenIdConfiguration[]
-  ): Observable<CallbackContext> {
+  ): Observable<boolean | CallbackContext | null> {
     const shouldStartRefreshEvent =
       this.shouldStartPeriodicallyCheckForConfig(config);
 
@@ -128,10 +132,12 @@ export class PeriodicallyTokenCheckService {
     configsWithSilentRenewEnabled: OpenIdConfiguration[]
   ): number {
     const result = configsWithSilentRenewEnabled.reduce((prev, curr) =>
-      prev.tokenRefreshInSeconds < curr.tokenRefreshInSeconds ? prev : curr
+      (prev.tokenRefreshInSeconds ?? 0) < (curr.tokenRefreshInSeconds ?? 0)
+        ? prev
+        : curr
     );
 
-    return result.tokenRefreshInSeconds;
+    return result.tokenRefreshInSeconds ?? 0;
   }
 
   private getConfigsWithSilentRenewEnabled(
@@ -143,7 +149,7 @@ export class PeriodicallyTokenCheckService {
   private createRefreshEventForConfig(
     configuration: OpenIdConfiguration,
     allConfigs: OpenIdConfiguration[]
-  ): Observable<CallbackContext | null> {
+  ): Observable<boolean | CallbackContext | null> {
     this.loggerService.logDebug(configuration, 'starting silent renew...');
 
     return this.configurationService
