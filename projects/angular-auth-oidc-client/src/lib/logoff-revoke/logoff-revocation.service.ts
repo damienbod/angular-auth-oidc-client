@@ -178,7 +178,7 @@ export class LogoffRevocationService {
   }
 
   private logoffInternal(
-    logoutAuthOptions: LogoutAuthOptions,
+    logoutAuthOptions: LogoutAuthOptions | undefined,
     endSessionUrl: string,
     config: OpenIdConfiguration,
     allConfigs: OpenIdConfiguration[]
