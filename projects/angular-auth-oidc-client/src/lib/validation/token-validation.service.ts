@@ -479,8 +479,7 @@ export class TokenValidationService {
       return of(false);
     }
 
-    const algorithm: RsaHashedImportParams | EcKeyImportParams =
-      getImportAlg(alg);
+    const algorithm = getImportAlg(alg);
 
     const signingInput = this.tokenHelperService.getSigningInputFromToken(
       idToken,
@@ -501,8 +500,7 @@ export class TokenValidationService {
           loose: true,
         });
 
-        const verifyAlgorithm: RsaHashedImportParams | EcdsaParams =
-          getVerifyAlg(alg);
+        const verifyAlgorithm = getVerifyAlg(alg);
 
         return from(
           this.jwkWindowCryptoService.verifyKey(

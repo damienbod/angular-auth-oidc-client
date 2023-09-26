@@ -69,7 +69,7 @@ export class RefreshSessionIframeService {
       };
 
       sessionIframe.addEventListener('load', onLoadHandler);
-      sessionIframe.contentWindow.location.replace(url);
+      sessionIframe.contentWindow?.location.replace(url ?? '');
     });
   }
 
@@ -96,7 +96,7 @@ export class RefreshSessionIframeService {
         this.silentRenewService.silentRenewEventHandler(e, config, allConfigs)
     );
 
-    this.document.defaultView.dispatchEvent(
+    this.document.defaultView?.dispatchEvent(
       new CustomEvent('oidc-silent-renew-init', {
         detail: instanceId,
       })

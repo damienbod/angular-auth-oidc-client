@@ -81,13 +81,13 @@ export class SilentRenewService {
       return throwError(() => new Error(error));
     }
 
-    const code = params.get('code');
-    const state = params.get('state');
+    const code = params.get('code') ?? '';
+    const state = params.get('state') ?? '';
     const sessionState = params.get('session_state');
 
-    const callbackContext = {
+    const callbackContext: CallbackContext = {
       code,
-      refreshToken: null,
+      refreshToken: '',
       state,
       sessionState,
       authResult: null,

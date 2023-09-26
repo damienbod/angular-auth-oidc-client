@@ -18,7 +18,7 @@ export class CodeFlowCallbackService {
   ) {}
 
   authenticatedCallbackWithCode(
-    urlToCheck: string | null,
+    urlToCheck: string,
     config: OpenIdConfiguration,
     allConfigs: OpenIdConfiguration[]
   ): Observable<CallbackContext> {

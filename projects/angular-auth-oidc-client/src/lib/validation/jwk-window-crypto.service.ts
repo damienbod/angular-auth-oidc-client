@@ -13,6 +13,7 @@ export class JwkWindowCryptoService {
       | EcKeyImportParams
       | HmacImportParams
       | AesKeyAlgorithm
+      | null
   ): Promise<CryptoKey> {
     return this.cryptoService
       .getCrypto()
@@ -20,7 +21,7 @@ export class JwkWindowCryptoService {
   }
 
   verifyKey(
-    verifyAlgorithm: AlgorithmIdentifier | RsaPssParams | EcdsaParams,
+    verifyAlgorithm: AlgorithmIdentifier | RsaPssParams | EcdsaParams | null,
     cryptoKey: CryptoKey,
     signature: BufferSource,
     signingInput: string

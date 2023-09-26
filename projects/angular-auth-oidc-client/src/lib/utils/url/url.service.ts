@@ -54,9 +54,7 @@ export class UrlService {
       return this.createUrlCodeFlowWithSilentRenew(config, customParams);
     }
 
-    return of(
-      this.createUrlImplicitFlowWithSilentRenew(config, customParams) || ''
-    );
+    return of(this.createUrlImplicitFlowWithSilentRenew(config, customParams));
   }
 
   getAuthorizeParUrl(

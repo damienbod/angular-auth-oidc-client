@@ -27,7 +27,10 @@ export class StateValidationService {
     callbackContext: CallbackContext,
     configuration: OpenIdConfiguration
   ): Observable<StateValidationResult> {
-    if (!callbackContext || callbackContext.authResult.error) {
+    const hasError = Boolean(callbackContext.authResult?.error);
+    const hasCallbackContext = Boolean(callbackContext);
+
+    if (!hasCallbackContext || hasError) {
       return of(new StateValidationResult('', '', false, {}));
     }
 
@@ -46,7 +49,7 @@ export class StateValidationService {
 
     if (
       !this.tokenValidationService.validateStateFromHashCallback(
-        callbackContext.authResult.state,
+        callbackContext.authResult?.state,
         authStateControl,
         configuration
       )
@@ -67,14 +70,13 @@ export class StateValidationService {
       this.flowHelper.isCurrentFlowCodeFlow(configuration);
 
     if (isCurrentFlowImplicitFlowWithAccessToken || isCurrentFlowCodeFlow) {
-      toReturn.accessToken = callbackContext.authResult.access_token;
+      toReturn.accessToken = callbackContext.authResult?.access_token ?? '';
     }
 
     const disableIdTokenValidation = configuration.disableIdTokenValidation;
 
     if (disableIdTokenValidation) {
       toReturn.state = ValidationResult.Ok;
-      // TODO TESTING
       toReturn.authResponseIsValid = true;
 
       return of(toReturn);

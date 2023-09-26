@@ -1,9 +1,9 @@
 import { Injectable, NgZone } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class IntervalService {
-  runTokenValidationRunning = null;
+  runTokenValidationRunning: Subscription | null = null;
 
   constructor(private readonly zone: NgZone) {}
 
