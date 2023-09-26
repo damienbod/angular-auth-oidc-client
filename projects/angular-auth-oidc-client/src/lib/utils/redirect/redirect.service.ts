@@ -5,7 +5,7 @@ import { Inject, Injectable } from '@angular/core';
 export class RedirectService {
   constructor(@Inject(DOCUMENT) private readonly document: Document) {}
 
-  redirectTo(url): void {
+  redirectTo(url: string): void {
     this.document.location.href = url;
   }
 }

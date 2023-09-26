@@ -36,6 +36,18 @@ export class CheckAuthService {
     private readonly publicEventsService: PublicEventsService
   ) {}
 
+  private getConfig(
+    configuration: OpenIdConfiguration,
+    url: string | undefined
+  ): OpenIdConfiguration | null {
+    const stateParamFromUrl =
+      this.currentUrlService.getStateParamFromCurrentUrl(url);
+
+    return Boolean(stateParamFromUrl)
+      ? this.getConfigurationWithUrlState([configuration], stateParamFromUrl)
+      : configuration;
+  }
+
   checkAuth(
     configuration: OpenIdConfiguration,
     allConfigs: OpenIdConfiguration[],
@@ -46,20 +58,14 @@ export class CheckAuthService {
     const stateParamFromUrl =
       this.currentUrlService.getStateParamFromCurrentUrl(url);
 
-    if (!!stateParamFromUrl) {
-      configuration = this.getConfigurationWithUrlState(
-        [configuration],
-        stateParamFromUrl
+    const config = this.getConfig(configuration, url);
+    if (!config) {
+      return throwError(
+        () =>
+          new Error(
+            `could not find matching config for state ${stateParamFromUrl}`
+          )
       );
-
-      if (!configuration) {
-        return throwError(
-          () =>
-            new Error(
-              `could not find matching config for state ${stateParamFromUrl}`
-            )
-        );
-      }
     }
 
     return this.checkAuthWithConfig(configuration, allConfigs, url);
@@ -134,14 +140,16 @@ export class CheckAuthService {
 
       this.loggerService.logError(config, errorMessage);
 
-      return of({
+      const result: LoginResponse = {
         isAuthenticated: false,
         errorMessage,
         userData: null,
         idToken: '',
         accessToken: '',
-        configId: null,
-      });
+        configId: '',
+      };
+
+      return of(result);
     }
 
     const currentUrl = url || this.currentUrlService.getCurrentUrl();
@@ -149,19 +157,22 @@ export class CheckAuthService {
 
     this.loggerService.logDebug(
       config,
-      `Working with config '${configId}' using ${authority}`
+      `Working with config '${configId}' using '${authority}'`
     );
 
     if (this.popupService.isCurrentlyInPopup(config)) {
-      this.popupService.sendMessageToMainWindow(currentUrl);
+      this.popupService.sendMessageToMainWindow(currentUrl, config);
 
-      return of({
+      const result: LoginResponse = {
         isAuthenticated: false,
         errorMessage: '',
         userData: null,
         idToken: '',
         accessToken: '',
-      });
+        configId: '',
+      };
+
+      return of(result);
     }
 
     const isCallback = this.callbackService.isCallback(currentUrl);
@@ -178,12 +189,17 @@ export class CheckAuthService {
           config,
           allConfigs
         )
-      : of(null);
+      : of({});
 
     return callback$.pipe(
       map(() => {
         const isAuthenticated =
           this.authStateService.areAuthStorageTokensValid(config);
+
+        this.loggerService.logDebug(
+          config,
+          `checkAuth completed. Firing events now. isAuthenticated: ${isAuthenticated}`
+        );
 
         if (isAuthenticated) {
           this.startCheckSessionAndValidation(config, allConfigs);
@@ -192,25 +208,21 @@ export class CheckAuthService {
             this.authStateService.setAuthenticatedAndFireEvent(allConfigs);
             this.userService.publishUserDataIfExists(config, allConfigs);
           }
+
+          this.publicEventsService.fireEvent(EventTypes.CheckingAuthFinished);
         }
 
-        this.loggerService.logDebug(
-          config,
-          'checkAuth completed - firing events now. isAuthenticated: ' +
-            isAuthenticated
-        );
-
-        return {
+        const result: LoginResponse = {
           isAuthenticated,
           userData: this.userService.getUserDataFromStore(config),
           accessToken: this.authStateService.getAccessToken(config),
           idToken: this.authStateService.getIdToken(config),
           configId,
         };
+
+        return result;
       }),
       tap(({ isAuthenticated }) => {
-        this.publicEventsService.fireEvent(EventTypes.CheckingAuthFinished);
-
         if (isAuthenticated) {
           this.autoLoginService.checkSavedRedirectRouteAndNavigate(config);
         }
@@ -222,14 +234,16 @@ export class CheckAuthService {
           message
         );
 
-        return of({
+        const result: LoginResponse = {
           isAuthenticated: false,
           errorMessage: message,
           userData: null,
           idToken: '',
           accessToken: '',
           configId,
-        });
+        };
+
+        return of(result);
       })
     );
   }
@@ -254,8 +268,12 @@ export class CheckAuthService {
 
   private getConfigurationWithUrlState(
     configurations: OpenIdConfiguration[],
-    stateFromUrl: string
+    stateFromUrl: string | null
   ): OpenIdConfiguration | null {
+    if (!stateFromUrl) {
+      return null;
+    }
+
     for (const config of configurations) {
       const storedState = this.storagePersistenceService.read(
         'authStateControl',

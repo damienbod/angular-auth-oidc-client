@@ -45,7 +45,7 @@ export class RefreshSessionIframeService {
   }
 
   private sendAuthorizeRequestUsingSilentRenew(
-    url: string,
+    url: string | null,
     config: OpenIdConfiguration,
     allConfigs: OpenIdConfiguration[]
   ): Observable<boolean> {
@@ -54,7 +54,7 @@ export class RefreshSessionIframeService {
     this.initSilentRenewRequest(config, allConfigs);
     this.loggerService.logDebug(
       config,
-      'sendAuthorizeRequestUsingSilentRenew for URL:' + url
+      `sendAuthorizeRequestUsingSilentRenew for URL: ${url}`
     );
 
     return new Observable((observer) => {

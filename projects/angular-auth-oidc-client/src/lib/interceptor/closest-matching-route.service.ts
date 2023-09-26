@@ -10,7 +10,7 @@ export class ClosestMatchingRouteService {
     for (const config of configurations) {
       const { secureRoutes } = config;
 
-      for (const configuredRoute of secureRoutes) {
+      for (const configuredRoute of secureRoutes ?? []) {
         if (route.startsWith(configuredRoute)) {
           return {
             matchingRoute: configuredRoute,
@@ -28,6 +28,6 @@ export class ClosestMatchingRouteService {
 }
 
 export interface ClosestMatchingRouteResult {
-  matchingRoute: string;
-  matchingConfig: OpenIdConfiguration;
+  matchingRoute: string | null;
+  matchingConfig: OpenIdConfiguration | null;
 }

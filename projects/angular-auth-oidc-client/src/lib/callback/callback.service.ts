@@ -23,16 +23,20 @@ export class CallbackService {
     private readonly codeFlowCallbackService: CodeFlowCallbackService
   ) {}
 
-  isCallback(currentUrl: string): boolean {
+  isCallback(currentUrl: string | null): boolean {
+    if (!currentUrl) {
+      return false;
+    }
+
     return this.urlService.isCallbackFromSts(currentUrl);
   }
 
   handleCallbackAndFireEvents(
-    currentCallbackUrl: string,
+    currentCallbackUrl: string | null,
     config: OpenIdConfiguration,
     allConfigs: OpenIdConfiguration[]
   ): Observable<CallbackContext> {
-    let callback$: Observable<any>;
+    let callback$: Observable<CallbackContext> = new Observable();
 
     if (this.flowHelper.isCurrentFlowCodeFlow(config)) {
       callback$ = this.codeFlowCallbackService.authenticatedCallbackWithCode(

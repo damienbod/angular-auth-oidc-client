@@ -1,10 +1,4 @@
-export interface PopupResultUserClosed {
-  userClosed: true;
-}
-
-export interface PopupResultReceivedUrl {
-  userClosed: false;
+export interface PopupResult {
+  userClosed: boolean;
   receivedUrl: string;
 }
-
-export type PopupResult = PopupResultUserClosed | PopupResultReceivedUrl;

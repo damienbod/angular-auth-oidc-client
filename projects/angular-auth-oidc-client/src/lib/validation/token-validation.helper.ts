@@ -1,4 +1,6 @@
-export function getVerifyAlg(alg: string): RsaHashedImportParams | EcdsaParams {
+export function getVerifyAlg(
+  alg: string
+): RsaHashedImportParams | EcdsaParams | null {
   switch (alg.charAt(0)) {
     case 'R':
       return {
@@ -39,7 +41,7 @@ export function alg2kty(alg: string): string {
 
 export function getImportAlg(
   alg: string
-): RsaHashedImportParams | EcKeyImportParams {
+): RsaHashedImportParams | EcKeyImportParams | null {
   switch (alg.charAt(0)) {
     case 'R':
       if (alg.includes('256')) {

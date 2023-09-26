@@ -19,7 +19,9 @@ export class FlowHelper {
   ): boolean {
     const { useRefreshToken } = configuration;
 
-    return this.isCurrentFlowCodeFlow(configuration) && useRefreshToken;
+    return (
+      this.isCurrentFlowCodeFlow(configuration) && Boolean(useRefreshToken)
+    );
   }
 
   isCurrentFlowImplicitFlowWithAccessToken(

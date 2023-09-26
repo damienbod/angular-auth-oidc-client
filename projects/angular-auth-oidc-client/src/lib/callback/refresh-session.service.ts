@@ -96,7 +96,7 @@ export class RefreshSessionService {
     }
 
     const { silentRenewTimeoutInSeconds } = config;
-    const timeOutTime = silentRenewTimeoutInSeconds * 1000;
+    const timeOutTime = (silentRenewTimeoutInSeconds ?? 0) * 1000;
 
     return forkJoin([
       this.startRefreshSession(config, allConfigs, extraCustomParams),
@@ -110,8 +110,8 @@ export class RefreshSessionService {
 
         if (isAuthenticated) {
           return {
-            idToken: callbackContext?.authResult?.id_token,
-            accessToken: callbackContext?.authResult?.access_token,
+            idToken: callbackContext?.authResult?.id_token ?? '',
+            accessToken: callbackContext?.authResult?.access_token ?? '',
             userData: this.userService.getUserDataFromStore(config),
             isAuthenticated,
             configId,

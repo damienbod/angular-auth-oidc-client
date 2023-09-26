@@ -113,8 +113,12 @@ export class TokenHelperService {
 
     const decoded =
       typeof this.document.defaultView !== 'undefined'
-        ? this.document.defaultView.atob(output)
+        ? this.document.defaultView?.atob(output)
         : Buffer.from(output, 'base64').toString('binary');
+
+    if (!decoded) {
+      return '';
+    }
 
     try {
       // Going backwards: from byte stream, to percent-encoding, to original string.

@@ -13,6 +13,10 @@ export interface PassedInitialConfig {
 export function createStaticLoader(
   passedConfig: PassedInitialConfig
 ): StsConfigLoader {
+  if (!passedConfig?.config) {
+    throw new Error('No config provided!');
+  }
+
   return new StsConfigStaticLoader(passedConfig.config);
 }
 

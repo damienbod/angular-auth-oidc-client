@@ -8,10 +8,10 @@ import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
 import { UrlService } from '../../utils/url/url.service';
 import { LoginResponse } from '../login-response';
-import { PopupOptions } from './popup-options';
-import { PopUpService } from './popup.service';
 import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
-import { PopupResultReceivedUrl } from './popup-result';
+import { PopupOptions } from './popup-options';
+import { PopupResult } from './popup-result';
+import { PopUpService } from './popup.service';
 
 @Injectable({ providedIn: 'root' })
 export class PopUpLoginService {
@@ -55,24 +55,26 @@ export class PopUpLoginService {
         switchMap(() =>
           this.urlService.getAuthorizeUrl(configuration, authOptions)
         ),
-        tap((authUrl: string) =>
+        tap((authUrl) =>
           this.popupService.openPopUp(authUrl, popupOptions, configuration)
         ),
         switchMap(() => {
           return this.popupService.result$.pipe(
             take(1),
-            switchMap((result: PopupResultReceivedUrl) => {
+            switchMap((result: PopupResult) => {
               const { userClosed, receivedUrl } = result;
 
               if (userClosed) {
-                return of({
+                const response: LoginResponse = {
                   isAuthenticated: false,
                   errorMessage: 'User closed popup',
                   userData: null,
-                  idToken: null,
-                  accessToken: null,
+                  idToken: '',
+                  accessToken: '',
                   configId,
-                });
+                };
+
+                return of(response);
               }
 
               return this.checkAuthService.checkAuth(

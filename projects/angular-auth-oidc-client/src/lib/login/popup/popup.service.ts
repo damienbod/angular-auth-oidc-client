@@ -11,9 +11,9 @@ import { PopupResult } from './popup-result';
 export class PopUpService {
   private readonly STORAGE_IDENTIFIER = 'popupauth';
 
-  private popUp: Window;
+  private popUp: Window | null = null;
 
-  private handle: number;
+  private handle: number = -1;
 
   private readonly resultInternal$ = new Subject<PopupResult>();
 
@@ -21,7 +21,7 @@ export class PopUpService {
     return this.resultInternal$.asObservable();
   }
 
-  private get windowInternal(): Window {
+  private get windowInternal(): Window | null {
     return this.document.defaultView;
   }
 
@@ -38,10 +38,15 @@ export class PopUpService {
         config
       );
 
+      const windowIdentifier = this.windowInternal;
+      if (!windowIdentifier) {
+        return false;
+      }
+
       return (
-        !!this.windowInternal.opener &&
-        this.windowInternal.opener !== this.windowInternal &&
-        !!popup
+        Boolean(windowIdentifier.opener) &&
+        windowIdentifier.opener !== windowIdentifier &&
+        Boolean(popup)
       );
     }
 
@@ -49,8 +54,8 @@ export class PopUpService {
   }
 
   openPopUp(
-    url: string,
-    popupOptions: PopupOptions,
+    url: string | null,
+    popupOptions: PopupOptions | undefined,
     config: OpenIdConfiguration
   ): void {
     const optionsToPass = this.getOptions(popupOptions);
@@ -61,7 +66,18 @@ export class PopUpService {
       config
     );
 
-    this.popUp = this.windowInternal.open(url, '_blank', optionsToPass);
+    const windowIdentifier = this.windowInternal;
+    if (!windowIdentifier) {
+      return;
+    }
+
+    if (!url) {
+      this.loggerService.logError(config, 'Could not open popup, url is empty');
+
+      return;
+    }
+
+    this.popUp = windowIdentifier.open(url, '_blank', optionsToPass);
 
     if (!this.popUp) {
       this.storagePersistenceService.remove(this.STORAGE_IDENTIFIER, config);
@@ -89,28 +105,41 @@ export class PopUpService {
       this.cleanUp(listener, config);
     };
 
-    this.windowInternal.addEventListener('message', listener, false);
+    windowIdentifier.addEventListener('message', listener, false);
 
-    this.handle = this.windowInternal.setInterval(() => {
+    this.handle = windowIdentifier.setInterval(() => {
       if (this.popUp?.closed) {
-        this.resultInternal$.next({ userClosed: true });
+        this.resultInternal$.next({ userClosed: true, receivedUrl: '' });
 
         this.cleanUp(listener, config);
       }
     }, 200);
   }
 
-  sendMessageToMainWindow(url: string): void {
-    if (this.windowInternal.opener) {
-      const href = this.windowInternal.location.href;
+  sendMessageToMainWindow(
+    url: string | null,
+    config: OpenIdConfiguration
+  ): void {
+    const windowIdentifier = this.windowInternal;
+    if (!windowIdentifier) {
+      return;
+    }
 
-      this.sendMessage(url, href);
+    if (windowIdentifier.opener) {
+      const href = windowIdentifier.location.href;
+
+      this.sendMessage(url, href, config);
     }
   }
 
   private cleanUp(listener: any, config: OpenIdConfiguration): void {
-    this.windowInternal.removeEventListener('message', listener, false);
-    this.windowInternal.clearInterval(this.handle);
+    const windowIdentifier = this.windowInternal;
+    if (!windowIdentifier) {
+      return;
+    }
+
+    windowIdentifier.removeEventListener('message', listener, false);
+    windowIdentifier.clearInterval(this.handle);
 
     if (this.popUp) {
       this.storagePersistenceService.remove(this.STORAGE_IDENTIFIER, config);
@@ -119,12 +148,30 @@ export class PopUpService {
     }
   }
 
-  private sendMessage(url: string, href: string): void {
-    this.windowInternal.opener.postMessage(url, href);
+  private sendMessage(
+    url: string | null,
+    href: string,
+    config: OpenIdConfiguration
+  ): void {
+    const windowIdentifier = this.windowInternal;
+    if (!windowIdentifier) {
+      return;
+    }
+
+    if (!url) {
+      this.loggerService.logDebug(
+        config,
+        `Can not send message to parent, no url: '${url}'`
+      );
+
+      return;
+    }
+
+    windowIdentifier.opener.postMessage(url, href);
   }
 
-  private getOptions(popupOptions: PopupOptions): string {
-    const popupDefaultOptions: PopupOptions = {
+  private getOptions(popupOptions: PopupOptions | undefined): string {
+    const popupDefaultOptions = {
       width: 500,
       height: 500,
       left: 50,
@@ -134,12 +181,18 @@ export class PopUpService {
       ...popupDefaultOptions,
       ...(popupOptions || {}),
     };
+    const windowIdentifier = this.windowInternal;
+    if (!windowIdentifier) {
+      return '';
+    }
+
+    const width = options.width || popupDefaultOptions.width;
+    const height = options.height || popupDefaultOptions.height;
+
     const left: number =
-      this.windowInternal.screenLeft +
-      (this.windowInternal.outerWidth - options.width) / 2;
+      windowIdentifier.screenLeft + (windowIdentifier.outerWidth - width) / 2;
     const top: number =
-      this.windowInternal.screenTop +
-      (this.windowInternal.outerHeight - options.height) / 2;
+      windowIdentifier.screenTop + (windowIdentifier.outerHeight - height) / 2;
 
     options.left = left;
     options.top = top;

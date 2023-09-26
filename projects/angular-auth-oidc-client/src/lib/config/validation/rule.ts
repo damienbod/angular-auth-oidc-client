@@ -10,10 +10,10 @@ export interface RuleValidationResult {
   level: Level;
 }
 
-export const POSITIVE_VALIDATION_RESULT = {
+export const POSITIVE_VALIDATION_RESULT: RuleValidationResult = {
   result: true,
   messages: [],
-  level: null,
+  level: 'none',
 };
 
-export type Level = 'warning' | 'error';
+export type Level = 'warning' | 'error' | 'none';
