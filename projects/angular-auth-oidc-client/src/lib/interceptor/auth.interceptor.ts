@@ -11,6 +11,7 @@ import { Observable } from 'rxjs';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { ConfigurationService } from '../config/config.service';
 import { LoggerService } from '../logging/logger.service';
+import { flattenArray } from '../utils/collections/collections.helper';
 import { ClosestMatchingRouteService } from './closest-matching-route.service';
 
 @Injectable()
@@ -64,7 +65,7 @@ function interceptRequest(
   const allRoutesConfigured = allConfigurations.map(
     (x) => x.secureRoutes || []
   );
-  const allRoutesConfiguredFlat = [].concat(...allRoutesConfigured) as string[];
+  const allRoutesConfiguredFlat = flattenArray(allRoutesConfigured);
 
   if (allRoutesConfiguredFlat.length === 0) {
     deps.loggerService.logDebug(

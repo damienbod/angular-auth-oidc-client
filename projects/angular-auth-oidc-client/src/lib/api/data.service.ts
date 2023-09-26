@@ -25,7 +25,7 @@ export class DataService {
   }
 
   post<T>(
-    url: string,
+    url: string | null,
     body: any,
     config: OpenIdConfiguration,
     headersParams?: HttpHeaders
@@ -33,7 +33,7 @@ export class DataService {
     const headers = headersParams || this.prepareHeaders();
     const params = this.prepareParams(config);
 
-    return this.httpClient.post<T>(url, body, { headers, params });
+    return this.httpClient.post<T>(url ?? '', body, { headers, params });
   }
 
   private prepareHeaders(token?: string): HttpHeaders {

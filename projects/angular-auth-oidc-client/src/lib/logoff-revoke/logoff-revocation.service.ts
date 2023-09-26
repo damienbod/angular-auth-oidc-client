@@ -222,7 +222,7 @@ export class LogoffRevocationService {
 
   private sendRevokeRequest(
     configuration: OpenIdConfiguration,
-    body: string
+    body: string | null
   ): Observable<any> {
     const url = this.urlService.getRevocationEndpointUrl(configuration);
     const headers = this.getHeaders();
