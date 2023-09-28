@@ -110,9 +110,13 @@ export class UrlService {
   }
 
   getAuthorizeUrl(
-    config: OpenIdConfiguration,
+    config: OpenIdConfiguration | null,
     authOptions?: AuthOptions
   ): Observable<string | null> {
+    if (!config) {
+      return of(null);
+    }
+
     if (this.flowHelper.isCurrentFlowCodeFlow(config)) {
       return this.createUrlCodeFlowAuthorize(config, authOptions);
     }

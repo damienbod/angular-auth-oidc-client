@@ -12,7 +12,10 @@ export class AutoLoginService {
     private readonly router: Router
   ) {}
 
-  checkSavedRedirectRouteAndNavigate(config: OpenIdConfiguration): void {
+  checkSavedRedirectRouteAndNavigate(config: OpenIdConfiguration | null): void {
+    if (!config) {
+      return;
+    }
     const savedRouteForRedirect = this.getStoredRedirectRoute(config);
 
     if (savedRouteForRedirect != null) {

@@ -34,7 +34,9 @@ export class ConfigurationService {
     return Object.values(this.configsInternal);
   }
 
-  getOpenIDConfiguration(configId?: string): Observable<OpenIdConfiguration> {
+  getOpenIDConfiguration(
+    configId?: string
+  ): Observable<OpenIdConfiguration | null> {
     if (this.configsAlreadySaved()) {
       return of(this.getConfig(configId));
     }
@@ -44,9 +46,10 @@ export class ConfigurationService {
     );
   }
 
-  getOpenIDConfigurations(
-    configId?: string
-  ): Observable<{ allConfigs; currentConfig }> {
+  getOpenIDConfigurations(configId?: string): Observable<{
+    allConfigs: OpenIdConfiguration[];
+    currentConfig: OpenIdConfiguration | null;
+  }> {
     return this.loadConfigs().pipe(
       concatMap((allConfigs) => this.prepareAndSaveConfigs(allConfigs)),
       map((allPreparedConfigs) => ({
@@ -63,7 +66,7 @@ export class ConfigurationService {
   private saveConfig(readyConfig: OpenIdConfiguration): void {
     const { configId } = readyConfig;
 
-    this.configsInternal[configId] = readyConfig;
+    this.configsInternal[configId as string] = readyConfig;
   }
 
   private loadConfigs(): Observable<OpenIdConfiguration[]> {
@@ -74,9 +77,9 @@ export class ConfigurationService {
     return this.hasAtLeastOneConfig();
   }
 
-  private getConfig(configId: string): OpenIdConfiguration {
-    if (!!configId) {
-      return this.configsInternal[configId] || null;
+  private getConfig(configId?: string): OpenIdConfiguration | null {
+    if (Boolean(configId)) {
+      return this.configsInternal[configId as string] || null;
     }
 
     const [, value] = Object.entries(this.configsInternal)[0] || [[null, null]];
@@ -88,13 +91,18 @@ export class ConfigurationService {
     passedConfigs: OpenIdConfiguration[]
   ): Observable<OpenIdConfiguration[]> {
     if (!this.configValidationService.validateConfigs(passedConfigs)) {
-      return of(null);
+      return of([]);
     }
 
     this.createUniqueIds(passedConfigs);
-    const allHandleConfigs$ = passedConfigs.map((x) => this.handleConfig(x));
 
-    return forkJoin(allHandleConfigs$);
+    const allHandleConfigs$ = passedConfigs.map((x) => this.handleConfig(x));
+    const as = forkJoin(allHandleConfigs$).pipe(
+      map((x) => x.filter((y) => Boolean(y))),
+      map((z) => z as OpenIdConfiguration[])
+    );
+
+    return as;
   }
 
   private createUniqueIds(passedConfigs: OpenIdConfiguration[]): void {
@@ -107,7 +115,7 @@ export class ConfigurationService {
 
   private handleConfig(
     passedConfig: OpenIdConfiguration
-  ): Observable<OpenIdConfiguration> {
+  ): Observable<OpenIdConfiguration | null> {
     if (!this.configValidationService.validateConfig(passedConfig)) {
       this.loggerService.logError(
         passedConfig,

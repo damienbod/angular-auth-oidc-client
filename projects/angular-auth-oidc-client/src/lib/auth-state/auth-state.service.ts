@@ -118,7 +118,13 @@ export class AuthStateService {
     );
   }
 
-  areAuthStorageTokensValid(configuration: OpenIdConfiguration): boolean {
+  areAuthStorageTokensValid(
+    configuration: OpenIdConfiguration | null
+  ): boolean {
+    if (!configuration) {
+      return false;
+    }
+
     if (!this.isAuthenticated(configuration)) {
       return false;
     }

@@ -33,7 +33,7 @@ export class UserCallbackHandlerService {
     if (!autoUserInfo) {
       if (!isRenewProcess || renewUserInfoAfterTokenRenew) {
         // userData is set to the id_token decoded, auto get user data set to false
-        if (validationResult.decodedIdToken) {
+        if (validationResult?.decodedIdToken) {
           this.userService.setUserDataToStore(
             validationResult.decodedIdToken,
             configuration,
@@ -44,7 +44,7 @@ export class UserCallbackHandlerService {
 
       if (!isRenewProcess && !refreshToken) {
         this.flowsDataService.setSessionState(
-          authResult.session_state,
+          authResult?.session_state,
           configuration
         );
       }
