@@ -60,7 +60,7 @@ export class AuthStateService {
 
   setAuthorizationData(
     accessToken: string,
-    authResult: AuthResult,
+    authResult: AuthResult | null,
     currentConfig: OpenIdConfiguration,
     allConfigs: OpenIdConfiguration[]
   ): void {

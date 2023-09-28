@@ -335,7 +335,7 @@ export class TokenValidationService {
   // not trusted by the Client.
   validateIdTokenAud(
     dataIdToken: any,
-    aud: any,
+    aud: string | undefined,
     configuration: OpenIdConfiguration
   ): boolean {
     if (Array.isArray(dataIdToken.aud)) {
@@ -382,7 +382,10 @@ export class TokenValidationService {
   }
 
   // If an azp (authorized party) Claim is present, the Client SHOULD verify that its client_id is the Claim Value.
-  validateIdTokenAzpValid(dataIdToken: any, clientId: string): boolean {
+  validateIdTokenAzpValid(
+    dataIdToken: any,
+    clientId: string | undefined
+  ): boolean {
     if (!dataIdToken?.azp) {
       return true;
     }

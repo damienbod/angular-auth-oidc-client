@@ -353,7 +353,7 @@ export class StateValidationService {
     }
 
     // only do check if id_token returned, no always the case when using refresh tokens
-    if (callbackContext.authResult.id_token) {
+    if (callbackContext.authResult?.id_token) {
       const idTokenHeader = this.tokenHelperService.getHeaderFromToken(
         toReturn.idToken,
         false,

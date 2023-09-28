@@ -59,8 +59,8 @@ export class UserCallbackHandlerService {
         configuration,
         allConfigs,
         isRenewProcess,
-        validationResult.idToken,
-        validationResult.decodedIdToken
+        validationResult?.idToken,
+        validationResult?.decodedIdToken
       )
       .pipe(
         switchMap((userData) => {

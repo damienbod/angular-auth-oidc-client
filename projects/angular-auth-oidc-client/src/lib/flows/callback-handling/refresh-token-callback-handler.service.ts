@@ -44,30 +44,33 @@ export class RefreshTokenCallbackHandlerService {
       customParamsRefresh
     );
 
-    return this.dataService.post(tokenEndpoint, data, config, headers).pipe(
-      switchMap((response: AuthResult) => {
-        this.loggerService.logDebug(
-          config,
-          'token refresh response: ',
-          response
-        );
+    return this.dataService
+      .post<AuthResult>(tokenEndpoint, data, config, headers)
+      .pipe(
+        switchMap((response) => {
+          this.loggerService.logDebug(
+            config,
+            `token refresh response: ${response}`
+          );
 
-        response.state = callbackContext.state;
+          if (response) {
+            response.state = callbackContext.state;
+          }
 
-        callbackContext.authResult = response;
+          callbackContext.authResult = response;
 
-        return of(callbackContext);
-      }),
-      retryWhen((error) => this.handleRefreshRetry(error, config)),
-      catchError((error) => {
-        const { authority } = config;
-        const errorMessage = `OidcService code request ${authority}`;
+          return of(callbackContext);
+        }),
+        retryWhen((error) => this.handleRefreshRetry(error, config)),
+        catchError((error) => {
+          const { authority } = config;
+          const errorMessage = `OidcService code request ${authority}`;
 
-        this.loggerService.logError(config, errorMessage, error);
+          this.loggerService.logError(config, errorMessage, error);
 
-        return throwError(() => new Error(errorMessage));
-      })
-    );
+          return throwError(() => new Error(errorMessage));
+        })
+      );
   }
 
   private handleRefreshRetry(
@@ -88,7 +91,7 @@ export class RefreshTokenCallbackHandlerService {
 
           this.loggerService.logWarning(config, errorMessage, error);
 
-          return timer(refreshTokenRetryInSeconds * 1000);
+          return timer((refreshTokenRetryInSeconds ?? 0) * 1000);
         }
 
         return throwError(() => error);
