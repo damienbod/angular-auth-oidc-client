@@ -66,9 +66,9 @@ export class SilentRenewService {
       fromString: urlParts[1],
     });
 
-    const error = params.get('error');
+    const errorParam = params.get('error');
 
-    if (error) {
+    if (errorParam) {
       this.authStateService.updateAndPublishAuthState({
         isAuthenticated: false,
         validationResult: ValidationResult.LoginRequired,
@@ -78,7 +78,7 @@ export class SilentRenewService {
       this.flowsDataService.setNonce('', config);
       this.intervalService.stopPeriodicTokenCheck();
 
-      return throwError(() => new Error(error));
+      return throwError(() => new Error(errorParam));
     }
 
     const code = params.get('code') ?? '';

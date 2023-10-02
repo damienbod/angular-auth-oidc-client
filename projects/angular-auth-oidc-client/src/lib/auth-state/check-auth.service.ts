@@ -57,8 +57,8 @@ export class CheckAuthService {
 
     const stateParamFromUrl =
       this.currentUrlService.getStateParamFromCurrentUrl(url);
-
     const config = this.getConfig(configuration, url);
+
     if (!config) {
       return throwError(
         () =>
