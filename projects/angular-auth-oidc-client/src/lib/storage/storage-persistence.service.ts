@@ -1,4 +1,5 @@
-﻿import { Injectable } from '@angular/core';
+﻿import { Injectable, inject } from '@angular/core';
+import { AuthResult } from '../flows/callback-context';
 import { OpenIdConfiguration } from './../config/openid-configuration';
 import { BrowserStorageService } from './browser-storage.service';
 
@@ -25,7 +26,7 @@ export type StorageKeys =
 
 @Injectable({ providedIn: 'root' })
 export class StoragePersistenceService {
-  constructor(private readonly browserStorageService: BrowserStorageService) {}
+  private readonly browserStorageService = inject(BrowserStorageService);
 
   read(key: StorageKeys, config: OpenIdConfiguration): any {
     const storedConfig = this.browserStorageService.read(key, config) || {};
@@ -90,7 +91,7 @@ export class StoragePersistenceService {
     return refreshToken;
   }
 
-  getAuthenticationResult(config: OpenIdConfiguration): any {
+  getAuthenticationResult(config: OpenIdConfiguration): AuthResult {
     return this.read('authnResult', config);
   }
 }

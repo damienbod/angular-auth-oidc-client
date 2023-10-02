@@ -108,7 +108,7 @@ export class AuthStateService {
     return this.decodeURIComponentSafely(token);
   }
 
-  getAuthenticationResult(configuration: OpenIdConfiguration): any {
+  getAuthenticationResult(configuration: OpenIdConfiguration): AuthResult {
     if (!this.isAuthenticated(configuration)) {
       return null;
     }
@@ -225,7 +225,7 @@ export class AuthStateService {
   }
 
   private persistAccessTokenExpirationTime(
-    authResult: any,
+    authResult: AuthResult,
     configuration: OpenIdConfiguration
   ): void {
     if (authResult?.expires_in) {
