@@ -216,16 +216,6 @@ export class AuthStateService {
     return hasAccessToken && hasIdToken;
   }
 
-  getAccessTokenScopes(configuration: OpenIdConfiguration): string {
-    if (!this.isAuthenticated(configuration)) {
-      return null;
-    }
-
-    const authResult = this.getAuthenticationResult(configuration);
-
-    return authResult.scope ?? '';
-  }
-
   private decodeURIComponentSafely(token: string): string {
     if (token) {
       return decodeURIComponent(token);
