@@ -13,7 +13,7 @@ export class PopUpService {
 
   private popUp: Window | null = null;
 
-  private handle: number = -1;
+  private handle = -1;
 
   private readonly resultInternal$ = new Subject<PopupResult>();
 
@@ -39,6 +39,7 @@ export class PopUpService {
       );
 
       const windowIdentifier = this.windowInternal;
+
       if (!windowIdentifier) {
         return false;
       }
@@ -67,6 +68,7 @@ export class PopUpService {
     );
 
     const windowIdentifier = this.windowInternal;
+
     if (!windowIdentifier) {
       return;
     }
@@ -118,6 +120,7 @@ export class PopUpService {
 
   sendMessageToMainWindow(url: string, config: OpenIdConfiguration): void {
     const windowIdentifier = this.windowInternal;
+
     if (!windowIdentifier) {
       return;
     }
@@ -131,6 +134,7 @@ export class PopUpService {
 
   private cleanUp(listener: any, config: OpenIdConfiguration): void {
     const windowIdentifier = this.windowInternal;
+
     if (!windowIdentifier) {
       return;
     }
@@ -151,6 +155,7 @@ export class PopUpService {
     config: OpenIdConfiguration
   ): void {
     const windowIdentifier = this.windowInternal;
+
     if (!windowIdentifier) {
       return;
     }
@@ -179,6 +184,7 @@ export class PopUpService {
       ...(popupOptions || {}),
     };
     const windowIdentifier = this.windowInternal;
+
     if (!windowIdentifier) {
       return '';
     }
