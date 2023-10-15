@@ -67,7 +67,7 @@ export class UserCallbackHandlerService {
           if (!!userData) {
             if (!refreshToken) {
               this.flowsDataService.setSessionState(
-                authResult.session_state,
+                authResult?.session_state,
                 configuration
               );
             }
@@ -99,9 +99,13 @@ export class UserCallbackHandlerService {
   }
 
   private publishAuthState(
-    stateValidationResult: StateValidationResult,
+    stateValidationResult: StateValidationResult | null,
     isRenewProcess: boolean
   ): void {
+    if (!stateValidationResult) {
+      return;
+    }
+
     this.authStateService.updateAndPublishAuthState({
       isAuthenticated: true,
       validationResult: stateValidationResult.state,
@@ -110,9 +114,13 @@ export class UserCallbackHandlerService {
   }
 
   private publishUnauthenticatedState(
-    stateValidationResult: StateValidationResult,
+    stateValidationResult: StateValidationResult | null,
     isRenewProcess: boolean
   ): void {
+    if (!stateValidationResult) {
+      return;
+    }
+
     this.authStateService.updateAndPublishAuthState({
       isAuthenticated: false,
       validationResult: stateValidationResult.state,

@@ -30,7 +30,11 @@ export class AutoLoginService {
    * @param config The OpenId configuration.
    * @param url The redirect URL to save.
    */
-  saveRedirectRoute(config: OpenIdConfiguration, url: string): void {
+  saveRedirectRoute(config: OpenIdConfiguration | null, url: string): void {
+    if (!config) {
+      return;
+    }
+
     this.storageService.write(STORAGE_KEY, url, config);
   }
 

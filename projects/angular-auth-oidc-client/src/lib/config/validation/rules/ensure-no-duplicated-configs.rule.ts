@@ -3,7 +3,7 @@ import { POSITIVE_VALIDATION_RESULT, RuleValidationResult } from '../rule';
 
 const createIdentifierToCheck = (passedConfig: OpenIdConfiguration): string => {
   if (!passedConfig) {
-    return null;
+    return '';
   }
 
   const { authority, clientId, scope } = passedConfig;
@@ -19,9 +19,9 @@ export const ensureNoDuplicatedConfigsRule = (
 ): RuleValidationResult => {
   const allIdentifiers = passedConfigs.map((x) => createIdentifierToCheck(x));
 
-  const someAreNull = allIdentifiers.some((x) => x === null);
+  const someAreNotSet = allIdentifiers.some((x) => x === '');
 
-  if (someAreNull) {
+  if (someAreNotSet) {
     return {
       result: false,
       messages: [

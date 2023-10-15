@@ -15,9 +15,13 @@ export class ResetAuthDataService {
   ) {}
 
   resetAuthorizationData(
-    currentConfiguration: OpenIdConfiguration,
+    currentConfiguration: OpenIdConfiguration | null,
     allConfigs: OpenIdConfiguration[]
   ): void {
+    if (!currentConfiguration) {
+      return;
+    }
+
     this.userService.resetUserDataInStore(currentConfiguration, allConfigs);
     this.flowsDataService.resetStorageFlowData(currentConfiguration);
     this.authStateService.setUnauthenticatedAndFireEvent(

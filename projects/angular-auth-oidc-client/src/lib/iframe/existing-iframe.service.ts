@@ -46,7 +46,7 @@ export class IFrameService {
   ): HTMLIFrameElement | null {
     try {
       const iFrameElement =
-        this.document.defaultView.parent.document.getElementById(identifier);
+        this.document.defaultView?.parent.document.getElementById(identifier);
 
       if (this.isIFrameElement(iFrameElement)) {
         return iFrameElement;
@@ -69,7 +69,7 @@ export class IFrameService {
   }
 
   private isIFrameElement(
-    element: HTMLElement | null
+    element: HTMLElement | null | undefined
   ): element is HTMLIFrameElement {
     return !!element && element instanceof HTMLIFrameElement;
   }

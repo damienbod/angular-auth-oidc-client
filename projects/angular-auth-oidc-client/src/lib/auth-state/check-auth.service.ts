@@ -49,10 +49,19 @@ export class CheckAuthService {
   }
 
   checkAuth(
-    configuration: OpenIdConfiguration,
+    configuration: OpenIdConfiguration | null,
     allConfigs: OpenIdConfiguration[],
     url?: string
   ): Observable<LoginResponse> {
+    if (!configuration) {
+      return throwError(
+        () =>
+          new Error(
+            'Please provide a configuration before setting up the module'
+          )
+      );
+    }
+
     this.publicEventsService.fireEvent(EventTypes.CheckingAuth);
 
     const stateParamFromUrl =

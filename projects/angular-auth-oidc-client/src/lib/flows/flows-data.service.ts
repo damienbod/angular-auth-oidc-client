@@ -162,7 +162,11 @@ export class FlowsDataService {
     );
   }
 
-  resetSilentRenewRunning(configuration: OpenIdConfiguration): void {
+  resetSilentRenewRunning(configuration: OpenIdConfiguration | null): void {
+    if (!configuration) {
+      return;
+    }
+
     this.storagePersistenceService.write(
       'storageSilentRenewRunning',
       '',

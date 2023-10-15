@@ -20,7 +20,14 @@ export class LoginService {
     private readonly popupService: PopUpService
   ) {}
 
-  login(configuration: OpenIdConfiguration, authOptions?: AuthOptions): void {
+  login(
+    configuration: OpenIdConfiguration | null,
+    authOptions?: AuthOptions
+  ): void {
+    if (!configuration) {
+      return;
+    }
+
     const { usePushedAuthorisationRequests } = configuration;
 
     if (authOptions?.customParams) {
