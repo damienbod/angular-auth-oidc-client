@@ -62,8 +62,12 @@ export class TokenHelperService {
   getPayloadFromToken(
     token: any,
     encoded: boolean,
-    configuration: OpenIdConfiguration
+    configuration: OpenIdConfiguration | null
   ): any {
+    if (!configuration) {
+      return {};
+    }
+
     if (!this.tokenIsValid(token, configuration)) {
       return {};
     }

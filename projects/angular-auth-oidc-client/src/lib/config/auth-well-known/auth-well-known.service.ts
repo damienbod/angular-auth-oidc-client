@@ -28,7 +28,7 @@ export class AuthWellKnownService {
   }
 
   queryAndStoreAuthWellKnownEndPoints(
-    config: OpenIdConfiguration
+    config: OpenIdConfiguration | null
   ): Observable<AuthWellKnownEndpoints> {
     if (!config) {
       return throwError(

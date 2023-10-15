@@ -108,7 +108,16 @@ export class UserService {
     return of(existingUserDataFromStorage);
   }
 
-  getUserDataFromStore(currentConfiguration: OpenIdConfiguration): any {
+  getUserDataFromStore(currentConfiguration: OpenIdConfiguration | null): any {
+    if (!currentConfiguration) {
+      return throwError(
+        () =>
+          new Error(
+            'Please provide a configuration before setting up the module'
+          )
+      );
+    }
+
     return (
       this.storagePersistenceService.read('userData', currentConfiguration) ||
       null

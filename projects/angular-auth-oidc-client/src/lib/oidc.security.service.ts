@@ -104,7 +104,7 @@ export class OidcSecurityService {
    *
    * @param configId The configId to identify the config. If not passed, the first one is being returned
    */
-  getConfiguration(configId?: string): Observable<OpenIdConfiguration> {
+  getConfiguration(configId?: string): Observable<OpenIdConfiguration | null> {
     return this.configurationService.getOpenIDConfiguration(configId);
   }
 

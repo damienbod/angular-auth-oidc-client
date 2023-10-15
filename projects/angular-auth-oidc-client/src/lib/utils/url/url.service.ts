@@ -152,9 +152,13 @@ export class UrlService {
   }
 
   getEndSessionUrl(
-    configuration: OpenIdConfiguration,
+    configuration: OpenIdConfiguration | null,
     customParams?: { [p: string]: string | number | boolean }
   ): string | null {
+    if (!configuration) {
+      return null;
+    }
+
     const idToken = this.storagePersistenceService.getIdToken(configuration);
     const { customParamsEndSessionRequest } = configuration;
     const mergedParams = { ...customParamsEndSessionRequest, ...customParams };

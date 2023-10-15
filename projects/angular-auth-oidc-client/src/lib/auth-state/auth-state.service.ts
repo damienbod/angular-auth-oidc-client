@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { AuthResult } from '../flows/callback-context';
@@ -78,7 +78,11 @@ export class AuthStateService {
     this.setAuthenticatedAndFireEvent(allConfigs);
   }
 
-  getAccessToken(configuration: OpenIdConfiguration): string {
+  getAccessToken(configuration: OpenIdConfiguration | null): string {
+    if (!configuration) {
+      return '';
+    }
+
     if (!this.isAuthenticated(configuration)) {
       return '';
     }
@@ -88,7 +92,11 @@ export class AuthStateService {
     return this.decodeURIComponentSafely(token);
   }
 
-  getIdToken(configuration: OpenIdConfiguration): string {
+  getIdToken(configuration: OpenIdConfiguration | null): string {
+    if (!configuration) {
+      return '';
+    }
+
     if (!this.isAuthenticated(configuration)) {
       return '';
     }
@@ -98,7 +106,11 @@ export class AuthStateService {
     return this.decodeURIComponentSafely(token);
   }
 
-  getRefreshToken(configuration: OpenIdConfiguration): string {
+  getRefreshToken(configuration: OpenIdConfiguration | null): string {
+    if (!configuration) {
+      return '';
+    }
+
     if (!this.isAuthenticated(configuration)) {
       return '';
     }
@@ -108,7 +120,11 @@ export class AuthStateService {
     return this.decodeURIComponentSafely(token);
   }
 
-  getAuthenticationResult(configuration: OpenIdConfiguration): any {
+  getAuthenticationResult(configuration: OpenIdConfiguration | null): any {
+    if (!configuration) {
+      return '';
+    }
+
     if (!this.isAuthenticated(configuration)) {
       return null;
     }
@@ -213,7 +229,18 @@ export class AuthStateService {
     return hasExpired;
   }
 
-  isAuthenticated(configuration: OpenIdConfiguration): boolean {
+  isAuthenticated(configuration: OpenIdConfiguration | null): boolean {
+    if (!configuration) {
+      throwError(
+        () =>
+          new Error(
+            'Please provide a configuration before setting up the module'
+          )
+      );
+
+      return false;
+    }
+
     const hasAccessToken =
       !!this.storagePersistenceService.getAccessToken(configuration);
     const hasIdToken =

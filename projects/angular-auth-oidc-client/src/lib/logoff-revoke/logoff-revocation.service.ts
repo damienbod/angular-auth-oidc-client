@@ -28,10 +28,19 @@ export class LogoffRevocationService {
   // Logs out on the server and the local client.
   // If the server state has changed, check session, then only a local logout.
   logoff(
-    config: OpenIdConfiguration,
+    config: OpenIdConfiguration | null,
     allConfigs: OpenIdConfiguration[],
     logoutAuthOptions?: LogoutAuthOptions
   ): Observable<unknown> {
+    if (!config) {
+      return throwError(
+        () =>
+          new Error(
+            'Please provide a configuration before setting up the module'
+          )
+      );
+    }
+
     this.loggerService.logDebug(
       config,
       'logoff, remove auth',
@@ -83,7 +92,7 @@ export class LogoffRevocationService {
   }
 
   logoffLocal(
-    config: OpenIdConfiguration,
+    config: OpenIdConfiguration | null,
     allConfigs: OpenIdConfiguration[]
   ): void {
     this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
@@ -99,10 +108,19 @@ export class LogoffRevocationService {
   // The refresh token and and the access token are revoked on the server. If the refresh token does not exist
   // only the access token is revoked. Then the logout run.
   logoffAndRevokeTokens(
-    config: OpenIdConfiguration,
+    config: OpenIdConfiguration | null,
     allConfigs: OpenIdConfiguration[],
     logoutAuthOptions?: LogoutAuthOptions
   ): Observable<any> {
+    if (!config) {
+      return throwError(
+        () =>
+          new Error(
+            'Please provide a configuration before setting up the module'
+          )
+      );
+    }
+
     const { revocationEndpoint } =
       this.storagePersistenceService.read('authWellKnownEndPoints', config) ||
       {};
@@ -144,9 +162,18 @@ export class LogoffRevocationService {
   // the storage is revoked. You can pass any token to revoke. This makes it possible to
   // manage your own tokens. The is a public API.
   revokeAccessToken(
-    configuration: OpenIdConfiguration,
+    configuration: OpenIdConfiguration | null,
     accessToken?: any
   ): Observable<any> {
+    if (!configuration) {
+      return throwError(
+        () =>
+          new Error(
+            'Please provide a configuration before setting up the module'
+          )
+      );
+    }
+
     const accessTok =
       accessToken ||
       this.storagePersistenceService.getAccessToken(configuration);
@@ -163,9 +190,18 @@ export class LogoffRevocationService {
   // If no token is provided, then the token from the storage is revoked. You can pass any token to revoke.
   // This makes it possible to manage your own tokens.
   revokeRefreshToken(
-    configuration: OpenIdConfiguration,
+    configuration: OpenIdConfiguration | null,
     refreshToken?: any
   ): Observable<any> {
+    if (!configuration) {
+      return throwError(
+        () =>
+          new Error(
+            'Please provide a configuration before setting up the module'
+          )
+      );
+    }
+
     const refreshTok =
       refreshToken ||
       this.storagePersistenceService.getRefreshToken(configuration);

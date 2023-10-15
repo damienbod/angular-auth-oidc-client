@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { AuthOptions } from '../auth-options';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
@@ -25,6 +25,13 @@ export class LoginService {
     authOptions?: AuthOptions
   ): void {
     if (!configuration) {
+      throwError(
+        () =>
+          new Error(
+            'Please provide a configuration before setting up the module'
+          )
+      );
+
       return;
     }
 
@@ -49,11 +56,20 @@ export class LoginService {
   }
 
   loginWithPopUp(
-    configuration: OpenIdConfiguration,
+    configuration: OpenIdConfiguration | null,
     allConfigs: OpenIdConfiguration[],
     authOptions?: AuthOptions,
     popupOptions?: PopupOptions
   ): Observable<LoginResponse> {
+    if (!configuration) {
+      return throwError(
+        () =>
+          new Error(
+            'Please provide a configuration before setting up the module'
+          )
+      );
+    }
+
     const isAlreadyInPopUp =
       this.popupService.isCurrentlyInPopup(configuration);
 

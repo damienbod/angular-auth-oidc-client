@@ -114,9 +114,18 @@ export class CheckAuthService {
   }
 
   checkAuthIncludingServer(
-    configuration: OpenIdConfiguration,
+    configuration: OpenIdConfiguration | null,
     allConfigs: OpenIdConfiguration[]
   ): Observable<LoginResponse> {
+    if (!configuration) {
+      return throwError(
+        () =>
+          new Error(
+            'Please provide a configuration before setting up the module'
+          )
+      );
+    }
+
     return this.checkAuthWithConfig(configuration, allConfigs).pipe(
       switchMap((loginResponse) => {
         const { isAuthenticated } = loginResponse;

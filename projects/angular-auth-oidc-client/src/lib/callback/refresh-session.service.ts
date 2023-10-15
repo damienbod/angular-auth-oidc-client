@@ -47,10 +47,19 @@ export class RefreshSessionService {
   ) {}
 
   userForceRefreshSession(
-    config: OpenIdConfiguration,
+    config: OpenIdConfiguration | null,
     allConfigs: OpenIdConfiguration[],
     extraCustomParams?: { [key: string]: string | number | boolean }
   ): Observable<LoginResponse> {
+    if (!config) {
+      return throwError(
+        () =>
+          new Error(
+            'Please provide a configuration before setting up the module'
+          )
+      );
+    }
+
     this.persistCustomParams(extraCustomParams, config);
 
     return this.forceRefreshSession(config, allConfigs, extraCustomParams);
