@@ -112,7 +112,30 @@ export class RefreshSessionService {
       this.silentRenewService.refreshSessionWithIFrameCompleted$.pipe(take(1)),
     ]).pipe(
       timeout(timeOutTime),
-      retryWhen(this.timeoutRetryStrategy.bind(this)),
+      retryWhen((errors) => {
+        return errors.pipe(
+          mergeMap((error, index) => {
+            const scalingDuration = 1000;
+            const currentAttempt = index + 1;
+
+            if (
+              !(error instanceof TimeoutError) ||
+              currentAttempt > MAX_RETRY_ATTEMPTS
+            ) {
+              return throwError(() => new Error(error));
+            }
+
+            this.loggerService.logDebug(
+              config,
+              `forceRefreshSession timeout. Attempt #${currentAttempt}`
+            );
+
+            this.flowsDataService.resetSilentRenewRunning(config);
+
+            return timer(currentAttempt * scalingDuration);
+          })
+        );
+      }),
       map(([_, callbackContext]) => {
         const isAuthenticated =
           this.authStateService.areAuthStorageTokensValid(config);
@@ -202,33 +225,5 @@ export class RefreshSessionService {
           );
         })
       );
-  }
-
-  private timeoutRetryStrategy(
-    errorAttempts: Observable<any>,
-    config: OpenIdConfiguration
-  ): Observable<number> {
-    return errorAttempts.pipe(
-      mergeMap((error, index) => {
-        const scalingDuration = 1000;
-        const currentAttempt = index + 1;
-
-        if (
-          !(error instanceof TimeoutError) ||
-          currentAttempt > MAX_RETRY_ATTEMPTS
-        ) {
-          return throwError(() => new Error(error));
-        }
-
-        this.loggerService.logDebug(
-          config,
-          `forceRefreshSession timeout. Attempt #${currentAttempt}`
-        );
-
-        this.flowsDataService.resetSilentRenewRunning(config);
-
-        return timer(currentAttempt * scalingDuration);
-      })
-    );
   }
 }
