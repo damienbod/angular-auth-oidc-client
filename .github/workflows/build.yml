@@ -77,7 +77,7 @@ jobs:
           path: angular-auth-oidc-client-artefact
 
       - name: Install AngularCLI globally
-        run: sudo npm install -g @angular/cli
+        run: sudo npm install -g @angular/cli@16
 
       - name: Show ng Version
         run: ng version
@@ -117,7 +117,7 @@ jobs:
           path: angular-auth-oidc-client-artefact
 
       - name: Install AngularCLI globally
-        run: sudo npm install -g @angular/cli
+        run: sudo npm install -g @angular/cli@16
 
       - name: Show ng Version
         run: ng version
@@ -157,7 +157,7 @@ jobs:
           path: angular-auth-oidc-client-artefact
 
       - name: Install AngularCLI globally
-        run: sudo npm install -g @angular/cli
+        run: sudo npm install -g @angular/cli@16
 
       - name: Show ng Version
         run: ng version
@@ -197,7 +197,7 @@ jobs:
           path: angular-auth-oidc-client-artefact
 
       - name: Install AngularCLI globally
-        run: sudo npm install -g @angular/cli
+        run: sudo npm install -g @angular/cli@16
 
       - name: Show ng Version
         run: ng version
