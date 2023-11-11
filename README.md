@@ -41,7 +41,7 @@ This library is <a href="http://openid.net/certification/#RPs">certified</a> by 
 
 You can use the schematics and `ng add` the library.
 
-```
+```shell
 ng add angular-auth-oidc-client
 ```
 
@@ -122,11 +122,14 @@ export class AppComponent implements OnInit {
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
   ngOnInit() {
-    this.oidcSecurityService.checkAuth().subscribe((loginResponse: LoginResponse) => {
-      const { isAuthenticated, userData, accessToken, idToken, configId } = loginResponse;
+    this.oidcSecurityService
+      .checkAuth()
+      .subscribe((loginResponse: LoginResponse) => {
+        const { isAuthenticated, userData, accessToken, idToken, configId } =
+          loginResponse;
 
-      /*...*/
-    });
+        /*...*/
+      });
   }
 
   login() {
@@ -134,7 +137,9 @@ export class AppComponent implements OnInit {
   }
 
   logout() {
-    this.oidcSecurityService.logoff().subscribe((result) => console.log(result));
+    this.oidcSecurityService
+      .logoff()
+      .subscribe((result) => console.log(result));
   }
 }
 ```

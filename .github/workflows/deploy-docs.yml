@@ -22,7 +22,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: 16.16.0
+          node-version: 18
 
       - name: Installing Dependencies
         run: sudo npm install
