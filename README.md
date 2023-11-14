@@ -41,7 +41,7 @@ This library is <a href="http://openid.net/certification/#RPs">certified</a> by 
 
 You can use the schematics and `ng add` the library.
 
-```
+```shell
 ng add angular-auth-oidc-client
 ```
 
