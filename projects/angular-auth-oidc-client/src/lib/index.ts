@@ -1,5 +1,6 @@
 // Public classes.
 
+export { PassedInitialConfig } from './auth-config';
 export * from './auth-options';
 export * from './auth-state/auth-result';
 export * from './auth-state/auth-state';

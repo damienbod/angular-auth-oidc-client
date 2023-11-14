@@ -24,7 +24,7 @@ const IFRAME_SILENT_RENEW = `{
 
 const AZURE_AD_SILENT_RENEW = `{
             authority: 'https://login.microsoftonline.com/<authorityUrlOrTenantId>/v2.0',
-            authWellknownEndpoint: 'https://login.microsoftonline.com/common/v2.0',
+            authWellknownEndpointUrl: 'https://login.microsoftonline.com/common/v2.0',
             redirectUrl: window.location.origin,
             clientId: 'please-enter-clientId',
             scope: 'please-enter-scopes', // 'openid profile ' + your scopes
@@ -41,7 +41,7 @@ const AZURE_AD_SILENT_RENEW = `{
 
 const AZURE_AD_REFRESH_TOKENS = `{
             authority: 'https://login.microsoftonline.com/<authorityUrlOrTenantId>/v2.0',
-            authWellknownEndpoint: 'https://login.microsoftonline.com/common/v2.0',
+            authWellknownEndpointUrl: 'https://login.microsoftonline.com/common/v2.0',
             redirectUrl: window.location.origin,
             clientId: 'please-enter-clientId',
             scope: 'please-enter-scopes', // 'openid profile offline_access ' + your scopes
@@ -93,5 +93,5 @@ const OIDC_PLAIN = `{
             renewTimeBeforeTokenExpiresInSeconds: 10,
         }`;
 
-export { DEFAULT_CONFIG, AZURE_AD_SILENT_RENEW, IFRAME_SILENT_RENEW, AZURE_AD_REFRESH_TOKENS, OIDC_PLAIN, AUTH_0, OAUTH_PAR };
+export { AUTH_0, AZURE_AD_REFRESH_TOKENS, AZURE_AD_SILENT_RENEW, DEFAULT_CONFIG, IFRAME_SILENT_RENEW, OAUTH_PAR, OIDC_PLAIN };
 

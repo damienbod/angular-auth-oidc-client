@@ -144,7 +144,9 @@ describe('ParLoginService', () => {
       });
 
       expect(result).toBeUndefined();
-      expect(spy).toHaveBeenCalledOnceWith(config, { some: 'thing' });
+      expect(spy).toHaveBeenCalledOnceWith(config, {
+        customParams: { some: 'thing' },
+      });
     }));
 
     it('returns undefined and logs error when no url could be created', waitForAsync(() => {
@@ -184,6 +186,8 @@ describe('ParLoginService', () => {
         responseType: 'stubValue',
       };
 
+      const authOptions = {};
+
       spyOn(
         authWellKnownService,
         'queryAndStoreAuthWellKnownEndPoints'
@@ -195,7 +199,7 @@ describe('ParLoginService', () => {
       spyOn(urlService, 'getAuthorizeParUrl').and.returnValue('some-par-url');
       const spy = spyOn(redirectService, 'redirectTo');
 
-      service.loginPar(config);
+      service.loginPar(config, authOptions);
 
       expect(spy).toHaveBeenCalledOnceWith('some-par-url');
     }));
@@ -306,7 +310,9 @@ describe('ParLoginService', () => {
         })
         .subscribe({
           error: (err) => {
-            expect(spy).toHaveBeenCalledOnceWith(config, { some: 'thing' });
+            expect(spy).toHaveBeenCalledOnceWith(config, {
+              customParams: { some: 'thing' },
+            });
             expect(err.message).toBe(
               "Could not create URL with param requestUri: 'url'"
             );

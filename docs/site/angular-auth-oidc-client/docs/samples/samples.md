@@ -104,6 +104,12 @@ The example uses the code flow with silent renew but you authenticate in a lazy 
 
 [Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-lazy-loaded)
 
+## Code flow using the standalone API
+
+The example uses the code flow with silent renew within a project that uses the standalone API
+
+[Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-standalone)
+
 ## Mobile Sample using Cordova
 
 This sample is a sample application using Cordova and the Angular Auth OIDC Client.

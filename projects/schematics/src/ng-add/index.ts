@@ -1,8 +1,10 @@
-import { chain, Rule } from '@angular-devkit/schematics';
+import { chain, Rule, SchematicContext, Tree } from '@angular-devkit/schematics';
 import { getAllActions } from './actions';
 import { Schema } from './schema';
 
 export function ngAdd(options: Schema): Rule {
-  const allActions = getAllActions(options);
-  return chain(allActions);
+   return async (host: Tree, context: SchematicContext) => {
+    const allActions = await getAllActions(host, options);
+    return chain(allActions);
+  }
 }
