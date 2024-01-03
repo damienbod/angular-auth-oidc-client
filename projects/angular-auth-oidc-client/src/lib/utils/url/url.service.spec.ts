@@ -1711,7 +1711,7 @@ describe('UrlService Tests', () => {
 
       const resultObs$ = serviceAsAny.createUrlCodeFlowAuthorize(config);
 
-      resultObs$.subscribe((result) => {
+      resultObs$.subscribe((result: any) => {
         expect(result).toBe(
           `authorizationEndpoint?client_id=clientId&redirect_uri=http%3A%2F%2Fany-url.com&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}`
         );
@@ -1759,7 +1759,7 @@ describe('UrlService Tests', () => {
         customParams: { to: 'add', as: 'well' },
       });
 
-      resultObs$.subscribe((result) => {
+      resultObs$.subscribe((result: any) => {
         expect(result).toBe(
           `authorizationEndpoint?client_id=clientId&redirect_uri=http%3A%2F%2Fany-url.com` +
             `&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}&to=add&as=well`

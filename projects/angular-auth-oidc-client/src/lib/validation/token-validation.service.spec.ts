@@ -518,7 +518,7 @@ describe('TokenValidationService', () => {
 
     it('returns true if no idToken is passed', waitForAsync(() => {
       const valueFalse$ = tokenValidationService.validateSignatureIdToken(
-        null,
+        null as any,
         'some-jwt-keys',
         { configId: 'configId1' }
       );
@@ -776,7 +776,9 @@ describe('TokenValidationService', () => {
 
   describe('validateIdTokenExpNotExpired', () => {
     it('returns false when getTokenExpirationDate returns null', () => {
-      spyOn(tokenHelperService, 'getTokenExpirationDate').and.returnValue(null);
+      spyOn(tokenHelperService, 'getTokenExpirationDate').and.returnValue(
+        null as unknown as Date
+      );
       const notExpired = tokenValidationService.validateIdTokenExpNotExpired(
         'idToken',
         { configId: 'configId1' },
@@ -824,7 +826,7 @@ describe('TokenValidationService', () => {
     testCases.forEach(({ date, offsetSeconds, expectedResult }) => {
       it(`returns ${expectedResult} if ${date} is given with an offset of ${offsetSeconds}`, () => {
         const notExpired = tokenValidationService.validateAccessTokenNotExpired(
-          date,
+          date as Date,
           { configId: 'configId1' },
           offsetSeconds
         );

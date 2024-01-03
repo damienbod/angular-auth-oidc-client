@@ -3,6 +3,7 @@ import { of } from 'rxjs';
 import { mockClass } from '../../test/auto-mock';
 import { AuthWellKnownEndpoints } from '../config/auth-well-known/auth-well-known-endpoints';
 import { OpenIdConfiguration } from '../config/openid-configuration';
+import { CallbackContext } from '../flows/callback-context';
 import { LogLevel } from '../logging/log-level';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
@@ -2101,12 +2102,12 @@ describe('State Validation Service', () => {
       config.maxIdTokenIatOffsetAllowedInSeconds = 0;
       config.disableIdTokenValidation = true;
 
-      const callbackContext = {
+      const callbackContext: CallbackContext = {
         code: 'fdffsdfsdf',
-        refreshToken: null,
+        refreshToken: '',
         state: 'fdffsggggggdfsdf',
         sessionState: 'fdffsggggggdfsdf',
-        existingIdToken: null,
+        existingIdToken: '',
         authResult: {},
         isRenewProcess: false,
         jwtKeys: null,
