@@ -59,7 +59,7 @@ function addProvider(host: Tree, context: SchematicContext, configName: string, 
 
 
   const change = insertImport(
-    source,
+    source as any, // Angular uses the TS 5.1 compiler internally for schematics?
     patchedConfigFile,
     configName,
     configPath
