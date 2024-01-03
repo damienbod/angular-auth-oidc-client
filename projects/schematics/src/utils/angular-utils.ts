@@ -181,15 +181,16 @@ function getProjectFromWorkspace(
 
 function getProjectMainFile(project: ProjectDefinition): Path {
   const buildOptions = getProjectTargetOptions(project, 'build');
+  const mainPath = (buildOptions['browser'] || buildOptions['main']) as Path | undefined;
 
-  if (!buildOptions.main) {
+  if (!mainPath) {
     throw new SchematicsException(
       `Could not find the project main file inside of the ` +
         `workspace config (${project.sourceRoot})`,
     );
   }
 
-  return buildOptions.main as Path;
+  return mainPath;
 }
 
 function getProjectTargetOptions(

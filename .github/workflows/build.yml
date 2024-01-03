@@ -140,7 +140,7 @@ jobs:
         working-directory: ./angular-auth-oidc-client-test
         run: sudo npm run build
 
-  AngularLatestVersionWithStandaloneSchematics:
+  AngularLatestVersionWithNgModuleSchematics:
     needs: build_job
     runs-on: ubuntu-latest
     name: Angular latest Standalone & Schematics Job
@@ -163,7 +163,7 @@ jobs:
         run: ng version
 
       - name: Create Angular Project
-        run: sudo ng new angular-auth-oidc-client-test --skip-git --standalone
+        run: sudo ng new angular-auth-oidc-client-test --skip-git --standalone=false
 
       - name: Npm Install & Install Library from local artefact
         run: |
