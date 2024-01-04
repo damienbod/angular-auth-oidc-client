@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
 import { mockClass } from '../../test/auto-mock';
+import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
 import { ImplicitFlowCallbackService } from './implicit-flow-callback.service';
@@ -44,7 +45,7 @@ describe('ImplicitFlowCallbackService ', () => {
       const spy = spyOn(
         flowsService,
         'processImplicitFlowCallback'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const config = {
         configId: 'configId1',
         triggerAuthorizationResultEvent: true,

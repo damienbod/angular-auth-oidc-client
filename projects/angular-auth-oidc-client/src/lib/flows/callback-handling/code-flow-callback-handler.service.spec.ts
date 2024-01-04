@@ -58,7 +58,7 @@ describe('CodeFlowCallbackHandlerService', () => {
         'getUrlParameter'
       ).and.returnValue('params');
 
-      getUrlParameterSpy.withArgs('any-url', 'state').and.returnValue(null);
+      getUrlParameterSpy.withArgs('any-url', 'state').and.returnValue('');
 
       service.codeFlowCallback('any-url', { configId: 'configId1' }).subscribe({
         error: (err) => {
@@ -73,7 +73,7 @@ describe('CodeFlowCallbackHandlerService', () => {
         'getUrlParameter'
       ).and.returnValue('params');
 
-      getUrlParameterSpy.withArgs('any-url', 'code').and.returnValue(null);
+      getUrlParameterSpy.withArgs('any-url', 'code').and.returnValue('');
 
       service.codeFlowCallback('any-url', { configId: 'configId1' }).subscribe({
         error: (err) => {
@@ -87,15 +87,15 @@ describe('CodeFlowCallbackHandlerService', () => {
 
       const expectedCallbackContext = {
         code: 'params',
-        refreshToken: null,
+        refreshToken: '',
         state: 'params',
         sessionState: 'params',
         authResult: null,
         isRenewProcess: false,
         jwtKeys: null,
         validationResult: null,
-        existingIdToken: null,
-      };
+        existingIdToken: '',
+      } as CallbackContext;
 
       service
         .codeFlowCallback('any-url', { configId: 'configId1' })

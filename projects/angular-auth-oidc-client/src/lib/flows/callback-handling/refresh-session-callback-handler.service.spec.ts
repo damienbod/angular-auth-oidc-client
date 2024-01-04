@@ -2,6 +2,7 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { mockClass } from '../../../test/auto-mock';
 import { AuthStateService } from '../../auth-state/auth-state.service';
 import { LoggerService } from '../../logging/logger.service';
+import { CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
 import { RefreshSessionCallbackHandlerService } from './refresh-session-callback-handler.service';
 
@@ -43,7 +44,7 @@ describe('RefreshSessionCallbackHandlerService', () => {
       spyOn(authStateService, 'getIdToken').and.returnValue('henlo-legger');
 
       const expectedCallbackContext = {
-        code: null,
+        code: '',
         refreshToken: 'henlo-furiend',
         state: 'state-data',
         sessionState: null,
@@ -52,7 +53,7 @@ describe('RefreshSessionCallbackHandlerService', () => {
         jwtKeys: null,
         validationResult: null,
         existingIdToken: 'henlo-legger',
-      };
+      } as CallbackContext;
 
       service
         .refreshSessionWithRefreshTokens({ configId: 'configId1' })
@@ -66,7 +67,7 @@ describe('RefreshSessionCallbackHandlerService', () => {
         flowsDataService,
         'getExistingOrCreateAuthStateControl'
       ).and.returnValue('state-data');
-      spyOn(authStateService, 'getRefreshToken').and.returnValue(null);
+      spyOn(authStateService, 'getRefreshToken').and.returnValue('');
       spyOn(authStateService, 'getIdToken').and.returnValue('henlo-legger');
 
       service

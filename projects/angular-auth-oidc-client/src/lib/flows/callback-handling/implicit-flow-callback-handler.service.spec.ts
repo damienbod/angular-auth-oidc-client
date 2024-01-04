@@ -91,9 +91,9 @@ describe('ImplicitFlowCallbackHandlerService', () => {
     it('returns callbackContext if all params are good', waitForAsync(() => {
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
       const expectedCallbackContext = {
-        code: null,
-        refreshToken: null,
-        state: null,
+        code: '',
+        refreshToken: '',
+        state: '',
         sessionState: null,
         authResult: { anyHash: '' },
         isRenewProcess: true,
@@ -118,9 +118,9 @@ describe('ImplicitFlowCallbackHandlerService', () => {
     it('uses window location hash if no hash is passed', waitForAsync(() => {
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
       const expectedCallbackContext = {
-        code: null,
-        refreshToken: null,
-        state: null,
+        code: '',
+        refreshToken: '',
+        state: '',
         sessionState: null,
         authResult: { anyFakeHash: '' },
         isRenewProcess: true,

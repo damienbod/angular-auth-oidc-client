@@ -30,7 +30,7 @@ describe('PopUpService', () => {
     popUpService = TestBed.inject(PopUpService);
   });
 
-  let store = {};
+  let store: any = {};
   const mockStorage = {
     getItem: (key: string): string => {
       return key in store ? store[key] : null;
@@ -45,7 +45,7 @@ describe('PopUpService', () => {
       store = {};
     },
     length: 1,
-    key: (_i): string => '',
+    key: (_i: any): string => '',
   };
 
   it('should create', () => {
@@ -199,16 +199,16 @@ describe('PopUpService', () => {
 
         cleanUpSpy = spyOn(popUpService as any, 'cleanUp').and.callThrough();
 
-        popupResult = undefined;
+        popupResult = {} as PopupResult;
 
         popUpService.result$.subscribe((result) => (popupResult = result));
       });
 
       it('message received with data', fakeAsync(() => {
-        let listener: (event: MessageEvent) => void;
+        let listener: (event: MessageEvent) => void = () => {};
 
         spyOn(window, 'addEventListener').and.callFake(
-          (_, func) => (listener = func)
+          (_: any, func: any) => (listener = func)
         );
 
         popUpService.openPopUp('url', {}, { configId: 'configId1' });
@@ -230,10 +230,10 @@ describe('PopUpService', () => {
       }));
 
       it('message received without data does return but cleanup does not throw event', fakeAsync(() => {
-        let listener: (event: MessageEvent) => void;
+        let listener: (event: MessageEvent) => void = () => {};
 
         spyOn(window, 'addEventListener').and.callFake(
-          (_, func) => (listener = func)
+          (_: any, func: any) => (listener = func)
         );
         const nextSpy = spyOn((popUpService as any).resultInternal$, 'next');
 

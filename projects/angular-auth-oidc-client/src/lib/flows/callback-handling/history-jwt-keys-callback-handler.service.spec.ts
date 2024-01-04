@@ -6,7 +6,7 @@ import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { JwtKey, JwtKeys } from '../../validation/jwtkeys';
 import { ValidationResult } from '../../validation/validation-result';
-import { CallbackContext, AuthResult } from '../callback-context';
+import { AuthResult, CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
 import { ResetAuthDataService } from '../reset-auth-data.service';
 import { SigninKeyDataService } from '../signin-key-data.service';
@@ -272,7 +272,9 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         },
       ];
 
-      spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(of(null));
+      spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(
+        of({} as JwtKeys)
+      );
       service
         .callbackHistoryAndResetJwtKeys(
           callbackContext,
@@ -381,7 +383,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
             expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
               isAuthenticated: false,
               validationResult: ValidationResult.SecureTokenServerError,
-              isRenewProcess: undefined,
+              isRenewProcess: false,
             });
           },
         });
@@ -421,7 +423,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
             expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
               isAuthenticated: false,
               validationResult: ValidationResult.LoginRequired,
-              isRenewProcess: undefined,
+              isRenewProcess: false,
             });
           },
         });

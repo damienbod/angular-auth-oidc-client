@@ -53,7 +53,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
       (service as any)
         .refreshTokensRequestTokens({} as CallbackContext)
         .subscribe({
-          error: (err) => {
+          error: (err: any) => {
             expect(err).toBeTruthy();
           },
         });
