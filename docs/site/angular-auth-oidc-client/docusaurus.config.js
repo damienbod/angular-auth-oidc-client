@@ -12,6 +12,9 @@ module.exports = {
   favicon: 'img/favicon.ico',
   organizationName: 'damienbod', // Usually your GitHub org/user name.
   projectName: 'Angular Auth OIDC Client', // Usually your repo name.
+  markdown: {
+    format: 'md',
+  },
   themeConfig: {
     navbar: {
       title: 'Angular Auth OIDC Client Docs',
@@ -71,7 +74,7 @@ module.exports = {
       copyright: `Copyright © ${new Date().getFullYear()} Angular Auth OIDC Client Docs, Inc. Built with Docusaurus.`,
     },
     prism: {
-      additionalLanguages: ['typescript'],
+      additionalLanguages: ['typescript', 'bash', 'json'],
     },
   },
   presets: [
@@ -81,7 +84,13 @@ module.exports = {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
-          editUrl: 'https://github.com/damienbod/angular-auth-oidc-client',
+          editUrl:
+            'https://github.com/damienbod/angular-auth-oidc-client/edit/main/docs/site/angular-auth-oidc-client',
+          remarkPlugins: [
+            [require('@docusaurus/remark-plugin-npm2yarn'), { sync: true }],
+          ],
+          showLastUpdateAuthor: true,
+          showLastUpdateTime: true,
         },
         blog: {
           showReadingTime: true,

@@ -11,6 +11,7 @@ import { AuthWellKnownEndpoints } from './config/auth-well-known/auth-well-known
 import { AuthWellKnownService } from './config/auth-well-known/auth-well-known.service';
 import { ConfigurationService } from './config/config.service';
 import { OpenIdConfiguration } from './config/openid-configuration';
+import { AuthResult } from './flows/callback-context';
 import { FlowsDataService } from './flows/flows-data.service';
 import { CheckSessionService } from './iframe/check-session.service';
 import { LoginResponse } from './login/login-response';
@@ -234,7 +235,7 @@ export class OidcSecurityService {
    *
    * @returns A object with the authentication result
    */
-  getAuthenticationResult(configId?: string): Observable<any> {
+  getAuthenticationResult(configId?: string): Observable<AuthResult> {
     return this.configurationService
       .getOpenIDConfiguration(configId)
       .pipe(

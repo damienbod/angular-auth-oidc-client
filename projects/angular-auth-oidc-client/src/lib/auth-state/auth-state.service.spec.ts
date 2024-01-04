@@ -359,13 +359,13 @@ describe('Auth State Service', () => {
       );
       spyOn(storagePersistenceService, 'getAuthenticationResult')
         .withArgs({ configId: 'configId1' })
-        .and.returnValue({ test: 'HenloFuriend' });
+        .and.returnValue({ scope: 'HenloFuriend' });
 
       const result = authStateService.getAuthenticationResult({
         configId: 'configId1',
       });
 
-      expect(result.test).toBe('HenloFuriend');
+      expect(result.scope).toBe('HenloFuriend');
     });
   });
 

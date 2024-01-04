@@ -120,9 +120,11 @@ export class AuthStateService {
     return this.decodeURIComponentSafely(token);
   }
 
-  getAuthenticationResult(configuration: OpenIdConfiguration | null): any {
+  getAuthenticationResult(
+    configuration: OpenIdConfiguration | null
+  ): AuthResult | null {
     if (!configuration) {
-      return '';
+      return null;
     }
 
     if (!this.isAuthenticated(configuration)) {
