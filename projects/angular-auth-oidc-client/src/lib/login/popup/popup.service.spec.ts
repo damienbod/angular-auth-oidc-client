@@ -261,7 +261,7 @@ describe('PopUpService', () => {
 
         tick(200);
 
-        expect(popupResult).toEqual({ userClosed: true });
+        expect(popupResult).toEqual({ userClosed: true } as PopupResult);
         expect(cleanUpSpy).toHaveBeenCalled();
       }));
     });
@@ -275,7 +275,7 @@ describe('PopUpService', () => {
       const sendMessageSpy = spyOn(popUpService as any, 'sendMessage');
 
       // act
-      popUpService.sendMessageToMainWindow('');
+      popUpService.sendMessageToMainWindow('', {});
 
       // assert
       expect(sendMessageSpy).not.toHaveBeenCalled();
@@ -289,7 +289,7 @@ describe('PopUpService', () => {
       const sendMessageSpy = spyOn(window.opener, 'postMessage');
 
       // act
-      popUpService.sendMessageToMainWindow('someUrl');
+      popUpService.sendMessageToMainWindow('someUrl', {});
 
       // assert
       expect(sendMessageSpy).toHaveBeenCalledOnceWith(
@@ -305,7 +305,7 @@ describe('PopUpService', () => {
       const spy = spyOn(window, 'removeEventListener').and.callFake(
         () => undefined
       );
-      const listener = null;
+      const listener: any = null;
 
       // act
       (popUpService as any).cleanUp(listener, { configId: 'configId1' });

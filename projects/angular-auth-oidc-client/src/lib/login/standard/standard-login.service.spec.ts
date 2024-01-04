@@ -160,7 +160,7 @@ describe('StandardLoginService', () => {
         () => undefined
       );
       const spy = jasmine.createSpy();
-      const urlHandler = (url): void => {
+      const urlHandler = (url: any): void => {
         spy(url);
       };
 
