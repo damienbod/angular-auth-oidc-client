@@ -55,7 +55,7 @@ describe('ParService', () => {
   describe('postParRequest', () => {
     it('throws error if authWellKnownEndPoints does not exist in storage', waitForAsync(() => {
       spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(
-        null
+        of(null)
       );
       spyOn(storagePersistenceService, 'read')
         .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
@@ -71,7 +71,7 @@ describe('ParService', () => {
 
     it('throws error if par endpoint does not exist in storage', waitForAsync(() => {
       spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(
-        null
+        of(null)
       );
       spyOn(storagePersistenceService, 'read')
         .withArgs('authWellKnownEndPoints', { configId: 'configId1' })

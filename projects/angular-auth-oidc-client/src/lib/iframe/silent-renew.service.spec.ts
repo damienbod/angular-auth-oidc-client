@@ -139,10 +139,10 @@ describe('SilentRenewService  ', () => {
       const spy = spyOn(
         flowsService,
         'processSilentRenewCodeFlowCallback'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const expectedContext = {
         code: 'some-code',
-        refreshToken: null,
+        refreshToken: '',
         state: 'some-state',
         sessionState: 'some-session-state',
         authResult: null,
@@ -150,7 +150,7 @@ describe('SilentRenewService  ', () => {
         jwtKeys: null,
         validationResult: null,
         existingIdToken: null,
-      };
+      } as CallbackContext;
       const url = 'url-part-1';
       const urlParts =
         'code=some-code&state=some-state&session_state=some-session-state';
@@ -173,7 +173,7 @@ describe('SilentRenewService  ', () => {
       const spy = spyOn(
         flowsService,
         'processSilentRenewCodeFlowCallback'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const authStateServiceSpy = spyOn(
         authStateService,
         'updateAndPublishAuthState'
@@ -223,7 +223,7 @@ describe('SilentRenewService  ', () => {
       spyOn(
         implicitFlowCallbackService,
         'authenticatedImplicitFlowCallback'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const eventData = { detail: null } as CustomEvent;
       const allConfigs = [{ configId: 'configId1' }];
 
@@ -244,7 +244,7 @@ describe('SilentRenewService  ', () => {
       const authorizedImplicitFlowCallbackSpy = spyOn(
         implicitFlowCallbackService,
         'authenticatedImplicitFlowCallback'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const eventData = { detail: 'detail' } as CustomEvent;
       const allConfigs = [{ configId: 'configId1' }];
 
@@ -267,7 +267,7 @@ describe('SilentRenewService  ', () => {
       const codeFlowCallbackSilentRenewIframe = spyOn(
         silentRenewService,
         'codeFlowCallbackSilentRenewIframe'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const eventData = { detail: 'detail?detail2' } as CustomEvent;
       const allConfigs = [{ configId: 'configId1' }];
 
@@ -289,7 +289,7 @@ describe('SilentRenewService  ', () => {
       const codeFlowCallbackSilentRenewIframe = spyOn(
         silentRenewService,
         'codeFlowCallbackSilentRenewIframe'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const eventData = { detail: 'detail?detail2' } as CustomEvent;
       const allConfigs = [{ configId: 'configId1' }];
 

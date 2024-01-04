@@ -6,6 +6,7 @@ import { LoggerService } from '../../logging/logger.service';
 import { UserService } from '../../user-data/user.service';
 import { StateValidationResult } from '../../validation/state-validation-result';
 import { ValidationResult } from '../../validation/validation-result';
+import { CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
 import { ResetAuthDataService } from '../reset-auth-data.service';
 import { UserCallbackHandlerService } from './user-callback-handler.service';
@@ -54,16 +55,16 @@ describe('UserCallbackHandlerService', () => {
         'decoded'
       );
       const callbackContext = {
-        code: null,
-        refreshToken: null,
-        state: null,
+        code: '',
+        refreshToken: '',
+        state: '',
         sessionState: null,
         authResult: { session_state: 'mystate' },
         isRenewProcess: false,
         jwtKeys: null,
         validationResult: svr,
-        existingIdToken: null,
-      };
+        existingIdToken: '',
+      } as CallbackContext;
 
       const allConfigs = [
         {
@@ -90,16 +91,16 @@ describe('UserCallbackHandlerService', () => {
         'decoded'
       );
       const callbackContext = {
-        code: null,
-        refreshToken: null,
-        state: null,
+        code: '',
+        refreshToken: '',
+        state: '',
         sessionState: null,
         authResult: { session_state: 'mystate' },
         isRenewProcess: true,
         jwtKeys: null,
         validationResult: svr,
         existingIdToken: null,
-      };
+      } as CallbackContext;
       const allConfigs = [
         {
           configId: 'configId1',
@@ -124,16 +125,16 @@ describe('UserCallbackHandlerService', () => {
         'decoded'
       );
       const callbackContext = {
-        code: null,
+        code: '',
         refreshToken: 'somerefreshtoken',
-        state: null,
+        state: '',
         sessionState: null,
         authResult: { session_state: 'mystate' },
         isRenewProcess: false,
         jwtKeys: null,
         validationResult: svr,
         existingIdToken: null,
-      };
+      } as CallbackContext;
       const allConfigs = [
         {
           configId: 'configId1',
@@ -153,16 +154,16 @@ describe('UserCallbackHandlerService', () => {
     it('does NOT call flowsDataService.setSessionState if autoUserInfo is false isRenewProcess is false, refreshToken has value, id_token is false', waitForAsync(() => {
       const svr = new StateValidationResult('accesstoken', '', true, '');
       const callbackContext = {
-        code: null,
+        code: '',
         refreshToken: 'somerefreshtoken',
-        state: null,
+        state: '',
         sessionState: null,
         authResult: { session_state: 'mystate' },
         isRenewProcess: false,
         jwtKeys: null,
         validationResult: svr,
         existingIdToken: null,
-      };
+      } as CallbackContext;
       const allConfigs = [
         {
           configId: 'configId1',
@@ -188,16 +189,16 @@ describe('UserCallbackHandlerService', () => {
         'decoded'
       );
       const callbackContext = {
-        code: null,
+        code: '',
         refreshToken: 'somerefreshtoken',
-        state: null,
+        state: '',
         sessionState: null,
         authResult: { session_state: 'mystate' },
         isRenewProcess: false,
         jwtKeys: null,
         validationResult: svr,
         existingIdToken: null,
-      };
+      } as CallbackContext;
 
       const allConfigs = [
         {
@@ -231,16 +232,16 @@ describe('UserCallbackHandlerService', () => {
         'decoded'
       );
       const callbackContext = {
-        code: null,
+        code: '',
         refreshToken: 'somerefreshtoken',
-        state: null,
+        state: '',
         sessionState: null,
         authResult: { session_state: 'mystate' },
         isRenewProcess: false,
         jwtKeys: null,
         validationResult: svr,
         existingIdToken: null,
-      };
+      } as CallbackContext;
 
       const allConfigs = [
         {
@@ -277,16 +278,16 @@ describe('UserCallbackHandlerService', () => {
         ValidationResult.MaxOffsetExpired
       );
       const callbackContext = {
-        code: null,
+        code: '',
         refreshToken: 'somerefreshtoken',
-        state: null,
+        state: '',
         sessionState: null,
         authResult: { session_state: 'mystate' },
         isRenewProcess: false,
         jwtKeys: null,
         validationResult: svr,
         existingIdToken: null,
-      };
+      } as CallbackContext;
 
       const allConfigs = [
         {
@@ -324,16 +325,16 @@ describe('UserCallbackHandlerService', () => {
         ValidationResult.MaxOffsetExpired
       );
       const callbackContext = {
-        code: null,
+        code: '',
         refreshToken: '', // something falsy
-        state: null,
+        state: '',
         sessionState: null,
         authResult: { session_state: 'mystate' },
         isRenewProcess: false,
         jwtKeys: null,
         validationResult: svr,
         existingIdToken: null,
-      };
+      } as CallbackContext;
 
       const allConfigs = [
         {
@@ -367,16 +368,16 @@ describe('UserCallbackHandlerService', () => {
         ValidationResult.MaxOffsetExpired
       );
       const callbackContext = {
-        code: null,
+        code: '',
         refreshToken: 'somerefreshtoken',
-        state: null,
+        state: '',
         sessionState: null,
         authResult: { session_state: 'mystate' },
         isRenewProcess: false,
         jwtKeys: null,
         validationResult: svr,
         existingIdToken: null,
-      };
+      } as CallbackContext;
 
       const allConfigs = [
         {
@@ -418,16 +419,16 @@ describe('UserCallbackHandlerService', () => {
         ValidationResult.MaxOffsetExpired
       );
       const callbackContext = {
-        code: null,
+        code: '',
         refreshToken: 'somerefreshtoken',
-        state: null,
+        state: '',
         sessionState: null,
         authResult: { session_state: 'mystate' },
         isRenewProcess: false,
         jwtKeys: null,
         validationResult: svr,
         existingIdToken: null,
-      };
+      } as CallbackContext;
 
       const allConfigs = [
         {
