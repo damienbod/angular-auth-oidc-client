@@ -477,7 +477,7 @@ describe('Logout and Revoke Service', () => {
       // Arrange
       spyOn(urlService, 'getEndSessionUrl').and.returnValue('someValue');
       const spy = jasmine.createSpy();
-      const urlHandler = (url): void => {
+      const urlHandler = (url: string): void => {
         spy(url);
       };
       const redirectSpy = spyOn(redirectService, 'redirectTo');
@@ -749,7 +749,7 @@ describe('Logout and Revoke Service', () => {
       );
       spyOn(service, 'revokeAccessToken').and.returnValue(of({ any: 'thing' }));
       const logoffSpy = spyOn(service, 'logoff').and.returnValue(of(null));
-      const urlHandler = (_url): void => undefined;
+      const urlHandler = (_url: string): void => undefined;
       const config = { configId: 'configId1' };
 
       // Act
@@ -771,7 +771,7 @@ describe('Logout and Revoke Service', () => {
         .withArgs('authWellKnownEndPoints', config)
         .and.returnValue({ revocationEndpoint: 'revocationEndpoint' });
 
-      spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(null);
+      spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue('');
       const revokeRefreshTokenSpy = spyOn(service, 'revokeRefreshToken');
       const revokeAccessTokenSpy = spyOn(
         service,
@@ -793,7 +793,7 @@ describe('Logout and Revoke Service', () => {
       spyOn(storagePersistenceService, 'read')
         .withArgs('authWellKnownEndPoints', config)
         .and.returnValue({ revocationEndpoint: 'revocationEndpoint' });
-      spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(null);
+      spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue('');
       const loggerSpy = spyOn(loggerService, 'logError');
 
       spyOn(service, 'revokeAccessToken').and.returnValue(

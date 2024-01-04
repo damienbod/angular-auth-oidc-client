@@ -235,7 +235,7 @@ export class OidcSecurityService {
    *
    * @returns A object with the authentication result
    */
-  getAuthenticationResult(configId?: string): Observable<AuthResult> {
+  getAuthenticationResult(configId?: string): Observable<AuthResult | null> {
     return this.configurationService
       .getOpenIDConfiguration(configId)
       .pipe(

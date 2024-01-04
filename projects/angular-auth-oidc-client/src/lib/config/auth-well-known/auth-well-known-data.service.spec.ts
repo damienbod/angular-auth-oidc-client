@@ -51,9 +51,9 @@ describe('AuthWellKnownDataService', () => {
 
   describe('getWellKnownDocument', () => {
     it('should add suffix if it does not exist on current URL', waitForAsync(() => {
-      const dataServiceSpy = spyOn(dataService, 'get').and.callFake(() => {
-        return of(null);
-      });
+      const dataServiceSpy = spyOn(dataService, 'get').and.returnValue(
+        of(null)
+      );
       const urlWithoutSuffix = 'myUrl';
       const urlWithSuffix = `${urlWithoutSuffix}/.well-known/openid-configuration`;
 
@@ -67,9 +67,9 @@ describe('AuthWellKnownDataService', () => {
     }));
 
     it('should not add suffix if it does exist on current url', waitForAsync(() => {
-      const dataServiceSpy = spyOn(dataService, 'get').and.callFake(() => {
-        return of(null);
-      });
+      const dataServiceSpy = spyOn(dataService, 'get').and.returnValue(
+        of(null)
+      );
       const urlWithSuffix = `myUrl/.well-known/openid-configuration`;
 
       (service as any)
@@ -82,9 +82,9 @@ describe('AuthWellKnownDataService', () => {
     }));
 
     it('should not add suffix if it does exist in the middle of current url', waitForAsync(() => {
-      const dataServiceSpy = spyOn(dataService, 'get').and.callFake(() => {
-        return of(null);
-      });
+      const dataServiceSpy = spyOn(dataService, 'get').and.returnValue(
+        of(null)
+      );
       const urlWithSuffix = `myUrl/.well-known/openid-configuration/and/some/more/stuff`;
 
       (service as any)
@@ -107,7 +107,7 @@ describe('AuthWellKnownDataService', () => {
       (service as any)
         .getWellKnownDocument('anyurl', { configId: 'configId1' })
         .subscribe({
-          next: (res) => {
+          next: (res: any) => {
             expect(res).toBeTruthy();
             expect(res).toEqual(DUMMY_WELL_KNOWN_DOCUMENT);
           },
@@ -126,7 +126,7 @@ describe('AuthWellKnownDataService', () => {
       (service as any)
         .getWellKnownDocument('anyurl', { configId: 'configId1' })
         .subscribe({
-          next: (res) => {
+          next: (res: any) => {
             expect(res).toBeTruthy();
             expect(res).toEqual(DUMMY_WELL_KNOWN_DOCUMENT);
           },
@@ -144,7 +144,7 @@ describe('AuthWellKnownDataService', () => {
       );
 
       (service as any).getWellKnownDocument('anyurl', 'configId').subscribe({
-        error: (err) => {
+        error: (err: any) => {
           expect(err).toBeTruthy();
         },
       });
@@ -153,9 +153,7 @@ describe('AuthWellKnownDataService', () => {
 
   describe('getWellKnownEndPointsForConfig', () => {
     it('calling internal getWellKnownDocument and maps', waitForAsync(() => {
-      spyOn<any>(dataService, 'get').and.returnValue(
-        of({ jwks_uri: 'jwks_uri' })
-      );
+      spyOn(dataService, 'get').and.returnValue(of({ jwks_uri: 'jwks_uri' }));
 
       const spy = spyOn(
         service as any,
@@ -176,7 +174,10 @@ describe('AuthWellKnownDataService', () => {
 
     it('throws error and logs if no authwellknownUrl is given', waitForAsync(() => {
       const loggerSpy = spyOn(loggerService, 'logError');
-      const config = { configId: 'configId1', authWellknownEndpointUrl: null };
+      const config = {
+        configId: 'configId1',
+        authWellknownEndpointUrl: undefined,
+      };
 
       service.getWellKnownEndPointsForConfig(config).subscribe({
         error: (error) => {

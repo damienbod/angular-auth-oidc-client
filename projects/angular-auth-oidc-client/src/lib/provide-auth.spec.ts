@@ -45,7 +45,7 @@ describe('provideAuth', () => {
           provideAuth({
             loader: {
               provide: StsConfigLoader,
-              useFactory: () => new StsConfigHttpLoader(of(null)),
+              useFactory: () => new StsConfigHttpLoader(of({})),
             },
           }),
           {

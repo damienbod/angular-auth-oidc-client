@@ -161,7 +161,7 @@ describe('Browser Service', () => {
 
   describe('hasStorage', () => {
     it('returns false if there is no storage', () => {
-      Storage = undefined;
+      (Storage as any) = undefined;
       expect((service as any).hasStorage()).toBeFalse();
       Storage = Storage;
     });

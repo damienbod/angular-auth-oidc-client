@@ -161,7 +161,7 @@ describe('PeriodicallyTokenCheckService', () => {
 
       tick(1000);
 
-      intervalService.runTokenValidationRunning.unsubscribe();
+      intervalService.runTokenValidationRunning?.unsubscribe();
       intervalService.runTokenValidationRunning = null;
       expect(isCurrentFlowCodeFlowWithRefreshTokensSpy).toHaveBeenCalled();
       expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
@@ -282,7 +282,7 @@ describe('PeriodicallyTokenCheckService', () => {
         configs[0]
       );
       tick(1000);
-      intervalService.runTokenValidationRunning.unsubscribe();
+      intervalService.runTokenValidationRunning?.unsubscribe();
       intervalService.runTokenValidationRunning = null;
 
       expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
@@ -321,7 +321,7 @@ describe('PeriodicallyTokenCheckService', () => {
 
       tick(1000);
 
-      intervalService.runTokenValidationRunning.unsubscribe();
+      intervalService.runTokenValidationRunning?.unsubscribe();
       intervalService.runTokenValidationRunning = null;
       expect(refreshSessionWithRefreshTokensSpy).toHaveBeenCalled();
     }));
@@ -329,7 +329,7 @@ describe('PeriodicallyTokenCheckService', () => {
 
   describe('shouldStartPeriodicallyCheckForConfig', () => {
     it('returns false when there is no IdToken', () => {
-      spyOn(authStateService, 'getIdToken').and.returnValue(null);
+      spyOn(authStateService, 'getIdToken').and.returnValue('');
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
       spyOn(userService, 'getUserDataFromStore').and.returnValue(
         'some-userdata'

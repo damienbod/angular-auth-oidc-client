@@ -899,17 +899,17 @@ describe('UrlService Tests', () => {
 
     it('getRevocationEndpointUrl returns null when there is not revociationendpoint given', () => {
       spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', null)
+        .withArgs('authWellKnownEndPoints', {})
         .and.returnValue({
           revocationEndpoint: null,
         });
-      const value = service.getRevocationEndpointUrl(null);
+      const value = service.getRevocationEndpointUrl({});
 
       expect(value).toBeNull();
     });
 
     it('getRevocationEndpointUrl returns null when there is no wellKnownEndpoints given', () => {
-      const value = service.getRevocationEndpointUrl(null);
+      const value = service.getRevocationEndpointUrl({});
 
       expect(value).toBeNull();
     });

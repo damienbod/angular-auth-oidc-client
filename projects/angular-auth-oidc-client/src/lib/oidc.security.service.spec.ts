@@ -10,6 +10,7 @@ import { AuthWellKnownService } from './config/auth-well-known/auth-well-known.s
 import { ConfigurationService } from './config/config.service';
 import { FlowsDataService } from './flows/flows-data.service';
 import { CheckSessionService } from './iframe/check-session.service';
+import { LoginResponse } from './login/login-response';
 import { LoginService } from './login/login.service';
 import { LogoffRevocationService } from './logoff-revoke/logoff-revocation.service';
 import { OidcSecurityService } from './oidc.security.service';
@@ -165,7 +166,7 @@ describe('OidcSecurityService', () => {
       const spy = spyOn(
         authWellKnownService,
         'queryAndStoreAuthWellKnownEndPoints'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({}));
 
       oidcSecurityService.preloadAuthWellKnownDocument().subscribe(() => {
         expect(spy).toHaveBeenCalledOnceWith(config);
@@ -248,7 +249,7 @@ describe('OidcSecurityService', () => {
       );
 
       const spy = spyOn(checkAuthService, 'checkAuth').and.returnValue(
-        of(null)
+        of({} as LoginResponse)
       );
 
       oidcSecurityService.checkAuth().subscribe(() => {
@@ -264,7 +265,7 @@ describe('OidcSecurityService', () => {
       );
 
       const spy = spyOn(checkAuthService, 'checkAuth').and.returnValue(
-        of(null)
+        of({} as LoginResponse)
       );
 
       oidcSecurityService.checkAuth('some-url').subscribe(() => {
@@ -282,7 +283,7 @@ describe('OidcSecurityService', () => {
       );
 
       const spy = spyOn(checkAuthService, 'checkAuthMultiple').and.returnValue(
-        of(null)
+        of([{}] as LoginResponse[])
       );
 
       oidcSecurityService.checkAuthMultiple().subscribe(() => {
@@ -298,7 +299,7 @@ describe('OidcSecurityService', () => {
       );
 
       const spy = spyOn(checkAuthService, 'checkAuthMultiple').and.returnValue(
-        of(null)
+        of([{}] as LoginResponse[])
       );
 
       oidcSecurityService.checkAuthMultiple('some-url').subscribe(() => {
@@ -336,7 +337,7 @@ describe('OidcSecurityService', () => {
       const spy = spyOn(
         checkAuthService,
         'checkAuthIncludingServer'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as LoginResponse));
 
       oidcSecurityService.checkAuthIncludingServer().subscribe(() => {
         expect(spy).toHaveBeenCalledOnceWith(config, [config]);
@@ -562,7 +563,7 @@ describe('OidcSecurityService', () => {
         of({ allConfigs: [config], currentConfig: config })
       );
       const spy = spyOn(loginService, 'loginWithPopUp').and.callFake(() =>
-        of(null)
+        of({} as LoginResponse)
       );
 
       oidcSecurityService.authorizeWithPopUp().subscribe(() => {
@@ -587,7 +588,7 @@ describe('OidcSecurityService', () => {
       const spy = spyOn(
         refreshSessionService,
         'userForceRefreshSession'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as LoginResponse));
 
       oidcSecurityService.forceRefreshSession().subscribe(() => {
         expect(spy).toHaveBeenCalledOnceWith(config, [config], undefined);

@@ -70,7 +70,7 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
     });
 
     afterEach(() => {
-      storagePersistenceService.clear(null);
+      storagePersistenceService.clear({});
     });
 
     it('should create', () => {
@@ -93,7 +93,10 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         const loginSpy = spyOn(loginService, 'login');
 
         guard
-          .canActivate(null, { url: 'some-url1' } as RouterStateSnapshot)
+          .canActivate(
+            {} as ActivatedRouteSnapshot,
+            { url: 'some-url1' } as RouterStateSnapshot
+          )
           .subscribe(() => {
             expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith(
               { configId: 'configId1' },
@@ -157,7 +160,10 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         const loginSpy = spyOn(loginService, 'login');
 
         guard
-          .canActivate(null, { url: 'some-url1' } as RouterStateSnapshot)
+          .canActivate(
+            {} as ActivatedRouteSnapshot,
+            { url: 'some-url1' } as RouterStateSnapshot
+          )
           .subscribe(() => {
             expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
             expect(loginSpy).not.toHaveBeenCalled();
@@ -184,7 +190,10 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         const loginSpy = spyOn(loginService, 'login');
 
         guard
-          .canActivateChild(null, { url: 'some-url1' } as RouterStateSnapshot)
+          .canActivateChild(
+            {} as ActivatedRouteSnapshot,
+            { url: 'some-url1' } as RouterStateSnapshot
+          )
           .subscribe(() => {
             expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith(
               { configId: 'configId1' },
@@ -248,7 +257,10 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         const loginSpy = spyOn(loginService, 'login');
 
         guard
-          .canActivateChild(null, { url: 'some-url1' } as RouterStateSnapshot)
+          .canActivateChild(
+            {} as ActivatedRouteSnapshot,
+            { url: 'some-url1' } as RouterStateSnapshot
+          )
           .subscribe(() => {
             expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
             expect(loginSpy).not.toHaveBeenCalled();
@@ -368,7 +380,7 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
       });
 
       afterEach(() => {
-        storagePersistenceService.clear(null);
+        storagePersistenceService.clear({});
       });
 
       it('should save current route (empty) and call `login` if not authenticated already', waitForAsync(() => {

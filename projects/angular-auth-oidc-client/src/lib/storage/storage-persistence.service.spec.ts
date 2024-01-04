@@ -93,7 +93,7 @@ describe('Storage Persistence Service', () => {
     it('should call oidcSecurityStorage.clear()', () => {
       const clearSpy = spyOn(securityStorage, 'clear');
 
-      service.clear(null);
+      service.clear({});
 
       expect(clearSpy).toHaveBeenCalledTimes(1);
     });

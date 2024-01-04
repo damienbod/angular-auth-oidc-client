@@ -535,7 +535,7 @@ describe('User Service', () => {
         .withArgs('authWellKnownEndPoints', config)
         .and.returnValue(null);
       serviceAsAny.getIdentityUserData(config).subscribe({
-        error: (err) => {
+        error: (err: any) => {
           expect(err).toBeTruthy();
         },
       });
@@ -552,7 +552,7 @@ describe('User Service', () => {
         .withArgs('authWellKnownEndPoints', config)
         .and.returnValue({ userInfoEndpoint: null });
       serviceAsAny.getIdentityUserData(config).subscribe({
-        error: (err) => {
+        error: (err: any) => {
           expect(err).toBeTruthy();
         },
       });
@@ -596,7 +596,7 @@ describe('User Service', () => {
     );
 
     (userService as any).getIdentityUserData(config).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         expect(res).toBeTruthy();
         expect(res).toEqual(DUMMY_USER_DATA);
       },
@@ -621,7 +621,7 @@ describe('User Service', () => {
     );
 
     (userService as any).getIdentityUserData(config).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         expect(res).toBeTruthy();
         expect(res).toEqual(DUMMY_USER_DATA);
       },
@@ -647,7 +647,7 @@ describe('User Service', () => {
     );
 
     (userService as any).getIdentityUserData(config).subscribe({
-      error: (err) => {
+      error: (err: any) => {
         expect(err).toBeTruthy();
       },
     });
