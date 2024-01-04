@@ -226,6 +226,7 @@ describe('CheckAuthService', () => {
             userData: null,
             idToken: '',
             accessToken: '',
+            configId: '',
           });
           expect(popupSpy).toHaveBeenCalled();
         });

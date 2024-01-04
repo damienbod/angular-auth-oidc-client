@@ -165,7 +165,7 @@ describe('UrlService Tests', () => {
   });
 
   describe('createAuthorizeUrl', () => {
-    it('returns null when no authoizationendpoint given -> wellKnownEndpoints null', () => {
+    it('returns empty string when no authoizationendpoint given -> wellKnownEndpoints null', () => {
       const value = (service as any).createAuthorizeUrl(
         '', // Implicit Flow
         'https://localhost:44386',
@@ -173,12 +173,10 @@ describe('UrlService Tests', () => {
         'state'
       );
 
-      const expectValue = null;
-
-      expect(value).toEqual(expectValue);
+      expect(value).toEqual('');
     });
 
-    it('returns null when no authoizationendpoint given -> configurationProvider null', () => {
+    it('returns empty string when no authoizationendpoint given -> configurationProvider null', () => {
       (service as any).configurationProvider = null;
 
       const value = (service as any).createAuthorizeUrl(
@@ -188,12 +186,10 @@ describe('UrlService Tests', () => {
         'state'
       );
 
-      const expectValue = null;
-
-      expect(value).toEqual(expectValue);
+      expect(value).toEqual('');
     });
 
-    it('returns null when clientId is null', () => {
+    it('returns empty string when clientId is null', () => {
       const config = { configId: 'configId1', clientId: '' };
       const authorizationEndpoint = 'authorizationEndpoint';
 
@@ -209,12 +205,10 @@ describe('UrlService Tests', () => {
         config
       );
 
-      const expectValue = null;
-
-      expect(value).toEqual(expectValue);
+      expect(value).toEqual('');
     });
 
-    it('returns null when responseType is null', () => {
+    it('returns empty string when responseType is null', () => {
       const config = {
         configId: 'configId1',
         clientId: 'something',
@@ -234,12 +228,10 @@ describe('UrlService Tests', () => {
         config
       );
 
-      const expectValue = null;
-
-      expect(value).toEqual(expectValue);
+      expect(value).toEqual('');
     });
 
-    it('returns null when scope is null', () => {
+    it('returns empty string when scope is null', () => {
       const config = {
         configId: 'configId1',
         clientId: 'something',
@@ -260,9 +252,7 @@ describe('UrlService Tests', () => {
         config
       );
 
-      const expectValue = null;
-
-      expect(value).toEqual(expectValue);
+      expect(value).toEqual('');
     });
 
     it('createAuthorizeUrl with code flow and codeChallenge adds "code_challenge" and "code_challenge_method" param', () => {
@@ -1561,7 +1551,7 @@ describe('UrlService Tests', () => {
       const resultObs$ = serviceAsAny.createUrlCodeFlowWithSilentRenew(config);
 
       resultObs$.subscribe((result: any) => {
-        expect(result).toBe(null);
+        expect(result).toBe('');
       });
     }));
   });

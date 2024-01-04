@@ -348,7 +348,7 @@ describe('Auth State Service', () => {
         configId: 'configId1',
       });
 
-      expect(result).toBe({});
+      expect(result).toEqual({});
     });
 
     it('isAuthorized is true returns object', () => {

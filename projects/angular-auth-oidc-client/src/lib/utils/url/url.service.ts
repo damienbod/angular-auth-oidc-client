@@ -431,7 +431,7 @@ export class UrlService {
     configuration: OpenIdConfiguration,
     prompt?: string,
     customRequestParams?: { [key: string]: string | number | boolean }
-  ): string | null {
+  ): string {
     const authWellKnownEndPoints = this.storagePersistenceService.read(
       'authWellKnownEndPoints',
       configuration
@@ -444,7 +444,7 @@ export class UrlService {
         `Can not create an authorize URL when authorizationEndpoint is '${authorizationEndpoint}'`
       );
 
-      return null;
+      return '';
     }
 
     const { clientId, responseType, scope, hdParam, customParamsAuthRequest } =
@@ -457,7 +457,7 @@ export class UrlService {
         clientId
       );
 
-      return null;
+      return '';
     }
 
     if (!responseType) {
@@ -467,7 +467,7 @@ export class UrlService {
         responseType
       );
 
-      return null;
+      return '';
     }
 
     if (!scope) {
@@ -477,7 +477,7 @@ export class UrlService {
         scope
       );
 
-      return null;
+      return '';
     }
 
     const urlParts = authorizationEndpoint.split('?');
@@ -564,7 +564,7 @@ export class UrlService {
   private createUrlCodeFlowWithSilentRenew(
     configuration: OpenIdConfiguration,
     customParams?: { [key: string]: string | number | boolean }
-  ): Observable<string | null> {
+  ): Observable<string> {
     const state =
       this.flowsDataService.getExistingOrCreateAuthStateControl(configuration);
     const nonce = this.flowsDataService.createNonce(configuration);
@@ -583,7 +583,7 @@ export class UrlService {
         const silentRenewUrl = this.getSilentRenewUrl(configuration);
 
         if (!silentRenewUrl) {
-          return null;
+          return '';
         }
 
         const authWellKnownEndPoints = this.storagePersistenceService.read(
@@ -608,7 +608,7 @@ export class UrlService {
           'authWellKnownEndpoints is undefined'
         );
 
-        return null;
+        return '';
       })
     );
   }
