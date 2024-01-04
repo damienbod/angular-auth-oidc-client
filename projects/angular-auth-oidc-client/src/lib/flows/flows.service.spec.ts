@@ -89,23 +89,23 @@ describe('Flows Service', () => {
       const codeFlowCallbackSpy = spyOn(
         codeFlowCallbackHandlerService,
         'codeFlowCallback'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const codeFlowCodeRequestSpy = spyOn(
         codeFlowCallbackHandlerService,
         'codeFlowCodeRequest'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const callbackHistoryAndResetJwtKeysSpy = spyOn(
         historyJwtKeysCallbackHandlerService,
         'callbackHistoryAndResetJwtKeys'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const callbackStateValidationSpy = spyOn(
         stateValidationCallbackHandlerService,
         'callbackStateValidation'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const callbackUserSpy = spyOn(
         userCallbackHandlerService,
         'callbackUser'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const allConfigs = [
         {
           configId: 'configId1',
@@ -133,19 +133,19 @@ describe('Flows Service', () => {
       const codeFlowCodeRequestSpy = spyOn(
         codeFlowCallbackHandlerService,
         'codeFlowCodeRequest'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const callbackHistoryAndResetJwtKeysSpy = spyOn(
         historyJwtKeysCallbackHandlerService,
         'callbackHistoryAndResetJwtKeys'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const callbackStateValidationSpy = spyOn(
         stateValidationCallbackHandlerService,
         'callbackStateValidation'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const callbackUserSpy = spyOn(
         userCallbackHandlerService,
         'callbackUser'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const allConfigs = [
         {
           configId: 'configId1',
@@ -173,19 +173,19 @@ describe('Flows Service', () => {
       const implicitFlowCallbackSpy = spyOn(
         implicitFlowCallbackHandlerService,
         'implicitFlowCallback'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const callbackHistoryAndResetJwtKeysSpy = spyOn(
         historyJwtKeysCallbackHandlerService,
         'callbackHistoryAndResetJwtKeys'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const callbackStateValidationSpy = spyOn(
         stateValidationCallbackHandlerService,
         'callbackStateValidation'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const callbackUserSpy = spyOn(
         userCallbackHandlerService,
         'callbackUser'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const allConfigs = [
         {
           configId: 'configId1',
@@ -209,23 +209,23 @@ describe('Flows Service', () => {
       const refreshSessionWithRefreshTokensSpy = spyOn(
         refreshSessionCallbackHandlerService,
         'refreshSessionWithRefreshTokens'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const refreshTokensRequestTokensSpy = spyOn(
         refreshTokenCallbackHandlerService,
         'refreshTokensRequestTokens'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const callbackHistoryAndResetJwtKeysSpy = spyOn(
         historyJwtKeysCallbackHandlerService,
         'callbackHistoryAndResetJwtKeys'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const callbackStateValidationSpy = spyOn(
         stateValidationCallbackHandlerService,
         'callbackStateValidation'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const callbackUserSpy = spyOn(
         userCallbackHandlerService,
         'callbackUser'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const allConfigs = [
         {
           configId: 'configId1',

@@ -99,11 +99,11 @@ describe('LoginService', () => {
       const loginWithPopUpPar = spyOn(
         parLoginService,
         'loginWithPopUpPar'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as LoginResponse));
       const loginWithPopUpStandardSpy = spyOn(
         popUpLoginService,
         'loginWithPopUpStandard'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as LoginResponse));
 
       // act
       service.loginWithPopUp(config, [config]).subscribe(() => {
@@ -119,11 +119,11 @@ describe('LoginService', () => {
       const loginWithPopUpPar = spyOn(
         parLoginService,
         'loginWithPopUpPar'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as LoginResponse));
       const loginWithPopUpStandardSpy = spyOn(
         popUpLoginService,
         'loginWithPopUpStandard'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as LoginResponse));
 
       // act
       service.loginWithPopUp(config, [config]).subscribe(() => {
@@ -143,7 +143,7 @@ describe('LoginService', () => {
       const authOptions = { customParams: { custom: 'params' } };
 
       spyOn(popUpLoginService, 'loginWithPopUpStandard').and.returnValue(
-        of(null)
+        of({} as LoginResponse)
       );
 
       // act
@@ -164,11 +164,11 @@ describe('LoginService', () => {
       const loginWithPopUpPar = spyOn(
         parLoginService,
         'loginWithPopUpPar'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as LoginResponse));
       const loginWithPopUpStandardSpy = spyOn(
         popUpLoginService,
         'loginWithPopUpStandard'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as LoginResponse));
 
       spyOn(popUpService, 'isCurrentlyInPopup').and.returnValue(true);
 

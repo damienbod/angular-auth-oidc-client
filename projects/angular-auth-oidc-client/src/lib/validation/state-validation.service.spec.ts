@@ -699,7 +699,7 @@ describe('State Validation Service', () => {
   describe('getValidatedStateResult', () => {
     it('should return authResponseIsValid false when null is passed', waitForAsync(() => {
       const isValidObs$ = stateValidationService.getValidatedStateResult(
-        null,
+        {} as CallbackContext,
         config
       );
 
@@ -723,7 +723,7 @@ describe('State Validation Service', () => {
 
       const callbackContext = {
         code: 'fdffsdfsdf',
-        refreshToken: null,
+        refreshToken: '',
         state: 'fdffsggggggdfsdf',
         sessionState: 'fdffsggggggdfsdf',
         existingIdToken: null,
@@ -810,7 +810,7 @@ describe('State Validation Service', () => {
 
       const callbackContext = {
         code: 'fdffsdfsdf',
-        refreshToken: null,
+        refreshToken: '',
         state: 'fdffsdfhhhhsdf',
         sessionState: 'fdffsggggggdfsdf',
         authResult: {
@@ -859,7 +859,7 @@ describe('State Validation Service', () => {
 
       const callbackContext = {
         code: 'fdffsdfsdf',
-        refreshToken: null,
+        refreshToken: '',
         state: 'fdffsdfhhhhsdf',
         sessionState: 'fdffsggggggdfsdf',
         authResult: {
@@ -952,7 +952,7 @@ describe('State Validation Service', () => {
 
       const callbackContext = {
         code: 'fdffsdfsdf',
-        refreshToken: null,
+        refreshToken: '',
         state: 'fdffsdfhhhhsdf',
         sessionState: 'fdffsggggggdfsdf',
         authResult: {
@@ -1004,7 +1004,7 @@ describe('State Validation Service', () => {
 
       const callbackContext = {
         code: 'fdffsdfsdf',
-        refreshToken: null,
+        refreshToken: '',
         state: 'fdffsdfhhhhsdf',
         sessionState: 'fdffsggggggdfsdf',
         authResult: {
@@ -1066,7 +1066,7 @@ describe('State Validation Service', () => {
 
       const callbackContext = {
         code: 'fdffsdfsdf',
-        refreshToken: null,
+        refreshToken: '',
         state: 'fdffsdfhhhhsdf',
         sessionState: 'fdffsggggggdfsdf',
         authResult: {
@@ -1133,7 +1133,7 @@ describe('State Validation Service', () => {
 
       const callbackContext = {
         code: 'fdffsdfsdf',
-        refreshToken: null,
+        refreshToken: '',
         state: 'fdffsdfhhhhsdf',
         sessionState: 'fdffsggggggdfsdf',
         authResult: {
@@ -1207,7 +1207,7 @@ describe('State Validation Service', () => {
 
       const callbackContext = {
         code: 'fdffsdfsdf',
-        refreshToken: null,
+        refreshToken: '',
         state: 'fdffsdfhhhhsdf',
         sessionState: 'fdffsggggggdfsdf',
         authResult: {
@@ -1284,7 +1284,7 @@ describe('State Validation Service', () => {
 
       const callbackContext = {
         code: 'fdffsdfsdf',
-        refreshToken: null,
+        refreshToken: '',
         state: 'fdffsdfhhhhsdf',
         sessionState: 'fdffsggggggdfsdf',
         authResult: {
@@ -1349,7 +1349,7 @@ describe('State Validation Service', () => {
 
       const callbackContext = {
         code: 'fdffsdfsdf',
-        refreshToken: null,
+        refreshToken: '',
         state: 'fdffsdfhhhhsdf',
         sessionState: 'fdffsggggggdfsdf',
         authResult: {
@@ -1424,7 +1424,7 @@ describe('State Validation Service', () => {
 
       const callbackContext = {
         code: 'fdffsdfsdf',
-        refreshToken: null,
+        refreshToken: '',
         state: 'fdffsdfhhhhsdf',
         sessionState: 'fdffsggggggdfsdf',
         authResult: {
@@ -1499,7 +1499,7 @@ describe('State Validation Service', () => {
 
       const callbackContext = {
         code: 'fdffsdfsdf',
-        refreshToken: null,
+        refreshToken: '',
         state: 'fdffsdfhhhhsdf',
         sessionState: 'fdffsggggggdfsdf',
         authResult: {
@@ -1578,7 +1578,7 @@ describe('State Validation Service', () => {
 
       const callbackContext = {
         code: 'fdffsdfsdf',
-        refreshToken: null,
+        refreshToken: '',
         state: 'fdffsdfhhhhsdf',
         sessionState: 'fdffsggggggdfsdf',
         authResult: {
@@ -1661,7 +1661,7 @@ describe('State Validation Service', () => {
 
       const callbackContext = {
         code: 'fdffsdfsdf',
-        refreshToken: null,
+        refreshToken: '',
         state: 'fdffsdfhhhhsdf',
         sessionState: 'fdffsggggggdfsdf',
         authResult: {
@@ -1755,7 +1755,7 @@ describe('State Validation Service', () => {
 
       const callbackContext = {
         code: 'fdffsdfsdf',
-        refreshToken: null,
+        refreshToken: '',
         state: 'fdffsdfhhhhsdf',
         sessionState: 'fdffsggggggdfsdf',
         authResult: {
@@ -1853,7 +1853,7 @@ describe('State Validation Service', () => {
 
       const callbackContext = {
         code: 'fdffsdfsdf',
-        refreshToken: null,
+        refreshToken: '',
         state: 'fdffsdfhhhhsdf',
         sessionState: 'fdffsggggggdfsdf',
         authResult: {
@@ -1944,7 +1944,7 @@ describe('State Validation Service', () => {
 
       const callbackContext = {
         code: 'fdffsdfsdf',
-        refreshToken: null,
+        refreshToken: '',
         state: 'fdffsdfhhhhsdf',
         sessionState: 'fdffsggggggdfsdf',
         authResult: {
@@ -2023,7 +2023,7 @@ describe('State Validation Service', () => {
 
       const callbackContext = {
         code: 'fdffsdfsdf',
-        refreshToken: null,
+        refreshToken: '',
         state: 'fdffsdfhhhhsdf',
         sessionState: 'fdffsggggggdfsdf',
         authResult: {
@@ -2066,7 +2066,7 @@ describe('State Validation Service', () => {
 
       const callbackContext = {
         code: 'fdffsdfsdf',
-        refreshToken: null,
+        refreshToken: '',
         state: 'fdffsggggggdfsdf',
         sessionState: 'fdffsggggggdfsdf',
         existingIdToken: null,

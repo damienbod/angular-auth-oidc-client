@@ -194,7 +194,7 @@ describe('UrlService Tests', () => {
     });
 
     it('returns null when clientId is null', () => {
-      const config = { configId: 'configId1', clientId: null };
+      const config = { configId: 'configId1', clientId: '' };
       const authorizationEndpoint = 'authorizationEndpoint';
 
       spyOn(storagePersistenceService, 'read')
@@ -218,7 +218,7 @@ describe('UrlService Tests', () => {
       const config = {
         configId: 'configId1',
         clientId: 'something',
-        responseType: null,
+        responseType: undefined,
       };
       const authorizationEndpoint = 'authorizationEndpoint';
 
@@ -244,7 +244,7 @@ describe('UrlService Tests', () => {
         configId: 'configId1',
         clientId: 'something',
         responseType: 'responsetype',
-        scope: null,
+        scope: undefined,
       };
       const authorizationEndpoint = 'authorizationEndpoint';
 
@@ -563,7 +563,7 @@ describe('UrlService Tests', () => {
           '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
         responseType: 'id_token token',
         scope: 'openid email profile',
-        customParamsAuthRequest: null,
+        customParamsAuthRequest: undefined,
         configId: 'configId1',
       };
 
@@ -786,7 +786,7 @@ describe('UrlService Tests', () => {
     it('createRevocationEndpointBodyAccessToken returns null when no clientId is given', () => {
       const config = {
         authority: 'https://localhost:5001',
-        clientId: null,
+        clientId: '',
       } as OpenIdConfiguration;
       const value = service.createRevocationEndpointBodyAccessToken(
         'mytoken',
@@ -831,7 +831,7 @@ describe('UrlService Tests', () => {
     it('createRevocationEndpointBodyRefreshToken returns null when no clientId is given', () => {
       const config = {
         authority: 'https://localhost:5001',
-        clientId: null,
+        clientId: undefined,
       } as OpenIdConfiguration;
       const value = service.createRevocationEndpointBodyRefreshToken(
         'mytoken',
@@ -964,8 +964,8 @@ describe('UrlService Tests', () => {
         clientId: 'some-clientId',
         responseType: 'testResponseType',
         scope: 'testScope',
-        hdParam: null,
-        customParamsAuthRequest: null,
+        hdParam: undefined,
+        customParamsAuthRequest: undefined,
       } as OpenIdConfiguration;
 
       const authorizationEndpoint = 'authorizationEndpoint';
@@ -1073,7 +1073,7 @@ describe('UrlService Tests', () => {
       const codeVerifier = 'codeverifier';
 
       spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
-      const clientId = null;
+      const clientId = '';
       const result = service.createBodyForCodeFlowCodeRequest(
         'notRelevantParam',
         { clientId }
@@ -1085,7 +1085,7 @@ describe('UrlService Tests', () => {
     it('returns null if silentrenewRunning is false and redirectUrl is falsy', () => {
       const codeVerifier = 'codeverifier';
       const code = 'code';
-      const redirectUrl = null;
+      const redirectUrl = '';
       const clientId = 'clientId';
 
       spyOn(flowsDataService, 'getCodeVerifier').and.returnValue(codeVerifier);
@@ -1237,8 +1237,8 @@ describe('UrlService Tests', () => {
         clientId: 'testClientId',
         responseType: 'testResponseType',
         scope: 'testScope',
-        hdParam: null,
-        customParamsAuthRequest: null,
+        hdParam: undefined,
+        customParamsAuthRequest: undefined,
         redirectUrl: 'testRedirectUrl',
       };
 
@@ -1269,7 +1269,7 @@ describe('UrlService Tests', () => {
         responseType: 'testResponseType',
         scope: 'testScope',
         hdParam: 'testHdParam',
-        customParamsAuthRequest: null,
+        customParamsAuthRequest: undefined,
         redirectUrl: 'testRedirectUrl',
       };
 
@@ -1478,7 +1478,7 @@ describe('UrlService Tests', () => {
 
       const resultObs$ = serviceAsAny.createUrlCodeFlowWithSilentRenew(config);
 
-      resultObs$.subscribe((result) => {
+      resultObs$.subscribe((result: any) => {
         expect(result).toBe('');
       });
     }));
@@ -1520,7 +1520,7 @@ describe('UrlService Tests', () => {
 
       const resultObs$ = serviceAsAny.createUrlCodeFlowWithSilentRenew(config);
 
-      resultObs$.subscribe((result) => {
+      resultObs$.subscribe((result: any) => {
         expect(result).toBe(
           `authorizationEndpoint?client_id=${clientId}&redirect_uri=http%3A%2F%2Fany-url.com&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}&prompt=none`
         );
@@ -1560,7 +1560,7 @@ describe('UrlService Tests', () => {
 
       const resultObs$ = serviceAsAny.createUrlCodeFlowWithSilentRenew(config);
 
-      resultObs$.subscribe((result) => {
+      resultObs$.subscribe((result: any) => {
         expect(result).toBe(null);
       });
     }));
@@ -1670,7 +1670,7 @@ describe('UrlService Tests', () => {
 
       const resultObs$ = serviceAsAny.createUrlCodeFlowAuthorize(config);
 
-      resultObs$.subscribe((result) => {
+      resultObs$.subscribe((result: any) => {
         expect(result).toBeNull();
       });
     }));
@@ -1796,7 +1796,7 @@ describe('UrlService Tests', () => {
 
       const resultObs$ = serviceAsAny.createUrlCodeFlowAuthorize(config);
 
-      resultObs$.subscribe((result) => {
+      resultObs$.subscribe((result: any) => {
         expect(result).toBe('');
       });
     }));
@@ -1832,7 +1832,7 @@ describe('UrlService Tests', () => {
         postLogoutRedirectUri: 'https://localhost:44386/Unauthorized',
       } as OpenIdConfiguration;
 
-      spyOn(storagePersistenceService, 'getIdToken').and.returnValue(null);
+      spyOn(storagePersistenceService, 'getIdToken').and.returnValue('');
       spyOn(storagePersistenceService, 'read')
         .withArgs('authWellKnownEndPoints', config)
         .and.returnValue({
@@ -1903,7 +1903,7 @@ describe('UrlService Tests', () => {
 
     it('create URL without postLogoutRedirectUri when not given', () => {
       const config = {
-        postLogoutRedirectUri: null,
+        postLogoutRedirectUri: '',
       } as OpenIdConfiguration;
 
       spyOn(storagePersistenceService, 'read')
@@ -1980,7 +1980,7 @@ describe('UrlService Tests', () => {
     });
 
     it('returns null if configurationProvider.openIDConfiguration has no clientId', () => {
-      const config = { clientId: null };
+      const config = { clientId: '' } as OpenIdConfiguration;
 
       spyOn(storagePersistenceService, 'read')
         .withArgs('authWellKnownEndPoints', config)
