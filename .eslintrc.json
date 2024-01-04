@@ -40,7 +40,8 @@
         "@typescript-eslint/ban-types": ["error"],
         "no-useless-escape": ["error"],
         "no-prototype-builtins": ["error"],
-        "prefer-spread": ["error"]
+        "prefer-spread": ["error"],
+        "@typescript-eslint/no-explicit-any": "off"
       }
     },
     {
