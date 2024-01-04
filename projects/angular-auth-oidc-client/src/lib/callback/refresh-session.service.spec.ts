@@ -502,7 +502,7 @@ describe('RefreshSessionService ', () => {
 
       (refreshSessionService as any)
         .startRefreshSession()
-        .subscribe((result) => {
+        .subscribe((result: any) => {
           expect(result).toBe(null);
         });
     }));
@@ -512,7 +512,7 @@ describe('RefreshSessionService ', () => {
 
       (refreshSessionService as any)
         .startRefreshSession()
-        .subscribe((result) => {
+        .subscribe((result: any) => {
           expect(result).toBe(null);
         });
     }));
@@ -542,7 +542,7 @@ describe('RefreshSessionService ', () => {
       spyOn(
         refreshSessionRefreshTokenService,
         'refreshSessionWithRefreshTokens'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
 
       (refreshSessionService as any)
         .startRefreshSession(allConfigs[0], allConfigs)
@@ -573,7 +573,7 @@ describe('RefreshSessionService ', () => {
       const refreshSessionWithRefreshTokensSpy = spyOn(
         refreshSessionRefreshTokenService,
         'refreshSessionWithRefreshTokens'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
 
       (refreshSessionService as any)
         .startRefreshSession(allConfigs[0], allConfigs)
@@ -604,12 +604,12 @@ describe('RefreshSessionService ', () => {
       const refreshSessionWithRefreshTokensSpy = spyOn(
         refreshSessionRefreshTokenService,
         'refreshSessionWithRefreshTokens'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
 
       const refreshSessionWithIframeSpy = spyOn(
         refreshSessionIframeService,
         'refreshSessionWithIframe'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of(false));
 
       (refreshSessionService as any)
         .startRefreshSession(allConfigs[0], allConfigs)

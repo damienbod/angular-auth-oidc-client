@@ -165,7 +165,7 @@ describe('Configuration Service', () => {
       });
 
       configService.getOpenIDConfiguration('configId1').subscribe((config) => {
-        expect(config.authWellknownEndpoints).toEqual({
+        expect(config?.authWellknownEndpoints).toEqual({
           issuer: 'auth-well-known',
         });
       });
@@ -214,9 +214,12 @@ describe('Configuration Service', () => {
           EventTypes.ConfigLoaded,
           jasmine.anything()
         );
-        expect(storeWellKnownEndpointsSpy).toHaveBeenCalledOnceWith(config, {
-          issuer: 'auth-well-known',
-        });
+        expect(storeWellKnownEndpointsSpy).toHaveBeenCalledOnceWith(
+          config as OpenIdConfiguration,
+          {
+            issuer: 'auth-well-known',
+          }
+        );
       });
     }));
   });
@@ -255,7 +258,7 @@ describe('Configuration Service', () => {
         expect(allConfigIds).toEqual(['0-clientId1', '1-clientId2']);
 
         expect(result.currentConfig).toBeTruthy();
-        expect(result.currentConfig.configId).toBeTruthy();
+        expect(result.currentConfig?.configId).toBeTruthy();
       });
     }));
 

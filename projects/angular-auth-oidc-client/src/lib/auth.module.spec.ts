@@ -28,7 +28,7 @@ describe('AuthModule', () => {
 
     it('should create', () => {
       expect(AuthModule).toBeDefined();
-      expect(AuthModule.forRoot(null)).toBeDefined();
+      expect(AuthModule.forRoot({})).toBeDefined();
     });
 
     it('should provide config', () => {
@@ -50,7 +50,7 @@ describe('AuthModule', () => {
           AuthModule.forRoot({
             loader: {
               provide: StsConfigLoader,
-              useFactory: () => new StsConfigHttpLoader(of(null)),
+              useFactory: () => new StsConfigHttpLoader(of({})),
             },
           }),
         ],

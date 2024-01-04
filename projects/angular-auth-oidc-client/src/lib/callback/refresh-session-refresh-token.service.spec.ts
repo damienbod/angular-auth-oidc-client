@@ -1,6 +1,7 @@
 import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { mockClass } from '../../test/auto-mock';
+import { CallbackContext } from '../flows/callback-context';
 import { FlowsService } from '../flows/flows.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { LoggerService } from '../logging/logger.service';
@@ -45,7 +46,7 @@ describe('RefreshSessionRefreshTokenService', () => {
   describe('refreshSessionWithRefreshTokens', () => {
     it('calls flowsService.processRefreshToken()', waitForAsync(() => {
       const spy = spyOn(flowsService, 'processRefreshToken').and.returnValue(
-        of(null)
+        of({} as CallbackContext)
       );
 
       refreshSessionRefreshTokenService
