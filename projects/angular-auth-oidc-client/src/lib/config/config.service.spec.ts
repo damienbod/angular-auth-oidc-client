@@ -262,7 +262,7 @@ describe('Configuration Service', () => {
       });
     }));
 
-    it(`returns null if config is not valid`, waitForAsync(() => {
+    it(`returns empty array if config is not valid`, waitForAsync(() => {
       spyOn(stsConfigLoader, 'loadConfigs').and.returnValue(
         of([
           { configId: 'configId1' } as OpenIdConfiguration,
@@ -275,7 +275,7 @@ describe('Configuration Service', () => {
       configService
         .getOpenIDConfigurations()
         .subscribe(({ allConfigs, currentConfig }) => {
-          expect(allConfigs).toBeNull();
+          expect(allConfigs).toEqual([]);
           expect(currentConfig).toBeNull();
         });
     }));

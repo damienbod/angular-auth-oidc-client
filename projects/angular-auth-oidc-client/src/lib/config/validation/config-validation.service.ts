@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { LoggerService } from '../../logging/logger.service';
 import { OpenIdConfiguration } from '../openid-configuration';
 import { Level, RuleValidationResult } from './rule';
-import { allRules, allMultipleConfigRules } from './rules';
+import { allMultipleConfigRules, allRules } from './rules';
 
 @Injectable({ providedIn: 'root' })
 export class ConfigValidationService {
@@ -23,6 +23,10 @@ export class ConfigValidationService {
     passedConfigs: OpenIdConfiguration[],
     allRulesToUse: any[]
   ): boolean {
+    if (passedConfigs.length === 0) {
+      return false;
+    }
+
     const allValidationResults = allRulesToUse.map((rule) =>
       rule(passedConfigs)
     );

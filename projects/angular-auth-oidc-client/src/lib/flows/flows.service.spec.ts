@@ -115,7 +115,7 @@ describe('Flows Service', () => {
       service
         .processCodeFlowCallback('some-url1234', allConfigs[0], allConfigs)
         .subscribe((value) => {
-          expect(value).toBeNull();
+          expect(value).toEqual({} as CallbackContext);
           expect(codeFlowCallbackSpy).toHaveBeenCalledOnceWith(
             'some-url1234',
             allConfigs[0]
@@ -159,7 +159,7 @@ describe('Flows Service', () => {
           allConfigs
         )
         .subscribe((value) => {
-          expect(value).toBeNull();
+          expect(value).toEqual({} as CallbackContext);
           expect(codeFlowCodeRequestSpy).toHaveBeenCalled();
           expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalled();
           expect(callbackStateValidationSpy).toHaveBeenCalled();
@@ -195,7 +195,7 @@ describe('Flows Service', () => {
       service
         .processImplicitFlowCallback(allConfigs[0], allConfigs, 'any-hash')
         .subscribe((value) => {
-          expect(value).toBeNull();
+          expect(value).toEqual({} as CallbackContext);
           expect(implicitFlowCallbackSpy).toHaveBeenCalled();
           expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalled();
           expect(callbackStateValidationSpy).toHaveBeenCalled();
@@ -235,7 +235,7 @@ describe('Flows Service', () => {
       service
         .processRefreshToken(allConfigs[0], allConfigs)
         .subscribe((value) => {
-          expect(value).toBeNull();
+          expect(value).toEqual({} as CallbackContext);
           expect(refreshSessionWithRefreshTokensSpy).toHaveBeenCalled();
           expect(refreshTokensRequestTokensSpy).toHaveBeenCalled();
           expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalled();

@@ -252,7 +252,7 @@ describe('PopUpService', () => {
       }));
 
       it('user closed', fakeAsync(() => {
-        popUpService.openPopUp('url', {}, { configId: 'configId1' });
+        popUpService.openPopUp('url', undefined, { configId: 'configId1' });
 
         expect(popupResult).toBeUndefined();
         expect(cleanUpSpy).not.toHaveBeenCalled();

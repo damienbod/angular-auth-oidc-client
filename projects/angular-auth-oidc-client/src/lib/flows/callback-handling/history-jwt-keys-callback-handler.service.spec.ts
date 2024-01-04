@@ -392,6 +392,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     it('calls authStateService.updateAndPublishAuthState with login required if the error is `login_required`', waitForAsync(() => {
       const callbackContext = {
         authResult: { error: 'login_required' },
+        isRenewProcess: false,
       } as CallbackContext;
       const allconfigs = [
         {

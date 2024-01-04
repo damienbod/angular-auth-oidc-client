@@ -98,8 +98,8 @@ export class ConfigurationService {
 
     const allHandleConfigs$ = passedConfigs.map((x) => this.handleConfig(x));
     const as = forkJoin(allHandleConfigs$).pipe(
-      map((x) => x.filter((y) => Boolean(y))),
-      map((z) => z as OpenIdConfiguration[])
+      map((config) => config.filter((conf) => Boolean(conf))),
+      map((c) => c as OpenIdConfiguration[])
     );
 
     return as;
