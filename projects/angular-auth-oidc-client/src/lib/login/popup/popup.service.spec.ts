@@ -205,7 +205,9 @@ describe('PopUpService', () => {
       });
 
       it('message received with data', fakeAsync(() => {
-        let listener: (event: MessageEvent) => void = () => {};
+        let listener: (event: MessageEvent) => void = () => {
+          return;
+        };
 
         spyOn(window, 'addEventListener').and.callFake(
           (_: any, func: any) => (listener = func)
@@ -230,7 +232,9 @@ describe('PopUpService', () => {
       }));
 
       it('message received without data does return but cleanup does not throw event', fakeAsync(() => {
-        let listener: (event: MessageEvent) => void = () => {};
+        let listener: (event: MessageEvent) => void = () => {
+          return;
+        };
 
         spyOn(window, 'addEventListener').and.callFake(
           (_: any, func: any) => (listener = func)

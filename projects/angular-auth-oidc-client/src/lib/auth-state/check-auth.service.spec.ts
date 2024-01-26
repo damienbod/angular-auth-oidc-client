@@ -549,12 +549,14 @@ describe('CheckAuthService', () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
       ];
+
       spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
         'http://localhost:4200'
       );
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
         true
       );
+
       const fireEventSpy = spyOn(publicEventsService, 'fireEvent');
 
       checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe(() => {
