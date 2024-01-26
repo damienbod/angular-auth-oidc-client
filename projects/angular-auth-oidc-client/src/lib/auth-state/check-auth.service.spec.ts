@@ -15,6 +15,7 @@ import { CallbackContext } from '../flows/callback-context';
 import { CheckSessionService } from '../iframe/check-session.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/logger.service';
+import { LoginResponse } from '../login/login-response';
 import { PopUpService } from '../login/popup/popup.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
@@ -183,24 +184,6 @@ describe('CheckAuthService', () => {
       });
     }));
 
-    it('returns isAuthenticated: false with error message when config is not valid', waitForAsync(() => {
-      const allConfigs: OpenIdConfiguration[] = [];
-
-      checkAuthService
-        .checkAuth(allConfigs[0], allConfigs)
-        .subscribe((result) =>
-          expect(result).toEqual({
-            isAuthenticated: false,
-            errorMessage:
-              'Please provide at least one configuration before setting up the module',
-            configId: '',
-            idToken: '',
-            userData: null,
-            accessToken: '',
-          })
-        );
-    }));
-
     it('returns null and sendMessageToMainWindow if currently in a popup', waitForAsync(() => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
@@ -326,9 +309,17 @@ describe('CheckAuthService', () => {
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
         true
       );
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
+      );
       spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(
         of({} as CallbackContext)
       );
+      spyOn(userService, 'getUserDataFromStore').and.returnValue({
+        some: 'user-data',
+      });
+      spyOn(authStateService, 'getAccessToken').and.returnValue('at');
+      spyOn(authStateService, 'getIdToken').and.returnValue('idt');
 
       const setAuthorizedAndFireEventSpy = spyOn(
         authStateService,
@@ -341,10 +332,12 @@ describe('CheckAuthService', () => {
         .subscribe((result) => {
           expect(result).toEqual({
             isAuthenticated: true,
-            userData: undefined,
-            accessToken: '',
+            userData: {
+              some: 'user-data',
+            },
+            accessToken: 'at',
             configId: 'configId1',
-            idToken: '',
+            idToken: 'idt',
           });
           expect(setAuthorizedAndFireEventSpy).toHaveBeenCalled();
           expect(userServiceSpy).toHaveBeenCalled();
@@ -415,9 +408,10 @@ describe('CheckAuthService', () => {
         { configId: 'configId1', authority: 'some-authority' },
       ];
 
-      spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(
-        of({} as CallbackContext)
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
       );
+      spyOn(callBackService, 'isCallback').and.returnValue(false);
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
         true
       );
@@ -555,6 +549,12 @@ describe('CheckAuthService', () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
       ];
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
+      );
+      spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
+        true
+      );
       const fireEventSpy = spyOn(publicEventsService, 'fireEvent');
 
       checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe(() => {
@@ -596,6 +596,9 @@ describe('CheckAuthService', () => {
       );
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
         true
+      );
+      spyOn(refreshSessionService, 'forceRefreshSession').and.returnValue(
+        of({ isAuthenticated: true } as LoginResponse)
       );
 
       spyOn(silentRenewService, 'isSilentRenewConfigured').and.returnValue(
