@@ -227,10 +227,12 @@ describe('CheckAuthService', () => {
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
         true
       );
+
       const spy = spyOn(
         callBackService,
         'handleCallbackAndFireEvents'
       ).and.returnValue(throwError(() => new Error('ERROR')));
+
       spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
         'http://localhost:4200'
       );
@@ -293,10 +295,12 @@ describe('CheckAuthService', () => {
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
         true
       );
+
       const spy = spyOn(
         callBackService,
         'handleCallbackAndFireEvents'
       ).and.returnValue(of({} as CallbackContext));
+
       spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
         'http://localhost:4200'
       );
@@ -454,6 +458,7 @@ describe('CheckAuthService', () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
       ];
+
       spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
         'http://localhost:4200'
       );
