@@ -94,7 +94,7 @@ describe('CodeFlowCallbackHandlerService', () => {
         isRenewProcess: false,
         jwtKeys: null,
         validationResult: null,
-        existingIdToken: '',
+        existingIdToken: null,
       } as CallbackContext;
 
       service

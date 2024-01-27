@@ -265,7 +265,10 @@ describe('PopUpService', () => {
 
         tick(200);
 
-        expect(popupResult).toEqual({ userClosed: true } as PopupResult);
+        expect(popupResult).toEqual({
+          userClosed: true,
+          receivedUrl: '',
+        } as PopupResult);
         expect(cleanUpSpy).toHaveBeenCalled();
       }));
     });
