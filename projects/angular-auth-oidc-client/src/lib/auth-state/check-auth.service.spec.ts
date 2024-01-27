@@ -192,6 +192,9 @@ describe('CheckAuthService', () => {
       spyOn(popUpService as any, 'canAccessSessionStorage').and.returnValue(
         true
       );
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
+      );
       spyOnProperty(popUpService as any, 'windowInternal').and.returnValue({
         opener: {} as Window,
       });
@@ -253,6 +256,7 @@ describe('CheckAuthService', () => {
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
         true
       );
+
       const spy = spyOn(
         callBackService,
         'handleCallbackAndFireEvents'
@@ -285,6 +289,9 @@ describe('CheckAuthService', () => {
         callBackService,
         'handleCallbackAndFireEvents'
       ).and.returnValue(of({} as CallbackContext));
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
+      );
 
       checkAuthService
         .checkAuth(allConfigs[0], allConfigs)
@@ -427,7 +434,9 @@ describe('CheckAuthService', () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
       ];
-
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
+      );
       spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(
         of({} as CallbackContext)
       );
@@ -455,7 +464,9 @@ describe('CheckAuthService', () => {
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
         true
       );
-
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
+      );
       const spy = spyOn(
         periodicallyTokenCheckService,
         'startTokenValidationPeriodically'
@@ -494,6 +505,9 @@ describe('CheckAuthService', () => {
 
       spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(
         of({} as CallbackContext)
+      );
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
       );
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
         true
