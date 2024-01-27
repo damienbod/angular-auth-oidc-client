@@ -360,8 +360,13 @@ describe('CheckAuthService', () => {
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
         false
       );
+      spyOn(authStateService, 'getAccessToken').and.returnValue('at');
+      spyOn(authStateService, 'getIdToken').and.returnValue('it');
       spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(
         of({} as CallbackContext)
+      );
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
       );
 
       const setAuthorizedAndFireEventSpy = spyOn(
@@ -376,9 +381,9 @@ describe('CheckAuthService', () => {
           expect(result).toEqual({
             isAuthenticated: false,
             userData: undefined,
-            accessToken: '',
+            accessToken: 'at',
             configId: 'configId1',
-            idToken: '',
+            idToken: 'it',
           });
           expect(setAuthorizedAndFireEventSpy).not.toHaveBeenCalled();
           expect(userServiceSpy).not.toHaveBeenCalled();
@@ -485,6 +490,9 @@ describe('CheckAuthService', () => {
       spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(
         of({} as CallbackContext)
       );
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
+      );
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
         true
       );
@@ -527,6 +535,9 @@ describe('CheckAuthService', () => {
         { configId: 'configId1', authority: 'some-authority' },
       ];
 
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
+      );
       spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(
         of({} as CallbackContext)
       );
