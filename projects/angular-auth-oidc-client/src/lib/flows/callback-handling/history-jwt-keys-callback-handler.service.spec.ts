@@ -352,6 +352,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     it('calls resetAuthorizationData, resets nonce and authStateService in case of an error', waitForAsync(() => {
       const callbackContext = {
         authResult: { error: 'someError' },
+        isRenewProcess: false,
       } as CallbackContext;
       const allconfigs = [
         {

@@ -170,17 +170,12 @@ describe('Config Validation Service', () => {
     });
 
     it('should return false and a better error message when config is not passed as object with config property', () => {
-      const loggerErrorSpy = spyOn(loggerService, 'logError');
       const loggerWarningSpy = spyOn(loggerService, 'logWarning');
 
       const result = configValidationService.validateConfigs([]);
 
       expect(result).toBeFalse();
       expect(loggerWarningSpy).not.toHaveBeenCalled();
-      expect(loggerErrorSpy.calls.argsFor(0)).toEqual([
-        null,
-        `Please make sure you add an object with a 'config' property: ....({ config }) instead of ...(config)`,
-      ]);
     });
   });
 

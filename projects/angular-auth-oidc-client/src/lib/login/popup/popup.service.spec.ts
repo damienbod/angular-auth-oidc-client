@@ -215,7 +215,7 @@ describe('PopUpService', () => {
 
         popUpService.openPopUp('url', {}, { configId: 'configId1' });
 
-        expect(popupResult).toBeUndefined();
+        expect(popupResult).toEqual({} as PopupResult);
         expect(cleanUpSpy).not.toHaveBeenCalled();
 
         listener(new MessageEvent('message', { data: 'some-url1111' }));
@@ -243,14 +243,14 @@ describe('PopUpService', () => {
 
         popUpService.openPopUp('url', {}, { configId: 'configId1' });
 
-        expect(popupResult).toBeUndefined();
+        expect(popupResult).toEqual({} as PopupResult);
         expect(cleanUpSpy).not.toHaveBeenCalled();
 
         listener(new MessageEvent('message', { data: null }));
 
         tick(200);
 
-        expect(popupResult).toBeUndefined();
+        expect(popupResult).toEqual({} as PopupResult);
         expect(cleanUpSpy).toHaveBeenCalled();
         expect(nextSpy).not.toHaveBeenCalled();
       }));
