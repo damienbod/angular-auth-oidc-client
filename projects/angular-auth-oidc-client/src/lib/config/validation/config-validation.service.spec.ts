@@ -188,7 +188,7 @@ describe('Config Validation Service', () => {
 
       const result = configValidationService.validateConfigs([]);
 
-      expect(result).toBeTrue();
+      expect(result).toBeFalse();
       expect(spy).toHaveBeenCalledOnceWith([], allMultipleConfigRules);
     });
   });

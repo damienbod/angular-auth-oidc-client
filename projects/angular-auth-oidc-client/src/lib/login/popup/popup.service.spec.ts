@@ -258,7 +258,7 @@ describe('PopUpService', () => {
       it('user closed', fakeAsync(() => {
         popUpService.openPopUp('url', undefined, { configId: 'configId1' });
 
-        expect(popupResult).toBeUndefined();
+        expect(popupResult).toEqual({} as PopupResult);
         expect(cleanUpSpy).not.toHaveBeenCalled();
 
         (popup as any).closed = true;
