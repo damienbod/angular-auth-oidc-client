@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { AuthOptions } from '../auth-options';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
@@ -25,14 +25,9 @@ export class LoginService {
     authOptions?: AuthOptions
   ): void {
     if (!configuration) {
-      throwError(
-        () =>
-          new Error(
-            'Please provide a configuration before setting up the module'
-          )
+      throw new Error(
+        'Please provide a configuration before setting up the module'
       );
-
-      return;
     }
 
     const { usePushedAuthorisationRequests } = configuration;
@@ -62,11 +57,8 @@ export class LoginService {
     popupOptions?: PopupOptions
   ): Observable<LoginResponse> {
     if (!configuration) {
-      return throwError(
-        () =>
-          new Error(
-            'Please provide a configuration before setting up the module'
-          )
+      throw new Error(
+        'Please provide a configuration before setting up the module'
       );
     }
 

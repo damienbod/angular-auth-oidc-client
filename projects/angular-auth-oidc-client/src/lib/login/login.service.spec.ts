@@ -75,6 +75,7 @@ describe('LoginService', () => {
     });
 
     it('stores the customParams to the storage if customParams are given', () => {
+      // arrange
       const config = { usePushedAuthorisationRequests: false };
       const storagePersistenceServiceSpy = spyOn(
         storagePersistenceService,
@@ -89,6 +90,24 @@ describe('LoginService', () => {
         { custom: 'params' },
         config
       );
+    });
+
+    it("should throw error if configuration is null and doesn't call loginPar or loginStandard", () => {
+      // arrange
+      const config = null;
+      const loginParSpy = spyOn(parLoginService, 'loginPar');
+      const standardLoginSpy = spyOn(standardLoginService, 'loginStandard');
+      const authOptions = { customParams: { custom: 'params' } };
+
+      // act
+      const fn = () => service.login(config, authOptions);
+
+      // assert
+      expect(fn).toThrow(
+        new Error('Please provide a configuration before setting up the module')
+      );
+      expect(loginParSpy).not.toHaveBeenCalled();
+      expect(standardLoginSpy).not.toHaveBeenCalled();
     });
   });
 
