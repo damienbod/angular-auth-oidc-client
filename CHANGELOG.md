@@ -1,5 +1,9 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2024-02-03 17.0.0
+
+- Support Angular 17
+
 ### 2023-08-27 16.0.1
 
 - Fix problem in logoff when urlHandler option is present
