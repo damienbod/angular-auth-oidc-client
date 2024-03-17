@@ -19,7 +19,6 @@ export class CurrentUrlService {
   }
 
   getCurrentUrl(): string | null {
-    console.log(this.document?.defaultView?.location);
     return this.document?.defaultView?.location.toString() ?? null;
   }
 }
