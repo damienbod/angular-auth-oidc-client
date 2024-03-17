@@ -29,3 +29,10 @@ export function mockClass<T>(obj: new (...args: any[]) => T): any {
 
   return mockedClass;
 }
+
+export function mockProvider<T>(obj: new (...args: any[]) => T): any {
+  return {
+    provide: obj,
+    useClass: mockClass(obj),
+  };
+}

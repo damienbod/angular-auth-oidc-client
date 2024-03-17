@@ -1,5 +1,5 @@
 import { HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AuthOptions } from '../../auth-options';
@@ -16,13 +16,13 @@ const AUTH0_ENDPOINT = 'auth0.com';
 
 @Injectable({ providedIn: 'root' })
 export class UrlService {
-  constructor(
-    private readonly loggerService: LoggerService,
-    private readonly flowsDataService: FlowsDataService,
-    private readonly flowHelper: FlowHelper,
-    private readonly storagePersistenceService: StoragePersistenceService,
-    private readonly jwtWindowCryptoService: JwtWindowCryptoService
-  ) {}
+  private readonly loggerService = inject(LoggerService);
+  private readonly flowsDataService = inject(FlowsDataService);
+  private readonly flowHelper = inject(FlowHelper);
+  private readonly storagePersistenceService = inject(
+    StoragePersistenceService
+  );
+  private readonly jwtWindowCryptoService = inject(JwtWindowCryptoService);
 
   getUrlParameter(urlToCheck: string, name: string): string {
     if (!urlToCheck) {

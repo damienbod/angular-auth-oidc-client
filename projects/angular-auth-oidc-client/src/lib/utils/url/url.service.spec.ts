@@ -1,6 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { mockClass } from '../../../test/auto-mock';
+import { mockProvider } from '../../../test/auto-mock';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { FlowsDataService } from '../../flows/flows-data.service';
 import { LoggerService } from '../../logging/logger.service';
@@ -21,23 +21,11 @@ describe('UrlService Tests', () => {
     TestBed.configureTestingModule({
       providers: [
         UrlService,
-        {
-          provide: LoggerService,
-          useClass: mockClass(LoggerService),
-        },
-        {
-          provide: FlowsDataService,
-          useClass: mockClass(FlowsDataService),
-        },
+        mockProvider(LoggerService),
+        mockProvider(FlowsDataService),
         FlowHelper,
-        {
-          provide: StoragePersistenceService,
-          useClass: mockClass(StoragePersistenceService),
-        },
-        {
-          provide: JwtWindowCryptoService,
-          useClass: mockClass(JwtWindowCryptoService),
-        },
+        mockProvider(StoragePersistenceService),
+        mockProvider(JwtWindowCryptoService),
       ],
     });
   });
@@ -924,6 +912,12 @@ describe('UrlService Tests', () => {
   });
 
   describe('getAuthorizeUrl', () => {
+    it('returns null if no config is given', waitForAsync(() => {
+      service.getAuthorizeUrl(null).subscribe((url) => {
+        expect(url).toBeNull();
+      });
+    }));
+
     it('returns null if current flow is code flow and no redirect url is defined', waitForAsync(() => {
       spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
 
@@ -1793,6 +1787,12 @@ describe('UrlService Tests', () => {
   });
 
   describe('getEndSessionUrl', () => {
+    it('returns null if no config given', () => {
+      const value = service.getEndSessionUrl(null);
+
+      expect(value).toBeNull();
+    });
+
     it('create URL when all parameters given', () => {
       //Arrange
       const config = {

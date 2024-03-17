@@ -1,9 +1,9 @@
 import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class CurrentUrlService {
-  constructor(@Inject(DOCUMENT) private readonly document: Document) {}
+  private readonly document: Document = inject(DOCUMENT);
 
   getStateParamFromCurrentUrl(url?: string): string | null {
     const currentUrl = url || this.getCurrentUrl();
@@ -19,6 +19,7 @@ export class CurrentUrlService {
   }
 
   getCurrentUrl(): string | null {
+    console.log(this.document?.defaultView?.location);
     return this.document?.defaultView?.location.toString() ?? null;
   }
 }
