@@ -100,7 +100,7 @@ describe('LoginService', () => {
       const authOptions = { customParams: { custom: 'params' } };
 
       // act
-      const fn = () => service.login(config, authOptions);
+      const fn = (): void => service.login(config, authOptions);
 
       // assert
       expect(fn).toThrow(
