@@ -26,4 +26,5 @@ export interface AuthResult {
   state?: any;
   scope?: string;
   expires_in?: number;
+  token_type?: string;
 }

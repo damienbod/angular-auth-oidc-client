@@ -180,10 +180,10 @@ jobs:
         working-directory: ./angular-auth-oidc-client-test
         run: sudo npm run build
 
-  AngularLatestVersionWithRxJs6:
+  Angular16VersionWithRxJs6:
     needs: build_job
     runs-on: ubuntu-latest
-    name: Angular latest & RxJs 6
+    name: Angular 16 & RxJs 6
     steps:
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -197,7 +197,7 @@ jobs:
           path: angular-auth-oidc-client-artefact
 
       - name: Install AngularCLI globally
-        run: sudo npm install -g @angular/cli
+        run: sudo npm install -g @angular/cli@16
 
       - name: Show ng Version
         run: ng version
