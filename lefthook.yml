@@ -10,9 +10,13 @@ pre-push:
       run: npm run fix-prettier {staged_files}
 
 pre-commit:
+  parallel: true
   commands:
     check-blockwords:
       run: npm run check-blockwords
+
+    lint:
+      run: npm run lint-lib
 #
 # pre-commit:
 #   parallel: true

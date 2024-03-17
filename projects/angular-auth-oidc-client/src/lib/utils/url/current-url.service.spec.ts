@@ -4,7 +4,7 @@ import { CurrentUrlService } from './current-url.service';
 
 describe('CurrentUrlService with existing Url', () => {
   let service: CurrentUrlService;
-  let document: any;
+
   const documentValue = {
     defaultView: { location: 'http://my-url.com?state=my-state' },
   };
@@ -20,7 +20,6 @@ describe('CurrentUrlService with existing Url', () => {
     });
 
     service = TestBed.inject(CurrentUrlService);
-    document = TestBed.inject(DOCUMENT);
   });
 
   it('should create', () => {

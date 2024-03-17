@@ -5,7 +5,9 @@ describe('AuthConfig', () => {
     it('should throw an error if no config is provided', () => {
       // Arrange
       const passedConfig = {} as PassedInitialConfig;
+
       // Act
+
       // Assert
       expect(() => createStaticLoader(passedConfig)).toThrowError(
         'No config provided!'

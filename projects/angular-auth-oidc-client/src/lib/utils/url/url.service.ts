@@ -17,11 +17,15 @@ const AUTH0_ENDPOINT = 'auth0.com';
 @Injectable({ providedIn: 'root' })
 export class UrlService {
   private readonly loggerService = inject(LoggerService);
+
   private readonly flowsDataService = inject(FlowsDataService);
+
   private readonly flowHelper = inject(FlowHelper);
+
   private readonly storagePersistenceService = inject(
     StoragePersistenceService
   );
+
   private readonly jwtWindowCryptoService = inject(JwtWindowCryptoService);
 
   getUrlParameter(urlToCheck: string, name: string): string {
