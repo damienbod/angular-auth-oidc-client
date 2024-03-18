@@ -121,7 +121,7 @@ describe('OidcSecurityService', () => {
       const spy = spyOnProperty(
         callbackService,
         'stsCallback$'
-      ).and.returnValue(of({ some: 'data' }));
+      ).and.returnValue(of());
 
       oidcSecurityService.stsCallback$.subscribe(() => {
         expect(spy).toHaveBeenCalledTimes(1);
