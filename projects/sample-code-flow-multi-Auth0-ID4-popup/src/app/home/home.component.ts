@@ -1,41 +1,26 @@
-import { Component, OnInit } from '@angular/core';
-import {
-  AuthenticatedResult,
-  OidcClientNotification,
-  OidcSecurityService,
-  OpenIdConfiguration,
-  UserDataResult,
-} from 'angular-auth-oidc-client';
-import { Observable } from 'rxjs';
+import { Component } from '@angular/core';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.component.html',
 })
-export class HomeComponent implements OnInit {
-  configurations: OpenIdConfiguration[];
+export class HomeComponent {
+  configurations = this.oidcSecurityService.getConfigurations();
 
-  userDataChanged$: Observable<OidcClientNotification<any>>;
+  userData$ = this.oidcSecurityService.userData$;
 
-  userData$: Observable<UserDataResult>;
-
-  isAuthenticated$: Observable<AuthenticatedResult>;
+  isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
 
   constructor(public oidcSecurityService: OidcSecurityService) {}
-
-  ngOnInit() {
-    this.configurations = this.oidcSecurityService.getConfigurations();
-    this.userData$ = this.oidcSecurityService.userData$;
-    this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
-  }
 
   login(configId: string) {
     this.oidcSecurityService.authorize(configId);
   }
 
-  loginWithPopup(configId: string) {
+  loginWithPopup(configId: string | undefined) {
     this.oidcSecurityService
-      .authorizeWithPopUp(null, null, configId)
+      .authorizeWithPopUp(undefined, undefined, configId)
       .subscribe(({ isAuthenticated, userData, accessToken, errorMessage }) => {
         console.log(isAuthenticated);
         console.log(userData);
@@ -54,19 +39,19 @@ export class HomeComponent implements OnInit {
       .subscribe((result) => console.warn(result));
   }
 
-  logout(configId: string) {
+  logout(configId: string | undefined) {
     this.oidcSecurityService
       .logoff(configId)
       .subscribe((result) => console.log(result));
   }
 
-  refreshSessionId4(configId: string) {
+  refreshSessionId4(configId: string | undefined) {
     this.oidcSecurityService
-      .forceRefreshSession(null, configId)
+      .forceRefreshSession(undefined, configId)
       .subscribe((result) => console.log(result));
   }
 
-  refreshSessionAuth0(configId: string) {
+  refreshSessionAuth0(configId: string | undefined) {
     this.oidcSecurityService
       .forceRefreshSession(
         { scope: 'openid profile offline_access auth0-user-api-spa' },
@@ -75,13 +60,13 @@ export class HomeComponent implements OnInit {
       .subscribe((result) => console.log(result));
   }
 
-  logoffAndRevokeTokens(configId: string) {
+  logoffAndRevokeTokens(configId: string | undefined) {
     this.oidcSecurityService
       .logoffAndRevokeTokens(configId)
       .subscribe((result) => console.log(result));
   }
 
-  revokeRefreshToken(configId: string) {
+  revokeRefreshToken(configId: string | undefined) {
     this.oidcSecurityService
       .revokeRefreshToken(null, configId)
       .subscribe((result) => console.log(result));

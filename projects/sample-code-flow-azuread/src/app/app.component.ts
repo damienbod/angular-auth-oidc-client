@@ -1,16 +1,12 @@
-﻿import { Component, OnDestroy, OnInit } from '@angular/core';
+﻿import { Component } from '@angular/core';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent {
   constructor(public oidcSecurityService: OidcSecurityService) {}
-
-  ngOnInit() {}
-
-  ngOnDestroy(): void {}
 
   login() {
     console.log('start login');

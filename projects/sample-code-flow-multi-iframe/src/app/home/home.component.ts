@@ -1,18 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.component.html',
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent {
   configurations = this.oidcSecurityService.getConfigurations();
   userData$ = this.oidcSecurityService.userData$;
   isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
 
   constructor(public oidcSecurityService: OidcSecurityService) {}
-
-  ngOnInit() {}
 
   login(configId: string | undefined) {
     this.oidcSecurityService.authorize(configId);
