@@ -36,7 +36,10 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["projects/angular-auth-oidc-client/**/*.ts", "projects/angular-auth-oidc-client/**/*.html"]
+            "lintFilePatterns": [
+              "projects/angular-auth-oidc-client/**/*.ts",
+              "projects/angular-auth-oidc-client/**/*.html"
+            ]
           }
         }
       }
@@ -110,14 +113,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4200,
-            "buildTarget": "sample-code-flow-multi-iframe:build"
+            "browserTarget": "sample-code-flow-multi-iframe:build"
           },
           "configurations": {
             "production": {
-              "buildTarget": "sample-code-flow-multi-iframe:build:production"
+              "browserTarget": "sample-code-flow-multi-iframe:build:production"
             },
             "development": {
-              "buildTarget": "sample-code-flow-multi-iframe:build:development"
+              "browserTarget": "sample-code-flow-multi-iframe:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -125,7 +128,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "sample-code-flow-multi-iframe:build"
+            "browserTarget": "sample-code-flow-multi-iframe:build"
           }
         },
         "test": {
@@ -135,7 +138,10 @@
             "polyfills": "projects/sample-code-flow-multi-iframe/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow-multi-iframe/tsconfig.spec.json",
             "karmaConfig": "projects/sample-code-flow-multi-iframe/karma.conf.js",
-            "assets": ["projects/sample-code-flow-multi-iframe/src/favicon.ico", "projects/sample-code-flow-multi-iframe/src/assets"],
+            "assets": [
+              "projects/sample-code-flow-multi-iframe/src/favicon.ico",
+              "projects/sample-code-flow-multi-iframe/src/assets"
+            ],
             "styles": ["projects/sample-code-flow-multi-iframe/src/styles.css"],
             "scripts": []
           }
@@ -143,7 +149,10 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["projects/sample-code-flow-multi-iframe/**/*.ts", "projects/sample-code-flow-multi-iframe/**/*.html"]
+            "lintFilePatterns": [
+              "projects/sample-code-flow-multi-iframe/**/*.ts",
+              "projects/sample-code-flow-multi-iframe/**/*.html"
+            ]
           }
         }
       }
@@ -216,14 +225,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4204,
-            "buildTarget": "sample-code-flow-auto-login:build"
+            "browserTarget": "sample-code-flow-auto-login:build"
           },
           "configurations": {
             "production": {
-              "buildTarget": "sample-code-flow-auto-login:build:production"
+              "browserTarget": "sample-code-flow-auto-login:build:production"
             },
             "development": {
-              "buildTarget": "sample-code-flow-auto-login:build:development"
+              "browserTarget": "sample-code-flow-auto-login:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -231,7 +240,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "sample-code-flow-auto-login:build"
+            "browserTarget": "sample-code-flow-auto-login:build"
           }
         },
         "test": {
@@ -241,7 +250,10 @@
             "polyfills": "projects/sample-code-flow-auto-login/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow-auto-login/tsconfig.spec.json",
             "karmaConfig": "projects/sample-code-flow-auto-login/karma.conf.js",
-            "assets": ["projects/sample-code-flow-auto-login/src/favicon.ico", "projects/sample-code-flow-auto-login/src/assets"],
+            "assets": [
+              "projects/sample-code-flow-auto-login/src/favicon.ico",
+              "projects/sample-code-flow-auto-login/src/assets"
+            ],
             "styles": ["projects/sample-code-flow-auto-login/src/styles.css"],
             "scripts": []
           }
@@ -249,7 +261,10 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["projects/sample-code-flow-auto-login/**/*.ts", "projects/sample-code-flow-auto-login/**/*.html"]
+            "lintFilePatterns": [
+              "projects/sample-code-flow-auto-login/**/*.ts",
+              "projects/sample-code-flow-auto-login/**/*.html"
+            ]
           }
         }
       }
@@ -322,14 +337,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4201,
-            "buildTarget": "sample-code-flow-http-config:build"
+            "browserTarget": "sample-code-flow-http-config:build"
           },
           "configurations": {
             "production": {
-              "buildTarget": "sample-code-flow-http-config:build:production"
+              "browserTarget": "sample-code-flow-http-config:build:production"
             },
             "development": {
-              "buildTarget": "sample-code-flow-http-config:build:development"
+              "browserTarget": "sample-code-flow-http-config:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -337,7 +352,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "sample-code-flow-http-config:build"
+            "browserTarget": "sample-code-flow-http-config:build"
           }
         },
         "test": {
@@ -347,7 +362,10 @@
             "polyfills": "projects/sample-code-flow-http-config/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow-http-config/tsconfig.spec.json",
             "karmaConfig": "projects/sample-code-flow-http-config/karma.conf.js",
-            "assets": ["projects/sample-code-flow-http-config/src/favicon.ico", "projects/sample-code-flow-http-config/src/assets"],
+            "assets": [
+              "projects/sample-code-flow-http-config/src/favicon.ico",
+              "projects/sample-code-flow-http-config/src/assets"
+            ],
             "styles": ["projects/sample-code-flow-http-config/src/styles.css"],
             "scripts": []
           }
@@ -355,7 +373,10 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["projects/sample-code-flow-http-config/**/*.ts", "projects/sample-code-flow-http-config/**/*.html"]
+            "lintFilePatterns": [
+              "projects/sample-code-flow-http-config/**/*.ts",
+              "projects/sample-code-flow-http-config/**/*.html"
+            ]
           }
         }
       }
@@ -376,7 +397,10 @@
             "polyfills": "projects/sample-implicit-flow-google/src/polyfills.ts",
             "tsConfig": "projects/sample-implicit-flow-google/tsconfig.app.json",
             "aot": true,
-            "assets": ["projects/sample-implicit-flow-google/src/favicon.ico", "projects/sample-implicit-flow-google/src/assets"],
+            "assets": [
+              "projects/sample-implicit-flow-google/src/favicon.ico",
+              "projects/sample-implicit-flow-google/src/assets"
+            ],
             "styles": ["projects/sample-implicit-flow-google/src/styles.css"],
             "scripts": []
           },
@@ -424,14 +448,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 44386,
-            "buildTarget": "sample-implicit-flow-google:build"
+            "browserTarget": "sample-implicit-flow-google:build"
           },
           "configurations": {
             "production": {
-              "buildTarget": "sample-implicit-flow-google:build:production"
+              "browserTarget": "sample-implicit-flow-google:build:production"
             },
             "development": {
-              "buildTarget": "sample-implicit-flow-google:build:development"
+              "browserTarget": "sample-implicit-flow-google:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -439,7 +463,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "sample-implicit-flow-google:build"
+            "browserTarget": "sample-implicit-flow-google:build"
           }
         },
         "test": {
@@ -449,7 +473,10 @@
             "polyfills": "projects/sample-implicit-flow-google/src/polyfills.ts",
             "tsConfig": "projects/sample-implicit-flow-google/tsconfig.spec.json",
             "karmaConfig": "projects/sample-implicit-flow-google/karma.conf.js",
-            "assets": ["projects/sample-implicit-flow-google/src/favicon.ico", "projects/sample-implicit-flow-google/src/assets"],
+            "assets": [
+              "projects/sample-implicit-flow-google/src/favicon.ico",
+              "projects/sample-implicit-flow-google/src/assets"
+            ],
             "styles": ["projects/sample-implicit-flow-google/src/styles.css"],
             "scripts": []
           }
@@ -457,7 +484,10 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["projects/sample-implicit-flow-google/**/*.ts", "projects/sample-implicit-flow-google/**/*.html"]
+            "lintFilePatterns": [
+              "projects/sample-implicit-flow-google/**/*.ts",
+              "projects/sample-implicit-flow-google/**/*.html"
+            ]
           }
         }
       }
@@ -530,14 +560,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 44347,
-            "buildTarget": "sample-code-flow-azuread:build"
+            "browserTarget": "sample-code-flow-azuread:build"
           },
           "configurations": {
             "production": {
-              "buildTarget": "sample-code-flow-azuread:build:production"
+              "browserTarget": "sample-code-flow-azuread:build:production"
             },
             "development": {
-              "buildTarget": "sample-code-flow-azuread:build:development"
+              "browserTarget": "sample-code-flow-azuread:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -545,7 +575,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "sample-code-flow-azuread:build"
+            "browserTarget": "sample-code-flow-azuread:build"
           }
         },
         "test": {
@@ -567,7 +597,10 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["projects/sample-code-flow-azuread/**/*.ts", "projects/sample-code-flow-azuread/**/*.html"]
+            "lintFilePatterns": [
+              "projects/sample-code-flow-azuread/**/*.ts",
+              "projects/sample-code-flow-azuread/**/*.html"
+            ]
           }
         }
       }
@@ -640,14 +673,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4200,
-            "buildTarget": "sample-code-flow-azure-b2c:build"
+            "browserTarget": "sample-code-flow-azure-b2c:build"
           },
           "configurations": {
             "production": {
-              "buildTarget": "sample-code-flow-azure-b2c:build:production"
+              "browserTarget": "sample-code-flow-azure-b2c:build:production"
             },
             "development": {
-              "buildTarget": "sample-code-flow-azure-b2c:build:development"
+              "browserTarget": "sample-code-flow-azure-b2c:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -655,7 +688,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "sample-code-flow-azure-b2c:build"
+            "browserTarget": "sample-code-flow-azure-b2c:build"
           }
         },
         "test": {
@@ -665,7 +698,10 @@
             "polyfills": "projects/sample-code-flow-azure-b2c/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow-azure-b2c/tsconfig.spec.json",
             "karmaConfig": "projects/sample-code-flow-azure-b2c/karma.conf.js",
-            "assets": ["projects/sample-code-flow-azure-b2c/src/favicon.ico", "projects/sample-code-flow-azure-b2c/src/assets"],
+            "assets": [
+              "projects/sample-code-flow-azure-b2c/src/favicon.ico",
+              "projects/sample-code-flow-azure-b2c/src/assets"
+            ],
             "styles": ["projects/sample-code-flow-azure-b2c/src/styles.css"],
             "scripts": []
           }
@@ -673,7 +709,10 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["projects/sample-code-flow-azure-b2c/**/*.ts", "projects/sample-code-flow-azure-b2c/**/*.html"]
+            "lintFilePatterns": [
+              "projects/sample-code-flow-azure-b2c/**/*.ts",
+              "projects/sample-code-flow-azure-b2c/**/*.html"
+            ]
           }
         }
       }
@@ -699,7 +738,9 @@
               "projects/sample-implicit-flow-silent-renew/src/assets",
               "projects/sample-implicit-flow-silent-renew/src/silent-renew.html"
             ],
-            "styles": ["projects/sample-implicit-flow-silent-renew/src/styles.css"],
+            "styles": [
+              "projects/sample-implicit-flow-silent-renew/src/styles.css"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -746,14 +787,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4202,
-            "buildTarget": "sample-implicit-flow-silent-renew:build"
+            "browserTarget": "sample-implicit-flow-silent-renew:build"
           },
           "configurations": {
             "production": {
-              "buildTarget": "sample-implicit-flow-silent-renew:build:production"
+              "browserTarget": "sample-implicit-flow-silent-renew:build:production"
             },
             "development": {
-              "buildTarget": "sample-implicit-flow-silent-renew:build:development"
+              "browserTarget": "sample-implicit-flow-silent-renew:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -761,7 +802,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "sample-implicit-flow-silent-renew:build"
+            "browserTarget": "sample-implicit-flow-silent-renew:build"
           }
         },
         "test": {
@@ -775,7 +816,9 @@
               "projects/sample-implicit-flow-silent-renew/src/favicon.ico",
               "projects/sample-implicit-flow-silent-renew/src/assets"
             ],
-            "styles": ["projects/sample-implicit-flow-silent-renew/src/styles.css"],
+            "styles": [
+              "projects/sample-implicit-flow-silent-renew/src/styles.css"
+            ],
             "scripts": []
           }
         },
@@ -806,7 +849,10 @@
             "polyfills": "projects/sample-code-flow-auth0/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow-auth0/tsconfig.app.json",
             "aot": true,
-            "assets": ["projects/sample-code-flow-auth0/src/favicon.ico", "projects/sample-code-flow-auth0/src/assets"],
+            "assets": [
+              "projects/sample-code-flow-auth0/src/favicon.ico",
+              "projects/sample-code-flow-auth0/src/assets"
+            ],
             "styles": ["projects/sample-code-flow-auth0/src/styles.css"],
             "scripts": []
           },
@@ -854,14 +900,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4210,
-            "buildTarget": "sample-code-flow-auth0:build"
+            "browserTarget": "sample-code-flow-auth0:build"
           },
           "configurations": {
             "production": {
-              "buildTarget": "sample-code-flow-auth0:build:production"
+              "browserTarget": "sample-code-flow-auth0:build:production"
             },
             "development": {
-              "buildTarget": "sample-code-flow-auth0:build:development"
+              "browserTarget": "sample-code-flow-auth0:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -869,7 +915,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "sample-code-flow-auth0:build"
+            "browserTarget": "sample-code-flow-auth0:build"
           }
         },
         "test": {
@@ -879,7 +925,10 @@
             "polyfills": "projects/sample-code-flow-auth0/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow-auth0/tsconfig.spec.json",
             "karmaConfig": "projects/sample-code-flow-auth0/karma.conf.js",
-            "assets": ["projects/sample-code-flow-auth0/src/favicon.ico", "projects/sample-code-flow-auth0/src/assets"],
+            "assets": [
+              "projects/sample-code-flow-auth0/src/favicon.ico",
+              "projects/sample-code-flow-auth0/src/assets"
+            ],
             "styles": ["projects/sample-code-flow-auth0/src/styles.css"],
             "scripts": []
           }
@@ -887,7 +936,10 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["projects/sample-code-flow-auth0/**/*.ts", "projects/sample-code-flow-auth0/**/*.html"]
+            "lintFilePatterns": [
+              "projects/sample-code-flow-auth0/**/*.ts",
+              "projects/sample-code-flow-auth0/**/*.html"
+            ]
           }
         }
       }
@@ -908,8 +960,13 @@
             "polyfills": "projects/sample-code-flow-refresh-tokens/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow-refresh-tokens/tsconfig.app.json",
             "aot": true,
-            "assets": ["projects/sample-code-flow-refresh-tokens/src/favicon.ico", "projects/sample-code-flow-refresh-tokens/src/assets"],
-            "styles": ["projects/sample-code-flow-refresh-tokens/src/styles.css"],
+            "assets": [
+              "projects/sample-code-flow-refresh-tokens/src/favicon.ico",
+              "projects/sample-code-flow-refresh-tokens/src/assets"
+            ],
+            "styles": [
+              "projects/sample-code-flow-refresh-tokens/src/styles.css"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -956,14 +1013,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4204,
-            "buildTarget": "sample-code-flow-refresh-tokens:build"
+            "browserTarget": "sample-code-flow-refresh-tokens:build"
           },
           "configurations": {
             "production": {
-              "buildTarget": "sample-code-flow-refresh-tokens:build:production"
+              "browserTarget": "sample-code-flow-refresh-tokens:build:production"
             },
             "development": {
-              "buildTarget": "sample-code-flow-refresh-tokens:build:development"
+              "browserTarget": "sample-code-flow-refresh-tokens:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -971,7 +1028,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "sample-code-flow-refresh-tokens:build"
+            "browserTarget": "sample-code-flow-refresh-tokens:build"
           }
         },
         "test": {
@@ -981,15 +1038,23 @@
             "polyfills": "projects/sample-code-flow-refresh-tokens/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow-refresh-tokens/tsconfig.spec.json",
             "karmaConfig": "projects/sample-code-flow-refresh-tokens/karma.conf.js",
-            "assets": ["projects/sample-code-flow-refresh-tokens/src/favicon.ico", "projects/sample-code-flow-refresh-tokens/src/assets"],
-            "styles": ["projects/sample-code-flow-refresh-tokens/src/styles.css"],
+            "assets": [
+              "projects/sample-code-flow-refresh-tokens/src/favicon.ico",
+              "projects/sample-code-flow-refresh-tokens/src/assets"
+            ],
+            "styles": [
+              "projects/sample-code-flow-refresh-tokens/src/styles.css"
+            ],
             "scripts": []
           }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["projects/sample-code-flow-refresh-tokens/**/*.ts", "projects/sample-code-flow-refresh-tokens/**/*.html"]
+            "lintFilePatterns": [
+              "projects/sample-code-flow-refresh-tokens/**/*.ts",
+              "projects/sample-code-flow-refresh-tokens/**/*.html"
+            ]
           }
         }
       }
@@ -1057,14 +1122,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4204,
-            "buildTarget": "sample-code-flow-standalone:build"
+            "browserTarget": "sample-code-flow-standalone:build"
           },
           "configurations": {
             "production": {
-              "buildTarget": "sample-code-flow-standalone:build:production"
+              "browserTarget": "sample-code-flow-standalone:build:production"
             },
             "development": {
-              "buildTarget": "sample-code-flow-standalone:build:development"
+              "browserTarget": "sample-code-flow-standalone:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -1072,7 +1137,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "sample-code-flow-standalone:build"
+            "browserTarget": "sample-code-flow-standalone:build"
           }
         },
         "test": {
@@ -1082,7 +1147,10 @@
             "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "projects/sample-code-flow-standalone/tsconfig.spec.json",
             "karmaConfig": "projects/sample-code-flow-standalone/karma.conf.js",
-            "assets": ["projects/sample-code-flow-standalone/src/favicon.ico", "projects/sample-code-flow-standalone/src/assets"],
+            "assets": [
+              "projects/sample-code-flow-standalone/src/favicon.ico",
+              "projects/sample-code-flow-standalone/src/assets"
+            ],
             "styles": ["projects/sample-code-flow-standalone/src/styles.css"],
             "scripts": []
           }
@@ -1090,7 +1158,10 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["projects/sample-code-flow-standalone/**/*.ts", "projects/sample-code-flow-standalone/**/*.html"]
+            "lintFilePatterns": [
+              "projects/sample-code-flow-standalone/**/*.ts",
+              "projects/sample-code-flow-standalone/**/*.html"
+            ]
           }
         }
       }
@@ -1111,8 +1182,13 @@
             "polyfills": "projects/sample-code-flow-multi-Azure-B2C/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow-multi-Azure-B2C/tsconfig.app.json",
             "aot": true,
-            "assets": ["projects/sample-code-flow-multi-Azure-B2C/src/favicon.ico", "projects/sample-code-flow-multi-Azure-B2C/src/assets"],
-            "styles": ["projects/sample-code-flow-multi-Azure-B2C/src/styles.css"],
+            "assets": [
+              "projects/sample-code-flow-multi-Azure-B2C/src/favicon.ico",
+              "projects/sample-code-flow-multi-Azure-B2C/src/assets"
+            ],
+            "styles": [
+              "projects/sample-code-flow-multi-Azure-B2C/src/styles.css"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -1159,14 +1235,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4200,
-            "buildTarget": "sample-code-flow-multi-Azure-B2C:build"
+            "browserTarget": "sample-code-flow-multi-Azure-B2C:build"
           },
           "configurations": {
             "production": {
-              "buildTarget": "sample-code-flow-multi-Azure-B2C:build:production"
+              "browserTarget": "sample-code-flow-multi-Azure-B2C:build:production"
             },
             "development": {
-              "buildTarget": "sample-code-flow-multi-Azure-B2C:build:development"
+              "browserTarget": "sample-code-flow-multi-Azure-B2C:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -1174,7 +1250,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "sample-code-flow-multi-Azure-B2C:build"
+            "browserTarget": "sample-code-flow-multi-Azure-B2C:build"
           }
         },
         "test": {
@@ -1184,15 +1260,23 @@
             "polyfills": "projects/sample-code-flow-multi-Azure-B2C/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow-multi-Azure-B2C/tsconfig.spec.json",
             "karmaConfig": "projects/sample-code-flow-multi-Azure-B2C/karma.conf.js",
-            "assets": ["projects/sample-code-flow-multi-Azure-B2C/src/favicon.ico", "projects/sample-code-flow-multi-Azure-B2C/src/assets"],
-            "styles": ["projects/sample-code-flow-multi-Azure-B2C/src/styles.css"],
+            "assets": [
+              "projects/sample-code-flow-multi-Azure-B2C/src/favicon.ico",
+              "projects/sample-code-flow-multi-Azure-B2C/src/assets"
+            ],
+            "styles": [
+              "projects/sample-code-flow-multi-Azure-B2C/src/styles.css"
+            ],
             "scripts": []
           }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["projects/sample-code-flow-multi-Azure-B2C/**/*.ts", "projects/sample-code-flow-multi-Azure-B2C/**/*.html"]
+            "lintFilePatterns": [
+              "projects/sample-code-flow-multi-Azure-B2C/**/*.ts",
+              "projects/sample-code-flow-multi-Azure-B2C/**/*.html"
+            ]
           }
         }
       }
@@ -1213,7 +1297,10 @@
             "polyfills": "projects/sample-code-flow-multi-AAD/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow-multi-AAD/tsconfig.app.json",
             "aot": true,
-            "assets": ["projects/sample-code-flow-multi-AAD/src/favicon.ico", "projects/sample-code-flow-multi-AAD/src/assets"],
+            "assets": [
+              "projects/sample-code-flow-multi-AAD/src/favicon.ico",
+              "projects/sample-code-flow-multi-AAD/src/assets"
+            ],
             "styles": ["projects/sample-code-flow-multi-AAD/src/styles.css"],
             "scripts": []
           },
@@ -1261,14 +1348,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4200,
-            "buildTarget": "sample-code-flow-multi-AAD:build"
+            "browserTarget": "sample-code-flow-multi-AAD:build"
           },
           "configurations": {
             "production": {
-              "buildTarget": "sample-code-flow-multi-AAD:build:production"
+              "browserTarget": "sample-code-flow-multi-AAD:build:production"
             },
             "development": {
-              "buildTarget": "sample-code-flow-multi-AAD:build:development"
+              "browserTarget": "sample-code-flow-multi-AAD:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -1276,7 +1363,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "sample-code-flow-multi-AAD:build"
+            "browserTarget": "sample-code-flow-multi-AAD:build"
           }
         },
         "test": {
@@ -1286,7 +1373,10 @@
             "polyfills": "projects/sample-code-flow-multi-AAD/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow-multi-AAD/tsconfig.spec.json",
             "karmaConfig": "projects/sample-code-flow-multi-AAD/karma.conf.js",
-            "assets": ["projects/sample-code-flow-multi-AAD/src/favicon.ico", "projects/sample-code-flow-multi-AAD/src/assets"],
+            "assets": [
+              "projects/sample-code-flow-multi-AAD/src/favicon.ico",
+              "projects/sample-code-flow-multi-AAD/src/assets"
+            ],
             "styles": ["projects/sample-code-flow-multi-AAD/src/styles.css"],
             "scripts": []
           }
@@ -1294,7 +1384,10 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["projects/sample-code-flow-multi-AAD/**/*.ts", "projects/sample-code-flow-multi-AAD/**/*.html"]
+            "lintFilePatterns": [
+              "projects/sample-code-flow-multi-AAD/**/*.ts",
+              "projects/sample-code-flow-multi-AAD/**/*.html"
+            ]
           }
         }
       }
@@ -1319,7 +1412,9 @@
               "projects/sample-code-flow-multi-Auth0-ID4-popup/src/favicon.ico",
               "projects/sample-code-flow-multi-Auth0-ID4-popup/src/assets"
             ],
-            "styles": ["projects/sample-code-flow-multi-Auth0-ID4-popup/src/styles.css"],
+            "styles": [
+              "projects/sample-code-flow-multi-Auth0-ID4-popup/src/styles.css"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -1366,14 +1461,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4204,
-            "buildTarget": "sample-code-flow-multi-Auth0-ID4-popup:build"
+            "browserTarget": "sample-code-flow-multi-Auth0-ID4-popup:build"
           },
           "configurations": {
             "production": {
-              "buildTarget": "sample-code-flow-multi-Auth0-ID4-popup:build:production"
+              "browserTarget": "sample-code-flow-multi-Auth0-ID4-popup:build:production"
             },
             "development": {
-              "buildTarget": "sample-code-flow-multi-Auth0-ID4-popup:build:development"
+              "browserTarget": "sample-code-flow-multi-Auth0-ID4-popup:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -1381,7 +1476,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "sample-code-flow-multi-Auth0-ID4-popup:build"
+            "browserTarget": "sample-code-flow-multi-Auth0-ID4-popup:build"
           }
         },
         "test": {
@@ -1395,7 +1490,9 @@
               "projects/sample-code-flow-multi-Auth0-ID4-popup/src/favicon.ico",
               "projects/sample-code-flow-multi-Auth0-ID4-popup/src/assets"
             ],
-            "styles": ["projects/sample-code-flow-multi-Auth0-ID4-popup/src/styles.css"],
+            "styles": [
+              "projects/sample-code-flow-multi-Auth0-ID4-popup/src/styles.css"
+            ],
             "scripts": []
           }
         },
@@ -1426,8 +1523,13 @@
             "polyfills": "projects/sample-code-flow-multi-Auth0-ID4/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow-multi-Auth0-ID4/tsconfig.app.json",
             "aot": true,
-            "assets": ["projects/sample-code-flow-multi-Auth0-ID4/src/favicon.ico", "projects/sample-code-flow-multi-Auth0-ID4/src/assets"],
-            "styles": ["projects/sample-code-flow-multi-Auth0-ID4/src/styles.css"],
+            "assets": [
+              "projects/sample-code-flow-multi-Auth0-ID4/src/favicon.ico",
+              "projects/sample-code-flow-multi-Auth0-ID4/src/assets"
+            ],
+            "styles": [
+              "projects/sample-code-flow-multi-Auth0-ID4/src/styles.css"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -1474,14 +1576,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4204,
-            "buildTarget": "sample-code-flow-multi-Auth0-ID4:build"
+            "browserTarget": "sample-code-flow-multi-Auth0-ID4:build"
           },
           "configurations": {
             "production": {
-              "buildTarget": "sample-code-flow-multi-Auth0-ID4:build:production"
+              "browserTarget": "sample-code-flow-multi-Auth0-ID4:build:production"
             },
             "development": {
-              "buildTarget": "sample-code-flow-multi-Auth0-ID4:build:development"
+              "browserTarget": "sample-code-flow-multi-Auth0-ID4:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -1489,7 +1591,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "sample-code-flow-multi-Auth0-ID4:build"
+            "browserTarget": "sample-code-flow-multi-Auth0-ID4:build"
           }
         },
         "test": {
@@ -1499,15 +1601,23 @@
             "polyfills": "projects/sample-code-flow-multi-Auth0-ID4/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow-multi-Auth0-ID4/tsconfig.spec.json",
             "karmaConfig": "projects/sample-code-flow-multi-Auth0-ID4/karma.conf.js",
-            "assets": ["projects/sample-code-flow-multi-Auth0-ID4/src/favicon.ico", "projects/sample-code-flow-multi-Auth0-ID4/src/assets"],
-            "styles": ["projects/sample-code-flow-multi-Auth0-ID4/src/styles.css"],
+            "assets": [
+              "projects/sample-code-flow-multi-Auth0-ID4/src/favicon.ico",
+              "projects/sample-code-flow-multi-Auth0-ID4/src/assets"
+            ],
+            "styles": [
+              "projects/sample-code-flow-multi-Auth0-ID4/src/styles.css"
+            ],
             "scripts": []
           }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["projects/sample-code-flow-multi-Auth0-ID4/**/*.ts", "projects/sample-code-flow-multi-Auth0-ID4/**/*.html"]
+            "lintFilePatterns": [
+              "projects/sample-code-flow-multi-Auth0-ID4/**/*.ts",
+              "projects/sample-code-flow-multi-Auth0-ID4/**/*.html"
+            ]
           }
         }
       }
@@ -1528,7 +1638,10 @@
             "polyfills": "projects/sample-code-flow-lazy-loaded/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow-lazy-loaded/tsconfig.app.json",
             "aot": true,
-            "assets": ["projects/sample-code-flow-lazy-loaded/src/favicon.ico", "projects/sample-code-flow-lazy-loaded/src/assets"],
+            "assets": [
+              "projects/sample-code-flow-lazy-loaded/src/favicon.ico",
+              "projects/sample-code-flow-lazy-loaded/src/assets"
+            ],
             "styles": ["projects/sample-code-flow-lazy-loaded/src/styles.css"],
             "scripts": []
           },
@@ -1575,14 +1688,14 @@
           "options": {
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
-            "buildTarget": "sample-code-flow-lazy-loaded:build"
+            "browserTarget": "sample-code-flow-lazy-loaded:build"
           },
           "configurations": {
             "production": {
-              "buildTarget": "sample-code-flow-lazy-loaded:build:production"
+              "browserTarget": "sample-code-flow-lazy-loaded:build:production"
             },
             "development": {
-              "buildTarget": "sample-code-flow-lazy-loaded:build:development"
+              "browserTarget": "sample-code-flow-lazy-loaded:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -1590,7 +1703,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "sample-code-flow-lazy-loaded:build"
+            "browserTarget": "sample-code-flow-lazy-loaded:build"
           }
         },
         "test": {
@@ -1600,7 +1713,10 @@
             "polyfills": "projects/sample-code-flow-lazy-loaded/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow-lazy-loaded/tsconfig.spec.json",
             "karmaConfig": "projects/sample-code-flow-lazy-loaded/karma.conf.js",
-            "assets": ["projects/sample-code-flow-lazy-loaded/src/favicon.ico", "projects/sample-code-flow-lazy-loaded/src/assets"],
+            "assets": [
+              "projects/sample-code-flow-lazy-loaded/src/favicon.ico",
+              "projects/sample-code-flow-lazy-loaded/src/assets"
+            ],
             "styles": ["projects/sample-code-flow-lazy-loaded/src/styles.css"],
             "scripts": []
           }
@@ -1608,7 +1724,10 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["projects/sample-code-flow-lazy-loaded/**/*.ts", "projects/sample-code-flow-lazy-loaded/**/*.html"]
+            "lintFilePatterns": [
+              "projects/sample-code-flow-lazy-loaded/**/*.ts",
+              "projects/sample-code-flow-lazy-loaded/**/*.html"
+            ]
           }
         }
       }
@@ -1629,7 +1748,10 @@
             "polyfills": "projects/sample-code-flow-popup/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow-popup/tsconfig.app.json",
             "aot": true,
-            "assets": ["projects/sample-code-flow-popup/src/favicon.ico", "projects/sample-code-flow-popup/src/assets"],
+            "assets": [
+              "projects/sample-code-flow-popup/src/favicon.ico",
+              "projects/sample-code-flow-popup/src/assets"
+            ],
             "styles": ["projects/sample-code-flow-popup/src/styles.css"],
             "scripts": []
           },
@@ -1677,14 +1799,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4204,
-            "buildTarget": "sample-code-flow-popup:build"
+            "browserTarget": "sample-code-flow-popup:build"
           },
           "configurations": {
             "production": {
-              "buildTarget": "sample-code-flow-popup:build:production"
+              "browserTarget": "sample-code-flow-popup:build:production"
             },
             "development": {
-              "buildTarget": "sample-code-flow-popup:build:development"
+              "browserTarget": "sample-code-flow-popup:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -1692,7 +1814,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "sample-code-flow-popup:build"
+            "browserTarget": "sample-code-flow-popup:build"
           }
         },
         "test": {
@@ -1702,7 +1824,10 @@
             "polyfills": "projects/sample-code-flow-popup/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow-popup/tsconfig.spec.json",
             "karmaConfig": "projects/sample-code-flow-popup/karma.conf.js",
-            "assets": ["projects/sample-code-flow-popup/src/favicon.ico", "projects/sample-code-flow-popup/src/assets"],
+            "assets": [
+              "projects/sample-code-flow-popup/src/favicon.ico",
+              "projects/sample-code-flow-popup/src/assets"
+            ],
             "styles": ["projects/sample-code-flow-popup/src/styles.css"],
             "scripts": []
           }
@@ -1777,14 +1902,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4207,
-            "buildTarget": "sample-code-flow-par:build"
+            "browserTarget": "sample-code-flow-par:build"
           },
           "configurations": {
             "production": {
-              "buildTarget": "sample-code-flow-par:build:production"
+              "browserTarget": "sample-code-flow-par:build:production"
             },
             "development": {
-              "buildTarget": "sample-code-flow-par:build:development"
+              "browserTarget": "sample-code-flow-par:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -1792,7 +1917,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "sample-code-flow-par:build"
+            "browserTarget": "sample-code-flow-par:build"
           }
         },
         "test": {
@@ -1802,7 +1927,10 @@
             "polyfills": "projects/sample-code-flow-par/src/polyfills.ts",
             "tsConfig": "projects/sample-code-flow-par/tsconfig.spec.json",
             "karmaConfig": "projects/sample-code-flow-par/karma.conf.js",
-            "assets": ["projects/sample-code-flow-par/src/favicon.ico", "projects/sample-code-flow-par/src/assets"],
+            "assets": [
+              "projects/sample-code-flow-par/src/favicon.ico",
+              "projects/sample-code-flow-par/src/assets"
+            ],
             "styles": ["projects/sample-code-flow-par/src/styles.css"],
             "scripts": []
           }
@@ -1833,7 +1961,9 @@
               "projects/sample-code-flow-auto-login-all-routes/src/assets",
               "projects/sample-code-flow-auto-login-all-routes/src/silent-renew.html"
             ],
-            "styles": ["projects/sample-code-flow-auto-login-all-routes/src/styles.css"],
+            "styles": [
+              "projects/sample-code-flow-auto-login-all-routes/src/styles.css"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -1875,14 +2005,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4204,
-            "buildTarget": "sample-code-flow-auto-login-all-routes:build"
+            "browserTarget": "sample-code-flow-auto-login-all-routes:build"
           },
           "configurations": {
             "production": {
-              "buildTarget": "sample-code-flow-auto-login-all-routes:build:production"
+              "browserTarget": "sample-code-flow-auto-login-all-routes:build:production"
             },
             "development": {
-              "buildTarget": "sample-code-flow-auto-login-all-routes:build:development"
+              "browserTarget": "sample-code-flow-auto-login-all-routes:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -1890,7 +2020,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "sample-code-flow-auto-login-all-routes:build"
+            "browserTarget": "sample-code-flow-auto-login-all-routes:build"
           }
         },
         "test": {
@@ -1904,7 +2034,9 @@
               "projects/sample-code-flow-auto-login-all-routes/src/favicon.ico",
               "projects/sample-code-flow-auto-login-all-routes/src/assets"
             ],
-            "styles": ["projects/sample-code-flow-auto-login-all-routes/src/styles.css"],
+            "styles": [
+              "projects/sample-code-flow-auto-login-all-routes/src/styles.css"
+            ],
             "scripts": []
           }
         }
