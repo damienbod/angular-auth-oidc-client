@@ -1,6 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { mockClass } from '../../../test/auto-mock';
+import { mockProvider } from '../../../test/auto-mock';
 import { LoggerService } from '../../logging/logger.service';
 import { CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
@@ -16,12 +16,9 @@ describe('ImplicitFlowCallbackHandlerService', () => {
     TestBed.configureTestingModule({
       providers: [
         ImplicitFlowCallbackHandlerService,
-        {
-          provide: ResetAuthDataService,
-          useClass: mockClass(ResetAuthDataService),
-        },
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
-        { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
+        mockProvider(FlowsDataService),
+        mockProvider(ResetAuthDataService),
+        mockProvider(LoggerService),
         {
           provide: DOCUMENT,
           useValue: {

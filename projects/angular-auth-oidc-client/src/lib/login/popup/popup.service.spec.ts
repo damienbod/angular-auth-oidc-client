@@ -1,5 +1,5 @@
 import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
-import { mockClass } from '../../../test/auto-mock';
+import { mockProvider } from '../../../test/auto-mock';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
@@ -14,12 +14,8 @@ describe('PopUpService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        {
-          provide: StoragePersistenceService,
-          useClass: mockClass(StoragePersistenceService),
-        },
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
-        PopUpService,
+        mockProvider(StoragePersistenceService),
+        mockProvider(LoggerService),
       ],
     });
   });

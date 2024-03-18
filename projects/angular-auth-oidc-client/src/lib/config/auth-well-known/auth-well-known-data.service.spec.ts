@@ -1,6 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
-import { mockClass } from '../../../test/auto-mock';
+import { mockProvider } from '../../../test/auto-mock';
 import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
 import { DataService } from '../../api/data.service';
 import { LoggerService } from '../../logging/logger.service';
@@ -33,8 +33,8 @@ describe('AuthWellKnownDataService', () => {
     TestBed.configureTestingModule({
       providers: [
         AuthWellKnownDataService,
-        { provide: DataService, useClass: mockClass(DataService) },
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
+        mockProvider(DataService),
+        mockProvider(LoggerService),
       ],
     });
   });

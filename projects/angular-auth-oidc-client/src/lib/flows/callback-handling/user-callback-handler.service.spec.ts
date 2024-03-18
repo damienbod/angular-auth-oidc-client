@@ -1,6 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { mockClass } from '../../../test/auto-mock';
+import { mockProvider } from '../../../test/auto-mock';
 import { AuthStateService } from '../../auth-state/auth-state.service';
 import { LoggerService } from '../../logging/logger.service';
 import { UserService } from '../../user-data/user.service';
@@ -22,14 +22,11 @@ describe('UserCallbackHandlerService', () => {
     TestBed.configureTestingModule({
       providers: [
         UserCallbackHandlerService,
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
-        { provide: AuthStateService, useClass: mockClass(AuthStateService) },
-        { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
-        { provide: UserService, useClass: mockClass(UserService) },
-        {
-          provide: ResetAuthDataService,
-          useClass: mockClass(ResetAuthDataService),
-        },
+        mockProvider(LoggerService),
+        mockProvider(AuthStateService),
+        mockProvider(FlowsDataService),
+        mockProvider(UserService),
+        mockProvider(ResetAuthDataService),
       ],
     });
   });

@@ -1,7 +1,7 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { skip } from 'rxjs/operators';
-import { mockClass } from '../../test/auto-mock';
+import { mockClass, mockProvider } from '../../test/auto-mock';
 import { LoggerService } from '../logging/logger.service';
 import { OidcSecurityService } from '../oidc.security.service';
 import { PublicEventsService } from '../public-events/public-events.service';
@@ -25,16 +25,13 @@ describe('CheckSessionService', () => {
         OidcSecurityService,
         IFrameService,
         PublicEventsService,
-        {
-          provide: StoragePersistenceService,
-          useClass: mockClass(StoragePersistenceService),
-        },
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
+        mockProvider(StoragePersistenceService),
+        mockProvider(LoggerService),
+        mockProvider(PlatformProvider),
         {
           provide: AbstractSecurityStorage,
           useClass: mockClass(DefaultSessionStorageService),
         },
-        { provide: PlatformProvider, useClass: mockClass(PlatformProvider) },
       ],
     });
   });

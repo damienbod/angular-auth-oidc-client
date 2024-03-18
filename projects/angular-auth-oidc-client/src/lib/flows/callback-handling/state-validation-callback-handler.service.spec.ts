@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { mockClass } from '../../../test/auto-mock';
+import { mockProvider } from '../../../test/auto-mock';
 import { AuthStateService } from '../../auth-state/auth-state.service';
 import { LoggerService } from '../../logging/logger.service';
 import { StateValidationResult } from '../../validation/state-validation-result';
@@ -22,16 +22,10 @@ describe('StateValidationCallbackHandlerService', () => {
     TestBed.configureTestingModule({
       providers: [
         StateValidationCallbackHandlerService,
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
-        {
-          provide: StateValidationService,
-          useClass: mockClass(StateValidationService),
-        },
-        { provide: AuthStateService, useClass: mockClass(AuthStateService) },
-        {
-          provide: ResetAuthDataService,
-          useClass: mockClass(ResetAuthDataService),
-        },
+        mockProvider(LoggerService),
+        mockProvider(StateValidationService),
+        mockProvider(AuthStateService),
+        mockProvider(ResetAuthDataService),
         {
           provide: DOCUMENT,
           useValue: {

@@ -1,7 +1,7 @@
 import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
-import { mockClass } from '../../../test/auto-mock';
+import { mockProvider } from '../../../test/auto-mock';
 import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
 import { DataService } from '../../api/data.service';
 import { LoggerService } from '../../logging/logger.service';
@@ -23,18 +23,12 @@ describe('CodeFlowCallbackHandlerService', () => {
     TestBed.configureTestingModule({
       providers: [
         CodeFlowCallbackHandlerService,
-        { provide: UrlService, useClass: mockClass(UrlService) },
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
-        {
-          provide: TokenValidationService,
-          useClass: mockClass(TokenValidationService),
-        },
-        { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
-        {
-          provide: StoragePersistenceService,
-          useClass: mockClass(StoragePersistenceService),
-        },
-        { provide: DataService, useClass: mockClass(DataService) },
+        mockProvider(UrlService),
+        mockProvider(LoggerService),
+        mockProvider(TokenValidationService),
+        mockProvider(FlowsDataService),
+        mockProvider(StoragePersistenceService),
+        mockProvider(DataService),
       ],
     });
   });

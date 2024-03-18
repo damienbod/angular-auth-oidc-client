@@ -1,6 +1,6 @@
 ﻿import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { Observable, of, throwError } from 'rxjs';
-import { mockClass } from '../../test/auto-mock';
+import { mockProvider } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { ImplicitFlowCallbackService } from '../callback/implicit-flow-callback.service';
 import { IntervalService } from '../callback/interval.service';
@@ -31,19 +31,13 @@ describe('SilentRenewService  ', () => {
       providers: [
         SilentRenewService,
         IFrameService,
-        { provide: FlowsService, useClass: mockClass(FlowsService) },
-        {
-          provide: ResetAuthDataService,
-          useClass: mockClass(ResetAuthDataService),
-        },
-        { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
-        { provide: AuthStateService, useClass: mockClass(AuthStateService) },
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
+        mockProvider(FlowsService),
+        mockProvider(ResetAuthDataService),
+        mockProvider(FlowsDataService),
+        mockProvider(AuthStateService),
+        mockProvider(LoggerService),
+        mockProvider(ImplicitFlowCallbackService),
         FlowHelper,
-        {
-          provide: ImplicitFlowCallbackService,
-          useClass: mockClass(ImplicitFlowCallbackService),
-        },
         IntervalService,
       ],
     });

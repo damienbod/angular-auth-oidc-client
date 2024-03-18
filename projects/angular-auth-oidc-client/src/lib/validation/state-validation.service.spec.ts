@@ -1,6 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { mockClass } from '../../test/auto-mock';
+import { mockProvider } from '../../test/auto-mock';
 import { AuthWellKnownEndpoints } from '../config/auth-well-known/auth-well-known-endpoints';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { CallbackContext } from '../flows/callback-context';
@@ -26,21 +26,10 @@ describe('State Validation Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [],
       providers: [
-        StateValidationService,
-        {
-          provide: StoragePersistenceService,
-          useClass: mockClass(StoragePersistenceService),
-        },
-        {
-          provide: TokenValidationService,
-          useClass: mockClass(TokenValidationService),
-        },
-        {
-          provide: LoggerService,
-          useClass: mockClass(LoggerService),
-        },
+        mockProvider(StoragePersistenceService),
+        mockProvider(TokenValidationService),
+        mockProvider(LoggerService),
         TokenHelperService,
         EqualityService,
         FlowHelper,

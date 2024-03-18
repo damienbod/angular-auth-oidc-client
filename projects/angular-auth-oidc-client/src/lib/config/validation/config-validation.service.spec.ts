@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { mockClass } from '../../../test/auto-mock';
+import { mockProvider } from '../../../test/auto-mock';
 import { LogLevel } from '../../logging/log-level';
 import { LoggerService } from '../../logging/logger.service';
 import { OpenIdConfiguration } from '../openid-configuration';
@@ -12,10 +12,7 @@ describe('Config Validation Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        ConfigValidationService,
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
-      ],
+      providers: [ConfigValidationService, mockProvider(LoggerService)],
     });
   });
 

@@ -1,7 +1,7 @@
 import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
-import { mockClass } from '../../../test/auto-mock';
+import { mockProvider } from '../../../test/auto-mock';
 import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
 import { DataService } from '../../api/data.service';
 import { LoggerService } from '../../logging/logger.service';
@@ -19,13 +19,10 @@ describe('RefreshTokenCallbackHandlerService', () => {
     TestBed.configureTestingModule({
       providers: [
         RefreshTokenCallbackHandlerService,
-        { provide: UrlService, useClass: mockClass(UrlService) },
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
-        { provide: DataService, useClass: mockClass(DataService) },
-        {
-          provide: StoragePersistenceService,
-          useClass: mockClass(StoragePersistenceService),
-        },
+        mockProvider(UrlService),
+        mockProvider(LoggerService),
+        mockProvider(DataService),
+        mockProvider(StoragePersistenceService),
       ],
     });
   });

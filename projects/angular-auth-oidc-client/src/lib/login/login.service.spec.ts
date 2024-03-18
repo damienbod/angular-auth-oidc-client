@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { mockClass } from '../../test/auto-mock';
+import { mockProvider } from '../../test/auto-mock';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { LoginResponse } from './login-response';
 import { LoginService } from './login.service';
@@ -23,17 +23,11 @@ describe('LoginService', () => {
       imports: [CommonModule],
       providers: [
         LoginService,
-        { provide: ParLoginService, useClass: mockClass(ParLoginService) },
-        { provide: PopUpLoginService, useClass: mockClass(PopUpLoginService) },
-        {
-          provide: StandardLoginService,
-          useClass: mockClass(StandardLoginService),
-        },
-        {
-          provide: StoragePersistenceService,
-          useClass: mockClass(StoragePersistenceService),
-        },
-        { provide: PopUpService, useClass: mockClass(PopUpService) },
+        mockProvider(ParLoginService),
+        mockProvider(PopUpLoginService),
+        mockProvider(StandardLoginService),
+        mockProvider(StoragePersistenceService),
+        mockProvider(PopUpService),
       ],
     });
   });

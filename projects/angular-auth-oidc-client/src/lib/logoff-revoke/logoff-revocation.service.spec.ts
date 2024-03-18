@@ -1,7 +1,7 @@
 import { HttpHeaders } from '@angular/common/http';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Observable, of, throwError } from 'rxjs';
-import { mockClass } from '../../test/auto-mock';
+import { mockProvider } from '../../test/auto-mock';
 import { createRetriableStream } from '../../test/create-retriable-stream.helper';
 import { DataService } from '../api/data.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
@@ -25,23 +25,13 @@ describe('Logout and Revoke Service', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        LogoffRevocationService,
-        { provide: DataService, useClass: mockClass(DataService) },
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
-        {
-          provide: StoragePersistenceService,
-          useClass: mockClass(StoragePersistenceService),
-        },
-        { provide: UrlService, useClass: mockClass(UrlService) },
-        {
-          provide: CheckSessionService,
-          useClass: mockClass(CheckSessionService),
-        },
-        {
-          provide: ResetAuthDataService,
-          useClass: mockClass(ResetAuthDataService),
-        },
-        { provide: RedirectService, useClass: mockClass(RedirectService) },
+        mockProvider(DataService),
+        mockProvider(LoggerService),
+        mockProvider(StoragePersistenceService),
+        mockProvider(UrlService),
+        mockProvider(CheckSessionService),
+        mockProvider(ResetAuthDataService),
+        mockProvider(RedirectService),
       ],
     });
   });
