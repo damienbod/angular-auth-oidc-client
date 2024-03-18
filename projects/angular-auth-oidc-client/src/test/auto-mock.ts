@@ -1,3 +1,5 @@
+import { Provider } from '@angular/core';
+
 export function mockClass<T>(obj: new (...args: any[]) => T): any {
   const keys = Object.getOwnPropertyNames(obj.prototype);
   const allMethods = keys.filter((key) => {
@@ -30,9 +32,18 @@ export function mockClass<T>(obj: new (...args: any[]) => T): any {
   return mockedClass;
 }
 
-export function mockProvider<T>(obj: new (...args: any[]) => T): any {
+export function mockProvider<T>(obj: new (...args: any[]) => T): Provider {
   return {
     provide: obj,
     useClass: mockClass(obj),
   };
+}
+
+export function mockAbstractProvider<T, M extends T>(
+  type: abstract new (...args: any[]) => T,
+  mockType: new (...args: any[]) => M
+): Provider {
+  const mock = mockClass(mockType);
+
+  return { provide: type, useClass: mock };
 }

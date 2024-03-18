@@ -1,7 +1,7 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
-import { mockClass, mockProvider } from '../../test/auto-mock';
+import { mockAbstractProvider, mockProvider } from '../../test/auto-mock';
 import { AutoLoginService } from '../auto-login/auto-login.service';
 import { CallbackService } from '../callback/callback.service';
 import { PeriodicallyTokenCheckService } from '../callback/periodically-token-check.service';
@@ -55,12 +55,8 @@ describe('CheckAuthService', () => {
         mockProvider(PopUpService),
         mockProvider(CurrentUrlService),
         mockProvider(PublicEventsService),
-        {
-          provide: StsConfigLoader,
-          useClass: mockClass(StsConfigStaticLoader),
-        },
+        mockAbstractProvider(StsConfigLoader, StsConfigStaticLoader),
         AutoLoginService,
-        CheckAuthService,
         mockProvider(StoragePersistenceService),
       ],
     });

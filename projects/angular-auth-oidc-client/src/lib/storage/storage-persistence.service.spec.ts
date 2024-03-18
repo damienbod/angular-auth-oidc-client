@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { mockClass } from '../../test/auto-mock';
+import { mockProvider } from '../../test/auto-mock';
 import { BrowserStorageService } from './browser-storage.service';
 import { StoragePersistenceService } from './storage-persistence.service';
 
@@ -9,13 +9,7 @@ describe('Storage Persistence Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        StoragePersistenceService,
-        {
-          provide: BrowserStorageService,
-          useClass: mockClass(BrowserStorageService),
-        },
-      ],
+      providers: [mockProvider(BrowserStorageService)],
     });
   });
 

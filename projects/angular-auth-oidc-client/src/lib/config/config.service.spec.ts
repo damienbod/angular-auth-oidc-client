@@ -1,6 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { mockClass, mockProvider } from '../../test/auto-mock';
+import { mockAbstractProvider, mockProvider } from '../../test/auto-mock';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
@@ -31,10 +31,7 @@ describe('Configuration Service', () => {
         ConfigValidationService,
         mockProvider(PlatformProvider),
         mockProvider(AuthWellKnownService),
-        {
-          provide: StsConfigLoader,
-          useClass: mockClass(StsConfigStaticLoader),
-        },
+        mockAbstractProvider(StsConfigLoader, StsConfigStaticLoader),
       ],
     });
   });
