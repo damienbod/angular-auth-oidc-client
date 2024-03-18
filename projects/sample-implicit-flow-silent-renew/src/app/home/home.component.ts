@@ -1,30 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  OidcClientNotification,
-  OidcSecurityService,
-  OpenIdConfiguration,
-  UserDataResult,
-} from 'angular-auth-oidc-client';
-import { Observable } from 'rxjs';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.component.html',
 })
 export class HomeComponent implements OnInit {
-  configuration$: Observable<OpenIdConfiguration>;
-  userDataChanged$: Observable<OidcClientNotification<any>>;
-  userData$: Observable<UserDataResult>;
+  configuration$ = this.oidcSecurityService.getConfiguration();
+  userData$ = this.oidcSecurityService.userData$;
   isAuthenticated = false;
-  checkSessionChanged$: Observable<boolean>;
-  checkSessionChanged: any;
+  checkSessionChanged$ = this.oidcSecurityService.checkSessionChanged$;
 
   constructor(public oidcSecurityService: OidcSecurityService) {}
-  ngOnInit() {
-    this.configuration$ = this.oidcSecurityService.getConfiguration();
-    this.userData$ = this.oidcSecurityService.userData$;
-    this.checkSessionChanged$ = this.oidcSecurityService.checkSessionChanged$;
 
+  ngOnInit() {
     this.oidcSecurityService.isAuthenticated$.subscribe(
       ({ isAuthenticated }) => {
         this.isAuthenticated = isAuthenticated;

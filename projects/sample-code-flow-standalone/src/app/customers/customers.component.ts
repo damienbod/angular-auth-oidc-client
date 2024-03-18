@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-customers',
@@ -6,8 +6,4 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./customers.component.css'],
   standalone: true,
 })
-export class CustomersComponent implements OnInit {
-  constructor() {}
-
-  ngOnInit(): void {}
-}
+export class CustomersComponent {}

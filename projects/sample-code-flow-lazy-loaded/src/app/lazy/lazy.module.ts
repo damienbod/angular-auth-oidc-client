@@ -7,6 +7,4 @@ import { LazyComponent } from './lazy.component';
   declarations: [LazyComponent],
   imports: [CommonModule, LazyRoutingModule],
 })
-export class LazyModule {
-  constructor() {}
-}
+export class LazyModule {}

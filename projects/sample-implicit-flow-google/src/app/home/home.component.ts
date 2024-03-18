@@ -1,13 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { OidcSecurityService, UserDataResult } from 'angular-auth-oidc-client';
-import { Observable } from 'rxjs';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.component.html',
 })
 export class HomeComponent implements OnInit {
-  userData$: Observable<UserDataResult>;
+  userData$ = this.oidcSecurityService.userData$;
   isAuthenticated = false;
 
   constructor(public oidcSecurityService: OidcSecurityService) {}
@@ -20,6 +19,5 @@ export class HomeComponent implements OnInit {
         console.warn('authenticated: ', isAuthenticated);
       }
     );
-    this.userData$ = this.oidcSecurityService.userData$;
   }
 }
