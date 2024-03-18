@@ -1,6 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { mockClass } from '../test/auto-mock';
+import { mockProvider } from '../test/auto-mock';
 import { PASSED_CONFIG } from './auth-config';
 import { AuthModule } from './auth.module';
 import { ConfigurationService } from './config/config.service';
@@ -17,12 +17,7 @@ describe('AuthModule', () => {
     beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [AuthModule.forRoot({ config: { authority: 'something' } })],
-        providers: [
-          {
-            provide: ConfigurationService,
-            useClass: mockClass(ConfigurationService),
-          },
-        ],
+        providers: [mockProvider(ConfigurationService)],
       }).compileComponents();
     }));
 
@@ -54,12 +49,7 @@ describe('AuthModule', () => {
             },
           }),
         ],
-        providers: [
-          {
-            provide: ConfigurationService,
-            useClass: mockClass(ConfigurationService),
-          },
-        ],
+        providers: [mockProvider(ConfigurationService)],
       }).compileComponents();
     }));
 

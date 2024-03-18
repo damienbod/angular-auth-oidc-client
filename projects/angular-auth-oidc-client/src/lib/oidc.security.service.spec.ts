@@ -1,6 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
-import { mockClass } from '../test/auto-mock';
+import { mockProvider } from '../test/auto-mock';
 import { AuthenticatedResult } from './auth-state/auth-result';
 import { AuthStateService } from './auth-state/auth-state.service';
 import { CheckAuthService } from './auth-state/check-auth.service';
@@ -40,46 +40,19 @@ describe('OidcSecurityService', () => {
       imports: [],
       providers: [
         OidcSecurityService,
-        {
-          provide: CheckSessionService,
-          useClass: mockClass(CheckSessionService),
-        },
-        {
-          provide: CheckAuthService,
-          useClass: mockClass(CheckAuthService),
-        },
-        {
-          provide: UserService,
-          useClass: mockClass(UserService),
-        },
-        {
-          provide: TokenHelperService,
-          useClass: mockClass(TokenHelperService),
-        },
-        {
-          provide: ConfigurationService,
-          useClass: mockClass(ConfigurationService),
-        },
-        {
-          provide: AuthStateService,
-          useClass: mockClass(AuthStateService),
-        },
-        { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
-        { provide: CallbackService, useClass: mockClass(CallbackService) },
-        {
-          provide: LogoffRevocationService,
-          useClass: mockClass(LogoffRevocationService),
-        },
-        { provide: LoginService, useClass: mockClass(LoginService) },
-        {
-          provide: RefreshSessionService,
-          useClass: mockClass(RefreshSessionService),
-        },
-        { provide: UrlService, useClass: mockClass(UrlService) },
-        {
-          provide: AuthWellKnownService,
-          useClass: mockClass(AuthWellKnownService),
-        },
+        mockProvider(CheckSessionService),
+        mockProvider(CheckAuthService),
+        mockProvider(UserService),
+        mockProvider(TokenHelperService),
+        mockProvider(ConfigurationService),
+        mockProvider(AuthStateService),
+        mockProvider(FlowsDataService),
+        mockProvider(CallbackService),
+        mockProvider(LogoffRevocationService),
+        mockProvider(LoginService),
+        mockProvider(RefreshSessionService),
+        mockProvider(UrlService),
+        mockProvider(AuthWellKnownService),
       ],
     });
   });

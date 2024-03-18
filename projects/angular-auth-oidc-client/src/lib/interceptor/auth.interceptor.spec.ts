@@ -1,6 +1,6 @@
 import {
-  HttpClient,
   HTTP_INTERCEPTORS,
+  HttpClient,
   provideHttpClient,
   withInterceptors,
 } from '@angular/common/http';
@@ -10,11 +10,11 @@ import {
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { mockClass } from '../../test/auto-mock';
+import { mockClass, mockProvider } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { ConfigurationService } from '../config/config.service';
 import { LoggerService } from '../logging/logger.service';
-import { authInterceptor, AuthInterceptor } from './auth.interceptor';
+import { AuthInterceptor, authInterceptor } from './auth.interceptor';
 import { ClosestMatchingRouteService } from './closest-matching-route.service';
 
 describe(`AuthHttpInterceptor`, () => {
@@ -40,10 +40,7 @@ describe(`AuthHttpInterceptor`, () => {
             provide: LoggerService,
             useClass: mockClass(LoggerService),
           },
-          {
-            provide: ConfigurationService,
-            useClass: mockClass(ConfigurationService),
-          },
+          mockProvider(ConfigurationService),
         ],
       });
 
@@ -73,10 +70,7 @@ describe(`AuthHttpInterceptor`, () => {
             provide: LoggerService,
             useClass: mockClass(LoggerService),
           },
-          {
-            provide: ConfigurationService,
-            useClass: mockClass(ConfigurationService),
-          },
+          mockProvider(ConfigurationService),
         ],
       });
 

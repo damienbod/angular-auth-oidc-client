@@ -1,6 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { mockClass } from '../test/auto-mock';
+import { mockProvider } from '../test/auto-mock';
 import { PASSED_CONFIG } from './auth-config';
 import { ConfigurationService } from './config/config.service';
 import {
@@ -18,10 +18,7 @@ describe('provideAuth', () => {
       TestBed.configureTestingModule({
         providers: [
           provideAuth({ config: { authority: 'something' } }),
-          {
-            provide: ConfigurationService,
-            useClass: mockClass(ConfigurationService),
-          },
+          mockProvider(ConfigurationService),
         ],
       }).compileComponents();
     }));
@@ -48,10 +45,7 @@ describe('provideAuth', () => {
               useFactory: () => new StsConfigHttpLoader(of({})),
             },
           }),
-          {
-            provide: ConfigurationService,
-            useClass: mockClass(ConfigurationService),
-          },
+          mockProvider(ConfigurationService),
         ],
       }).compileComponents();
     }));

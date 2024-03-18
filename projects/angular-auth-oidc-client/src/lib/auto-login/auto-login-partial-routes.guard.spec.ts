@@ -6,7 +6,7 @@ import {
 } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { mockClass } from '../../test/auto-mock';
+import { mockClass, mockProvider } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { CheckAuthService } from '../auth-state/check-auth.service';
 import { ConfigurationService } from '../config/config.service';
@@ -37,10 +37,7 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
           provide: CheckAuthService,
           useClass: mockClass(CheckAuthService),
         },
-        {
-          provide: ConfigurationService,
-          useClass: mockClass(ConfigurationService),
-        },
+        mockProvider(ConfigurationService),
       ],
     });
   });
