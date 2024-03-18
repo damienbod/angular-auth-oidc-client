@@ -8,7 +8,7 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 })
 export class NavMenuComponent implements OnInit {
   isExpanded = false;
-  isAuthenticated: boolean;
+  isAuthenticated = false;
 
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
