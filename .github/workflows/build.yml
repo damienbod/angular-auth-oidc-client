@@ -28,7 +28,7 @@ jobs:
         run: npm ci
 
       - name: Linting Frontend
-        run: npm run lint-lib
+        run: npm run lint
 
       - name: Testing Frontend
         run: npm run test-lib-ci

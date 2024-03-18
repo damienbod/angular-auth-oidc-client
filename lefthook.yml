@@ -16,7 +16,7 @@ pre-commit:
       run: npm run check-blockwords
 
     lint:
-      run: npm run lint-lib
+      run: npm run lint
 #
 # pre-commit:
 #   parallel: true

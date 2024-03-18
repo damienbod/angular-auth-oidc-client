@@ -11,7 +11,7 @@ export class NavigationComponent implements OnInit {
 
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.oidcSecurityService.isAuthenticated$.subscribe(
       ({ isAuthenticated }) => {
         this.isAuthenticated = isAuthenticated;
@@ -21,15 +21,15 @@ export class NavigationComponent implements OnInit {
     );
   }
 
-  login() {
+  login(): void {
     this.oidcSecurityService.authorize();
   }
 
-  refreshSession() {
+  refreshSession(): void {
     this.oidcSecurityService.authorize();
   }
 
-  logout() {
+  logout(): void {
     this.oidcSecurityService
       .logoff()
       .subscribe((result) => console.log(result));

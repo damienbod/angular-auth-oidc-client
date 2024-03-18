@@ -14,17 +14,17 @@ export class HomeComponent {
 
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
-  login(configId: string | undefined) {
+  login(configId: string | undefined): void {
     this.oidcSecurityService.authorize(configId);
   }
 
-  forceRefreshSession() {
+  forceRefreshSession(): void {
     this.oidcSecurityService
       .forceRefreshSession()
       .subscribe((result) => console.warn(result));
   }
 
-  logout(configId: string | undefined) {
+  logout(configId: string | undefined): void {
     this.oidcSecurityService.logoff(configId);
   }
 }

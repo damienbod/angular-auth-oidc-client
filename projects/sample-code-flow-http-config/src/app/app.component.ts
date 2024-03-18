@@ -16,15 +16,13 @@ export class AppComponent implements OnInit {
     private readonly eventService: PublicEventsService
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.oidcSecurityService
       .checkAuth()
-      .subscribe(
-        ({ isAuthenticated, userData, accessToken, idToken, configId }) => {
-          console.log('app authenticated', isAuthenticated);
-          console.log(`Current access token is '${accessToken}'`);
-        }
-      );
+      .subscribe(({ isAuthenticated, accessToken }) => {
+        console.log('app authenticated', isAuthenticated);
+        console.log(`Current access token is '${accessToken}'`);
+      });
 
     this.eventService
       .registerForEvents()
