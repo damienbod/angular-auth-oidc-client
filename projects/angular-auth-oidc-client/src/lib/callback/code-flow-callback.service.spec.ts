@@ -2,7 +2,7 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
-import { mockClass } from '../../test/auto-mock';
+import { mockProvider } from '../../test/auto-mock';
 import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
@@ -21,8 +21,8 @@ describe('CodeFlowCallbackService ', () => {
       imports: [RouterTestingModule],
       providers: [
         CodeFlowCallbackService,
-        { provide: FlowsService, useClass: mockClass(FlowsService) },
-        { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
+        mockProvider(FlowsService),
+        mockProvider(FlowsDataService),
         IntervalService,
       ],
     });

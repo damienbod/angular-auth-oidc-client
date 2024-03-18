@@ -1,6 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { mockClass } from '../../../test/auto-mock';
+import { mockProvider } from '../../../test/auto-mock';
 import { CheckAuthService } from '../../auth-state/check-auth.service';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
 import { LoggerService } from '../../logging/logger.service';
@@ -29,38 +29,14 @@ describe('ParLoginService', () => {
     TestBed.configureTestingModule({
       providers: [
         ParLoginService,
-        {
-          provide: LoggerService,
-          useClass: mockClass(LoggerService),
-        },
-        {
-          provide: ResponseTypeValidationService,
-          useClass: mockClass(ResponseTypeValidationService),
-        },
-        {
-          provide: UrlService,
-          useClass: mockClass(UrlService),
-        },
-        {
-          provide: RedirectService,
-          useClass: mockClass(RedirectService),
-        },
-        {
-          provide: AuthWellKnownService,
-          useClass: mockClass(AuthWellKnownService),
-        },
-        {
-          provide: PopUpService,
-          useClass: mockClass(PopUpService),
-        },
-        {
-          provide: CheckAuthService,
-          useClass: mockClass(CheckAuthService),
-        },
-        {
-          provide: ParService,
-          useClass: mockClass(ParService),
-        },
+        mockProvider(LoggerService),
+        mockProvider(ResponseTypeValidationService),
+        mockProvider(UrlService),
+        mockProvider(RedirectService),
+        mockProvider(AuthWellKnownService),
+        mockProvider(PopUpService),
+        mockProvider(CheckAuthService),
+        mockProvider(ParService),
       ],
     });
   });

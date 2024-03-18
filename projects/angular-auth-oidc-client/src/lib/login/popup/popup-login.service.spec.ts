@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { mockClass } from '../../../test/auto-mock';
+import { mockProvider } from '../../../test/auto-mock';
 import { CheckAuthService } from '../../auth-state/check-auth.service';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
 import { LoggerService } from '../../logging/logger.service';
@@ -26,18 +26,12 @@ describe('PopUpLoginService', () => {
       imports: [CommonModule],
       providers: [
         PopUpLoginService,
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
-        {
-          provide: ResponseTypeValidationService,
-          useClass: mockClass(ResponseTypeValidationService),
-        },
-        { provide: UrlService, useClass: mockClass(UrlService) },
-        {
-          provide: AuthWellKnownService,
-          useClass: mockClass(AuthWellKnownService),
-        },
-        { provide: PopUpService, useClass: mockClass(PopUpService) },
-        { provide: CheckAuthService, useClass: mockClass(CheckAuthService) },
+        mockProvider(LoggerService),
+        mockProvider(ResponseTypeValidationService),
+        mockProvider(UrlService),
+        mockProvider(AuthWellKnownService),
+        mockProvider(PopUpService),
+        mockProvider(CheckAuthService),
       ],
     });
   });

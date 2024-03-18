@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { Observable } from 'rxjs';
-import { mockClass } from '../../test/auto-mock';
+import { mockProvider } from '../../test/auto-mock';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
@@ -21,16 +21,10 @@ describe('Auth State Service', () => {
       providers: [
         AuthStateService,
         PublicEventsService,
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
-        {
-          provide: TokenValidationService,
-          useClass: mockClass(TokenValidationService),
-        },
-        { provide: PlatformProvider, useClass: mockClass(PlatformProvider) },
-        {
-          provide: StoragePersistenceService,
-          useClass: mockClass(StoragePersistenceService),
-        },
+        mockProvider(LoggerService),
+        mockProvider(TokenValidationService),
+        mockProvider(PlatformProvider),
+        mockProvider(StoragePersistenceService),
       ],
     });
   });

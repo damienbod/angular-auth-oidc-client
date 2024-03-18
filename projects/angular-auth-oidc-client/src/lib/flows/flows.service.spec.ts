@@ -1,6 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { mockClass } from '../../test/auto-mock';
+import { mockProvider } from '../../test/auto-mock';
 import { CallbackContext } from './callback-context';
 import { CodeFlowCallbackHandlerService } from './callback-handling/code-flow-callback-handler.service';
 import { HistoryJwtKeysCallbackHandlerService } from './callback-handling/history-jwt-keys-callback-handler.service';
@@ -25,34 +25,13 @@ describe('Flows Service', () => {
     TestBed.configureTestingModule({
       providers: [
         FlowsService,
-        {
-          provide: CodeFlowCallbackHandlerService,
-          useClass: mockClass(CodeFlowCallbackHandlerService),
-        },
-        {
-          provide: ImplicitFlowCallbackHandlerService,
-          useClass: mockClass(ImplicitFlowCallbackHandlerService),
-        },
-        {
-          provide: HistoryJwtKeysCallbackHandlerService,
-          useClass: mockClass(HistoryJwtKeysCallbackHandlerService),
-        },
-        {
-          provide: UserCallbackHandlerService,
-          useClass: mockClass(UserCallbackHandlerService),
-        },
-        {
-          provide: StateValidationCallbackHandlerService,
-          useClass: mockClass(StateValidationCallbackHandlerService),
-        },
-        {
-          provide: RefreshSessionCallbackHandlerService,
-          useClass: mockClass(RefreshSessionCallbackHandlerService),
-        },
-        {
-          provide: RefreshTokenCallbackHandlerService,
-          useClass: mockClass(RefreshTokenCallbackHandlerService),
-        },
+        mockProvider(CodeFlowCallbackHandlerService),
+        mockProvider(ImplicitFlowCallbackHandlerService),
+        mockProvider(HistoryJwtKeysCallbackHandlerService),
+        mockProvider(UserCallbackHandlerService),
+        mockProvider(StateValidationCallbackHandlerService),
+        mockProvider(RefreshSessionCallbackHandlerService),
+        mockProvider(RefreshTokenCallbackHandlerService),
       ],
     });
   });

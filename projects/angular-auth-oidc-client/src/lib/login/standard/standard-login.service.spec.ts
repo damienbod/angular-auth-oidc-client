@@ -1,6 +1,6 @@
 import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { mockClass } from '../../../test/auto-mock';
+import { mockProvider } from '../../../test/auto-mock';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
 import { FlowsDataService } from '../../flows/flows-data.service';
 import { LoggerService } from '../../logging/logger.service';
@@ -23,18 +23,12 @@ describe('StandardLoginService', () => {
       imports: [],
       providers: [
         StandardLoginService,
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
-        {
-          provide: ResponseTypeValidationService,
-          useClass: mockClass(ResponseTypeValidationService),
-        },
-        { provide: UrlService, useClass: mockClass(UrlService) },
-        { provide: RedirectService, useClass: mockClass(RedirectService) },
-        {
-          provide: AuthWellKnownService,
-          useClass: mockClass(AuthWellKnownService),
-        },
-        { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
+        mockProvider(LoggerService),
+        mockProvider(ResponseTypeValidationService),
+        mockProvider(UrlService),
+        mockProvider(RedirectService),
+        mockProvider(AuthWellKnownService),
+        mockProvider(FlowsDataService),
       ],
     });
   });

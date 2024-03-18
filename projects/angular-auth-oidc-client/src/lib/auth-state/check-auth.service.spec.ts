@@ -1,7 +1,7 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
-import { mockClass } from '../../test/auto-mock';
+import { mockClass, mockProvider } from '../../test/auto-mock';
 import { AutoLoginService } from '../auto-login/auto-login.service';
 import { CallbackService } from '../callback/callback.service';
 import { PeriodicallyTokenCheckService } from '../callback/periodically-token-check.service';
@@ -44,45 +44,24 @@ describe('CheckAuthService', () => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
       providers: [
-        {
-          provide: CheckSessionService,
-          useClass: mockClass(CheckSessionService),
-        },
-        {
-          provide: SilentRenewService,
-          useClass: mockClass(SilentRenewService),
-        },
-        { provide: UserService, useClass: mockClass(UserService) },
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
-        { provide: AuthStateService, useClass: mockClass(AuthStateService) },
-        { provide: CallbackService, useClass: mockClass(CallbackService) },
-        {
-          provide: RefreshSessionService,
-          useClass: mockClass(RefreshSessionService),
-        },
-        {
-          provide: PeriodicallyTokenCheckService,
-          useClass: mockClass(PeriodicallyTokenCheckService),
-        },
-        { provide: PopUpService, useClass: mockClass(PopUpService) },
+        mockProvider(CheckSessionService),
+        mockProvider(SilentRenewService),
+        mockProvider(UserService),
+        mockProvider(LoggerService),
+        mockProvider(AuthStateService),
+        mockProvider(CallbackService),
+        mockProvider(RefreshSessionService),
+        mockProvider(PeriodicallyTokenCheckService),
+        mockProvider(PopUpService),
+        mockProvider(CurrentUrlService),
+        mockProvider(PublicEventsService),
         {
           provide: StsConfigLoader,
           useClass: mockClass(StsConfigStaticLoader),
         },
-        {
-          provide: StoragePersistenceService,
-          useClass: mockClass(StoragePersistenceService),
-        },
         AutoLoginService,
         CheckAuthService,
-        {
-          provide: CurrentUrlService,
-          useClass: mockClass(CurrentUrlService),
-        },
-        {
-          provide: PublicEventsService,
-          useClass: mockClass(PublicEventsService),
-        },
+        mockProvider(StoragePersistenceService),
       ],
     });
   });

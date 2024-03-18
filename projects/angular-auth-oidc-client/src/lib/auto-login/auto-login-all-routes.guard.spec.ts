@@ -6,7 +6,7 @@ import {
 } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable, of } from 'rxjs';
-import { mockClass, mockProvider } from '../../test/auto-mock';
+import { mockProvider } from '../../test/auto-mock';
 import { CheckAuthService } from '../auth-state/check-auth.service';
 import { ConfigurationService } from '../config/config.service';
 import { LoginResponse } from '../login/login-response';
@@ -21,18 +21,9 @@ describe(`AutoLoginAllRoutesGuard`, () => {
       imports: [RouterTestingModule],
       providers: [
         AutoLoginService,
-        {
-          provide: CheckAuthService,
-          useClass: mockClass(CheckAuthService),
-        },
-        {
-          provide: LoginService,
-          useClass: mockClass(LoginService),
-        },
-        {
-          provide: StoragePersistenceService,
-          useClass: mockClass(StoragePersistenceService),
-        },
+        mockProvider(CheckAuthService),
+        mockProvider(LoginService),
+        mockProvider(StoragePersistenceService),
         mockProvider(ConfigurationService),
       ],
     });
