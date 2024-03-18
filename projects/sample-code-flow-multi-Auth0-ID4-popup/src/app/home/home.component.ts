@@ -14,11 +14,11 @@ export class HomeComponent {
 
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
-  login(configId: string) {
+  login(configId: string): void {
     this.oidcSecurityService.authorize(configId);
   }
 
-  loginWithPopup(configId: string | undefined) {
+  loginWithPopup(configId: string | undefined): void {
     this.oidcSecurityService
       .authorizeWithPopUp(undefined, undefined, configId)
       .subscribe(({ isAuthenticated, userData, accessToken, errorMessage }) => {
@@ -29,29 +29,29 @@ export class HomeComponent {
       });
   }
 
-  openWindow() {
+  openWindow(): void {
     window.open('/', '_blank');
   }
 
-  forceRefreshSession() {
+  forceRefreshSession(): void {
     this.oidcSecurityService
       .forceRefreshSession()
       .subscribe((result) => console.warn(result));
   }
 
-  logout(configId: string | undefined) {
+  logout(configId: string | undefined): void {
     this.oidcSecurityService
       .logoff(configId)
       .subscribe((result) => console.log(result));
   }
 
-  refreshSessionId4(configId: string | undefined) {
+  refreshSessionId4(configId: string | undefined): void {
     this.oidcSecurityService
       .forceRefreshSession(undefined, configId)
       .subscribe((result) => console.log(result));
   }
 
-  refreshSessionAuth0(configId: string | undefined) {
+  refreshSessionAuth0(configId: string | undefined): void {
     this.oidcSecurityService
       .forceRefreshSession(
         { scope: 'openid profile offline_access auth0-user-api-spa' },
@@ -60,13 +60,13 @@ export class HomeComponent {
       .subscribe((result) => console.log(result));
   }
 
-  logoffAndRevokeTokens(configId: string | undefined) {
+  logoffAndRevokeTokens(configId: string | undefined): void {
     this.oidcSecurityService
       .logoffAndRevokeTokens(configId)
       .subscribe((result) => console.log(result));
   }
 
-  revokeRefreshToken(configId: string | undefined) {
+  revokeRefreshToken(configId: string | undefined): void {
     this.oidcSecurityService
       .revokeRefreshToken(null, configId)
       .subscribe((result) => console.log(result));

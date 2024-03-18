@@ -8,17 +8,17 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 export class AppComponent {
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
-  login() {
+  login(): void {
     console.log('start login');
     this.oidcSecurityService.authorize();
   }
 
-  refreshSession() {
+  refreshSession(): void {
     console.log('start refreshSession');
     this.oidcSecurityService.authorize();
   }
 
-  logout() {
+  logout(): void {
     console.log('start logoff');
     this.oidcSecurityService
       .logoff()

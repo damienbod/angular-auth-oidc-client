@@ -13,7 +13,7 @@ import { filter } from 'rxjs/operators';
 export class AppComponent implements OnInit {
   constructor(
     public oidcSecurityService: OidcSecurityService,
-    private eventService: PublicEventsService
+    private readonly eventService: PublicEventsService
   ) {}
 
   ngOnInit() {

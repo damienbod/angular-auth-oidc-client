@@ -1,4 +1,3 @@
-/* eslint-disable arrow-body-style */
 import { HttpClient } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import {
@@ -9,7 +8,7 @@ import {
 } from 'angular-auth-oidc-client';
 import { map } from 'rxjs/operators';
 
-export const httpLoaderFactory = (httpClient: HttpClient) => {
+export const httpLoaderFactory = (httpClient: HttpClient): StsConfigLoader => {
   const config$ = httpClient
     .get<any>(
       `https://offeringsolutions-sts.azurewebsites.net/api/ClientAppSettings`

@@ -7,7 +7,7 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
-  constructor(private oidcSecurityService: OidcSecurityService) {}
+  constructor(private readonly oidcSecurityService: OidcSecurityService) {}
 
   ngOnInit() {
     this.oidcSecurityService

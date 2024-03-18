@@ -7,7 +7,9 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 })
 export class HomeComponent {
   configurations = this.oidcSecurityService.getConfigurations();
+
   userData$ = this.oidcSecurityService.userData$;
+
   isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
 
   constructor(public oidcSecurityService: OidcSecurityService) {}

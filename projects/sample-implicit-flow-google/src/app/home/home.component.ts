@@ -7,11 +7,12 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 })
 export class HomeComponent implements OnInit {
   userData$ = this.oidcSecurityService.userData$;
+
   isAuthenticated = false;
 
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.oidcSecurityService.isAuthenticated$.subscribe(
       ({ isAuthenticated }) => {
         this.isAuthenticated = isAuthenticated;

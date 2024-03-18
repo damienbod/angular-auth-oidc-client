@@ -8,8 +8,7 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 export class AppComponent implements OnInit {
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
-  ngOnInit() {
-    //this.oidcSecurityService.preloadAuthWellKnownDocument().subscribe();
+  ngOnInit(): void {
     this.oidcSecurityService
       .checkAuthMultiple()
       .subscribe(([{ isAuthenticated, userData, accessToken }]) => {

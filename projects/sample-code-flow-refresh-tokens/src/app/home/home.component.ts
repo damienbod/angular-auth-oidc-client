@@ -7,11 +7,14 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 })
 export class HomeComponent implements OnInit {
   configuration$ = this.oidcSecurityService.getConfiguration();
+
   userData$ = this.oidcSecurityService.userData$;
+
   isAuthenticated = false;
+
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.oidcSecurityService.isAuthenticated$.subscribe(
       ({ isAuthenticated }) => {
         this.isAuthenticated = isAuthenticated;
@@ -21,35 +24,35 @@ export class HomeComponent implements OnInit {
     );
   }
 
-  login() {
+  login(): void {
     this.oidcSecurityService.authorize();
   }
 
-  refreshSession() {
+  refreshSession(): void {
     this.oidcSecurityService
       .forceRefreshSession()
       .subscribe((result) => console.log(result));
   }
 
-  logout() {
+  logout(): void {
     this.oidcSecurityService
       .logoff()
       .subscribe((result) => console.log(result));
   }
 
-  logoffAndRevokeTokens() {
+  logoffAndRevokeTokens(): void {
     this.oidcSecurityService
       .logoffAndRevokeTokens()
       .subscribe((result) => console.log(result));
   }
 
-  revokeRefreshToken() {
+  revokeRefreshToken(): void {
     this.oidcSecurityService
       .revokeRefreshToken()
       .subscribe((result) => console.log(result));
   }
 
-  revokeAccessToken() {
+  revokeAccessToken(): void {
     this.oidcSecurityService
       .revokeAccessToken()
       .subscribe((result) => console.log(result));

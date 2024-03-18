@@ -7,26 +7,28 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 })
 export class HomeComponent {
   configurations = this.oidcSecurityService.getConfigurations();
+
   userData$ = this.oidcSecurityService.userData$;
+
   isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
 
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
-  login(configId: string | undefined) {
+  login(configId: string | undefined): void {
     this.oidcSecurityService.authorize(configId);
   }
 
-  forceRefreshSession() {
+  forceRefreshSession(): void {
     this.oidcSecurityService
       .forceRefreshSession()
       .subscribe((result) => console.warn(result));
   }
 
-  logout(configId: string | undefined) {
+  logout(configId: string | undefined): void {
     this.oidcSecurityService.logoff(configId);
   }
 
-  refreshSession(configId: string | undefined) {
+  refreshSession(configId: string | undefined): void {
     this.oidcSecurityService
       .forceRefreshSession(undefined, configId)
       .subscribe((result) => console.log(result));

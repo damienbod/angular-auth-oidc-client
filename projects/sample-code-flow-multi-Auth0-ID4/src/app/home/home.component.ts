@@ -14,29 +14,29 @@ export class HomeComponent {
 
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
-  login(configId: string | undefined) {
+  login(configId: string | undefined): void {
     this.oidcSecurityService.authorize(configId);
   }
 
-  forceRefreshSession() {
+  forceRefreshSession(): void {
     this.oidcSecurityService
       .forceRefreshSession()
       .subscribe((result) => console.warn(result));
   }
 
-  logout(configId: string | undefined) {
+  logout(configId: string | undefined): void {
     this.oidcSecurityService
       .logoff(configId)
       .subscribe((result) => console.log(result));
   }
 
-  refreshSessionId4(configId: string | undefined) {
+  refreshSessionId4(configId: string | undefined): void {
     this.oidcSecurityService
       .forceRefreshSession(undefined, configId)
       .subscribe((result) => console.log(result));
   }
 
-  refreshSessionAuth0(configId: string | undefined) {
+  refreshSessionAuth0(configId: string | undefined): void {
     this.oidcSecurityService
       .forceRefreshSession(
         { scope: 'openid profile offline_access auth0-user-api-spa' },
@@ -45,13 +45,13 @@ export class HomeComponent {
       .subscribe((result) => console.log(result));
   }
 
-  logoffAndRevokeTokens(configId: string | undefined) {
+  logoffAndRevokeTokens(configId: string | undefined): void {
     this.oidcSecurityService
       .logoffAndRevokeTokens(configId)
       .subscribe((result) => console.log(result));
   }
 
-  revokeRefreshToken(configId: string | undefined) {
+  revokeRefreshToken(configId: string | undefined): void {
     this.oidcSecurityService
       .revokeRefreshToken(null, configId)
       .subscribe((result) => console.log(result));
