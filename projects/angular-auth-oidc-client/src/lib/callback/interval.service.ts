@@ -22,7 +22,7 @@ export class IntervalService {
     const millisecondsDelayBetweenTokenCheck = repeatAfterSeconds * 1000;
 
     return new Observable((subscriber) => {
-      let intervalId: NodeJS.Timeout;
+      let intervalId?: number;
 
       this.zone.runOutsideAngular(() => {
         intervalId = setInterval(
