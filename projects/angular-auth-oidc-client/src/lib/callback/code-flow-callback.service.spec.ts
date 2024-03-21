@@ -23,7 +23,7 @@ describe('CodeFlowCallbackService ', () => {
         CodeFlowCallbackService,
         mockProvider(FlowsService),
         mockProvider(FlowsDataService),
-        IntervalService,
+        mockProvider(IntervalService),
       ],
     });
   });

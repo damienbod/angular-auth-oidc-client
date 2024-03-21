@@ -22,7 +22,7 @@ describe('RefreshSessionRefreshTokenService', () => {
         mockProvider(LoggerService),
         mockProvider(FlowsService),
         mockProvider(ResetAuthDataService),
-        IntervalService,
+        mockProvider(IntervalService),
       ],
     });
   });

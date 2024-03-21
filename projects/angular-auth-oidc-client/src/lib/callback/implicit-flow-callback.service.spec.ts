@@ -20,10 +20,9 @@ describe('ImplicitFlowCallbackService ', () => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
       providers: [
-        ImplicitFlowCallbackService,
         mockProvider(FlowsService),
         mockProvider(FlowsDataService),
-        IntervalService,
+        mockProvider(IntervalService),
       ],
     });
   });

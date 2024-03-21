@@ -1,11 +1,13 @@
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable, NgZone, inject } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class IntervalService {
-  runTokenValidationRunning: Subscription | null = null;
+  private readonly zone = inject(NgZone);
 
-  constructor(private readonly zone: NgZone) {}
+  private readonly document = inject<Document>(Document);
+
+  runTokenValidationRunning: Subscription | null = null;
 
   isTokenValidationRunning(): boolean {
     return Boolean(this.runTokenValidationRunning);
@@ -22,10 +24,10 @@ export class IntervalService {
     const millisecondsDelayBetweenTokenCheck = repeatAfterSeconds * 1000;
 
     return new Observable((subscriber) => {
-      let intervalId?: number;
+      let intervalId: number | undefined;
 
       this.zone.runOutsideAngular(() => {
-        intervalId = setInterval(
+        intervalId = this.document?.defaultView?.setInterval(
           () => this.zone.run(() => subscriber.next()),
           millisecondsDelayBetweenTokenCheck
         );

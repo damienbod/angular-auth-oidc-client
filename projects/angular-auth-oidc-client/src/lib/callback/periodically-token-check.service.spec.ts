@@ -43,7 +43,7 @@ describe('PeriodicallyTokenCheckService', () => {
         mockProvider(AuthStateService),
         mockProvider(RefreshSessionIframeService),
         mockProvider(RefreshSessionRefreshTokenService),
-        IntervalService,
+        mockProvider(IntervalService),
         mockProvider(StoragePersistenceService),
         mockProvider(PublicEventsService),
         mockProvider(ConfigurationService),
@@ -67,6 +67,8 @@ describe('PeriodicallyTokenCheckService', () => {
     resetAuthDataService = TestBed.inject(ResetAuthDataService);
     publicEventsService = TestBed.inject(PublicEventsService);
     configurationService = TestBed.inject(ConfigurationService);
+
+    spyOn(intervalService, 'startPeriodicTokenCheck').and.returnValue(of(null));
   });
 
   afterEach(() => {
@@ -154,9 +156,6 @@ describe('PeriodicallyTokenCheckService', () => {
         { silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 },
       ];
 
-      spyOn(intervalService, 'startPeriodicTokenCheck').and.returnValue(
-        of(null)
-      );
       spyOn(
         periodicallyTokenCheckService as any,
         'shouldStartPeriodicallyCheckForConfig'
@@ -196,9 +195,6 @@ describe('PeriodicallyTokenCheckService', () => {
         { silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 },
       ];
 
-      spyOn(intervalService, 'startPeriodicTokenCheck').and.returnValue(
-        of(null)
-      );
       spyOn(
         periodicallyTokenCheckService as any,
         'shouldStartPeriodicallyCheckForConfig'

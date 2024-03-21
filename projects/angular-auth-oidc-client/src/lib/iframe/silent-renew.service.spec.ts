@@ -37,8 +37,8 @@ describe('SilentRenewService  ', () => {
         mockProvider(AuthStateService),
         mockProvider(LoggerService),
         mockProvider(ImplicitFlowCallbackService),
+        mockProvider(IntervalService),
         FlowHelper,
-        IntervalService,
       ],
     });
   });
