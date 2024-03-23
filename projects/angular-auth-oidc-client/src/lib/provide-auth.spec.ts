@@ -12,8 +12,6 @@ import { provideAuth } from './provide-auth';
 
 describe('provideAuth', () => {
   describe('APP_CONFIG', () => {
-    let config: any;
-
     beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         providers: [
@@ -24,7 +22,8 @@ describe('provideAuth', () => {
     }));
 
     it('should provide config', () => {
-      config = TestBed.inject(PASSED_CONFIG);
+      const config = TestBed.inject(PASSED_CONFIG);
+
       expect(config).toEqual({ config: { authority: 'something' } });
     });
 

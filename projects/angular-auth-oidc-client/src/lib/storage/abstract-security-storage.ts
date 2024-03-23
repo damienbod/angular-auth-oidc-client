@@ -10,7 +10,7 @@ export abstract class AbstractSecurityStorage {
    *
    * @return The value of the given key
    */
-  abstract read(key: string): any;
+  abstract read(key: string): string|null;
 
   /**
    * This method must contain the logic to write the storage.
@@ -18,7 +18,7 @@ export abstract class AbstractSecurityStorage {
    * @param key The key to write a value for
    * @param value The value for the given key
    */
-  abstract write(key: string, value: any): void;
+  abstract write(key: string, value: string): void;
 
   /**
    * This method must contain the logic to remove an item from the storage.

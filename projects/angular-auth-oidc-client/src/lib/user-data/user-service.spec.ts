@@ -59,7 +59,7 @@ describe('User Service', () => {
   describe('getAndPersistUserDataInStore', () => {
     it('if not currentFlow is NOT id Token or Code flow, return decoded ID Token - passed as argument', waitForAsync(() => {
       const isRenewProcess = false;
-      const idToken = false;
+      const idToken = '';
       const decodedIdToken = 'decodedIdToken';
       const userDataInstore = '';
 
@@ -87,7 +87,7 @@ describe('User Service', () => {
 
     it('if not currentFlow is NOT id Token or Code flow, "setUserDataToStore" is called with the decodedIdToken', waitForAsync(() => {
       const isRenewProcess = false;
-      const idToken = false;
+      const idToken = '';
       const decodedIdToken = 'decodedIdToken';
       const userDataInstore = '';
 
@@ -118,7 +118,7 @@ describe('User Service', () => {
 
     it('if not currentFlow is id token or code flow with renewProcess going -> return existing data from storage', waitForAsync(() => {
       const isRenewProcess = true;
-      const idToken = false;
+      const idToken = '';
       const decodedIdToken = 'decodedIdToken';
       const userDataInstore = 'userDataInstore';
 
@@ -146,7 +146,7 @@ describe('User Service', () => {
 
     it('if not currentFlow is id token or code flow and not renewProcess --> ask server for data', waitForAsync(() => {
       const isRenewProcess = false;
-      const idToken = false;
+      const idToken = '';
       const decodedIdToken = 'decodedIdToken';
       const userDataInstore = '';
       const userDataFromSts = 'userDataFromSts';
@@ -183,7 +183,7 @@ describe('User Service', () => {
           --> ask server for data
           --> logging if it has userdata`, waitForAsync(() => {
       const isRenewProcess = false;
-      const idToken = false;
+      const idToken = '';
       const decodedIdToken = 'decodedIdToken';
       const userDataInstore = '';
       const userDataFromSts = 'userDataFromSts';
@@ -226,7 +226,7 @@ describe('User Service', () => {
           --> ask server for data
           --> throwing Error if it has no userdata `, waitForAsync(() => {
       const isRenewProcess = false;
-      const idToken = false;
+      const idToken = '';
       const decodedIdToken = { sub: 'decodedIdToken' };
       const userDataInstore = '';
       const userDataFromSts = null;
@@ -271,7 +271,7 @@ describe('User Service', () => {
     it(`if not currentFlow is id token or code flow and renewprocess and renewUserInfoAfterTokenRenew
           --> ask server for data`, waitForAsync(() => {
       const isRenewProcess = true;
-      const idToken = false;
+      const idToken = '';
       const decodedIdToken = 'decodedIdToken';
       const userDataInstore = 'userDataInStore';
       const userDataFromSts = 'userDataFromSts';

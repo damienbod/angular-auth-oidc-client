@@ -138,9 +138,9 @@ export class CodeFlowCallbackHandlerService {
   }
 
   private handleRefreshRetry(
-    errors: Observable<any>,
+    errors: Observable<unknown>,
     config: OpenIdConfiguration
-  ): Observable<any> {
+  ): Observable<unknown> {
     return errors.pipe(
       mergeMap((error) => {
         // retry token refresh if there is no internet connection

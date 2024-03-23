@@ -26,7 +26,7 @@ export class DataService {
 
   post<T>(
     url: string | null,
-    body: any,
+    body: unknown,
     config: OpenIdConfiguration,
     headersParams?: HttpHeaders
   ): Observable<T> {

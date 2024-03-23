@@ -5,9 +5,10 @@ import { Injectable } from '@angular/core';
  */
 @Injectable({ providedIn: 'root' })
 export abstract class AbstractLoggerService {
-  abstract logError(message: any, ...args: any[]): void;
+  abstract logError(message: string|object, ...args: any[]): void;
 
-  abstract logWarning(message: any, ...args: any[]): void;
+  abstract logWarning(message: string|object, ...args: any[]): void;
 
-  abstract logDebug(message: any, ...args: any[]): void;
+  abstract logDebug(message: string|object, ...args: any[]): void;
 }
+

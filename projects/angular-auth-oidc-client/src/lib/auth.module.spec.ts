@@ -12,8 +12,6 @@ import {
 
 describe('AuthModule', () => {
   describe('APP_CONFIG', () => {
-    let config: any;
-
     beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [AuthModule.forRoot({ config: { authority: 'something' } })],
@@ -27,7 +25,8 @@ describe('AuthModule', () => {
     });
 
     it('should provide config', () => {
-      config = TestBed.inject(PASSED_CONFIG);
+      const config = TestBed.inject(PASSED_CONFIG);
+
       expect(config).toEqual({ config: { authority: 'something' } });
     });
 
