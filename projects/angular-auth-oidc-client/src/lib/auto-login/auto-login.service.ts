@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
@@ -7,10 +7,9 @@ const STORAGE_KEY = 'redirect';
 
 @Injectable({ providedIn: 'root' })
 export class AutoLoginService {
-  constructor(
-    private readonly storageService: StoragePersistenceService,
-    private readonly router: Router
-  ) {}
+  private readonly storageService = inject(StoragePersistenceService);
+
+  private readonly router = inject(Router);
 
   checkSavedRedirectRouteAndNavigate(config: OpenIdConfiguration | null): void {
     if (!config) {

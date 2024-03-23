@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@angular/core';
+﻿import { inject, Injectable } from '@angular/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { concatMap, map } from 'rxjs/operators';
 import { LoggerService } from '../logging/logger.service';
@@ -14,17 +14,23 @@ import { ConfigValidationService } from './validation/config-validation.service'
 
 @Injectable({ providedIn: 'root' })
 export class ConfigurationService {
-  private configsInternal: Record<string, OpenIdConfiguration> = {};
+  private readonly loggerService = inject(LoggerService);
 
-  constructor(
-    private readonly loggerService: LoggerService,
-    private readonly publicEventsService: PublicEventsService,
-    private readonly storagePersistenceService: StoragePersistenceService,
-    private readonly configValidationService: ConfigValidationService,
-    private readonly platformProvider: PlatformProvider,
-    private readonly authWellKnownService: AuthWellKnownService,
-    private readonly loader: StsConfigLoader
-  ) {}
+  private readonly publicEventsService = inject(PublicEventsService);
+
+  private readonly storagePersistenceService = inject(
+    StoragePersistenceService
+  );
+
+  private readonly platformProvider = inject(PlatformProvider);
+
+  private readonly authWellKnownService = inject(AuthWellKnownService);
+
+  private readonly loader = inject(StsConfigLoader);
+
+  private readonly configValidationService = inject(ConfigValidationService);
+
+  private configsInternal: Record<string, OpenIdConfiguration> = {};
 
   hasManyConfigs(): boolean {
     return Object.keys(this.configsInternal).length > 1;
