@@ -1,14 +1,13 @@
 import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LoggerService } from '../logging/logger.service';
 
 @Injectable({ providedIn: 'root' })
 export class IFrameService {
-  constructor(
-    @Inject(DOCUMENT) private readonly document: Document,
-    private readonly loggerService: LoggerService
-  ) {}
+  private readonly document = inject(DOCUMENT);
+
+  private readonly loggerService = inject(LoggerService);
 
   getExistingIFrame(identifier: string): HTMLIFrameElement | null {
     const iFrameOnParent = this.getIFrameFromParentWindow(identifier);

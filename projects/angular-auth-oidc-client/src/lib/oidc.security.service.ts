@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { concatMap, map } from 'rxjs/operators';
 import { AuthOptions, LogoutAuthOptions } from './auth-options';
@@ -25,6 +25,32 @@ import { UrlService } from './utils/url/url.service';
 
 @Injectable({ providedIn: 'root' })
 export class OidcSecurityService {
+  private readonly checkSessionService = inject(CheckSessionService);
+
+  private readonly checkAuthService = inject(CheckAuthService);
+
+  private readonly userService = inject(UserService);
+
+  private readonly tokenHelperService = inject(TokenHelperService);
+
+  private readonly configurationService = inject(ConfigurationService);
+
+  private readonly authStateService = inject(AuthStateService);
+
+  private readonly flowsDataService = inject(FlowsDataService);
+
+  private readonly callbackService = inject(CallbackService);
+
+  private readonly logoffRevocationService = inject(LogoffRevocationService);
+
+  private readonly loginService = inject(LoginService);
+
+  private readonly refreshSessionService = inject(RefreshSessionService);
+
+  private readonly urlService = inject(UrlService);
+
+  private readonly authWellKnownService = inject(AuthWellKnownService);
+
   /**
    * Provides information about the user after they have logged in.
    *
@@ -62,22 +88,6 @@ export class OidcSecurityService {
   get stsCallback$(): Observable<void> {
     return this.callbackService.stsCallback$;
   }
-
-  constructor(
-    private readonly checkSessionService: CheckSessionService,
-    private readonly checkAuthService: CheckAuthService,
-    private readonly userService: UserService,
-    private readonly tokenHelperService: TokenHelperService,
-    private readonly configurationService: ConfigurationService,
-    private readonly authStateService: AuthStateService,
-    private readonly flowsDataService: FlowsDataService,
-    private readonly callbackService: CallbackService,
-    private readonly logoffRevocationService: LogoffRevocationService,
-    private readonly loginService: LoginService,
-    private readonly refreshSessionService: RefreshSessionService,
-    private readonly urlService: UrlService,
-    private readonly authWellKnownService: AuthWellKnownService
-  ) {}
 
   preloadAuthWellKnownDocument(
     configId?: string

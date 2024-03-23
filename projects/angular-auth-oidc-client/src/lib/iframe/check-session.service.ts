@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable, NgZone, OnDestroy } from '@angular/core';
+import { Injectable, NgZone, OnDestroy, inject } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
@@ -15,6 +15,20 @@ const IFRAME_FOR_CHECK_SESSION_IDENTIFIER = 'myiFrameForCheckSession';
 
 @Injectable({ providedIn: 'root' })
 export class CheckSessionService implements OnDestroy {
+  private readonly loggerService = inject(LoggerService);
+
+  private readonly storagePersistenceService = inject(
+    StoragePersistenceService
+  );
+
+  private readonly iFrameService = inject(IFrameService);
+
+  private readonly eventService = inject(PublicEventsService);
+
+  private readonly zone = inject(NgZone);
+
+  private readonly document = inject(DOCUMENT);
+
   private checkSessionReceived = false;
 
   private scheduledHeartBeatRunning: any;
@@ -36,15 +50,6 @@ export class CheckSessionService implements OnDestroy {
   get checkSessionChanged$(): Observable<boolean> {
     return this.checkSessionChangedInternal$.asObservable();
   }
-
-  constructor(
-    private readonly storagePersistenceService: StoragePersistenceService,
-    private readonly loggerService: LoggerService,
-    private readonly iFrameService: IFrameService,
-    private readonly eventService: PublicEventsService,
-    private readonly zone: NgZone,
-    @Inject(DOCUMENT) private readonly document: Document
-  ) {}
 
   ngOnDestroy(): void {
     this.stop();
