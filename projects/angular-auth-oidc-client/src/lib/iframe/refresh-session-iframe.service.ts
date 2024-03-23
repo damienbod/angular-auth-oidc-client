@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import { Injectable, RendererFactory2, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -19,7 +20,7 @@ export class RefreshSessionIframeService {
 
   private readonly silentRenewService = inject(SilentRenewService);
 
-  private readonly document = inject(Document);
+  private readonly document = inject(DOCUMENT);
 
   refreshSessionWithIframe(
     config: OpenIdConfiguration,

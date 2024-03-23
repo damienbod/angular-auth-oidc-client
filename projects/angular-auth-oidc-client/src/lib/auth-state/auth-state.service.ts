@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
