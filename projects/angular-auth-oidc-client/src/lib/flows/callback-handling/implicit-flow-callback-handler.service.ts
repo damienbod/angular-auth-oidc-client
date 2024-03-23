@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
@@ -9,12 +9,13 @@ import { ResetAuthDataService } from '../reset-auth-data.service';
 
 @Injectable({ providedIn: 'root' })
 export class ImplicitFlowCallbackHandlerService {
-  constructor(
-    private readonly resetAuthDataService: ResetAuthDataService,
-    private readonly loggerService: LoggerService,
-    private readonly flowsDataService: FlowsDataService,
-    @Inject(DOCUMENT) private readonly document: Document
-  ) {}
+  private readonly loggerService = inject(LoggerService);
+
+  private readonly resetAuthDataService = inject(ResetAuthDataService);
+
+  private readonly flowsDataService = inject(FlowsDataService);
+
+  private readonly document = inject(DOCUMENT);
 
   // STEP 1 Code Flow
   // STEP 1 Implicit Flow

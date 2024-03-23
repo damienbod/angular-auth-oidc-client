@@ -1,5 +1,4 @@
-import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable, Renderer2, RendererFactory2 } from '@angular/core';
+import { Injectable, RendererFactory2, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
@@ -9,17 +8,18 @@ import { SilentRenewService } from './silent-renew.service';
 
 @Injectable({ providedIn: 'root' })
 export class RefreshSessionIframeService {
-  private readonly renderer: Renderer2;
+  private readonly renderer = inject(RendererFactory2).createRenderer(
+    null,
+    null
+  );
 
-  constructor(
-    @Inject(DOCUMENT) private readonly document: Document,
-    private readonly loggerService: LoggerService,
-    private readonly urlService: UrlService,
-    private readonly silentRenewService: SilentRenewService,
-    rendererFactory: RendererFactory2
-  ) {
-    this.renderer = rendererFactory.createRenderer(null, null);
-  }
+  private readonly loggerService = inject(LoggerService);
+
+  private readonly urlService = inject(UrlService);
+
+  private readonly silentRenewService = inject(SilentRenewService);
+
+  private readonly document = inject(Document);
 
   refreshSessionWithIframe(
     config: OpenIdConfiguration,
