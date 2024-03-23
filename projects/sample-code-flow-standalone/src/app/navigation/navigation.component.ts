@@ -1,5 +1,5 @@
 import { NgIf } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 
@@ -11,9 +11,9 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
   imports: [RouterLink, NgIf],
 })
 export class NavigationComponent implements OnInit {
-  isAuthenticated = false;
+  private readonly oidcSecurityService = inject(OidcSecurityService);
 
-  constructor(public oidcSecurityService: OidcSecurityService) {}
+  isAuthenticated = false;
 
   ngOnInit(): void {
     this.oidcSecurityService.isAuthenticated$.subscribe(
