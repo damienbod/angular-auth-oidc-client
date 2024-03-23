@@ -1,11 +1,11 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class PlatformProvider {
+  private readonly platformId = inject<string>(PLATFORM_ID);
+
   isBrowser(): boolean {
     return isPlatformBrowser(this.platformId);
   }
-
-  constructor(@Inject(PLATFORM_ID) private readonly platformId: string) {}
 }

@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { CryptoService } from '../utils/crypto/crypto.service';
 
 @Injectable({ providedIn: 'root' })
 export class JwkWindowCryptoService {
-  constructor(private readonly cryptoService: CryptoService) {}
+  private readonly cryptoService = inject(CryptoService);
 
   importVerificationKey(
     key: JsonWebKey,

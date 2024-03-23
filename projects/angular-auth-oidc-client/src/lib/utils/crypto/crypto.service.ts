@@ -1,14 +1,15 @@
 import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class CryptoService {
-  constructor(@Inject(DOCUMENT) private readonly doc: Document) {}
+  private readonly document = inject<Document>(DOCUMENT);
 
   getCrypto(): any {
     // support for IE,  (window.crypto || window.msCrypto)
     return (
-      this.doc.defaultView?.crypto || (this.doc.defaultView as any)?.msCrypto
+      this.document.defaultView?.crypto ||
+      (this.document.defaultView as any)?.msCrypto
     );
   }
 }

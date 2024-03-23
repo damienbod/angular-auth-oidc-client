@@ -1,9 +1,9 @@
 import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class RedirectService {
-  constructor(@Inject(DOCUMENT) private readonly document: Document) {}
+  private readonly document = inject<Document>(DOCUMENT);
 
   redirectTo(url: string): void {
     this.document.location.href = url;

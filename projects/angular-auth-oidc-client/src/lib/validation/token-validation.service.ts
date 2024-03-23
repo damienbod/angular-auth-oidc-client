@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@angular/core';
+﻿import { inject, Injectable } from '@angular/core';
 import { base64url } from 'rfc4648';
 import { from, Observable, of } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
@@ -72,13 +72,15 @@ export class TokenValidationService {
     'PS512',
   ];
 
-  constructor(
-    private readonly tokenHelperService: TokenHelperService,
-    private readonly loggerService: LoggerService,
-    private readonly jwkExtractor: JwkExtractor,
-    private readonly jwkWindowCryptoService: JwkWindowCryptoService,
-    private readonly jwtWindowCryptoService: JwtWindowCryptoService
-  ) {}
+  private readonly tokenHelperService = inject(TokenHelperService);
+
+  private readonly loggerService = inject(LoggerService);
+
+  private readonly jwkExtractor = inject(JwkExtractor);
+
+  private readonly jwkWindowCryptoService = inject(JwkWindowCryptoService);
+
+  private readonly jwtWindowCryptoService = inject(JwtWindowCryptoService);
 
   // id_token C7: The current time MUST be before the time represented by the exp Claim
   // (possibly allowing for some small leeway to account for clock skew).

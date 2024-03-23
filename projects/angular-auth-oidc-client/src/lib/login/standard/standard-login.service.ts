@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { AuthOptions } from '../../auth-options';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
@@ -10,14 +10,19 @@ import { ResponseTypeValidationService } from '../response-type-validation/respo
 
 @Injectable({ providedIn: 'root' })
 export class StandardLoginService {
-  constructor(
-    private readonly loggerService: LoggerService,
-    private readonly responseTypeValidationService: ResponseTypeValidationService,
-    private readonly urlService: UrlService,
-    private readonly redirectService: RedirectService,
-    private readonly authWellKnownService: AuthWellKnownService,
-    private readonly flowsDataService: FlowsDataService
-  ) {}
+  private readonly loggerService = inject(LoggerService);
+
+  private readonly responseTypeValidationService = inject(
+    ResponseTypeValidationService
+  );
+
+  private readonly urlService = inject(UrlService);
+
+  private readonly redirectService = inject(RedirectService);
+
+  private readonly authWellKnownService = inject(AuthWellKnownService);
+
+  private readonly flowsDataService = inject(FlowsDataService);
 
   loginStandard(
     configuration: OpenIdConfiguration,

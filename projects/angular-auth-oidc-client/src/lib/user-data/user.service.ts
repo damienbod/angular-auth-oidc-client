@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { map, retry, switchMap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
@@ -23,14 +23,19 @@ export class UserService {
     return this.userDataInternal$.asObservable();
   }
 
-  constructor(
-    private readonly oidcDataService: DataService,
-    private readonly storagePersistenceService: StoragePersistenceService,
-    private readonly eventService: PublicEventsService,
-    private readonly loggerService: LoggerService,
-    private readonly tokenHelperService: TokenHelperService,
-    private readonly flowHelper: FlowHelper
-  ) {}
+  private readonly loggerService = inject(LoggerService);
+
+  private readonly tokenHelperService = inject(TokenHelperService);
+
+  private readonly flowHelper = inject(FlowHelper);
+
+  private readonly oidcDataService = inject(DataService);
+
+  private readonly storagePersistenceService = inject(
+    StoragePersistenceService
+  );
+
+  private readonly eventService = inject(PublicEventsService);
 
   getAndPersistUserDataInStore(
     currentConfiguration: OpenIdConfiguration,
