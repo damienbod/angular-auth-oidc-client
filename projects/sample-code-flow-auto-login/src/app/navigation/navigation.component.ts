@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
@@ -7,9 +7,9 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
   styleUrls: ['navigation.component.css'],
 })
 export class NavigationComponent implements OnInit {
-  isAuthenticated = false;
+  private readonly oidcSecurityService = inject(OidcSecurityService);
 
-  constructor(public oidcSecurityService: OidcSecurityService) {}
+  isAuthenticated = false;
 
   ngOnInit(): void {
     this.oidcSecurityService.isAuthenticated$.subscribe(
