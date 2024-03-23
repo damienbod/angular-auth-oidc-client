@@ -10,7 +10,7 @@ sidebar_position: 3
 For logging in a user you can call the `authorize()` method:
 
 ```ts
-constructor(private oidcSecurityService: OidcSecurityService) {}
+private readonly oidcSecurityService = inject(OidcSecurityService);
 
 // ...
 this.oidcSecurityService.authorize();
@@ -126,7 +126,8 @@ A simplified page (instead of the application url) can be used. Here's an exampl
     </script>
   </head>
   <body onload="sendMessage()">
-    Transmitting authentication result ... (this popup will be closed automatically).
+    Transmitting authentication result ... (this popup will be closed
+    automatically).
   </body>
 </html>
 ```
