@@ -6,7 +6,7 @@ import { allMultipleConfigRules, allRules } from './rules';
 
 @Injectable({ providedIn: 'root' })
 export class ConfigValidationService {
-  constructor(private readonly loggerService: LoggerService) {}
+  private readonly loggerService = inject(LoggerService);
 
   validateConfigs(passedConfigs: OpenIdConfiguration[]): boolean {
     return this.validateConfigsInternal(

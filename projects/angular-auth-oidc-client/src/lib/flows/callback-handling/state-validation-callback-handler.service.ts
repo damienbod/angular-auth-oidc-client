@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AuthStateService } from '../../auth-state/auth-state.service';
@@ -12,13 +12,15 @@ import { ResetAuthDataService } from '../reset-auth-data.service';
 
 @Injectable({ providedIn: 'root' })
 export class StateValidationCallbackHandlerService {
-  constructor(
-    private readonly loggerService: LoggerService,
-    private readonly stateValidationService: StateValidationService,
-    private readonly authStateService: AuthStateService,
-    private readonly resetAuthDataService: ResetAuthDataService,
-    @Inject(DOCUMENT) private readonly document: Document
-  ) {}
+  private readonly loggerService = inject(LoggerService);
+
+  private readonly stateValidationService = inject(StateValidationService);
+
+  private readonly authStateService = inject(AuthStateService);
+
+  private readonly resetAuthDataService = inject(ResetAuthDataService);
+
+  private readonly document = inject(DOCUMENT);
 
   // STEP 4 All flows
   callbackStateValidation(

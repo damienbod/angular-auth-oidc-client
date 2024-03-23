@@ -1,5 +1,5 @@
 import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, of, throwError, timer } from 'rxjs';
 import { catchError, mergeMap, retryWhen, switchMap } from 'rxjs/operators';
 import { DataService } from '../../api/data.service';
@@ -13,14 +13,19 @@ import { FlowsDataService } from '../flows-data.service';
 
 @Injectable({ providedIn: 'root' })
 export class CodeFlowCallbackHandlerService {
-  constructor(
-    private readonly urlService: UrlService,
-    private readonly loggerService: LoggerService,
-    private readonly tokenValidationService: TokenValidationService,
-    private readonly flowsDataService: FlowsDataService,
-    private readonly storagePersistenceService: StoragePersistenceService,
-    private readonly dataService: DataService
-  ) {}
+  private readonly urlService = inject(UrlService);
+
+  private readonly loggerService = inject(LoggerService);
+
+  private readonly tokenValidationService = inject(TokenValidationService);
+
+  private readonly flowsDataService = inject(FlowsDataService);
+
+  private readonly storagePersistenceService = inject(
+    StoragePersistenceService
+  );
+
+  private readonly dataService = inject(DataService);
 
   // STEP 1 Code Flow
   codeFlowCallback(

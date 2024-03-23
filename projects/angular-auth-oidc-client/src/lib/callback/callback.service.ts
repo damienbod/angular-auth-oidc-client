@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
@@ -10,18 +10,21 @@ import { ImplicitFlowCallbackService } from './implicit-flow-callback.service';
 
 @Injectable({ providedIn: 'root' })
 export class CallbackService {
+  private readonly urlService = inject(UrlService);
+
+  private readonly flowHelper = inject(FlowHelper);
+
+  private readonly implicitFlowCallbackService = inject(
+    ImplicitFlowCallbackService
+  );
+
+  private readonly codeFlowCallbackService = inject(CodeFlowCallbackService);
+
   private readonly stsCallbackInternal$ = new Subject<void>();
 
   get stsCallback$(): Observable<void> {
     return this.stsCallbackInternal$.asObservable();
   }
-
-  constructor(
-    private readonly urlService: UrlService,
-    private readonly flowHelper: FlowHelper,
-    private readonly implicitFlowCallbackService: ImplicitFlowCallbackService,
-    private readonly codeFlowCallbackService: CodeFlowCallbackService
-  ) {}
 
   isCallback(currentUrl: string): boolean {
     if (!currentUrl) {

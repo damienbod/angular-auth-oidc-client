@@ -5,10 +5,9 @@ import { CryptoService } from '../../utils/crypto/crypto.service';
 
 @Injectable({ providedIn: 'root' })
 export class RandomService {
-  constructor(
-    private readonly cryptoService: CryptoService,
-    private readonly loggerService: LoggerService
-  ) {}
+  private readonly loggerService = inject(LoggerService);
+
+  private readonly cryptoService = inject(CryptoService);
 
   createRandom(
     requiredLength: number,

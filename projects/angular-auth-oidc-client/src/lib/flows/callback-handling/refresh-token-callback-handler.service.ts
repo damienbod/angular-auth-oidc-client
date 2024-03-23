@@ -1,5 +1,5 @@
 import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, of, throwError, timer } from 'rxjs';
 import { catchError, mergeMap, retryWhen, switchMap } from 'rxjs/operators';
 import { DataService } from '../../api/data.service';
@@ -11,12 +11,15 @@ import { AuthResult, CallbackContext } from '../callback-context';
 
 @Injectable({ providedIn: 'root' })
 export class RefreshTokenCallbackHandlerService {
-  constructor(
-    private readonly urlService: UrlService,
-    private readonly loggerService: LoggerService,
-    private readonly dataService: DataService,
-    private readonly storagePersistenceService: StoragePersistenceService
-  ) {}
+  private readonly urlService = inject(UrlService);
+
+  private readonly loggerService = inject(LoggerService);
+
+  private readonly dataService = inject(DataService);
+
+  private readonly storagePersistenceService = inject(
+    StoragePersistenceService
+  );
 
   // STEP 2 Refresh Token
   refreshTokensRequestTokens(

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LoggerService } from '../logging/logger.service';
@@ -7,12 +7,13 @@ import { FlowsDataService } from './flows-data.service';
 
 @Injectable({ providedIn: 'root' })
 export class ResetAuthDataService {
-  constructor(
-    private readonly authStateService: AuthStateService,
-    private readonly flowsDataService: FlowsDataService,
-    private readonly userService: UserService,
-    private readonly loggerService: LoggerService
-  ) {}
+  private readonly loggerService = inject(LoggerService);
+
+  private readonly userService = inject(UserService);
+
+  private readonly flowsDataService = inject(FlowsDataService);
+
+  private readonly authStateService = inject(AuthStateService);
 
   resetAuthorizationData(
     currentConfiguration: OpenIdConfiguration | null,
