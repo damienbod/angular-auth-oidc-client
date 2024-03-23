@@ -1,6 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Observable, of, throwError } from 'rxjs';
-import { mockClass } from '../../test/auto-mock';
+import { mockProvider } from '../../test/auto-mock';
 import { createRetriableStream } from '../../test/create-retriable-stream.helper';
 import { DataService } from '../api/data.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
@@ -29,16 +29,12 @@ describe('User Service', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        {
-          provide: StoragePersistenceService,
-          useClass: mockClass(StoragePersistenceService),
-        },
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
-        { provide: DataService, useClass: mockClass(DataService) },
-        { provide: PlatformProvider, useClass: mockClass(PlatformProvider) },
+        mockProvider(StoragePersistenceService),
+        mockProvider(LoggerService),
+        mockProvider(DataService),
+        mockProvider(PlatformProvider),
         PublicEventsService,
         TokenHelperService,
-        UserService,
         FlowHelper,
       ],
     });
@@ -535,7 +531,7 @@ describe('User Service', () => {
         .withArgs('authWellKnownEndPoints', config)
         .and.returnValue(null);
       serviceAsAny.getIdentityUserData(config).subscribe({
-        error: (err) => {
+        error: (err: any) => {
           expect(err).toBeTruthy();
         },
       });
@@ -552,7 +548,7 @@ describe('User Service', () => {
         .withArgs('authWellKnownEndPoints', config)
         .and.returnValue({ userInfoEndpoint: null });
       serviceAsAny.getIdentityUserData(config).subscribe({
-        error: (err) => {
+        error: (err: any) => {
           expect(err).toBeTruthy();
         },
       });
@@ -596,7 +592,7 @@ describe('User Service', () => {
     );
 
     (userService as any).getIdentityUserData(config).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         expect(res).toBeTruthy();
         expect(res).toEqual(DUMMY_USER_DATA);
       },
@@ -621,7 +617,7 @@ describe('User Service', () => {
     );
 
     (userService as any).getIdentityUserData(config).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         expect(res).toBeTruthy();
         expect(res).toEqual(DUMMY_USER_DATA);
       },
@@ -647,7 +643,7 @@ describe('User Service', () => {
     );
 
     (userService as any).getIdentityUserData(config).subscribe({
-      error: (err) => {
+      error: (err: any) => {
         expect(err).toBeTruthy();
       },
     });

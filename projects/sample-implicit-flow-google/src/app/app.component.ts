@@ -1,4 +1,4 @@
-﻿import { Component, OnDestroy, OnInit } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 
@@ -6,13 +6,13 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
   selector: 'app-root',
   templateUrl: 'app.component.html',
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnInit {
   constructor(
     public oidcSecurityService: OidcSecurityService,
-    private router: Router
+    private readonly router: Router
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.oidcSecurityService
       .checkAuth()
 
@@ -29,26 +29,24 @@ export class AppComponent implements OnInit, OnDestroy {
       });
   }
 
-  ngOnDestroy(): void {}
-
-  login() {
+  login(): void {
     console.log('start login');
     this.oidcSecurityService.authorize();
   }
 
-  refreshSession() {
+  refreshSession(): void {
     console.log('start refreshSession');
     this.oidcSecurityService.authorize();
   }
 
-  logout() {
+  logout(): void {
     console.log('start logoff');
     this.oidcSecurityService
       .logoff()
       .subscribe((result) => console.log(result));
   }
 
-  private navigateToStoredEndpoint() {
+  private navigateToStoredEndpoint(): void {
     const path = this.read('redirect');
 
     if (this.router.url === path) {
@@ -64,6 +62,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private read(key: string): any {
     const data = localStorage.getItem(key);
+
     if (data != null) {
       return JSON.parse(data);
     }

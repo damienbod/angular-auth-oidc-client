@@ -1,7 +1,7 @@
 import { HttpHeaders } from '@angular/common/http';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Observable, of, throwError } from 'rxjs';
-import { mockClass } from '../../test/auto-mock';
+import { mockProvider } from '../../test/auto-mock';
 import { createRetriableStream } from '../../test/create-retriable-stream.helper';
 import { DataService } from '../api/data.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
@@ -25,23 +25,13 @@ describe('Logout and Revoke Service', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        LogoffRevocationService,
-        { provide: DataService, useClass: mockClass(DataService) },
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
-        {
-          provide: StoragePersistenceService,
-          useClass: mockClass(StoragePersistenceService),
-        },
-        { provide: UrlService, useClass: mockClass(UrlService) },
-        {
-          provide: CheckSessionService,
-          useClass: mockClass(CheckSessionService),
-        },
-        {
-          provide: ResetAuthDataService,
-          useClass: mockClass(ResetAuthDataService),
-        },
-        { provide: RedirectService, useClass: mockClass(RedirectService) },
+        mockProvider(DataService),
+        mockProvider(LoggerService),
+        mockProvider(StoragePersistenceService),
+        mockProvider(UrlService),
+        mockProvider(CheckSessionService),
+        mockProvider(ResetAuthDataService),
+        mockProvider(RedirectService),
       ],
     });
   });
@@ -477,7 +467,7 @@ describe('Logout and Revoke Service', () => {
       // Arrange
       spyOn(urlService, 'getEndSessionUrl').and.returnValue('someValue');
       const spy = jasmine.createSpy();
-      const urlHandler = (url): void => {
+      const urlHandler = (url: string): void => {
         spy(url);
       };
       const redirectSpy = spyOn(redirectService, 'redirectTo');
@@ -749,7 +739,7 @@ describe('Logout and Revoke Service', () => {
       );
       spyOn(service, 'revokeAccessToken').and.returnValue(of({ any: 'thing' }));
       const logoffSpy = spyOn(service, 'logoff').and.returnValue(of(null));
-      const urlHandler = (_url): void => undefined;
+      const urlHandler = (_url: string): void => undefined;
       const config = { configId: 'configId1' };
 
       // Act
@@ -771,7 +761,7 @@ describe('Logout and Revoke Service', () => {
         .withArgs('authWellKnownEndPoints', config)
         .and.returnValue({ revocationEndpoint: 'revocationEndpoint' });
 
-      spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(null);
+      spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue('');
       const revokeRefreshTokenSpy = spyOn(service, 'revokeRefreshToken');
       const revokeAccessTokenSpy = spyOn(
         service,
@@ -793,7 +783,7 @@ describe('Logout and Revoke Service', () => {
       spyOn(storagePersistenceService, 'read')
         .withArgs('authWellKnownEndPoints', config)
         .and.returnValue({ revocationEndpoint: 'revocationEndpoint' });
-      spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(null);
+      spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue('');
       const loggerSpy = spyOn(loggerService, 'logError');
 
       spyOn(service, 'revokeAccessToken').and.returnValue(

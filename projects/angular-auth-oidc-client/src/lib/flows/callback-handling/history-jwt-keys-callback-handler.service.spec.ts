@@ -1,12 +1,12 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
-import { mockClass } from '../../../test/auto-mock';
+import { mockProvider } from '../../../test/auto-mock';
 import { AuthStateService } from '../../auth-state/auth-state.service';
 import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { JwtKey, JwtKeys } from '../../validation/jwtkeys';
 import { ValidationResult } from '../../validation/validation-result';
-import { CallbackContext, AuthResult } from '../callback-context';
+import { AuthResult, CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
 import { ResetAuthDataService } from '../reset-auth-data.service';
 import { SigninKeyDataService } from '../signin-key-data.service';
@@ -38,21 +38,12 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     TestBed.configureTestingModule({
       providers: [
         HistoryJwtKeysCallbackHandlerService,
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
-        { provide: AuthStateService, useClass: mockClass(AuthStateService) },
-        { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
-        {
-          provide: SigninKeyDataService,
-          useClass: mockClass(SigninKeyDataService),
-        },
-        {
-          provide: StoragePersistenceService,
-          useClass: mockClass(StoragePersistenceService),
-        },
-        {
-          provide: ResetAuthDataService,
-          useClass: mockClass(ResetAuthDataService),
-        },
+        mockProvider(LoggerService),
+        mockProvider(AuthStateService),
+        mockProvider(FlowsDataService),
+        mockProvider(SigninKeyDataService),
+        mockProvider(StoragePersistenceService),
+        mockProvider(ResetAuthDataService),
       ],
     });
   });
@@ -272,7 +263,9 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         },
       ];
 
-      spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(of(null));
+      spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(
+        of({} as JwtKeys)
+      );
       service
         .callbackHistoryAndResetJwtKeys(
           callbackContext,
@@ -350,6 +343,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     it('calls resetAuthorizationData, resets nonce and authStateService in case of an error', waitForAsync(() => {
       const callbackContext = {
         authResult: { error: 'someError' },
+        isRenewProcess: false,
       } as CallbackContext;
       const allconfigs = [
         {
@@ -381,7 +375,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
             expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
               isAuthenticated: false,
               validationResult: ValidationResult.SecureTokenServerError,
-              isRenewProcess: undefined,
+              isRenewProcess: false,
             });
           },
         });
@@ -390,6 +384,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     it('calls authStateService.updateAndPublishAuthState with login required if the error is `login_required`', waitForAsync(() => {
       const callbackContext = {
         authResult: { error: 'login_required' },
+        isRenewProcess: false,
       } as CallbackContext;
       const allconfigs = [
         {
@@ -421,7 +416,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
             expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
               isAuthenticated: false,
               validationResult: ValidationResult.LoginRequired,
-              isRenewProcess: undefined,
+              isRenewProcess: false,
             });
           },
         });

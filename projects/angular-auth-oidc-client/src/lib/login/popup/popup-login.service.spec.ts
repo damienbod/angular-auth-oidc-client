@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { mockClass } from '../../../test/auto-mock';
+import { mockProvider } from '../../../test/auto-mock';
 import { CheckAuthService } from '../../auth-state/check-auth.service';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
 import { LoggerService } from '../../logging/logger.service';
 import { UrlService } from '../../utils/url/url.service';
+import { LoginResponse } from '../login-response';
 import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
 import { PopUpLoginService } from './popup-login.service';
 import { PopupResult } from './popup-result';
@@ -25,18 +26,12 @@ describe('PopUpLoginService', () => {
       imports: [CommonModule],
       providers: [
         PopUpLoginService,
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
-        {
-          provide: ResponseTypeValidationService,
-          useClass: mockClass(ResponseTypeValidationService),
-        },
-        { provide: UrlService, useClass: mockClass(UrlService) },
-        {
-          provide: AuthWellKnownService,
-          useClass: mockClass(AuthWellKnownService),
-        },
-        { provide: PopUpService, useClass: mockClass(PopUpService) },
-        { provide: CheckAuthService, useClass: mockClass(CheckAuthService) },
+        mockProvider(LoggerService),
+        mockProvider(ResponseTypeValidationService),
+        mockProvider(UrlService),
+        mockProvider(AuthWellKnownService),
+        mockProvider(PopUpService),
+        mockProvider(CheckAuthService),
       ],
     });
   });
@@ -93,7 +88,9 @@ describe('PopUpLoginService', () => {
         of({} as PopupResult)
       );
       spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
-      spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
+      spyOn(checkAuthService, 'checkAuth').and.returnValue(
+        of({} as LoginResponse)
+      );
 
       popUpLoginService
         .loginWithPopUpStandard(config, [config])
@@ -120,7 +117,9 @@ describe('PopUpLoginService', () => {
       spyOnProperty(popupService, 'result$').and.returnValue(
         of({} as PopupResult)
       );
-      spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
+      spyOn(checkAuthService, 'checkAuth').and.returnValue(
+        of({} as LoginResponse)
+      );
       const popupSpy = spyOn(popupService, 'openPopUp');
 
       popUpLoginService
@@ -150,7 +149,7 @@ describe('PopUpLoginService', () => {
         of({
           isAuthenticated: true,
           configId: 'configId1',
-          idToken: null,
+          idToken: '',
           userData: { any: 'userData' },
           accessToken: 'anyAccessToken',
         })
@@ -174,7 +173,7 @@ describe('PopUpLoginService', () => {
           expect(result).toEqual({
             isAuthenticated: true,
             configId: 'configId1',
-            idToken: null,
+            idToken: '',
             userData: { any: 'userData' },
             accessToken: 'anyAccessToken',
           });
@@ -199,9 +198,9 @@ describe('PopUpLoginService', () => {
       spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
       spyOn(popupService, 'openPopUp');
       const checkAuthSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(
-        of(null)
+        of({} as LoginResponse)
       );
-      const popupResult: PopupResult = { userClosed: true };
+      const popupResult = { userClosed: true } as PopupResult;
 
       spyOnProperty(popupService, 'result$').and.returnValue(of(popupResult));
 
@@ -213,9 +212,9 @@ describe('PopUpLoginService', () => {
             isAuthenticated: false,
             errorMessage: 'User closed popup',
             configId: 'configId1',
-            idToken: null,
+            idToken: '',
             userData: null,
-            accessToken: null,
+            accessToken: '',
           });
         });
     }));

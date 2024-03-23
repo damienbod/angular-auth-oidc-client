@@ -28,8 +28,17 @@ export class AuthWellKnownService {
   }
 
   queryAndStoreAuthWellKnownEndPoints(
-    config: OpenIdConfiguration
+    config: OpenIdConfiguration | null
   ): Observable<AuthWellKnownEndpoints> {
+    if (!config) {
+      return throwError(
+        () =>
+          new Error(
+            'Please provide a configuration before setting up the module'
+          )
+      );
+    }
+
     const alreadySavedWellKnownEndpoints = this.storagePersistenceService.read(
       'authWellKnownEndPoints',
       config

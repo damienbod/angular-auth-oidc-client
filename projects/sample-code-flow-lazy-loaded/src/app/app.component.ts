@@ -12,7 +12,7 @@ export class AppComponent {
   constructor(public oidcSecurityService: OidcSecurityService) {
     this.oidcSecurityService
       .checkAuth()
-      .subscribe(({ isAuthenticated, userData, accessToken }) => {
+      .subscribe(({ isAuthenticated, accessToken }) => {
         console.log('app authenticated', isAuthenticated);
         console.log(`Current access token is '${accessToken}'`);
       });

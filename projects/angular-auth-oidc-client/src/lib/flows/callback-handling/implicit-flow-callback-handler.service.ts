@@ -43,10 +43,10 @@ export class ImplicitFlowCallbackHandlerService {
         return resultData;
       }, {});
 
-    const callbackContext = {
-      code: null,
-      refreshToken: null,
-      state: null,
+    const callbackContext: CallbackContext = {
+      code: '',
+      refreshToken: '',
+      state: '',
       sessionState: null,
       authResult,
       isRenewProcess: isRenewProcessData,

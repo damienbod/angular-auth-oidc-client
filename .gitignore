@@ -50,3 +50,4 @@ Thumbs.db
 debug.log
 
 /.husky
+/.nx

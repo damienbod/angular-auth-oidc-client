@@ -8,9 +8,9 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 export class ForbiddenComponent implements OnInit {
   public isAuthenticated = false;
 
-  constructor(private oidcSecurityService: OidcSecurityService) {}
+  constructor(private readonly oidcSecurityService: OidcSecurityService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.oidcSecurityService.isAuthenticated$.subscribe(
       ({ isAuthenticated }) => {
         this.isAuthenticated = isAuthenticated;

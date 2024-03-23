@@ -108,7 +108,16 @@ export class UserService {
     return of(existingUserDataFromStorage);
   }
 
-  getUserDataFromStore(currentConfiguration: OpenIdConfiguration): any {
+  getUserDataFromStore(currentConfiguration: OpenIdConfiguration | null): any {
+    if (!currentConfiguration) {
+      return throwError(
+        () =>
+          new Error(
+            'Please provide a configuration before setting up the module'
+          )
+      );
+    }
+
     return (
       this.storagePersistenceService.read('userData', currentConfiguration) ||
       null
@@ -274,20 +283,24 @@ export class UserService {
     if (!hasManyConfigs) {
       const { configId } = currentConfiguration;
 
-      return this.composeSingleUserDataResult(configId, passedUserData);
+      return this.composeSingleUserDataResult(configId ?? '', passedUserData);
     }
 
     const allUserData: ConfigUserDataResult[] = allConfigs.map((config) => {
-      const { configId } = currentConfiguration;
+      const currentConfigId = currentConfiguration.configId ?? '';
+      const configId = config.configId ?? '';
 
-      if (this.currentConfigIsToUpdate(configId, config)) {
-        return { configId: config.configId, userData: passedUserData };
+      if (this.currentConfigIsToUpdate(currentConfigId, config)) {
+        return { configId, userData: passedUserData };
       }
 
       const alreadySavedUserData =
         this.storagePersistenceService.read('userData', config) || null;
 
-      return { configId: config.configId, userData: alreadySavedUserData };
+      return {
+        configId,
+        userData: alreadySavedUserData,
+      };
     });
 
     return {

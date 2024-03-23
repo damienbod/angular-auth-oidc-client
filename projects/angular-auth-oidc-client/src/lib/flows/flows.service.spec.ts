@@ -1,6 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { mockClass } from '../../test/auto-mock';
+import { mockProvider } from '../../test/auto-mock';
 import { CallbackContext } from './callback-context';
 import { CodeFlowCallbackHandlerService } from './callback-handling/code-flow-callback-handler.service';
 import { HistoryJwtKeysCallbackHandlerService } from './callback-handling/history-jwt-keys-callback-handler.service';
@@ -25,34 +25,13 @@ describe('Flows Service', () => {
     TestBed.configureTestingModule({
       providers: [
         FlowsService,
-        {
-          provide: CodeFlowCallbackHandlerService,
-          useClass: mockClass(CodeFlowCallbackHandlerService),
-        },
-        {
-          provide: ImplicitFlowCallbackHandlerService,
-          useClass: mockClass(ImplicitFlowCallbackHandlerService),
-        },
-        {
-          provide: HistoryJwtKeysCallbackHandlerService,
-          useClass: mockClass(HistoryJwtKeysCallbackHandlerService),
-        },
-        {
-          provide: UserCallbackHandlerService,
-          useClass: mockClass(UserCallbackHandlerService),
-        },
-        {
-          provide: StateValidationCallbackHandlerService,
-          useClass: mockClass(StateValidationCallbackHandlerService),
-        },
-        {
-          provide: RefreshSessionCallbackHandlerService,
-          useClass: mockClass(RefreshSessionCallbackHandlerService),
-        },
-        {
-          provide: RefreshTokenCallbackHandlerService,
-          useClass: mockClass(RefreshTokenCallbackHandlerService),
-        },
+        mockProvider(CodeFlowCallbackHandlerService),
+        mockProvider(ImplicitFlowCallbackHandlerService),
+        mockProvider(HistoryJwtKeysCallbackHandlerService),
+        mockProvider(UserCallbackHandlerService),
+        mockProvider(StateValidationCallbackHandlerService),
+        mockProvider(RefreshSessionCallbackHandlerService),
+        mockProvider(RefreshTokenCallbackHandlerService),
       ],
     });
   });
@@ -89,23 +68,23 @@ describe('Flows Service', () => {
       const codeFlowCallbackSpy = spyOn(
         codeFlowCallbackHandlerService,
         'codeFlowCallback'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const codeFlowCodeRequestSpy = spyOn(
         codeFlowCallbackHandlerService,
         'codeFlowCodeRequest'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const callbackHistoryAndResetJwtKeysSpy = spyOn(
         historyJwtKeysCallbackHandlerService,
         'callbackHistoryAndResetJwtKeys'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const callbackStateValidationSpy = spyOn(
         stateValidationCallbackHandlerService,
         'callbackStateValidation'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const callbackUserSpy = spyOn(
         userCallbackHandlerService,
         'callbackUser'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const allConfigs = [
         {
           configId: 'configId1',
@@ -115,7 +94,7 @@ describe('Flows Service', () => {
       service
         .processCodeFlowCallback('some-url1234', allConfigs[0], allConfigs)
         .subscribe((value) => {
-          expect(value).toBeNull();
+          expect(value).toEqual({} as CallbackContext);
           expect(codeFlowCallbackSpy).toHaveBeenCalledOnceWith(
             'some-url1234',
             allConfigs[0]
@@ -133,19 +112,19 @@ describe('Flows Service', () => {
       const codeFlowCodeRequestSpy = spyOn(
         codeFlowCallbackHandlerService,
         'codeFlowCodeRequest'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const callbackHistoryAndResetJwtKeysSpy = spyOn(
         historyJwtKeysCallbackHandlerService,
         'callbackHistoryAndResetJwtKeys'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const callbackStateValidationSpy = spyOn(
         stateValidationCallbackHandlerService,
         'callbackStateValidation'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const callbackUserSpy = spyOn(
         userCallbackHandlerService,
         'callbackUser'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const allConfigs = [
         {
           configId: 'configId1',
@@ -159,7 +138,7 @@ describe('Flows Service', () => {
           allConfigs
         )
         .subscribe((value) => {
-          expect(value).toBeNull();
+          expect(value).toEqual({} as CallbackContext);
           expect(codeFlowCodeRequestSpy).toHaveBeenCalled();
           expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalled();
           expect(callbackStateValidationSpy).toHaveBeenCalled();
@@ -173,19 +152,19 @@ describe('Flows Service', () => {
       const implicitFlowCallbackSpy = spyOn(
         implicitFlowCallbackHandlerService,
         'implicitFlowCallback'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const callbackHistoryAndResetJwtKeysSpy = spyOn(
         historyJwtKeysCallbackHandlerService,
         'callbackHistoryAndResetJwtKeys'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const callbackStateValidationSpy = spyOn(
         stateValidationCallbackHandlerService,
         'callbackStateValidation'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const callbackUserSpy = spyOn(
         userCallbackHandlerService,
         'callbackUser'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const allConfigs = [
         {
           configId: 'configId1',
@@ -195,7 +174,7 @@ describe('Flows Service', () => {
       service
         .processImplicitFlowCallback(allConfigs[0], allConfigs, 'any-hash')
         .subscribe((value) => {
-          expect(value).toBeNull();
+          expect(value).toEqual({} as CallbackContext);
           expect(implicitFlowCallbackSpy).toHaveBeenCalled();
           expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalled();
           expect(callbackStateValidationSpy).toHaveBeenCalled();
@@ -209,23 +188,23 @@ describe('Flows Service', () => {
       const refreshSessionWithRefreshTokensSpy = spyOn(
         refreshSessionCallbackHandlerService,
         'refreshSessionWithRefreshTokens'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const refreshTokensRequestTokensSpy = spyOn(
         refreshTokenCallbackHandlerService,
         'refreshTokensRequestTokens'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const callbackHistoryAndResetJwtKeysSpy = spyOn(
         historyJwtKeysCallbackHandlerService,
         'callbackHistoryAndResetJwtKeys'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const callbackStateValidationSpy = spyOn(
         stateValidationCallbackHandlerService,
         'callbackStateValidation'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const callbackUserSpy = spyOn(
         userCallbackHandlerService,
         'callbackUser'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const allConfigs = [
         {
           configId: 'configId1',
@@ -235,7 +214,7 @@ describe('Flows Service', () => {
       service
         .processRefreshToken(allConfigs[0], allConfigs)
         .subscribe((value) => {
-          expect(value).toBeNull();
+          expect(value).toEqual({} as CallbackContext);
           expect(refreshSessionWithRefreshTokensSpy).toHaveBeenCalled();
           expect(refreshTokensRequestTokensSpy).toHaveBeenCalled();
           expect(callbackHistoryAndResetJwtKeysSpy).toHaveBeenCalled();

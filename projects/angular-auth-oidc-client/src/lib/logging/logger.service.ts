@@ -70,10 +70,14 @@ export class LoggerService {
   }
 
   logDebug(
-    configuration: OpenIdConfiguration,
+    configuration: OpenIdConfiguration | null,
     message: any,
     ...args: any[]
   ): void {
+    if (!configuration) {
+      return;
+    }
+
     if (!this.logLevelIsSet(configuration)) {
       return;
     }
@@ -110,6 +114,10 @@ export class LoggerService {
     logLevelToCompare: LogLevel
   ): boolean {
     const { logLevel } = configuration || {};
+
+    if (!logLevel) {
+      return false;
+    }
 
     return logLevel <= logLevelToCompare;
   }

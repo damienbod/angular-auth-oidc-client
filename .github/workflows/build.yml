@@ -27,7 +27,7 @@ jobs:
       - name: Installing Dependencies
         run: npm ci
 
-      - name: Linting Frontend
+      - name: Linting Library
         run: npm run lint-lib
 
       - name: Testing Frontend

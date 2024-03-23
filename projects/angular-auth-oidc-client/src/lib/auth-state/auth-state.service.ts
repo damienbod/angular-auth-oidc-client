@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { AuthResult } from '../flows/callback-context';
@@ -60,7 +60,7 @@ export class AuthStateService {
 
   setAuthorizationData(
     accessToken: string,
-    authResult: AuthResult,
+    authResult: AuthResult | null,
     currentConfig: OpenIdConfiguration,
     allConfigs: OpenIdConfiguration[]
   ): void {
@@ -78,9 +78,13 @@ export class AuthStateService {
     this.setAuthenticatedAndFireEvent(allConfigs);
   }
 
-  getAccessToken(configuration: OpenIdConfiguration): string {
+  getAccessToken(configuration: OpenIdConfiguration | null): string {
+    if (!configuration) {
+      return '';
+    }
+
     if (!this.isAuthenticated(configuration)) {
-      return null;
+      return '';
     }
 
     const token = this.storagePersistenceService.getAccessToken(configuration);
@@ -88,9 +92,13 @@ export class AuthStateService {
     return this.decodeURIComponentSafely(token);
   }
 
-  getIdToken(configuration: OpenIdConfiguration): string {
+  getIdToken(configuration: OpenIdConfiguration | null): string {
+    if (!configuration) {
+      return '';
+    }
+
     if (!this.isAuthenticated(configuration)) {
-      return null;
+      return '';
     }
 
     const token = this.storagePersistenceService.getIdToken(configuration);
@@ -98,9 +106,13 @@ export class AuthStateService {
     return this.decodeURIComponentSafely(token);
   }
 
-  getRefreshToken(configuration: OpenIdConfiguration): string {
+  getRefreshToken(configuration: OpenIdConfiguration | null): string {
+    if (!configuration) {
+      return '';
+    }
+
     if (!this.isAuthenticated(configuration)) {
-      return null;
+      return '';
     }
 
     const token = this.storagePersistenceService.getRefreshToken(configuration);
@@ -108,7 +120,13 @@ export class AuthStateService {
     return this.decodeURIComponentSafely(token);
   }
 
-  getAuthenticationResult(configuration: OpenIdConfiguration): AuthResult {
+  getAuthenticationResult(
+    configuration: OpenIdConfiguration | null
+  ): AuthResult | null {
+    if (!configuration) {
+      return null;
+    }
+
     if (!this.isAuthenticated(configuration)) {
       return null;
     }
@@ -118,7 +136,13 @@ export class AuthStateService {
     );
   }
 
-  areAuthStorageTokensValid(configuration: OpenIdConfiguration): boolean {
+  areAuthStorageTokensValid(
+    configuration: OpenIdConfiguration | null
+  ): boolean {
+    if (!configuration) {
+      return false;
+    }
+
     if (!this.isAuthenticated(configuration)) {
       return false;
     }
@@ -207,7 +231,18 @@ export class AuthStateService {
     return hasExpired;
   }
 
-  isAuthenticated(configuration: OpenIdConfiguration): boolean {
+  isAuthenticated(configuration: OpenIdConfiguration | null): boolean {
+    if (!configuration) {
+      throwError(
+        () =>
+          new Error(
+            'Please provide a configuration before setting up the module'
+          )
+      );
+
+      return false;
+    }
+
     const hasAccessToken =
       !!this.storagePersistenceService.getAccessToken(configuration);
     const hasIdToken =
@@ -225,7 +260,7 @@ export class AuthStateService {
   }
 
   private persistAccessTokenExpirationTime(
-    authResult: AuthResult,
+    authResult: AuthResult | null,
     configuration: OpenIdConfiguration
   ): void {
     if (authResult?.expires_in) {
@@ -249,7 +284,9 @@ export class AuthStateService {
 
       return {
         isAuthenticated: true,
-        allConfigsAuthenticated: [{ configId, isAuthenticated: true }],
+        allConfigsAuthenticated: [
+          { configId: configId ?? '', isAuthenticated: true },
+        ],
       };
     }
 
@@ -264,7 +301,9 @@ export class AuthStateService {
 
       return {
         isAuthenticated: false,
-        allConfigsAuthenticated: [{ configId, isAuthenticated: false }],
+        allConfigsAuthenticated: [
+          { configId: configId ?? '', isAuthenticated: false },
+        ],
       };
     }
 
@@ -275,7 +314,7 @@ export class AuthStateService {
     allConfigs: OpenIdConfiguration[]
   ): AuthenticatedResult {
     const allConfigsAuthenticated = allConfigs.map((config) => ({
-      configId: config.configId,
+      configId: config.configId ?? '',
       isAuthenticated: this.isAuthenticated(config),
     }));
 

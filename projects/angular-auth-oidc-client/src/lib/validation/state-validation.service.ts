@@ -27,7 +27,10 @@ export class StateValidationService {
     callbackContext: CallbackContext,
     configuration: OpenIdConfiguration
   ): Observable<StateValidationResult> {
-    if (!callbackContext || callbackContext.authResult.error) {
+    const hasError = Boolean(callbackContext.authResult?.error);
+    const hasCallbackContext = Boolean(callbackContext);
+
+    if (!hasCallbackContext || hasError) {
       return of(new StateValidationResult('', '', false, {}));
     }
 
@@ -46,7 +49,7 @@ export class StateValidationService {
 
     if (
       !this.tokenValidationService.validateStateFromHashCallback(
-        callbackContext.authResult.state,
+        callbackContext.authResult?.state,
         authStateControl,
         configuration
       )
@@ -67,14 +70,13 @@ export class StateValidationService {
       this.flowHelper.isCurrentFlowCodeFlow(configuration);
 
     if (isCurrentFlowImplicitFlowWithAccessToken || isCurrentFlowCodeFlow) {
-      toReturn.accessToken = callbackContext.authResult.access_token;
+      toReturn.accessToken = callbackContext.authResult?.access_token ?? '';
     }
 
     const disableIdTokenValidation = configuration.disableIdTokenValidation;
 
     if (disableIdTokenValidation) {
       toReturn.state = ValidationResult.Ok;
-      // TODO TESTING
       toReturn.authResponseIsValid = true;
 
       return of(toReturn);
@@ -82,17 +84,16 @@ export class StateValidationService {
 
     const isInRefreshTokenFlow =
       callbackContext.isRenewProcess && !!callbackContext.refreshToken;
-    const hasIdToken = !!callbackContext.authResult.id_token;
+    const hasIdToken = Boolean(callbackContext.authResult?.id_token);
 
     if (isInRefreshTokenFlow && !hasIdToken) {
       toReturn.state = ValidationResult.Ok;
-      // TODO TESTING
       toReturn.authResponseIsValid = true;
 
       return of(toReturn);
     }
 
-    if (callbackContext.authResult.id_token) {
+    if (hasIdToken) {
       const {
         clientId,
         issValidationOff,
@@ -102,7 +103,7 @@ export class StateValidationService {
         renewTimeBeforeTokenExpiresInSeconds,
       } = configuration;
 
-      toReturn.idToken = callbackContext.authResult.id_token;
+      toReturn.idToken = callbackContext.authResult?.id_token ?? '';
       toReturn.decodedIdToken = this.tokenHelperService.getPayloadFromToken(
         toReturn.idToken,
         false,
@@ -137,7 +138,7 @@ export class StateValidationService {
               !this.tokenValidationService.validateIdTokenNonce(
                 toReturn.decodedIdToken,
                 authNonce,
-                ignoreNonceAfterRefresh,
+                Boolean(ignoreNonceAfterRefresh),
                 configuration
               )
             ) {
@@ -171,8 +172,8 @@ export class StateValidationService {
               !isInRefreshTokenFlow &&
               !this.tokenValidationService.validateIdTokenIatMaxOffset(
                 toReturn.decodedIdToken,
-                maxIdTokenIatOffsetAllowedInSeconds,
-                disableIatOffsetValidation,
+                maxIdTokenIatOffsetAllowedInSeconds ?? 120,
+                Boolean(disableIatOffsetValidation),
                 configuration
               )
             ) {
@@ -352,7 +353,7 @@ export class StateValidationService {
     }
 
     // only do check if id_token returned, no always the case when using refresh tokens
-    if (callbackContext.authResult.id_token) {
+    if (callbackContext.authResult?.id_token) {
       const idTokenHeader = this.tokenHelperService.getHeaderFromToken(
         toReturn.idToken,
         false,

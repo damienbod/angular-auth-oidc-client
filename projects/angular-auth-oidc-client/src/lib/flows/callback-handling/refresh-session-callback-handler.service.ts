@@ -30,8 +30,8 @@ export class RefreshSessionCallbackHandlerService {
     const idToken = this.authStateService.getIdToken(config);
 
     if (refreshToken) {
-      const callbackContext = {
-        code: null,
+      const callbackContext: CallbackContext = {
+        code: '',
         refreshToken,
         state: stateData,
         sessionState: null,

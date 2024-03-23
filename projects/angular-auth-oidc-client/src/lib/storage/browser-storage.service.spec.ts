@@ -1,23 +1,22 @@
 import { TestBed } from '@angular/core/testing';
-import { mockClass } from '../../test/auto-mock';
+import { mockClass, mockProvider } from '../../test/auto-mock';
 import { LoggerService } from '../logging/logger.service';
 import { AbstractSecurityStorage } from './abstract-security-storage';
 import { BrowserStorageService } from './browser-storage.service';
 import { DefaultSessionStorageService } from './default-sessionstorage.service';
 
-describe('Browser Service', () => {
+describe('BrowserStorageService', () => {
   let service: BrowserStorageService;
   let abstractSecurityStorage: AbstractSecurityStorage;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        mockProvider(LoggerService),
         {
           provide: AbstractSecurityStorage,
           useClass: mockClass(DefaultSessionStorageService),
         },
-        BrowserStorageService,
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
       ],
     });
   });
@@ -161,7 +160,7 @@ describe('Browser Service', () => {
 
   describe('hasStorage', () => {
     it('returns false if there is no storage', () => {
-      Storage = undefined;
+      (Storage as any) = undefined;
       expect((service as any).hasStorage()).toBeFalse();
       Storage = Storage;
     });

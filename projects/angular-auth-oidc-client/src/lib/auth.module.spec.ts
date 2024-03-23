@@ -1,6 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { mockClass } from '../test/auto-mock';
+import { mockProvider } from '../test/auto-mock';
 import { PASSED_CONFIG } from './auth-config';
 import { AuthModule } from './auth.module';
 import { ConfigurationService } from './config/config.service';
@@ -17,18 +17,13 @@ describe('AuthModule', () => {
     beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [AuthModule.forRoot({ config: { authority: 'something' } })],
-        providers: [
-          {
-            provide: ConfigurationService,
-            useClass: mockClass(ConfigurationService),
-          },
-        ],
+        providers: [mockProvider(ConfigurationService)],
       }).compileComponents();
     }));
 
     it('should create', () => {
       expect(AuthModule).toBeDefined();
-      expect(AuthModule.forRoot(null)).toBeDefined();
+      expect(AuthModule.forRoot({})).toBeDefined();
     });
 
     it('should provide config', () => {
@@ -50,16 +45,11 @@ describe('AuthModule', () => {
           AuthModule.forRoot({
             loader: {
               provide: StsConfigLoader,
-              useFactory: () => new StsConfigHttpLoader(of(null)),
+              useFactory: () => new StsConfigHttpLoader(of({})),
             },
           }),
         ],
-        providers: [
-          {
-            provide: ConfigurationService,
-            useClass: mockClass(ConfigurationService),
-          },
-        ],
+        providers: [mockProvider(ConfigurationService)],
       }).compileComponents();
     }));
 

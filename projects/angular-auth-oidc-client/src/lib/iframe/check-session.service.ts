@@ -1,14 +1,13 @@
 import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable, NgZone } from '@angular/core';
+import { Inject, Injectable, NgZone, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
-import { OpenIdConfiguration } from '../config/openid-configuration';
 import { IFrameService } from './existing-iframe.service';
-import { OnDestroy } from '@angular/core';
 
 const IFRAME_FOR_CHECK_SESSION_IDENTIFIER = 'myiFrameForCheckSession';
 
@@ -49,17 +48,21 @@ export class CheckSessionService implements OnDestroy {
 
   ngOnDestroy(): void {
     this.stop();
-    this.document.defaultView.removeEventListener(
-      'message',
-      this.iframeMessageEventListener,
-      false
-    );
+    const windowAsDefaultView = this.document.defaultView;
+
+    if (windowAsDefaultView) {
+      windowAsDefaultView.removeEventListener(
+        'message',
+        this.iframeMessageEventListener,
+        false
+      );
+    }
   }
 
   isCheckSessionConfigured(configuration: OpenIdConfiguration): boolean {
     const { startCheckSession } = configuration;
 
-    return startCheckSession;
+    return Boolean(startCheckSession);
   }
 
   start(configuration: OpenIdConfiguration): void {
@@ -84,10 +87,10 @@ export class CheckSessionService implements OnDestroy {
   serverStateChanged(configuration: OpenIdConfiguration): boolean {
     const { startCheckSession } = configuration;
 
-    return startCheckSession && this.checkSessionReceived;
+    return Boolean(startCheckSession) && this.checkSessionReceived;
   }
 
-  getExistingIframe(): HTMLIFrameElement {
+  getExistingIframe(): HTMLIFrameElement | null {
     return this.iFrameService.getExistingIFrame(
       IFRAME_FOR_CHECK_SESSION_IDENTIFIER
     );
@@ -119,14 +122,22 @@ export class CheckSessionService implements OnDestroy {
     // this is done even if iframe exists for HMR to work, since iframe exists on service init
     this.bindMessageEventToIframe(configuration);
     const checkSessionIframe = authWellKnownEndPoints.checkSessionIframe;
+    const contentWindow = existingIframe.contentWindow;
 
-    if (checkSessionIframe) {
-      existingIframe.contentWindow.location.replace(checkSessionIframe);
-    } else {
+    if (!checkSessionIframe) {
       this.loggerService.logWarning(
         configuration,
         'CheckSession - init check session: checkSessionIframe is not configured to run'
       );
+    }
+
+    if (!contentWindow) {
+      this.loggerService.logWarning(
+        configuration,
+        'CheckSession - init check session: IFrame contentWindow does not exist'
+      );
+    } else {
+      contentWindow.location.replace(checkSessionIframe);
     }
 
     return new Observable((observer) => {
@@ -139,7 +150,7 @@ export class CheckSessionService implements OnDestroy {
   }
 
   private pollServerSession(
-    clientId: string,
+    clientId: string | undefined,
     configuration: OpenIdConfiguration
   ): void {
     this.outstandingMessages = 0;
@@ -163,14 +174,19 @@ export class CheckSessionService implements OnDestroy {
               'authWellKnownEndPoints',
               configuration
             );
+            const contentWindow = existingIframe.contentWindow;
 
-            if (sessionState && authWellKnownEndPoints?.checkSessionIframe) {
+            if (
+              sessionState &&
+              authWellKnownEndPoints?.checkSessionIframe &&
+              contentWindow
+            ) {
               const iframeOrigin = new URL(
                 authWellKnownEndPoints.checkSessionIframe
               )?.origin;
 
               this.outstandingMessages++;
-              existingIframe.contentWindow.postMessage(
+              contentWindow.postMessage(
                 clientId + ' ' + sessionState,
                 iframeOrigin
               );
@@ -264,11 +280,16 @@ export class CheckSessionService implements OnDestroy {
       this,
       configuration
     );
-    this.document.defaultView.addEventListener(
-      'message',
-      this.iframeMessageEventListener,
-      false
-    );
+
+    const defaultView = this.document.defaultView;
+
+    if (defaultView) {
+      defaultView.addEventListener(
+        'message',
+        this.iframeMessageEventListener,
+        false
+      );
+    }
   }
 
   private getOrCreateIframe(

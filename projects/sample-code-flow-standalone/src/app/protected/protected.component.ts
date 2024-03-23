@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-protected',
@@ -6,8 +6,4 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./protected.component.css'],
   standalone: true,
 })
-export class ProtectedComponent implements OnInit {
-  constructor() {}
-
-  ngOnInit() {}
-}
+export class ProtectedComponent {}

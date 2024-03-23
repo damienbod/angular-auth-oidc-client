@@ -36,8 +36,9 @@ export class JwtWindowCryptoService {
     return from(
       this.cryptoService.getCrypto().subtle.digest(algorithm, msgBuffer)
     ).pipe(
-      map((hashBuffer: ArrayBuffer) => {
-        const hashArray: number[] = Array.from(new Uint8Array(hashBuffer));
+      map((hashBuffer: unknown) => {
+        const buffer = hashBuffer as ArrayBuffer;
+        const hashArray: number[] = Array.from(new Uint8Array(buffer));
 
         return this.toHashString(hashArray);
       })
@@ -54,7 +55,7 @@ export class JwtWindowCryptoService {
     return result;
   }
 
-  private base64UrlEncode(str): string {
+  private base64UrlEncode(str: string): string {
     const base64: string = btoa(str);
 
     return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');

@@ -48,7 +48,7 @@ export class HistoryJwtKeysCallbackHandlerService {
 
     if (
       config.allowUnsafeReuseRefreshToken &&
-      callbackContext.authResult.refresh_token
+      callbackContext.authResult?.refresh_token
     ) {
       this.storagePersistenceService.write(
         'reusable_refresh_token',
@@ -66,7 +66,7 @@ export class HistoryJwtKeysCallbackHandlerService {
       this.loggerService.logDebug(config, 'history clean up inactive');
     }
 
-    if (callbackContext.authResult.error) {
+    if (callbackContext.authResult?.error) {
       const errorMessage = `AuthCallback AuthResult came with error: ${callbackContext.authResult.error}`;
 
       this.loggerService.logDebug(config, errorMessage);
@@ -154,7 +154,7 @@ export class HistoryJwtKeysCallbackHandlerService {
   }
 
   private resetBrowserHistory(): void {
-    this.document.defaultView.history.replaceState(
+    this.document.defaultView?.history.replaceState(
       {},
       this.document.title,
       this.document.defaultView.location.origin +

@@ -1,5 +1,5 @@
 import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
-import { mockClass } from '../../../test/auto-mock';
+import { mockProvider } from '../../../test/auto-mock';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
@@ -14,12 +14,8 @@ describe('PopUpService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        {
-          provide: StoragePersistenceService,
-          useClass: mockClass(StoragePersistenceService),
-        },
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
-        PopUpService,
+        mockProvider(StoragePersistenceService),
+        mockProvider(LoggerService),
       ],
     });
   });
@@ -30,7 +26,7 @@ describe('PopUpService', () => {
     popUpService = TestBed.inject(PopUpService);
   });
 
-  let store = {};
+  let store: any = {};
   const mockStorage = {
     getItem: (key: string): string => {
       return key in store ? store[key] : null;
@@ -45,7 +41,7 @@ describe('PopUpService', () => {
       store = {};
     },
     length: 1,
-    key: (_i): string => '',
+    key: (_i: any): string => '',
   };
 
   it('should create', () => {
@@ -199,21 +195,23 @@ describe('PopUpService', () => {
 
         cleanUpSpy = spyOn(popUpService as any, 'cleanUp').and.callThrough();
 
-        popupResult = undefined;
+        popupResult = {} as PopupResult;
 
         popUpService.result$.subscribe((result) => (popupResult = result));
       });
 
       it('message received with data', fakeAsync(() => {
-        let listener: (event: MessageEvent) => void;
+        let listener: (event: MessageEvent) => void = () => {
+          return;
+        };
 
         spyOn(window, 'addEventListener').and.callFake(
-          (_, func) => (listener = func)
+          (_: any, func: any) => (listener = func)
         );
 
         popUpService.openPopUp('url', {}, { configId: 'configId1' });
 
-        expect(popupResult).toBeUndefined();
+        expect(popupResult).toEqual({} as PopupResult);
         expect(cleanUpSpy).not.toHaveBeenCalled();
 
         listener(new MessageEvent('message', { data: 'some-url1111' }));
@@ -230,38 +228,43 @@ describe('PopUpService', () => {
       }));
 
       it('message received without data does return but cleanup does not throw event', fakeAsync(() => {
-        let listener: (event: MessageEvent) => void;
+        let listener: (event: MessageEvent) => void = () => {
+          return;
+        };
 
         spyOn(window, 'addEventListener').and.callFake(
-          (_, func) => (listener = func)
+          (_: any, func: any) => (listener = func)
         );
         const nextSpy = spyOn((popUpService as any).resultInternal$, 'next');
 
         popUpService.openPopUp('url', {}, { configId: 'configId1' });
 
-        expect(popupResult).toBeUndefined();
+        expect(popupResult).toEqual({} as PopupResult);
         expect(cleanUpSpy).not.toHaveBeenCalled();
 
         listener(new MessageEvent('message', { data: null }));
 
         tick(200);
 
-        expect(popupResult).toBeUndefined();
+        expect(popupResult).toEqual({} as PopupResult);
         expect(cleanUpSpy).toHaveBeenCalled();
         expect(nextSpy).not.toHaveBeenCalled();
       }));
 
       it('user closed', fakeAsync(() => {
-        popUpService.openPopUp('url', {}, { configId: 'configId1' });
+        popUpService.openPopUp('url', undefined, { configId: 'configId1' });
 
-        expect(popupResult).toBeUndefined();
+        expect(popupResult).toEqual({} as PopupResult);
         expect(cleanUpSpy).not.toHaveBeenCalled();
 
         (popup as any).closed = true;
 
         tick(200);
 
-        expect(popupResult).toEqual({ userClosed: true });
+        expect(popupResult).toEqual({
+          userClosed: true,
+          receivedUrl: '',
+        } as PopupResult);
         expect(cleanUpSpy).toHaveBeenCalled();
       }));
     });
@@ -275,7 +278,7 @@ describe('PopUpService', () => {
       const sendMessageSpy = spyOn(popUpService as any, 'sendMessage');
 
       // act
-      popUpService.sendMessageToMainWindow('');
+      popUpService.sendMessageToMainWindow('', {});
 
       // assert
       expect(sendMessageSpy).not.toHaveBeenCalled();
@@ -289,7 +292,7 @@ describe('PopUpService', () => {
       const sendMessageSpy = spyOn(window.opener, 'postMessage');
 
       // act
-      popUpService.sendMessageToMainWindow('someUrl');
+      popUpService.sendMessageToMainWindow('someUrl', {});
 
       // assert
       expect(sendMessageSpy).toHaveBeenCalledOnceWith(
@@ -305,7 +308,7 @@ describe('PopUpService', () => {
       const spy = spyOn(window, 'removeEventListener').and.callFake(
         () => undefined
       );
-      const listener = null;
+      const listener: any = null;
 
       // act
       (popUpService as any).cleanUp(listener, { configId: 'configId1' });

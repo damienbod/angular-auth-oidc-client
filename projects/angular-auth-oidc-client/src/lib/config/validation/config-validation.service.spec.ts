@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { mockClass } from '../../../test/auto-mock';
+import { mockProvider } from '../../../test/auto-mock';
 import { LogLevel } from '../../logging/log-level';
 import { LoggerService } from '../../logging/logger.service';
+import { OpenIdConfiguration } from '../openid-configuration';
 import { ConfigValidationService } from './config-validation.service';
 import { allMultipleConfigRules } from './rules';
 
@@ -11,10 +12,7 @@ describe('Config Validation Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        ConfigValidationService,
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
-      ],
+      providers: [ConfigValidationService, mockProvider(LoggerService)],
     });
   });
 
@@ -71,7 +69,7 @@ describe('Config Validation Service', () => {
 
   describe('ensure-clientId.rule', () => {
     it('return false when no clientId is set', () => {
-      const config = { ...VALID_CONFIG, clientId: null };
+      const config = { ...VALID_CONFIG, clientId: '' } as OpenIdConfiguration;
       const result = configValidationService.validateConfig(config);
 
       expect(result).toBeFalse();
@@ -80,7 +78,10 @@ describe('Config Validation Service', () => {
 
   describe('ensure-authority-server.rule', () => {
     it('return false when no security token service is set', () => {
-      const config = { ...VALID_CONFIG, authority: null };
+      const config = {
+        ...VALID_CONFIG,
+        authority: '',
+      } as OpenIdConfiguration;
       const result = configValidationService.validateConfig(config);
 
       expect(result).toBeFalse();
@@ -102,8 +103,8 @@ describe('Config Validation Service', () => {
         ...VALID_CONFIG,
         silentRenew: true,
         useRefreshToken: false,
-        silentRenewUrl: null,
-      };
+        silentRenewUrl: '',
+      } as OpenIdConfiguration;
       const result = configValidationService.validateConfig(config);
 
       expect(result).toBeFalse();
@@ -166,17 +167,12 @@ describe('Config Validation Service', () => {
     });
 
     it('should return false and a better error message when config is not passed as object with config property', () => {
-      const loggerErrorSpy = spyOn(loggerService, 'logError');
       const loggerWarningSpy = spyOn(loggerService, 'logWarning');
 
-      const result = configValidationService.validateConfigs([null]);
+      const result = configValidationService.validateConfigs([]);
 
       expect(result).toBeFalse();
       expect(loggerWarningSpy).not.toHaveBeenCalled();
-      expect(loggerErrorSpy.calls.argsFor(0)).toEqual([
-        null,
-        `Please make sure you add an object with a 'config' property: ....({ config }) instead of ...(config)`,
-      ]);
     });
   });
 
@@ -187,9 +183,9 @@ describe('Config Validation Service', () => {
         'validateConfigsInternal'
       ).and.callThrough();
 
-      const result = configValidationService.validateConfigs(null);
+      const result = configValidationService.validateConfigs([]);
 
-      expect(result).toBeTrue();
+      expect(result).toBeFalse();
       expect(spy).toHaveBeenCalledOnceWith([], allMultipleConfigRules);
     });
   });

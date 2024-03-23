@@ -26,7 +26,11 @@ export class FlowsDataService {
     this.storagePersistenceService.write('authNonce', nonce, configuration);
   }
 
-  getAuthStateControl(configuration: OpenIdConfiguration): any {
+  getAuthStateControl(configuration: OpenIdConfiguration | null): string {
+    if (!configuration) {
+      return '';
+    }
+
     return this.storagePersistenceService.read(
       'authStateControl',
       configuration
@@ -35,8 +39,12 @@ export class FlowsDataService {
 
   setAuthStateControl(
     authStateControl: string,
-    configuration: OpenIdConfiguration
+    configuration: OpenIdConfiguration | null
   ): boolean {
+    if (!configuration) {
+      return false;
+    }
+
     return this.storagePersistenceService.write(
       'authStateControl',
       authStateControl,
@@ -121,7 +129,11 @@ export class FlowsDataService {
       return false;
     }
 
-    const timeOutInMilliseconds = silentRenewTimeoutInSeconds * 1000;
+    if (storageObject.state === 'not-running') {
+      return false;
+    }
+
+    const timeOutInMilliseconds = (silentRenewTimeoutInSeconds ?? 0) * 1000;
     const dateOfLaunchedProcessUtc = Date.parse(
       storageObject.dateOfLaunchedProcessUtc
     );
@@ -158,7 +170,11 @@ export class FlowsDataService {
     );
   }
 
-  resetSilentRenewRunning(configuration: OpenIdConfiguration): void {
+  resetSilentRenewRunning(configuration: OpenIdConfiguration | null): void {
+    if (!configuration) {
+      return;
+    }
+
     this.storagePersistenceService.write(
       'storageSilentRenewRunning',
       '',
@@ -175,7 +191,10 @@ export class FlowsDataService {
     );
 
     if (!storageEntry) {
-      return null;
+      return {
+        dateOfLaunchedProcessUtc: '',
+        state: 'not-running',
+      };
     }
 
     return JSON.parse(storageEntry);

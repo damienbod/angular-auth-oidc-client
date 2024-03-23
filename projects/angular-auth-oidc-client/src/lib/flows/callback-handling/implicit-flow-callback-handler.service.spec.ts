@@ -1,6 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { TestBed, waitForAsync } from '@angular/core/testing';
-import { mockClass } from '../../../test/auto-mock';
+import { mockProvider } from '../../../test/auto-mock';
 import { LoggerService } from '../../logging/logger.service';
 import { CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
@@ -16,12 +16,9 @@ describe('ImplicitFlowCallbackHandlerService', () => {
     TestBed.configureTestingModule({
       providers: [
         ImplicitFlowCallbackHandlerService,
-        {
-          provide: ResetAuthDataService,
-          useClass: mockClass(ResetAuthDataService),
-        },
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
-        { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
+        mockProvider(FlowsDataService),
+        mockProvider(ResetAuthDataService),
+        mockProvider(LoggerService),
         {
           provide: DOCUMENT,
           useValue: {
@@ -91,9 +88,9 @@ describe('ImplicitFlowCallbackHandlerService', () => {
     it('returns callbackContext if all params are good', waitForAsync(() => {
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
       const expectedCallbackContext = {
-        code: null,
-        refreshToken: null,
-        state: null,
+        code: '',
+        refreshToken: '',
+        state: '',
         sessionState: null,
         authResult: { anyHash: '' },
         isRenewProcess: true,
@@ -118,9 +115,9 @@ describe('ImplicitFlowCallbackHandlerService', () => {
     it('uses window location hash if no hash is passed', waitForAsync(() => {
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
       const expectedCallbackContext = {
-        code: null,
-        refreshToken: null,
-        state: null,
+        code: '',
+        refreshToken: '',
+        state: '',
         sessionState: null,
         authResult: { anyFakeHash: '' },
         isRenewProcess: true,

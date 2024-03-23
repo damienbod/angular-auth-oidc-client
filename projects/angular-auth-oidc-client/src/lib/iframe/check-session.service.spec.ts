@@ -1,14 +1,14 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { skip } from 'rxjs/operators';
-import { mockClass } from '../../test/auto-mock';
+import { mockAbstractProvider, mockProvider } from '../../test/auto-mock';
 import { LoggerService } from '../logging/logger.service';
 import { OidcSecurityService } from '../oidc.security.service';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { AbstractSecurityStorage } from '../storage/abstract-security-storage';
+import { DefaultSessionStorageService } from '../storage/default-sessionstorage.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
-import { DefaultSessionStorageService } from '../storage/default-sessionstorage.service';
 import { CheckSessionService } from './check-session.service';
 import { IFrameService } from './existing-iframe.service';
 
@@ -25,16 +25,13 @@ describe('CheckSessionService', () => {
         OidcSecurityService,
         IFrameService,
         PublicEventsService,
-        {
-          provide: StoragePersistenceService,
-          useClass: mockClass(StoragePersistenceService),
-        },
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
-        {
-          provide: AbstractSecurityStorage,
-          useClass: mockClass(DefaultSessionStorageService),
-        },
-        { provide: PlatformProvider, useClass: mockClass(PlatformProvider) },
+        mockProvider(StoragePersistenceService),
+        mockProvider(LoggerService),
+        mockProvider(PlatformProvider),
+        mockAbstractProvider(
+          AbstractSecurityStorage,
+          DefaultSessionStorageService
+        ),
       ],
     });
   });
@@ -52,7 +49,7 @@ describe('CheckSessionService', () => {
     );
 
     if (iFrameIdwhichshouldneverexist) {
-      iFrameIdwhichshouldneverexist.parentNode.removeChild(
+      iFrameIdwhichshouldneverexist.parentNode?.removeChild(
         iFrameIdwhichshouldneverexist
       );
     }
@@ -61,7 +58,7 @@ describe('CheckSessionService', () => {
     );
 
     if (myiFrameForCheckSession) {
-      myiFrameForCheckSession.parentNode.removeChild(myiFrameForCheckSession);
+      myiFrameForCheckSession.parentNode?.removeChild(myiFrameForCheckSession);
     }
   });
 
@@ -301,7 +298,7 @@ describe('CheckSessionService', () => {
       serviceAsAny.lastIFrameRefresh = lastRefresh;
       serviceAsAny.iframeRefreshInterval = lastRefresh;
 
-      serviceAsAny.init().subscribe((result) => {
+      serviceAsAny.init().subscribe((result: any) => {
         expect(result).toBeUndefined();
       });
     }));

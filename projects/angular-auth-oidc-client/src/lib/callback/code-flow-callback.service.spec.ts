@@ -2,7 +2,8 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
-import { mockClass } from '../../test/auto-mock';
+import { mockProvider } from '../../test/auto-mock';
+import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
 import { CodeFlowCallbackService } from './code-flow-callback.service';
@@ -20,9 +21,9 @@ describe('CodeFlowCallbackService ', () => {
       imports: [RouterTestingModule],
       providers: [
         CodeFlowCallbackService,
-        { provide: FlowsService, useClass: mockClass(FlowsService) },
-        { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
-        IntervalService,
+        mockProvider(FlowsService),
+        mockProvider(FlowsDataService),
+        mockProvider(IntervalService),
       ],
     });
   });
@@ -44,7 +45,7 @@ describe('CodeFlowCallbackService ', () => {
       const spy = spyOn(
         flowsService,
         'processCodeFlowCallback'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       //spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ triggerAuthorizationResultEvent: true });
 
       const config = {

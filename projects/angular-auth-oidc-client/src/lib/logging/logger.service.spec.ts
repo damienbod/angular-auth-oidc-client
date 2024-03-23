@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { LoggerService } from './logger.service';
 import { AbstractLoggerService } from './abstract-logger.service';
 import { ConsoleLoggerService } from './console-logger.service';
 import { LogLevel } from './log-level';
+import { LoggerService } from './logger.service';
 
 describe('Logger Service', () => {
   let loggerService: LoggerService;
@@ -73,7 +73,7 @@ describe('Logger Service', () => {
       const spy = spyOn(console, 'warn');
 
       loggerService.logWarning(
-        { configId: 'configId1', logLevel: null },
+        { configId: 'configId1', logLevel: undefined },
         'some message'
       );
       expect(spy).not.toHaveBeenCalled();
@@ -82,7 +82,7 @@ describe('Logger Service', () => {
     it('should not log if no config is given', () => {
       const spy = spyOn(console, 'warn');
 
-      loggerService.logWarning(null, 'some message');
+      loggerService.logWarning({}, 'some message');
       expect(spy).not.toHaveBeenCalled();
     });
 
@@ -168,7 +168,7 @@ describe('Logger Service', () => {
       const spy = spyOn(console, 'debug');
 
       loggerService.logDebug(
-        { configId: 'configId1', logLevel: null },
+        { configId: 'configId1', logLevel: undefined },
         'some message'
       );
       expect(spy).not.toHaveBeenCalled();

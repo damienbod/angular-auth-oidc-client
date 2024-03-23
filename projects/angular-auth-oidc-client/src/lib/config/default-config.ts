@@ -4,7 +4,7 @@ import { OpenIdConfiguration } from './openid-configuration';
 export const DEFAULT_CONFIG: OpenIdConfiguration = {
   authority: 'https://please_set',
   authWellknownEndpointUrl: '',
-  authWellknownEndpoints: null,
+  authWellknownEndpoints: undefined,
   redirectUrl: 'https://please_set',
   clientId: 'please_set',
   responseType: 'code',

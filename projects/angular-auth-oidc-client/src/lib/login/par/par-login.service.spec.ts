@@ -1,11 +1,12 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { mockClass } from '../../../test/auto-mock';
+import { mockProvider } from '../../../test/auto-mock';
 import { CheckAuthService } from '../../auth-state/check-auth.service';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
 import { LoggerService } from '../../logging/logger.service';
 import { RedirectService } from '../../utils/redirect/redirect.service';
 import { UrlService } from '../../utils/url/url.service';
+import { LoginResponse } from '../login-response';
 import { PopupResult } from '../popup/popup-result';
 import { PopUpService } from '../popup/popup.service';
 import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
@@ -28,38 +29,14 @@ describe('ParLoginService', () => {
     TestBed.configureTestingModule({
       providers: [
         ParLoginService,
-        {
-          provide: LoggerService,
-          useClass: mockClass(LoggerService),
-        },
-        {
-          provide: ResponseTypeValidationService,
-          useClass: mockClass(ResponseTypeValidationService),
-        },
-        {
-          provide: UrlService,
-          useClass: mockClass(UrlService),
-        },
-        {
-          provide: RedirectService,
-          useClass: mockClass(RedirectService),
-        },
-        {
-          provide: AuthWellKnownService,
-          useClass: mockClass(AuthWellKnownService),
-        },
-        {
-          provide: PopUpService,
-          useClass: mockClass(PopUpService),
-        },
-        {
-          provide: CheckAuthService,
-          useClass: mockClass(CheckAuthService),
-        },
-        {
-          provide: ParService,
-          useClass: mockClass(ParService),
-        },
+        mockProvider(LoggerService),
+        mockProvider(ResponseTypeValidationService),
+        mockProvider(UrlService),
+        mockProvider(RedirectService),
+        mockProvider(AuthWellKnownService),
+        mockProvider(PopUpService),
+        mockProvider(CheckAuthService),
+        mockProvider(ParService),
       ],
     });
   });
@@ -225,7 +202,7 @@ describe('ParLoginService', () => {
       spyOn(urlService, 'getAuthorizeParUrl').and.returnValue('some-par-url');
       const redirectToSpy = spyOn(redirectService, 'redirectTo');
       const spy = jasmine.createSpy();
-      const urlHandler = (url): void => {
+      const urlHandler = (url: any): void => {
         spy(url);
       };
 
@@ -376,7 +353,9 @@ describe('ParLoginService', () => {
         of({ requestUri: 'requestUri' } as ParResponse)
       );
       spyOn(urlService, 'getAuthorizeParUrl').and.returnValue('some-par-url');
-      spyOn(checkAuthService, 'checkAuth').and.returnValue(of(null));
+      spyOn(checkAuthService, 'checkAuth').and.returnValue(
+        of({} as LoginResponse)
+      );
       spyOnProperty(popupService, 'result$').and.returnValue(
         of({} as PopupResult)
       );
@@ -413,7 +392,7 @@ describe('ParLoginService', () => {
         of({
           isAuthenticated: true,
           configId: 'configId1',
-          idToken: null,
+          idToken: '',
           userData: { any: 'userData' },
           accessToken: 'anyAccessToken',
         })
@@ -435,7 +414,7 @@ describe('ParLoginService', () => {
         expect(result).toEqual({
           isAuthenticated: true,
           configId: 'configId1',
-          idToken: null,
+          idToken: '',
           userData: { any: 'userData' },
           accessToken: 'anyAccessToken',
         });
@@ -465,7 +444,7 @@ describe('ParLoginService', () => {
       spyOn(urlService, 'getAuthorizeParUrl').and.returnValue('some-par-url');
 
       const checkAuthSpy = spyOn(checkAuthService, 'checkAuth');
-      const popupResult: PopupResult = { userClosed: true };
+      const popupResult = { userClosed: true } as PopupResult;
 
       spyOnProperty(popupService, 'result$').and.returnValue(of(popupResult));
 
@@ -475,9 +454,9 @@ describe('ParLoginService', () => {
           isAuthenticated: false,
           errorMessage: 'User closed popup',
           configId: 'configId1',
-          idToken: null,
+          idToken: '',
           userData: null,
-          accessToken: null,
+          accessToken: '',
         });
       });
     }));

@@ -12,7 +12,7 @@ import { ImplicitFlowCallbackService } from './implicit-flow-callback.service';
 export class CallbackService {
   private readonly stsCallbackInternal$ = new Subject<void>();
 
-  get stsCallback$(): Observable<unknown> {
+  get stsCallback$(): Observable<void> {
     return this.stsCallbackInternal$.asObservable();
   }
 
@@ -24,6 +24,10 @@ export class CallbackService {
   ) {}
 
   isCallback(currentUrl: string): boolean {
+    if (!currentUrl) {
+      return false;
+    }
+
     return this.urlService.isCallbackFromSts(currentUrl);
   }
 
@@ -32,7 +36,7 @@ export class CallbackService {
     config: OpenIdConfiguration,
     allConfigs: OpenIdConfiguration[]
   ): Observable<CallbackContext> {
-    let callback$: Observable<any>;
+    let callback$: Observable<CallbackContext> = new Observable();
 
     if (this.flowHelper.isCurrentFlowCodeFlow(config)) {
       callback$ = this.codeFlowCallbackService.authenticatedCallbackWithCode(

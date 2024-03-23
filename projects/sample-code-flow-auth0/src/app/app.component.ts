@@ -8,7 +8,7 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 export class AppComponent implements OnInit {
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.oidcSecurityService
       .checkAuth()
       .subscribe(({ isAuthenticated }) =>

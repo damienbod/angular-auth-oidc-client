@@ -1,5 +1,5 @@
 import { HttpHeaders, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { HttpBaseService } from './http-base.service';
@@ -8,7 +8,7 @@ const NGSW_CUSTOM_PARAM = 'ngsw-bypass';
 
 @Injectable({ providedIn: 'root' })
 export class DataService {
-  constructor(private readonly httpClient: HttpBaseService) {}
+  private readonly httpClient = inject(HttpBaseService);
 
   get<T>(
     url: string,
@@ -25,7 +25,7 @@ export class DataService {
   }
 
   post<T>(
-    url: string,
+    url: string | null,
     body: any,
     config: OpenIdConfiguration,
     headersParams?: HttpHeaders
@@ -33,7 +33,7 @@ export class DataService {
     const headers = headersParams || this.prepareHeaders();
     const params = this.prepareParams(config);
 
-    return this.httpClient.post<T>(url, body, { headers, params });
+    return this.httpClient.post<T>(url ?? '', body, { headers, params });
   }
 
   private prepareHeaders(token?: string): HttpHeaders {

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { RouterOutlet } from '@angular/router';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { NavigationComponent } from './navigation/navigation.component';
 
 @Component({
@@ -11,28 +11,28 @@ import { NavigationComponent } from './navigation/navigation.component';
   imports: [RouterOutlet, NavigationComponent],
 })
 export class AppComponent implements OnInit {
-  constructor(private oidcSecurityService: OidcSecurityService) {}
+  constructor(private readonly oidcSecurityService: OidcSecurityService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.oidcSecurityService
       .checkAuth()
-      .subscribe(({ isAuthenticated, userData, accessToken }) => {
+      .subscribe(({ isAuthenticated, accessToken }) => {
         console.log('app authenticated', isAuthenticated);
         console.log(`Current access token is '${accessToken}'`);
       });
   }
 
-  login() {
+  login(): void {
     console.log('start login');
     this.oidcSecurityService.authorize();
   }
 
-  refreshSession() {
+  refreshSession(): void {
     console.log('start refreshSession');
     this.oidcSecurityService.authorize();
   }
 
-  logout() {
+  logout(): void {
     console.log('start logoff');
     this.oidcSecurityService
       .logoff()

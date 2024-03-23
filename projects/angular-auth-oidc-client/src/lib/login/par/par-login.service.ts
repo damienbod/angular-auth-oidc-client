@@ -10,7 +10,7 @@ import { RedirectService } from '../../utils/redirect/redirect.service';
 import { UrlService } from '../../utils/url/url.service';
 import { LoginResponse } from '../login-response';
 import { PopupOptions } from '../popup/popup-options';
-import { PopupResultReceivedUrl } from '../popup/popup-result';
+import { PopupResult } from '../popup/popup-result';
 import { PopUpService } from '../popup/popup.service';
 import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
 import { ParResponse } from './par-response';
@@ -74,7 +74,7 @@ export class ParLoginService {
           return;
         }
 
-        if (authOptions.urlHandler) {
+        if (authOptions?.urlHandler) {
           authOptions.urlHandler(url);
         } else {
           this.redirectService.redirectTo(url);
@@ -116,8 +116,7 @@ export class ParLoginService {
         switchMap((response: ParResponse) => {
           this.loggerService.logDebug(
             configuration,
-            'par response: ',
-            response
+            `par response: ${response}`
           );
 
           const url = this.urlService.getAuthorizeParUrl(
@@ -139,7 +138,7 @@ export class ParLoginService {
 
           return this.popupService.result$.pipe(
             take(1),
-            switchMap((result: PopupResultReceivedUrl) => {
+            switchMap((result: PopupResult) => {
               const { userClosed, receivedUrl } = result;
 
               if (userClosed) {
@@ -147,8 +146,8 @@ export class ParLoginService {
                   isAuthenticated: false,
                   errorMessage: 'User closed popup',
                   userData: null,
-                  idToken: null,
-                  accessToken: null,
+                  idToken: '',
+                  accessToken: '',
                   configId,
                 });
               }

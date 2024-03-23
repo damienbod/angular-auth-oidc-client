@@ -36,30 +36,45 @@ export class CheckAuthService {
     private readonly publicEventsService: PublicEventsService
   ) {}
 
-  checkAuth(
+  private getConfig(
     configuration: OpenIdConfiguration,
+    url: string | undefined
+  ): OpenIdConfiguration | null {
+    const stateParamFromUrl =
+      this.currentUrlService.getStateParamFromCurrentUrl(url);
+
+    return Boolean(stateParamFromUrl)
+      ? this.getConfigurationWithUrlState([configuration], stateParamFromUrl)
+      : configuration;
+  }
+
+  checkAuth(
+    configuration: OpenIdConfiguration | null,
     allConfigs: OpenIdConfiguration[],
     url?: string
   ): Observable<LoginResponse> {
+    if (!configuration) {
+      return throwError(
+        () =>
+          new Error(
+            'Please provide a configuration before setting up the module'
+          )
+      );
+    }
+
     this.publicEventsService.fireEvent(EventTypes.CheckingAuth);
 
     const stateParamFromUrl =
       this.currentUrlService.getStateParamFromCurrentUrl(url);
+    const config = this.getConfig(configuration, url);
 
-    if (!!stateParamFromUrl) {
-      configuration = this.getConfigurationWithUrlState(
-        [configuration],
-        stateParamFromUrl
+    if (!config) {
+      return throwError(
+        () =>
+          new Error(
+            `could not find matching config for state ${stateParamFromUrl}`
+          )
       );
-
-      if (!configuration) {
-        return throwError(
-          () =>
-            new Error(
-              `could not find matching config for state ${stateParamFromUrl}`
-            )
-        );
-      }
     }
 
     return this.checkAuthWithConfig(configuration, allConfigs, url);
@@ -99,9 +114,18 @@ export class CheckAuthService {
   }
 
   checkAuthIncludingServer(
-    configuration: OpenIdConfiguration,
+    configuration: OpenIdConfiguration | null,
     allConfigs: OpenIdConfiguration[]
   ): Observable<LoginResponse> {
+    if (!configuration) {
+      return throwError(
+        () =>
+          new Error(
+            'Please provide a configuration before setting up the module'
+          )
+      );
+    }
+
     return this.checkAuthWithConfig(configuration, allConfigs).pipe(
       switchMap((loginResponse) => {
         const { isAuthenticated } = loginResponse;
@@ -134,42 +158,64 @@ export class CheckAuthService {
 
       this.loggerService.logError(config, errorMessage);
 
-      return of({
+      const result: LoginResponse = {
         isAuthenticated: false,
         errorMessage,
         userData: null,
         idToken: '',
         accessToken: '',
-        configId: null,
-      });
+        configId: '',
+      };
+
+      return of(result);
     }
 
     const currentUrl = url || this.currentUrlService.getCurrentUrl();
+
+    if (!currentUrl) {
+      const errorMessage = 'No URL found!';
+
+      this.loggerService.logError(config, errorMessage);
+
+      const result: LoginResponse = {
+        isAuthenticated: false,
+        errorMessage,
+        userData: null,
+        idToken: '',
+        accessToken: '',
+        configId: '',
+      };
+
+      return of(result);
+    }
+
     const { configId, authority } = config;
 
     this.loggerService.logDebug(
       config,
-      `Working with config '${configId}' using ${authority}`
+      `Working with config '${configId}' using '${authority}'`
     );
 
     if (this.popupService.isCurrentlyInPopup(config)) {
-      this.popupService.sendMessageToMainWindow(currentUrl);
+      this.popupService.sendMessageToMainWindow(currentUrl, config);
 
-      return of({
+      const result: LoginResponse = {
         isAuthenticated: false,
         errorMessage: '',
         userData: null,
         idToken: '',
         accessToken: '',
-      });
+        configId: '',
+      };
+
+      return of(result);
     }
 
     const isCallback = this.callbackService.isCallback(currentUrl);
 
     this.loggerService.logDebug(
       config,
-      'currentUrl to check auth with: ',
-      currentUrl
+      `currentUrl to check auth with: '${currentUrl}'`
     );
 
     const callback$ = isCallback
@@ -178,12 +224,17 @@ export class CheckAuthService {
           config,
           allConfigs
         )
-      : of(null);
+      : of({});
 
     return callback$.pipe(
       map(() => {
         const isAuthenticated =
           this.authStateService.areAuthStorageTokensValid(config);
+
+        this.loggerService.logDebug(
+          config,
+          `checkAuth completed. Firing events now. isAuthenticated: ${isAuthenticated}`
+        );
 
         if (isAuthenticated) {
           this.startCheckSessionAndValidation(config, allConfigs);
@@ -192,25 +243,21 @@ export class CheckAuthService {
             this.authStateService.setAuthenticatedAndFireEvent(allConfigs);
             this.userService.publishUserDataIfExists(config, allConfigs);
           }
+
+          this.publicEventsService.fireEvent(EventTypes.CheckingAuthFinished);
         }
 
-        this.loggerService.logDebug(
-          config,
-          'checkAuth completed - firing events now. isAuthenticated: ' +
-            isAuthenticated
-        );
-
-        return {
+        const result: LoginResponse = {
           isAuthenticated,
           userData: this.userService.getUserDataFromStore(config),
           accessToken: this.authStateService.getAccessToken(config),
           idToken: this.authStateService.getIdToken(config),
           configId,
         };
+
+        return result;
       }),
       tap(({ isAuthenticated }) => {
-        this.publicEventsService.fireEvent(EventTypes.CheckingAuthFinished);
-
         if (isAuthenticated) {
           this.autoLoginService.checkSavedRedirectRouteAndNavigate(config);
         }
@@ -222,14 +269,16 @@ export class CheckAuthService {
           message
         );
 
-        return of({
+        const result: LoginResponse = {
           isAuthenticated: false,
           errorMessage: message,
           userData: null,
           idToken: '',
           accessToken: '',
           configId,
-        });
+        };
+
+        return of(result);
       })
     );
   }
@@ -254,8 +303,12 @@ export class CheckAuthService {
 
   private getConfigurationWithUrlState(
     configurations: OpenIdConfiguration[],
-    stateFromUrl: string
+    stateFromUrl: string | null
   ): OpenIdConfiguration | null {
+    if (!stateFromUrl) {
+      return null;
+    }
+
     for (const config of configurations) {
       const storedState = this.storagePersistenceService.read(
         'authStateControl',

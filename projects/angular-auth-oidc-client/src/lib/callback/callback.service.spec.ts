@@ -1,6 +1,7 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
-import { mockClass } from '../../test/auto-mock';
+import { mockProvider } from '../../test/auto-mock';
+import { CallbackContext } from '../flows/callback-context';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { UrlService } from '../utils/url/url.service';
 import { CallbackService } from './callback.service';
@@ -19,16 +20,10 @@ describe('CallbackService ', () => {
       imports: [],
       providers: [
         CallbackService,
-        { provide: UrlService, useClass: mockClass(UrlService) },
+        mockProvider(UrlService),
         FlowHelper,
-        {
-          provide: ImplicitFlowCallbackService,
-          useClass: mockClass(ImplicitFlowCallbackService),
-        },
-        {
-          provide: CodeFlowCallbackService,
-          useClass: mockClass(CodeFlowCallbackService),
-        },
+        mockProvider(ImplicitFlowCallbackService),
+        mockProvider(CodeFlowCallbackService),
       ],
     });
   });
@@ -62,7 +57,7 @@ describe('CallbackService ', () => {
       const authorizedCallbackWithCodeSpy = spyOn(
         codeFlowCallbackService,
         'authenticatedCallbackWithCode'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
 
       callbackService
         .handleCallbackAndFireEvents('anyUrl', { configId: 'configId1' }, [
@@ -83,7 +78,7 @@ describe('CallbackService ', () => {
       const authorizedCallbackWithCodeSpy = spyOn(
         implicitFlowCallbackService,
         'authenticatedImplicitFlowCallback'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
 
       callbackService
         .handleCallbackAndFireEvents('anyUrl', { configId: 'configId1' }, [
@@ -103,7 +98,7 @@ describe('CallbackService ', () => {
       const authorizedCallbackWithCodeSpy = spyOn(
         implicitFlowCallbackService,
         'authenticatedImplicitFlowCallback'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
 
       callbackService
         .handleCallbackAndFireEvents(
@@ -130,7 +125,7 @@ describe('CallbackService ', () => {
       const authenticatedCallbackWithCodeSpy = spyOn(
         codeFlowCallbackService,
         'authenticatedCallbackWithCode'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
 
       callbackService
         .handleCallbackAndFireEvents('anyUrl', { configId: 'configId1' }, [

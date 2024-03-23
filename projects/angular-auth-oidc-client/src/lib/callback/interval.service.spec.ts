@@ -7,7 +7,16 @@ describe('IntervalService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [IntervalService],
+      providers: [
+        {
+          provide: Document,
+          useValue: {
+            defaultView: {
+              setInterval: window.setInterval,
+            },
+          },
+        },
+      ],
     });
   });
 

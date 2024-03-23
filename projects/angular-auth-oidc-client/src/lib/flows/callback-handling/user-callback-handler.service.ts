@@ -33,7 +33,7 @@ export class UserCallbackHandlerService {
     if (!autoUserInfo) {
       if (!isRenewProcess || renewUserInfoAfterTokenRenew) {
         // userData is set to the id_token decoded, auto get user data set to false
-        if (validationResult.decodedIdToken) {
+        if (validationResult?.decodedIdToken) {
           this.userService.setUserDataToStore(
             validationResult.decodedIdToken,
             configuration,
@@ -44,7 +44,7 @@ export class UserCallbackHandlerService {
 
       if (!isRenewProcess && !refreshToken) {
         this.flowsDataService.setSessionState(
-          authResult.session_state,
+          authResult?.session_state,
           configuration
         );
       }
@@ -59,15 +59,15 @@ export class UserCallbackHandlerService {
         configuration,
         allConfigs,
         isRenewProcess,
-        validationResult.idToken,
-        validationResult.decodedIdToken
+        validationResult?.idToken,
+        validationResult?.decodedIdToken
       )
       .pipe(
         switchMap((userData) => {
           if (!!userData) {
             if (!refreshToken) {
               this.flowsDataService.setSessionState(
-                authResult.session_state,
+                authResult?.session_state,
                 configuration
               );
             }
@@ -99,9 +99,13 @@ export class UserCallbackHandlerService {
   }
 
   private publishAuthState(
-    stateValidationResult: StateValidationResult,
+    stateValidationResult: StateValidationResult | null,
     isRenewProcess: boolean
   ): void {
+    if (!stateValidationResult) {
+      return;
+    }
+
     this.authStateService.updateAndPublishAuthState({
       isAuthenticated: true,
       validationResult: stateValidationResult.state,
@@ -110,9 +114,13 @@ export class UserCallbackHandlerService {
   }
 
   private publishUnauthenticatedState(
-    stateValidationResult: StateValidationResult,
+    stateValidationResult: StateValidationResult | null,
     isRenewProcess: boolean
   ): void {
+    if (!stateValidationResult) {
+      return;
+    }
+
     this.authStateService.updateAndPublishAuthState({
       isAuthenticated: false,
       validationResult: stateValidationResult.state,

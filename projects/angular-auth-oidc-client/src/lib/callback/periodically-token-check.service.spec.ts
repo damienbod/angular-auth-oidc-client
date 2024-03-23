@@ -1,6 +1,6 @@
 import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
-import { mockClass } from '../../test/auto-mock';
+import { mockProvider } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { ConfigurationService } from '../config/config.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
@@ -35,36 +35,18 @@ describe('PeriodicallyTokenCheckService', () => {
     TestBed.configureTestingModule({
       imports: [],
       providers: [
-        {
-          provide: ResetAuthDataService,
-          useClass: mockClass(ResetAuthDataService),
-        },
+        mockProvider(ResetAuthDataService),
         FlowHelper,
-        { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
-        { provide: UserService, useClass: mockClass(UserService) },
-        { provide: AuthStateService, useClass: mockClass(AuthStateService) },
-        {
-          provide: RefreshSessionIframeService,
-          useClass: mockClass(RefreshSessionIframeService),
-        },
-        {
-          provide: RefreshSessionRefreshTokenService,
-          useClass: mockClass(RefreshSessionRefreshTokenService),
-        },
-        IntervalService,
-        {
-          provide: StoragePersistenceService,
-          useClass: mockClass(StoragePersistenceService),
-        },
-        {
-          provide: PublicEventsService,
-          useClass: mockClass(PublicEventsService),
-        },
-        {
-          provide: ConfigurationService,
-          useClass: mockClass(ConfigurationService),
-        },
+        mockProvider(FlowsDataService),
+        mockProvider(LoggerService),
+        mockProvider(UserService),
+        mockProvider(AuthStateService),
+        mockProvider(RefreshSessionIframeService),
+        mockProvider(RefreshSessionRefreshTokenService),
+        mockProvider(IntervalService),
+        mockProvider(StoragePersistenceService),
+        mockProvider(PublicEventsService),
+        mockProvider(ConfigurationService),
       ],
     });
   });
@@ -85,6 +67,8 @@ describe('PeriodicallyTokenCheckService', () => {
     resetAuthDataService = TestBed.inject(ResetAuthDataService);
     publicEventsService = TestBed.inject(PublicEventsService);
     configurationService = TestBed.inject(ConfigurationService);
+
+    spyOn(intervalService, 'startPeriodicTokenCheck').and.returnValue(of(null));
   });
 
   afterEach(() => {
@@ -161,7 +145,7 @@ describe('PeriodicallyTokenCheckService', () => {
 
       tick(1000);
 
-      intervalService.runTokenValidationRunning.unsubscribe();
+      intervalService.runTokenValidationRunning?.unsubscribe();
       intervalService.runTokenValidationRunning = null;
       expect(isCurrentFlowCodeFlowWithRefreshTokensSpy).toHaveBeenCalled();
       expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
@@ -172,9 +156,6 @@ describe('PeriodicallyTokenCheckService', () => {
         { silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 },
       ];
 
-      spyOn(intervalService, 'startPeriodicTokenCheck').and.returnValue(
-        of(null)
-      );
       spyOn(
         periodicallyTokenCheckService as any,
         'shouldStartPeriodicallyCheckForConfig'
@@ -214,9 +195,6 @@ describe('PeriodicallyTokenCheckService', () => {
         { silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 },
       ];
 
-      spyOn(intervalService, 'startPeriodicTokenCheck').and.returnValue(
-        of(null)
-      );
       spyOn(
         periodicallyTokenCheckService as any,
         'shouldStartPeriodicallyCheckForConfig'
@@ -282,7 +260,7 @@ describe('PeriodicallyTokenCheckService', () => {
         configs[0]
       );
       tick(1000);
-      intervalService.runTokenValidationRunning.unsubscribe();
+      intervalService.runTokenValidationRunning?.unsubscribe();
       intervalService.runTokenValidationRunning = null;
 
       expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
@@ -321,7 +299,7 @@ describe('PeriodicallyTokenCheckService', () => {
 
       tick(1000);
 
-      intervalService.runTokenValidationRunning.unsubscribe();
+      intervalService.runTokenValidationRunning?.unsubscribe();
       intervalService.runTokenValidationRunning = null;
       expect(refreshSessionWithRefreshTokensSpy).toHaveBeenCalled();
     }));
@@ -329,7 +307,7 @@ describe('PeriodicallyTokenCheckService', () => {
 
   describe('shouldStartPeriodicallyCheckForConfig', () => {
     it('returns false when there is no IdToken', () => {
-      spyOn(authStateService, 'getIdToken').and.returnValue(null);
+      spyOn(authStateService, 'getIdToken').and.returnValue('');
       spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
       spyOn(userService, 'getUserDataFromStore').and.returnValue(
         'some-userdata'

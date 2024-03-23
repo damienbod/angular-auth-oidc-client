@@ -9,11 +9,11 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 export class NavMenuComponent implements OnInit {
   isExpanded = false;
 
-  isAuthenticated: boolean;
+  isAuthenticated = false;
 
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.oidcSecurityService.isAuthenticated$.subscribe(
       ({ isAuthenticated }) => {
         this.isAuthenticated = isAuthenticated;
@@ -23,26 +23,27 @@ export class NavMenuComponent implements OnInit {
     );
   }
 
-  login() {
+  login(): void {
     this.oidcSecurityService.authorize();
   }
 
-  refreshSession() {
+  refreshSession(): void {
     this.oidcSecurityService
       .forceRefreshSession()
       .subscribe((result) => console.log(result));
   }
 
-  logout() {
+  logout(): void {
     this.oidcSecurityService
       .logoff()
       .subscribe((result) => console.log(result));
   }
-  collapse() {
+
+  collapse(): void {
     this.isExpanded = false;
   }
 
-  toggle() {
+  toggle(): void {
     this.isExpanded = !this.isExpanded;
   }
 }

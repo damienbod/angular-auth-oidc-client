@@ -6,7 +6,7 @@ import {
 } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { mockClass } from '../../test/auto-mock';
+import { mockProvider } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { CheckAuthService } from '../auth-state/check-auth.service';
 import { ConfigurationService } from '../config/config.service';
@@ -24,23 +24,11 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
       imports: [RouterTestingModule],
       providers: [
         AutoLoginService,
-        { provide: AuthStateService, useClass: mockClass(AuthStateService) },
-        {
-          provide: LoginService,
-          useClass: mockClass(LoginService),
-        },
-        {
-          provide: StoragePersistenceService,
-          useClass: mockClass(StoragePersistenceService),
-        },
-        {
-          provide: CheckAuthService,
-          useClass: mockClass(CheckAuthService),
-        },
-        {
-          provide: ConfigurationService,
-          useClass: mockClass(ConfigurationService),
-        },
+        mockProvider(AuthStateService),
+        mockProvider(LoginService),
+        mockProvider(StoragePersistenceService),
+        mockProvider(CheckAuthService),
+        mockProvider(ConfigurationService),
       ],
     });
   });
@@ -70,7 +58,7 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
     });
 
     afterEach(() => {
-      storagePersistenceService.clear(null);
+      storagePersistenceService.clear({});
     });
 
     it('should create', () => {
@@ -93,7 +81,10 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         const loginSpy = spyOn(loginService, 'login');
 
         guard
-          .canActivate(null, { url: 'some-url1' } as RouterStateSnapshot)
+          .canActivate(
+            {} as ActivatedRouteSnapshot,
+            { url: 'some-url1' } as RouterStateSnapshot
+          )
           .subscribe(() => {
             expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith(
               { configId: 'configId1' },
@@ -157,7 +148,10 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         const loginSpy = spyOn(loginService, 'login');
 
         guard
-          .canActivate(null, { url: 'some-url1' } as RouterStateSnapshot)
+          .canActivate(
+            {} as ActivatedRouteSnapshot,
+            { url: 'some-url1' } as RouterStateSnapshot
+          )
           .subscribe(() => {
             expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
             expect(loginSpy).not.toHaveBeenCalled();
@@ -184,7 +178,10 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         const loginSpy = spyOn(loginService, 'login');
 
         guard
-          .canActivateChild(null, { url: 'some-url1' } as RouterStateSnapshot)
+          .canActivateChild(
+            {} as ActivatedRouteSnapshot,
+            { url: 'some-url1' } as RouterStateSnapshot
+          )
           .subscribe(() => {
             expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith(
               { configId: 'configId1' },
@@ -248,7 +245,10 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         const loginSpy = spyOn(loginService, 'login');
 
         guard
-          .canActivateChild(null, { url: 'some-url1' } as RouterStateSnapshot)
+          .canActivateChild(
+            {} as ActivatedRouteSnapshot,
+            { url: 'some-url1' } as RouterStateSnapshot
+          )
           .subscribe(() => {
             expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
             expect(loginSpy).not.toHaveBeenCalled();
@@ -368,7 +368,7 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
       });
 
       afterEach(() => {
-        storagePersistenceService.clear(null);
+        storagePersistenceService.clear({});
       });
 
       it('should save current route (empty) and call `login` if not authenticated already', waitForAsync(() => {

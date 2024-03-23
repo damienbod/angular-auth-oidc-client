@@ -1,6 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { mockClass } from '../../test/auto-mock';
+import { mockProvider } from '../../test/auto-mock';
 import { JwkExtractor } from '../extractors/jwk.extractor';
 import { LoggerService } from '../logging/logger.service';
 import { CryptoService } from '../utils/crypto/crypto.service';
@@ -19,14 +19,8 @@ describe('TokenValidationService', () => {
       imports: [],
       providers: [
         TokenValidationService,
-        {
-          provide: LoggerService,
-          useClass: mockClass(LoggerService),
-        },
-        {
-          provide: TokenHelperService,
-          useClass: mockClass(TokenHelperService),
-        },
+        mockProvider(LoggerService),
+        mockProvider(TokenHelperService),
         JwkExtractor,
         JwkWindowCryptoService,
         JwtWindowCryptoService,
@@ -518,7 +512,7 @@ describe('TokenValidationService', () => {
 
     it('returns true if no idToken is passed', waitForAsync(() => {
       const valueFalse$ = tokenValidationService.validateSignatureIdToken(
-        null,
+        null as any,
         'some-jwt-keys',
         { configId: 'configId1' }
       );
@@ -776,7 +770,9 @@ describe('TokenValidationService', () => {
 
   describe('validateIdTokenExpNotExpired', () => {
     it('returns false when getTokenExpirationDate returns null', () => {
-      spyOn(tokenHelperService, 'getTokenExpirationDate').and.returnValue(null);
+      spyOn(tokenHelperService, 'getTokenExpirationDate').and.returnValue(
+        null as unknown as Date
+      );
       const notExpired = tokenValidationService.validateIdTokenExpNotExpired(
         'idToken',
         { configId: 'configId1' },
@@ -824,7 +820,7 @@ describe('TokenValidationService', () => {
     testCases.forEach(({ date, offsetSeconds, expectedResult }) => {
       it(`returns ${expectedResult} if ${date} is given with an offset of ${offsetSeconds}`, () => {
         const notExpired = tokenValidationService.validateAccessTokenNotExpired(
-          date,
+          date as Date,
           { configId: 'configId1' },
           offsetSeconds
         );

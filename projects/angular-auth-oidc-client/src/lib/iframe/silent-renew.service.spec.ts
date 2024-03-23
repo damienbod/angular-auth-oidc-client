@@ -1,6 +1,6 @@
 ﻿import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { Observable, of, throwError } from 'rxjs';
-import { mockClass } from '../../test/auto-mock';
+import { mockProvider } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { ImplicitFlowCallbackService } from '../callback/implicit-flow-callback.service';
 import { IntervalService } from '../callback/interval.service';
@@ -31,20 +31,14 @@ describe('SilentRenewService  ', () => {
       providers: [
         SilentRenewService,
         IFrameService,
-        { provide: FlowsService, useClass: mockClass(FlowsService) },
-        {
-          provide: ResetAuthDataService,
-          useClass: mockClass(ResetAuthDataService),
-        },
-        { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
-        { provide: AuthStateService, useClass: mockClass(AuthStateService) },
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
+        mockProvider(FlowsService),
+        mockProvider(ResetAuthDataService),
+        mockProvider(FlowsDataService),
+        mockProvider(AuthStateService),
+        mockProvider(LoggerService),
+        mockProvider(ImplicitFlowCallbackService),
+        mockProvider(IntervalService),
         FlowHelper,
-        {
-          provide: ImplicitFlowCallbackService,
-          useClass: mockClass(ImplicitFlowCallbackService),
-        },
-        IntervalService,
       ],
     });
   });
@@ -139,10 +133,10 @@ describe('SilentRenewService  ', () => {
       const spy = spyOn(
         flowsService,
         'processSilentRenewCodeFlowCallback'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const expectedContext = {
         code: 'some-code',
-        refreshToken: null,
+        refreshToken: '',
         state: 'some-state',
         sessionState: 'some-session-state',
         authResult: null,
@@ -150,7 +144,7 @@ describe('SilentRenewService  ', () => {
         jwtKeys: null,
         validationResult: null,
         existingIdToken: null,
-      };
+      } as CallbackContext;
       const url = 'url-part-1';
       const urlParts =
         'code=some-code&state=some-state&session_state=some-session-state';
@@ -173,7 +167,7 @@ describe('SilentRenewService  ', () => {
       const spy = spyOn(
         flowsService,
         'processSilentRenewCodeFlowCallback'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const authStateServiceSpy = spyOn(
         authStateService,
         'updateAndPublishAuthState'
@@ -223,7 +217,7 @@ describe('SilentRenewService  ', () => {
       spyOn(
         implicitFlowCallbackService,
         'authenticatedImplicitFlowCallback'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const eventData = { detail: null } as CustomEvent;
       const allConfigs = [{ configId: 'configId1' }];
 
@@ -244,7 +238,7 @@ describe('SilentRenewService  ', () => {
       const authorizedImplicitFlowCallbackSpy = spyOn(
         implicitFlowCallbackService,
         'authenticatedImplicitFlowCallback'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const eventData = { detail: 'detail' } as CustomEvent;
       const allConfigs = [{ configId: 'configId1' }];
 
@@ -267,7 +261,7 @@ describe('SilentRenewService  ', () => {
       const codeFlowCallbackSilentRenewIframe = spyOn(
         silentRenewService,
         'codeFlowCallbackSilentRenewIframe'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const eventData = { detail: 'detail?detail2' } as CustomEvent;
       const allConfigs = [{ configId: 'configId1' }];
 
@@ -289,7 +283,7 @@ describe('SilentRenewService  ', () => {
       const codeFlowCallbackSilentRenewIframe = spyOn(
         silentRenewService,
         'codeFlowCallbackSilentRenewIframe'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
       const eventData = { detail: 'detail?detail2' } as CustomEvent;
       const allConfigs = [{ configId: 'configId1' }];
 

@@ -1,3 +1,5 @@
+import { Provider } from '@angular/core';
+
 export function mockClass<T>(obj: new (...args: any[]) => T): any {
   const keys = Object.getOwnPropertyNames(obj.prototype);
   const allMethods = keys.filter((key) => {
@@ -12,8 +14,10 @@ export function mockClass<T>(obj: new (...args: any[]) => T): any {
   const mockedClass = class T {};
 
   allMethods.forEach(
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    (method) => (mockedClass.prototype[method] = (): void => {})
+    (method: string) =>
+      ((mockedClass.prototype as any)[method] = (): void => {
+        return;
+      })
   );
 
   allProperties.forEach((method) => {
@@ -26,4 +30,20 @@ export function mockClass<T>(obj: new (...args: any[]) => T): any {
   });
 
   return mockedClass;
+}
+
+export function mockProvider<T>(obj: new (...args: any[]) => T): Provider {
+  return {
+    provide: obj,
+    useClass: mockClass(obj),
+  };
+}
+
+export function mockAbstractProvider<T, M extends T>(
+  type: abstract new (...args: any[]) => T,
+  mockType: new (...args: any[]) => M
+): Provider {
+  const mock = mockClass(mockType);
+
+  return { provide: type, useClass: mock };
 }

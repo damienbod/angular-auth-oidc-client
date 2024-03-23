@@ -1,12 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 import { Observable } from 'rxjs';
-import { mockClass } from '../../test/auto-mock';
+import { mockProvider } from '../../test/auto-mock';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
 import { TokenValidationService } from '../validation/token-validation.service';
+import { ValidationResult } from '../validation/validation-result';
 import { AuthStateService } from './auth-state.service';
 
 describe('Auth State Service', () => {
@@ -20,16 +21,10 @@ describe('Auth State Service', () => {
       providers: [
         AuthStateService,
         PublicEventsService,
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
-        {
-          provide: TokenValidationService,
-          useClass: mockClass(TokenValidationService),
-        },
-        { provide: PlatformProvider, useClass: mockClass(PlatformProvider) },
-        {
-          provide: StoragePersistenceService,
-          useClass: mockClass(StoragePersistenceService),
-        },
+        mockProvider(LoggerService),
+        mockProvider(TokenValidationService),
+        mockProvider(PlatformProvider),
+        mockProvider(StoragePersistenceService),
       ],
     });
   });
@@ -95,13 +90,13 @@ describe('Auth State Service', () => {
         .withArgs(allConfigs[0])
         .and.returnValue('someAccessToken')
         .withArgs(allConfigs[1])
-        .and.returnValue(null);
+        .and.returnValue('');
 
       spyOn(storagePersistenceService, 'getIdToken')
         .withArgs(allConfigs[0])
         .and.returnValue('someIdToken')
         .withArgs(allConfigs[1])
-        .and.returnValue(null);
+        .and.returnValue('');
 
       const spy = spyOn(
         (authStateService as any).authenticatedInternal$,
@@ -175,13 +170,13 @@ describe('Auth State Service', () => {
         .withArgs({ configId: 'configId1' })
         .and.returnValue('someAccessToken')
         .withArgs({ configId: 'configId2' })
-        .and.returnValue(null);
+        .and.returnValue('');
 
       spyOn(storagePersistenceService, 'getIdToken')
         .withArgs({ configId: 'configId1' })
         .and.returnValue('someIdToken')
         .withArgs({ configId: 'configId2' })
-        .and.returnValue(null);
+        .and.returnValue('');
 
       const spy = spyOn(
         (authStateService as any).authenticatedInternal$,
@@ -210,7 +205,7 @@ describe('Auth State Service', () => {
       authStateService.updateAndPublishAuthState({
         isAuthenticated: false,
         isRenewProcess: false,
-        validationResult: null,
+        validationResult: {} as ValidationResult,
       });
 
       expect(eventsService.fireEvent).toHaveBeenCalledOnceWith(
@@ -297,7 +292,7 @@ describe('Auth State Service', () => {
       spyOn(storagePersistenceService, 'getIdToken').and.returnValue('');
       const result = authStateService.getAccessToken({ configId: 'configId1' });
 
-      expect(result).toBe(null);
+      expect(result).toBe('');
     });
 
     it('returns false if storagePersistenceService returns something falsy but authorized', () => {
@@ -328,7 +323,7 @@ describe('Auth State Service', () => {
 
       spyOn(storagePersistenceService, 'getAuthenticationResult')
         .withArgs({ configId: 'configId1' })
-        .and.returnValue(null);
+        .and.returnValue({});
 
       const result = authStateService.getAuthenticationResult({
         configId: 'configId1',
@@ -341,13 +336,13 @@ describe('Auth State Service', () => {
       spyOn(authStateService, 'isAuthenticated').and.returnValue(true);
       spyOn(storagePersistenceService, 'getAuthenticationResult')
         .withArgs({ configId: 'configId1' })
-        .and.returnValue(null);
+        .and.returnValue({});
 
       const result = authStateService.getAuthenticationResult({
         configId: 'configId1',
       });
 
-      expect(result).toBe(null);
+      expect(result).toEqual({});
     });
 
     it('isAuthorized is true returns object', () => {
@@ -365,7 +360,7 @@ describe('Auth State Service', () => {
         configId: 'configId1',
       });
 
-      expect(result.scope).toBe('HenloFuriend');
+      expect(result?.scope).toBe('HenloFuriend');
     });
   });
 
@@ -375,7 +370,7 @@ describe('Auth State Service', () => {
       spyOn(storagePersistenceService, 'getIdToken').and.returnValue('');
       const result = authStateService.getIdToken({ configId: 'configId1' });
 
-      expect(result).toBe(null);
+      expect(result).toBe('');
     });
 
     it('isAuthorized is true returns decodeURIComponent(token)', () => {
@@ -399,7 +394,7 @@ describe('Auth State Service', () => {
         configId: 'configId1',
       });
 
-      expect(result).toBe(null);
+      expect(result).toBe('');
     });
 
     it('isAuthorized is true returns decodeURIComponent(token)', () => {

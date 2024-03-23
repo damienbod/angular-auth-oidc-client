@@ -47,10 +47,19 @@ export class RefreshSessionService {
   ) {}
 
   userForceRefreshSession(
-    config: OpenIdConfiguration,
+    config: OpenIdConfiguration | null,
     allConfigs: OpenIdConfiguration[],
     extraCustomParams?: { [key: string]: string | number | boolean }
   ): Observable<LoginResponse> {
+    if (!config) {
+      return throwError(
+        () =>
+          new Error(
+            'Please provide a configuration before setting up the module'
+          )
+      );
+    }
+
     this.persistCustomParams(extraCustomParams, config);
 
     return this.forceRefreshSession(config, allConfigs, extraCustomParams);
@@ -96,22 +105,45 @@ export class RefreshSessionService {
     }
 
     const { silentRenewTimeoutInSeconds } = config;
-    const timeOutTime = silentRenewTimeoutInSeconds * 1000;
+    const timeOutTime = (silentRenewTimeoutInSeconds ?? 0) * 1000;
 
     return forkJoin([
       this.startRefreshSession(config, allConfigs, extraCustomParams),
       this.silentRenewService.refreshSessionWithIFrameCompleted$.pipe(take(1)),
     ]).pipe(
       timeout(timeOutTime),
-      retryWhen(this.timeoutRetryStrategy.bind(this)),
+      retryWhen((errors) => {
+        return errors.pipe(
+          mergeMap((error, index) => {
+            const scalingDuration = 1000;
+            const currentAttempt = index + 1;
+
+            if (
+              !(error instanceof TimeoutError) ||
+              currentAttempt > MAX_RETRY_ATTEMPTS
+            ) {
+              return throwError(() => new Error(error));
+            }
+
+            this.loggerService.logDebug(
+              config,
+              `forceRefreshSession timeout. Attempt #${currentAttempt}`
+            );
+
+            this.flowsDataService.resetSilentRenewRunning(config);
+
+            return timer(currentAttempt * scalingDuration);
+          })
+        );
+      }),
       map(([_, callbackContext]) => {
         const isAuthenticated =
           this.authStateService.areAuthStorageTokensValid(config);
 
         if (isAuthenticated) {
           return {
-            idToken: callbackContext?.authResult?.id_token,
-            accessToken: callbackContext?.authResult?.access_token,
+            idToken: callbackContext?.authResult?.id_token ?? '',
+            accessToken: callbackContext?.authResult?.access_token ?? '',
             userData: this.userService.getUserDataFromStore(config),
             isAuthenticated,
             configId,
@@ -193,33 +225,5 @@ export class RefreshSessionService {
           );
         })
       );
-  }
-
-  private timeoutRetryStrategy(
-    errorAttempts: Observable<any>,
-    config: OpenIdConfiguration
-  ): Observable<number> {
-    return errorAttempts.pipe(
-      mergeMap((error, index) => {
-        const scalingDuration = 1000;
-        const currentAttempt = index + 1;
-
-        if (
-          !(error instanceof TimeoutError) ||
-          currentAttempt > MAX_RETRY_ATTEMPTS
-        ) {
-          return throwError(() => new Error(error));
-        }
-
-        this.loggerService.logDebug(
-          config,
-          `forceRefreshSession timeout. Attempt #${currentAttempt}`
-        );
-
-        this.flowsDataService.resetSilentRenewRunning(config);
-
-        return timer(currentAttempt * scalingDuration);
-      })
-    );
   }
 }

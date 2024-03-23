@@ -1,6 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { mockClass } from '../../test/auto-mock';
+import { mockAbstractProvider, mockProvider } from '../../test/auto-mock';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
@@ -25,28 +25,13 @@ describe('Configuration Service', () => {
     TestBed.configureTestingModule({
       providers: [
         ConfigurationService,
-        {
-          provide: LoggerService,
-          useClass: mockClass(LoggerService),
-        },
+        mockProvider(LoggerService),
         PublicEventsService,
-        {
-          provide: StoragePersistenceService,
-          useClass: mockClass(StoragePersistenceService),
-        },
+        mockProvider(StoragePersistenceService),
         ConfigValidationService,
-        {
-          provide: PlatformProvider,
-          useClass: mockClass(PlatformProvider),
-        },
-        {
-          provide: AuthWellKnownService,
-          useClass: mockClass(AuthWellKnownService),
-        },
-        {
-          provide: StsConfigLoader,
-          useClass: mockClass(StsConfigStaticLoader),
-        },
+        mockProvider(PlatformProvider),
+        mockProvider(AuthWellKnownService),
+        mockAbstractProvider(StsConfigLoader, StsConfigStaticLoader),
       ],
     });
   });
@@ -165,7 +150,7 @@ describe('Configuration Service', () => {
       });
 
       configService.getOpenIDConfiguration('configId1').subscribe((config) => {
-        expect(config.authWellknownEndpoints).toEqual({
+        expect(config?.authWellknownEndpoints).toEqual({
           issuer: 'auth-well-known',
         });
       });
@@ -214,9 +199,12 @@ describe('Configuration Service', () => {
           EventTypes.ConfigLoaded,
           jasmine.anything()
         );
-        expect(storeWellKnownEndpointsSpy).toHaveBeenCalledOnceWith(config, {
-          issuer: 'auth-well-known',
-        });
+        expect(storeWellKnownEndpointsSpy).toHaveBeenCalledOnceWith(
+          config as OpenIdConfiguration,
+          {
+            issuer: 'auth-well-known',
+          }
+        );
       });
     }));
   });
@@ -255,11 +243,11 @@ describe('Configuration Service', () => {
         expect(allConfigIds).toEqual(['0-clientId1', '1-clientId2']);
 
         expect(result.currentConfig).toBeTruthy();
-        expect(result.currentConfig.configId).toBeTruthy();
+        expect(result.currentConfig?.configId).toBeTruthy();
       });
     }));
 
-    it(`returns null if config is not valid`, waitForAsync(() => {
+    it(`returns empty array if config is not valid`, waitForAsync(() => {
       spyOn(stsConfigLoader, 'loadConfigs').and.returnValue(
         of([
           { configId: 'configId1' } as OpenIdConfiguration,
@@ -272,7 +260,7 @@ describe('Configuration Service', () => {
       configService
         .getOpenIDConfigurations()
         .subscribe(({ allConfigs, currentConfig }) => {
-          expect(allConfigs).toBeNull();
+          expect(allConfigs).toEqual([]);
           expect(currentConfig).toBeNull();
         });
     }));

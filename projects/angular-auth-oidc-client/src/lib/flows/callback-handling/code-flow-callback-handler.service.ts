@@ -52,9 +52,9 @@ export class CodeFlowCallbackHandlerService {
       urlToCheck
     );
 
-    const initialCallbackContext = {
+    const initialCallbackContext: CallbackContext = {
       code,
-      refreshToken: null,
+      refreshToken: '',
       state,
       sessionState,
       authResult: null,
@@ -107,12 +107,16 @@ export class CodeFlowCallbackHandlerService {
     return this.dataService
       .post(tokenEndpoint, bodyForCodeFlow, config, headers)
       .pipe(
-        switchMap((response: AuthResult) => {
-          callbackContext.authResult = {
-            ...response,
-            state: callbackContext.state,
-            session_state: callbackContext.sessionState,
-          };
+        switchMap((response) => {
+          if (response) {
+            const authResult: AuthResult = {
+              ...response,
+              state: callbackContext.state,
+              session_state: callbackContext.sessionState,
+            };
+
+            callbackContext.authResult = authResult;
+          }
 
           return of(callbackContext);
         }),
@@ -146,7 +150,7 @@ export class CodeFlowCallbackHandlerService {
 
           this.loggerService.logWarning(config, errorMessage, error);
 
-          return timer(refreshTokenRetryInSeconds * 1000);
+          return timer((refreshTokenRetryInSeconds ?? 0) * 1000);
         }
 
         return throwError(() => error);

@@ -1,5 +1,5 @@
 import { HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AuthOptions } from '../../auth-options';
@@ -16,13 +16,17 @@ const AUTH0_ENDPOINT = 'auth0.com';
 
 @Injectable({ providedIn: 'root' })
 export class UrlService {
-  constructor(
-    private readonly loggerService: LoggerService,
-    private readonly flowsDataService: FlowsDataService,
-    private readonly flowHelper: FlowHelper,
-    private readonly storagePersistenceService: StoragePersistenceService,
-    private readonly jwtWindowCryptoService: JwtWindowCryptoService
-  ) {}
+  private readonly loggerService = inject(LoggerService);
+
+  private readonly flowsDataService = inject(FlowsDataService);
+
+  private readonly flowHelper = inject(FlowHelper);
+
+  private readonly storagePersistenceService = inject(
+    StoragePersistenceService
+  );
+
+  private readonly jwtWindowCryptoService = inject(JwtWindowCryptoService);
 
   getUrlParameter(urlToCheck: string, name: string): string {
     if (!urlToCheck) {
@@ -49,20 +53,18 @@ export class UrlService {
   getRefreshSessionSilentRenewUrl(
     config: OpenIdConfiguration,
     customParams?: { [key: string]: string | number | boolean }
-  ): Observable<string> {
+  ): Observable<string | null> {
     if (this.flowHelper.isCurrentFlowCodeFlow(config)) {
       return this.createUrlCodeFlowWithSilentRenew(config, customParams);
     }
 
-    return of(
-      this.createUrlImplicitFlowWithSilentRenew(config, customParams) || ''
-    );
+    return of(this.createUrlImplicitFlowWithSilentRenew(config, customParams));
   }
 
   getAuthorizeParUrl(
     requestUri: string,
     configuration: OpenIdConfiguration
-  ): string {
+  ): string | null {
     const authWellKnownEndPoints = this.storagePersistenceService.read(
       'authWellKnownEndPoints',
       configuration
@@ -112,9 +114,13 @@ export class UrlService {
   }
 
   getAuthorizeUrl(
-    config: OpenIdConfiguration,
+    config: OpenIdConfiguration | null,
     authOptions?: AuthOptions
-  ): Observable<string> {
+  ): Observable<string | null> {
+    if (!config) {
+      return of(null);
+    }
+
     if (this.flowHelper.isCurrentFlowCodeFlow(config)) {
       return this.createUrlCodeFlowAuthorize(config, authOptions);
     }
@@ -150,9 +156,13 @@ export class UrlService {
   }
 
   getEndSessionUrl(
-    configuration: OpenIdConfiguration,
+    configuration: OpenIdConfiguration | null,
     customParams?: { [p: string]: string | number | boolean }
   ): string | null {
+    if (!configuration) {
+      return null;
+    }
+
     const idToken = this.storagePersistenceService.getIdToken(configuration);
     const { customParamsEndSessionRequest } = configuration;
     const mergedParams = { ...customParamsEndSessionRequest, ...customParams };
@@ -163,7 +173,7 @@ export class UrlService {
   createRevocationEndpointBodyAccessToken(
     token: any,
     configuration: OpenIdConfiguration
-  ): string {
+  ): string | null {
     const clientId = this.getClientId(configuration);
 
     if (!clientId) {
@@ -182,7 +192,7 @@ export class UrlService {
   createRevocationEndpointBodyRefreshToken(
     token: any,
     configuration: OpenIdConfiguration
-  ): string {
+  ): string | null {
     const clientId = this.getClientId(configuration);
 
     if (!clientId) {
@@ -198,7 +208,7 @@ export class UrlService {
     return params.toString();
   }
 
-  getRevocationEndpointUrl(configuration: OpenIdConfiguration): string {
+  getRevocationEndpointUrl(configuration: OpenIdConfiguration): string | null {
     const authWellKnownEndPoints = this.storagePersistenceService.read(
       'authWellKnownEndPoints',
       configuration
@@ -218,7 +228,7 @@ export class UrlService {
     code: string,
     configuration: OpenIdConfiguration,
     customTokenParams?: { [p: string]: string | number | boolean }
-  ): string {
+  ): string | null {
     const clientId = this.getClientId(configuration);
 
     if (!clientId) {
@@ -278,7 +288,7 @@ export class UrlService {
     refreshToken: string,
     configuration: OpenIdConfiguration,
     customParamsRefresh?: { [key: string]: string | number | boolean }
-  ): string {
+  ): string | null {
     const clientId = this.getClientId(configuration);
 
     if (!clientId) {
@@ -301,7 +311,7 @@ export class UrlService {
   createBodyForParCodeFlowRequest(
     configuration: OpenIdConfiguration,
     authOptions?: AuthOptions
-  ): Observable<string> {
+  ): Observable<string | null> {
     const redirectUrl = this.getRedirectUrl(configuration, authOptions);
 
     if (!redirectUrl) {
@@ -332,10 +342,10 @@ export class UrlService {
         } = configuration;
         let params = this.createHttpParams('');
 
-        params = params.set('client_id', clientId);
+        params = params.set('client_id', clientId ?? '');
         params = params.append('redirect_uri', redirectUrl);
-        params = params.append('response_type', responseType);
-        params = params.append('scope', scope);
+        params = params.append('response_type', responseType ?? '');
+        params = params.append('scope', scope ?? '');
         params = params.append('nonce', nonce);
         params = params.append('state', state);
         params = params.append('code_challenge', codeChallenge);
@@ -364,7 +374,7 @@ export class UrlService {
     );
   }
 
-  getPostLogoutRedirectUrl(configuration: OpenIdConfiguration): string {
+  getPostLogoutRedirectUrl(configuration: OpenIdConfiguration): string | null {
     const { postLogoutRedirectUri } = configuration;
 
     if (!postLogoutRedirectUri) {
@@ -438,7 +448,7 @@ export class UrlService {
         `Can not create an authorize URL when authorizationEndpoint is '${authorizationEndpoint}'`
       );
 
-      return null;
+      return '';
     }
 
     const { clientId, responseType, scope, hdParam, customParamsAuthRequest } =
@@ -451,7 +461,7 @@ export class UrlService {
         clientId
       );
 
-      return null;
+      return '';
     }
 
     if (!responseType) {
@@ -461,7 +471,7 @@ export class UrlService {
         responseType
       );
 
-      return null;
+      return '';
     }
 
     if (!scope) {
@@ -471,7 +481,7 @@ export class UrlService {
         scope
       );
 
-      return null;
+      return '';
     }
 
     const urlParts = authorizationEndpoint.split('?');
@@ -486,10 +496,7 @@ export class UrlService {
     params = params.append('nonce', nonce);
     params = params.append('state', state);
 
-    if (
-      this.flowHelper.isCurrentFlowCodeFlow(configuration) &&
-      codeChallenge !== null
-    ) {
+    if (this.flowHelper.isCurrentFlowCodeFlow(configuration)) {
       params = params.append('code_challenge', codeChallenge);
       params = params.append('code_challenge_method', 'S256');
     }
@@ -514,7 +521,7 @@ export class UrlService {
   private createUrlImplicitFlowWithSilentRenew(
     configuration: OpenIdConfiguration,
     customParams?: { [key: string]: string | number | boolean }
-  ): string {
+  ): string | null {
     const state =
       this.flowsDataService.getExistingOrCreateAuthStateControl(configuration);
     const nonce = this.flowsDataService.createNonce(configuration);
@@ -602,7 +609,7 @@ export class UrlService {
           'authWellKnownEndpoints is undefined'
         );
 
-        return null;
+        return '';
       })
     );
   }
@@ -610,7 +617,7 @@ export class UrlService {
   private createUrlImplicitFlowAuthorize(
     configuration: OpenIdConfiguration,
     authOptions?: AuthOptions
-  ): string {
+  ): string | null {
     const state =
       this.flowsDataService.getExistingOrCreateAuthStateControl(configuration);
     const nonce = this.flowsDataService.createNonce(configuration);
@@ -640,7 +647,7 @@ export class UrlService {
         nonce,
         state,
         configuration,
-        null,
+        '',
         customParams
       );
     }
@@ -656,7 +663,7 @@ export class UrlService {
   private createUrlCodeFlowAuthorize(
     config: OpenIdConfiguration,
     authOptions?: AuthOptions
-  ): Observable<string> {
+  ): Observable<string | null> {
     const state =
       this.flowsDataService.getExistingOrCreateAuthStateControl(config);
     const nonce = this.flowsDataService.createNonce(config);
@@ -688,7 +695,7 @@ export class UrlService {
             nonce,
             state,
             config,
-            null,
+            '',
             customParams
           );
         }
@@ -705,7 +712,7 @@ export class UrlService {
 
   private getCodeChallenge(config: OpenIdConfiguration): Observable<string> {
     if (config.disablePkce) {
-      return of(null);
+      return of('');
     }
 
     // code_challenge with "S256"
@@ -717,7 +724,7 @@ export class UrlService {
   private getRedirectUrl(
     configuration: OpenIdConfiguration,
     authOptions?: AuthOptions
-  ): string {
+  ): string | null {
     let { redirectUrl } = configuration;
 
     if (authOptions?.redirectUrl) {
@@ -738,7 +745,7 @@ export class UrlService {
     return redirectUrl;
   }
 
-  private getSilentRenewUrl(configuration: OpenIdConfiguration): string {
+  private getSilentRenewUrl(configuration: OpenIdConfiguration): string | null {
     const { silentRenewUrl } = configuration;
 
     if (!silentRenewUrl) {
@@ -754,7 +761,7 @@ export class UrlService {
     return silentRenewUrl;
   }
 
-  private getClientId(configuration: OpenIdConfiguration): string {
+  private getClientId(configuration: OpenIdConfiguration): string | null {
     const { clientId } = configuration;
 
     if (!clientId) {
@@ -805,7 +812,7 @@ export class UrlService {
       return false;
     }
 
-    return authority.endsWith(AUTH0_ENDPOINT) || useCustomAuth0Domain;
+    return authority.endsWith(AUTH0_ENDPOINT) || Boolean(useCustomAuth0Domain);
   }
 
   private composeAuth0Endpoint(configuration: OpenIdConfiguration): string {

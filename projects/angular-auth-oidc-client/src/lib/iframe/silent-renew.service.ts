@@ -5,6 +5,7 @@ import { catchError } from 'rxjs/operators';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { ImplicitFlowCallbackService } from '../callback/implicit-flow-callback.service';
 import { IntervalService } from '../callback/interval.service';
+import { OpenIdConfiguration } from '../config/openid-configuration';
 import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
@@ -12,7 +13,6 @@ import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { LoggerService } from '../logging/logger.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { ValidationResult } from '../validation/validation-result';
-import { OpenIdConfiguration } from '../config/openid-configuration';
 import { IFrameService } from './existing-iframe.service';
 
 const IFRAME_FOR_SILENT_RENEW_IDENTIFIER = 'myiFrameForSilentRenew';
@@ -20,9 +20,9 @@ const IFRAME_FOR_SILENT_RENEW_IDENTIFIER = 'myiFrameForSilentRenew';
 @Injectable({ providedIn: 'root' })
 export class SilentRenewService {
   private readonly refreshSessionWithIFrameCompletedInternal$ =
-    new Subject<CallbackContext>();
+    new Subject<CallbackContext | null>();
 
-  get refreshSessionWithIFrameCompleted$(): Observable<CallbackContext> {
+  get refreshSessionWithIFrameCompleted$(): Observable<CallbackContext | null> {
     return this.refreshSessionWithIFrameCompletedInternal$.asObservable();
   }
 
@@ -54,7 +54,7 @@ export class SilentRenewService {
   isSilentRenewConfigured(configuration: OpenIdConfiguration): boolean {
     const { useRefreshToken, silentRenew } = configuration;
 
-    return !useRefreshToken && silentRenew;
+    return !useRefreshToken && Boolean(silentRenew);
   }
 
   codeFlowCallbackSilentRenewIframe(
@@ -66,9 +66,9 @@ export class SilentRenewService {
       fromString: urlParts[1],
     });
 
-    const error = params.get('error');
+    const errorParam = params.get('error');
 
-    if (error) {
+    if (errorParam) {
       this.authStateService.updateAndPublishAuthState({
         isAuthenticated: false,
         validationResult: ValidationResult.LoginRequired,
@@ -78,16 +78,16 @@ export class SilentRenewService {
       this.flowsDataService.setNonce('', config);
       this.intervalService.stopPeriodicTokenCheck();
 
-      return throwError(() => new Error(error));
+      return throwError(() => new Error(errorParam));
     }
 
-    const code = params.get('code');
-    const state = params.get('state');
+    const code = params.get('code') ?? '';
+    const state = params.get('state') ?? '';
     const sessionState = params.get('session_state');
 
-    const callbackContext = {
+    const callbackContext: CallbackContext = {
       code,
-      refreshToken: null,
+      refreshToken: '',
       state,
       sessionState,
       authResult: null,
@@ -100,7 +100,7 @@ export class SilentRenewService {
     return this.flowsService
       .processSilentRenewCodeFlowCallback(callbackContext, config, allConfigs)
       .pipe(
-        catchError(() => {
+        catchError((error) => {
           this.intervalService.stopPeriodicTokenCheck();
           this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
 
@@ -152,7 +152,7 @@ export class SilentRenewService {
     });
   }
 
-  private getExistingIframe(): HTMLIFrameElement {
+  private getExistingIframe(): HTMLIFrameElement | null {
     return this.iFrameService.getExistingIFrame(
       IFRAME_FOR_SILENT_RENEW_IDENTIFIER
     );

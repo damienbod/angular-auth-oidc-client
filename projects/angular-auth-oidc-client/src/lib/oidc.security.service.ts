@@ -59,7 +59,7 @@ export class OidcSecurityService {
   /**
    * Emits on a Security Token Service callback. The observable will never contain a value.
    */
-  get stsCallback$(): Observable<any> {
+  get stsCallback$(): Observable<void> {
     return this.callbackService.stsCallback$;
   }
 
@@ -105,7 +105,7 @@ export class OidcSecurityService {
    *
    * @param configId The configId to identify the config. If not passed, the first one is being returned
    */
-  getConfiguration(configId?: string): Observable<OpenIdConfiguration> {
+  getConfiguration(configId?: string): Observable<OpenIdConfiguration | null> {
     return this.configurationService.getOpenIDConfiguration(configId);
   }
 
@@ -235,7 +235,7 @@ export class OidcSecurityService {
    *
    * @returns A object with the authentication result
    */
-  getAuthenticationResult(configId?: string): Observable<AuthResult> {
+  getAuthenticationResult(configId?: string): Observable<AuthResult | null> {
     return this.configurationService
       .getOpenIDConfiguration(configId)
       .pipe(

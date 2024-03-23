@@ -8,6 +8,7 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 })
 export class LazyComponent implements OnInit {
   isAuthenticated = false;
+
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
   ngOnInit(): void {
@@ -20,11 +21,11 @@ export class LazyComponent implements OnInit {
     );
   }
 
-  login() {
+  login(): void {
     this.oidcSecurityService.authorize();
   }
 
-  logout() {
+  logout(): void {
     this.oidcSecurityService
       .logoff()
       .subscribe((result) => console.log(result));

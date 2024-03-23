@@ -13,6 +13,15 @@ export class BrowserStorageService {
   read(key: string, configuration: OpenIdConfiguration): any {
     const { configId } = configuration;
 
+    if (!configId) {
+      this.loggerService.logDebug(
+        configuration,
+        `Wanted to read '${key}' but configId was '${configId}'`
+      );
+
+      return null;
+    }
+
     if (!this.hasStorage()) {
       this.loggerService.logDebug(
         configuration,
@@ -34,10 +43,19 @@ export class BrowserStorageService {
   write(value: any, configuration: OpenIdConfiguration): boolean {
     const { configId } = configuration;
 
+    if (!configId) {
+      this.loggerService.logDebug(
+        configuration,
+        `Wanted to write but configId was '${configId}'`
+      );
+
+      return false;
+    }
+
     if (!this.hasStorage()) {
       this.loggerService.logDebug(
         configuration,
-        `Wanted to write '${value}' but Storage was falsy`
+        `Wanted to write but Storage was falsy`
       );
 
       return false;

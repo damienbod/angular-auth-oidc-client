@@ -3,4 +3,4 @@ export interface SilentRenewRunning {
   dateOfLaunchedProcessUtc: string;
 }
 
-export type SilentRenewRunningState = 'running';
+export type SilentRenewRunningState = 'running' | 'not-running';

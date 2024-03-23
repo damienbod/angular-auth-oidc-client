@@ -6,7 +6,8 @@
       "files": ["*.ts"],
       "parserOptions": {
         "project": ["tsconfig.json"],
-        "createDefaultProgram": true
+        "createDefaultProgram": true,
+        "tsconfigRootDir": "./"
       },
       "extends": [
         "plugin:@angular-eslint/recommended",
@@ -21,7 +22,6 @@
             "format": ["PascalCase"]
           }
         ],
-        "newline-before-return": "error",
         "max-len": "off",
         "no-useless-constructor": "off",
         "lines-between-class-members": ["error", "always"],
@@ -36,12 +36,22 @@
         "no-empty": ["error"],
         "@typescript-eslint/no-empty-function": ["error"],
         "no-unused-vars": "off",
-        "@typescript-eslint/no-unused-vars": ["error"],
         "@typescript-eslint/ban-types": ["error"],
         "no-useless-escape": ["error"],
         "no-prototype-builtins": ["error"],
         "prefer-spread": ["error"],
-        "@typescript-eslint/no-explicit-any": "off"
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/typedef": ["error"],
+        "@typescript-eslint/explicit-function-return-type": ["error"],
+        "newline-before-return": ["error"],
+        "@typescript-eslint/no-unused-vars": [
+          "error",
+          {
+            "argsIgnorePattern": "^_",
+            "varsIgnorePattern": "^_",
+            "caughtErrorsIgnorePattern": "^_"
+          }
+        ]
       }
     },
     {

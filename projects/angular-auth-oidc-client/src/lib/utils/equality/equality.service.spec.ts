@@ -155,21 +155,6 @@ describe('EqualityService Tests', () => {
         expected: true,
       },
       {
-        input1: null,
-        input2: 'value2',
-        expected: false,
-      },
-      {
-        input1: 'value1',
-        input2: null,
-        expected: false,
-      },
-      {
-        input1: null,
-        input2: null,
-        expected: false,
-      },
-      {
         input1: 'value1',
         input2: 'value2',
         expected: false,
@@ -177,42 +162,42 @@ describe('EqualityService Tests', () => {
       // old "x" (string) , [x] new invalid
       {
         input1: 'value1',
-        input2: ['value2'],
+        input2: ['value2'] as any[],
         expected: false,
       },
       // old [x], new "x" (string) invalid
       {
-        input1: ['value2'],
+        input1: ['value2'] as any[],
         input2: 'value1',
         expected: false,
       },
       {
-        input1: ['value1'],
-        input2: ['value2'],
+        input1: ['value1'] as any[],
+        input2: ['value2'] as any[],
         expected: false,
       },
       // old [x,y,z], new [x,y] invalid
       // old [x], new [y,x] invalid
       {
-        input1: ['value1'],
-        input2: ['value1', 'value2'],
+        input1: ['value1'] as any[],
+        input2: ['value1', 'value2'] as any[],
         expected: false,
       },
       {
-        input1: ['value1', 'value2'],
-        input2: ['value1', 'value2'],
+        input1: ['value1', 'value2'] as any[],
+        input2: ['value1', 'value2'] as any[],
         expected: true,
       },
       // old [x,y], new [y,x] valid
       {
-        input1: ['value1', 'value2'],
-        input2: ['value2', 'value1'],
+        input1: ['value1', 'value2'] as any[],
+        input2: ['value2', 'value1'] as any[],
         expected: true,
       },
       // old [x,y,z], new [y,z,x] valid
       {
-        input1: ['x', 'y', 'z'],
-        input2: ['y', 'z', 'x'],
+        input1: ['x', 'y', 'z'] as any[],
+        input2: ['y', 'z', 'x'] as any[],
         expected: true,
       },
     ];

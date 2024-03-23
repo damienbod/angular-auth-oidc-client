@@ -1,7 +1,7 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
-import { mockClass } from '../../test/auto-mock';
+import { mockAbstractProvider, mockProvider } from '../../test/auto-mock';
 import { AutoLoginService } from '../auto-login/auto-login.service';
 import { CallbackService } from '../callback/callback.service';
 import { PeriodicallyTokenCheckService } from '../callback/periodically-token-check.service';
@@ -10,9 +10,12 @@ import {
   StsConfigLoader,
   StsConfigStaticLoader,
 } from '../config/loader/config-loader';
+import { OpenIdConfiguration } from '../config/openid-configuration';
+import { CallbackContext } from '../flows/callback-context';
 import { CheckSessionService } from '../iframe/check-session.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/logger.service';
+import { LoginResponse } from '../login/login-response';
 import { PopUpService } from '../login/popup/popup.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
@@ -41,45 +44,20 @@ describe('CheckAuthService', () => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
       providers: [
-        {
-          provide: CheckSessionService,
-          useClass: mockClass(CheckSessionService),
-        },
-        {
-          provide: SilentRenewService,
-          useClass: mockClass(SilentRenewService),
-        },
-        { provide: UserService, useClass: mockClass(UserService) },
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
-        { provide: AuthStateService, useClass: mockClass(AuthStateService) },
-        { provide: CallbackService, useClass: mockClass(CallbackService) },
-        {
-          provide: RefreshSessionService,
-          useClass: mockClass(RefreshSessionService),
-        },
-        {
-          provide: PeriodicallyTokenCheckService,
-          useClass: mockClass(PeriodicallyTokenCheckService),
-        },
-        { provide: PopUpService, useClass: mockClass(PopUpService) },
-        {
-          provide: StsConfigLoader,
-          useClass: mockClass(StsConfigStaticLoader),
-        },
-        {
-          provide: StoragePersistenceService,
-          useClass: mockClass(StoragePersistenceService),
-        },
+        mockProvider(CheckSessionService),
+        mockProvider(SilentRenewService),
+        mockProvider(UserService),
+        mockProvider(LoggerService),
+        mockProvider(AuthStateService),
+        mockProvider(CallbackService),
+        mockProvider(RefreshSessionService),
+        mockProvider(PeriodicallyTokenCheckService),
+        mockProvider(PopUpService),
+        mockProvider(CurrentUrlService),
+        mockProvider(PublicEventsService),
+        mockAbstractProvider(StsConfigLoader, StsConfigStaticLoader),
         AutoLoginService,
-        CheckAuthService,
-        {
-          provide: CurrentUrlService,
-          useClass: mockClass(CurrentUrlService),
-        },
-        {
-          provide: PublicEventsService,
-          useClass: mockClass(PublicEventsService),
-        },
+        mockProvider(StoragePersistenceService),
       ],
     });
   });
@@ -103,7 +81,7 @@ describe('CheckAuthService', () => {
   });
 
   afterEach(() => {
-    storagePersistenceService.clear(null);
+    storagePersistenceService.clear({} as OpenIdConfiguration);
   });
 
   it('should create', () => {
@@ -181,24 +159,6 @@ describe('CheckAuthService', () => {
       });
     }));
 
-    it('returns isAuthenticated: false with error message when config is not valid', waitForAsync(() => {
-      const allConfigs = [];
-
-      checkAuthService
-        .checkAuth(allConfigs[0], allConfigs)
-        .subscribe((result) =>
-          expect(result).toEqual({
-            isAuthenticated: false,
-            errorMessage:
-              'Please provide at least one configuration before setting up the module',
-            configId: null,
-            idToken: '',
-            userData: null,
-            accessToken: '',
-          })
-        );
-    }));
-
     it('returns null and sendMessageToMainWindow if currently in a popup', waitForAsync(() => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
@@ -206,6 +166,9 @@ describe('CheckAuthService', () => {
 
       spyOn(popUpService as any, 'canAccessSessionStorage').and.returnValue(
         true
+      );
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
       );
       spyOnProperty(popUpService as any, 'windowInternal').and.returnValue({
         opener: {} as Window,
@@ -224,6 +187,7 @@ describe('CheckAuthService', () => {
             userData: null,
             idToken: '',
             accessToken: '',
+            configId: '',
           });
           expect(popupSpy).toHaveBeenCalled();
         });
@@ -238,10 +202,15 @@ describe('CheckAuthService', () => {
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
         true
       );
+
       const spy = spyOn(
         callBackService,
         'handleCallbackAndFireEvents'
       ).and.returnValue(throwError(() => new Error('ERROR')));
+
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
+      );
 
       checkAuthService
         .checkAuth(allConfigs[0], allConfigs)
@@ -267,10 +236,16 @@ describe('CheckAuthService', () => {
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
         true
       );
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
+      );
+      spyOn(authStateService, 'getAccessToken').and.returnValue('at');
+      spyOn(authStateService, 'getIdToken').and.returnValue('idt');
+
       const spy = spyOn(
         callBackService,
         'handleCallbackAndFireEvents'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
 
       checkAuthService
         .checkAuth(allConfigs[0], allConfigs)
@@ -278,9 +253,9 @@ describe('CheckAuthService', () => {
           expect(result).toEqual({
             isAuthenticated: true,
             userData: undefined,
-            accessToken: undefined,
+            accessToken: 'at',
             configId: 'configId1',
-            idToken: undefined,
+            idToken: 'idt',
           });
           expect(spy).toHaveBeenCalled();
         });
@@ -295,10 +270,17 @@ describe('CheckAuthService', () => {
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
         true
       );
+
       const spy = spyOn(
         callBackService,
         'handleCallbackAndFireEvents'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
+
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
+      );
+      spyOn(authStateService, 'getAccessToken').and.returnValue('at');
+      spyOn(authStateService, 'getIdToken').and.returnValue('idt');
 
       checkAuthService
         .checkAuth(allConfigs[0], allConfigs)
@@ -306,9 +288,9 @@ describe('CheckAuthService', () => {
           expect(result).toEqual({
             isAuthenticated: true,
             userData: undefined,
-            accessToken: undefined,
+            accessToken: 'at',
             configId: 'configId1',
-            idToken: undefined,
+            idToken: 'idt',
           });
           expect(spy).not.toHaveBeenCalled();
         });
@@ -323,9 +305,17 @@ describe('CheckAuthService', () => {
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
         true
       );
-      spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(
-        of(null)
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
       );
+      spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(
+        of({} as CallbackContext)
+      );
+      spyOn(userService, 'getUserDataFromStore').and.returnValue({
+        some: 'user-data',
+      });
+      spyOn(authStateService, 'getAccessToken').and.returnValue('at');
+      spyOn(authStateService, 'getIdToken').and.returnValue('idt');
 
       const setAuthorizedAndFireEventSpy = spyOn(
         authStateService,
@@ -338,10 +328,12 @@ describe('CheckAuthService', () => {
         .subscribe((result) => {
           expect(result).toEqual({
             isAuthenticated: true,
-            userData: undefined,
-            accessToken: undefined,
+            userData: {
+              some: 'user-data',
+            },
+            accessToken: 'at',
             configId: 'configId1',
-            idToken: undefined,
+            idToken: 'idt',
           });
           expect(setAuthorizedAndFireEventSpy).toHaveBeenCalled();
           expect(userServiceSpy).toHaveBeenCalled();
@@ -357,8 +349,13 @@ describe('CheckAuthService', () => {
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
         false
       );
+      spyOn(authStateService, 'getAccessToken').and.returnValue('at');
+      spyOn(authStateService, 'getIdToken').and.returnValue('it');
       spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(
-        of(null)
+        of({} as CallbackContext)
+      );
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
       );
 
       const setAuthorizedAndFireEventSpy = spyOn(
@@ -373,9 +370,9 @@ describe('CheckAuthService', () => {
           expect(result).toEqual({
             isAuthenticated: false,
             userData: undefined,
-            accessToken: undefined,
+            accessToken: 'at',
             configId: 'configId1',
-            idToken: undefined,
+            idToken: 'it',
           });
           expect(setAuthorizedAndFireEventSpy).not.toHaveBeenCalled();
           expect(userServiceSpy).not.toHaveBeenCalled();
@@ -387,8 +384,13 @@ describe('CheckAuthService', () => {
         { configId: 'configId1', authority: 'some-authority' },
       ];
 
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
+      );
+      spyOn(authStateService, 'getAccessToken').and.returnValue('at');
+      spyOn(authStateService, 'getIdToken').and.returnValue('idt');
       spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(
-        of(null)
+        of({} as CallbackContext)
       );
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
         true
@@ -400,9 +402,9 @@ describe('CheckAuthService', () => {
           expect(result).toEqual({
             isAuthenticated: true,
             userData: undefined,
-            accessToken: undefined,
+            accessToken: 'at',
             configId: 'configId1',
-            idToken: undefined,
+            idToken: 'idt',
           });
         });
     }));
@@ -412,9 +414,10 @@ describe('CheckAuthService', () => {
         { configId: 'configId1', authority: 'some-authority' },
       ];
 
-      spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(
-        of(null)
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
       );
+      spyOn(callBackService, 'isCallback').and.returnValue(false);
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
         true
       );
@@ -431,8 +434,11 @@ describe('CheckAuthService', () => {
         { configId: 'configId1', authority: 'some-authority' },
       ];
 
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
+      );
       spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(
-        of(null)
+        of({} as CallbackContext)
       );
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
         true
@@ -453,12 +459,14 @@ describe('CheckAuthService', () => {
       const allConfigs = [config];
 
       spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(
-        of(null)
+        of({} as CallbackContext)
       );
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
         true
       );
-
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
+      );
       const spy = spyOn(
         periodicallyTokenCheckService,
         'startTokenValidationPeriodically'
@@ -475,7 +483,10 @@ describe('CheckAuthService', () => {
       ];
 
       spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(
-        of(null)
+        of({} as CallbackContext)
+      );
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
       );
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
         true
@@ -496,7 +507,10 @@ describe('CheckAuthService', () => {
       ];
 
       spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(
-        of(null)
+        of({} as CallbackContext)
+      );
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
       );
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
         true
@@ -516,8 +530,11 @@ describe('CheckAuthService', () => {
         { configId: 'configId1', authority: 'some-authority' },
       ];
 
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
+      );
       spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(
-        of(null)
+        of({} as CallbackContext)
       );
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
         true
@@ -536,7 +553,7 @@ describe('CheckAuthService', () => {
       ];
 
       spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(
-        of(null)
+        of({} as CallbackContext)
       );
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
         false
@@ -552,6 +569,14 @@ describe('CheckAuthService', () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
       ];
+
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
+      );
+      spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
+        true
+      );
+
       const fireEventSpy = spyOn(publicEventsService, 'fireEvent');
 
       checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe(() => {
@@ -572,6 +597,9 @@ describe('CheckAuthService', () => {
       spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(
         throwError(() => new Error('ERROR'))
       );
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
+      );
 
       checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe(() => {
         expect(fireEventSpy.calls.allArgs()).toEqual([
@@ -589,10 +617,13 @@ describe('CheckAuthService', () => {
       ];
 
       spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(
-        of(null)
+        of({} as CallbackContext)
       );
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
         true
+      );
+      spyOn(refreshSessionService, 'forceRefreshSession').and.returnValue(
+        of({ isAuthenticated: true } as LoginResponse)
       );
 
       spyOn(silentRenewService, 'isSilentRenewConfigured').and.returnValue(
@@ -617,7 +648,7 @@ describe('CheckAuthService', () => {
         false
       );
       spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(
-        of(null)
+        of({} as CallbackContext)
       );
 
       spyOn(refreshSessionService, 'forceRefreshSession').and.returnValue(
@@ -647,7 +678,7 @@ describe('CheckAuthService', () => {
         false
       );
       spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(
-        of(null)
+        of({} as CallbackContext)
       );
       spyOn(checkSessionService, 'isCheckSessionConfigured').and.returnValue(
         true
@@ -697,7 +728,7 @@ describe('CheckAuthService', () => {
         false
       );
       spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(
-        of(null)
+        of({} as CallbackContext)
       );
       spyOn(checkSessionService, 'isCheckSessionConfigured').and.returnValue(
         true
@@ -840,7 +871,7 @@ describe('CheckAuthService', () => {
         'the-state-param'
       );
 
-      const allConfigs = [];
+      const allConfigs: OpenIdConfiguration[] = [];
 
       checkAuthService.checkAuthMultiple(allConfigs).subscribe({
         error: (error) => {

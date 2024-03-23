@@ -1,50 +1,30 @@
-import { Component, OnInit } from '@angular/core';
-import {
-  AuthenticatedResult,
-  OidcClientNotification,
-  OidcSecurityService,
-  OpenIdConfiguration,
-  UserDataResult,
-} from 'angular-auth-oidc-client';
-import { Observable } from 'rxjs';
+import { Component } from '@angular/core';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.component.html',
 })
-export class HomeComponent implements OnInit {
-  configurations: OpenIdConfiguration[];
-  userDataChanged$: Observable<OidcClientNotification<any>>;
-  userData$: Observable<UserDataResult>;
-  isAuthenticated$: Observable<AuthenticatedResult>;
+export class HomeComponent {
+  configurations = this.oidcSecurityService.getConfigurations();
+
+  userData$ = this.oidcSecurityService.userData$;
+
+  isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
 
   constructor(public oidcSecurityService: OidcSecurityService) {}
 
-  ngOnInit() {
-    this.configurations = this.oidcSecurityService.getConfigurations();
-    this.userData$ = this.oidcSecurityService.userData$;
-    this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
-  }
-
-  login(configId: string) {
+  login(configId: string | undefined): void {
     this.oidcSecurityService.authorize(configId);
   }
 
-  forceRefreshSession() {
+  forceRefreshSession(): void {
     this.oidcSecurityService
       .forceRefreshSession()
       .subscribe((result) => console.warn(result));
   }
 
-  logout(configId: string) {
+  logout(configId: string | undefined): void {
     this.oidcSecurityService.logoff(configId);
   }
-
-  // login(configId: string) {
-  //   this.oidcSecurityService.authorize(configId);
-  // }
-
-  // logout(configId: string) {
-  //   this.oidcSecurityService.logoff(configId);
-  // }
 }

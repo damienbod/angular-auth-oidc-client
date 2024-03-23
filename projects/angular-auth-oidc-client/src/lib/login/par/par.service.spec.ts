@@ -1,7 +1,7 @@
 import { HttpHeaders } from '@angular/common/http';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
-import { mockClass } from '../../../test/auto-mock';
+import { mockProvider } from '../../../test/auto-mock';
 import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
 import { DataService } from '../../api/data.service';
 import { LoggerService } from '../../logging/logger.service';
@@ -19,23 +19,10 @@ describe('ParService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        ParService,
-        {
-          provide: LoggerService,
-          useClass: mockClass(LoggerService),
-        },
-        {
-          provide: UrlService,
-          useClass: mockClass(UrlService),
-        },
-        {
-          provide: DataService,
-          useClass: mockClass(DataService),
-        },
-        {
-          provide: StoragePersistenceService,
-          useClass: mockClass(StoragePersistenceService),
-        },
+        mockProvider(LoggerService),
+        mockProvider(UrlService),
+        mockProvider(DataService),
+        mockProvider(StoragePersistenceService),
       ],
     });
   });
@@ -55,7 +42,7 @@ describe('ParService', () => {
   describe('postParRequest', () => {
     it('throws error if authWellKnownEndPoints does not exist in storage', waitForAsync(() => {
       spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(
-        null
+        of(null)
       );
       spyOn(storagePersistenceService, 'read')
         .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
@@ -71,7 +58,7 @@ describe('ParService', () => {
 
     it('throws error if par endpoint does not exist in storage', waitForAsync(() => {
       spyOn(urlService, 'createBodyForParCodeFlowRequest').and.returnValue(
-        null
+        of(null)
       );
       spyOn(storagePersistenceService, 'read')
         .withArgs('authWellKnownEndPoints', { configId: 'configId1' })

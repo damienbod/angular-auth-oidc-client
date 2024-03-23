@@ -5,21 +5,20 @@ import { CurrentUrlService } from './current-url.service';
 describe('CurrentUrlService with existing Url', () => {
   let service: CurrentUrlService;
 
+  const documentValue = {
+    defaultView: { location: 'http://my-url.com?state=my-state' },
+  };
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        CurrentUrlService,
         {
           provide: DOCUMENT,
-          useValue: {
-            defaultView: { location: 'http://my-url.com?state=my-state' },
-          },
+          useValue: documentValue,
         },
       ],
     });
-  });
 
-  beforeEach(() => {
     service = TestBed.inject(CurrentUrlService);
   });
 
@@ -36,6 +35,14 @@ describe('CurrentUrlService with existing Url', () => {
   });
 
   describe('getStateParamFromCurrentUrl', () => {
+    it('returns null if there is no current URL', () => {
+      spyOn(service, 'getCurrentUrl').and.returnValue(null);
+
+      const stateParam = service.getStateParamFromCurrentUrl('');
+
+      expect(stateParam).toBe(null);
+    });
+
     it('returns the state param for the URL', () => {
       const stateParam = service.getStateParamFromCurrentUrl();
 
@@ -57,7 +64,7 @@ describe('CurrentUrlService with existing Url', () => {
     });
 
     it('returns the state param for the URL if one is passed as null', () => {
-      const stateParam = service.getStateParamFromCurrentUrl(null);
+      const stateParam = service.getStateParamFromCurrentUrl(undefined);
 
       expect(stateParam).toBe('my-state');
     });

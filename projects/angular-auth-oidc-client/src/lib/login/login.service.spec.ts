@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { mockClass } from '../../test/auto-mock';
+import { mockProvider } from '../../test/auto-mock';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { LoginResponse } from './login-response';
 import { LoginService } from './login.service';
@@ -23,17 +23,11 @@ describe('LoginService', () => {
       imports: [CommonModule],
       providers: [
         LoginService,
-        { provide: ParLoginService, useClass: mockClass(ParLoginService) },
-        { provide: PopUpLoginService, useClass: mockClass(PopUpLoginService) },
-        {
-          provide: StandardLoginService,
-          useClass: mockClass(StandardLoginService),
-        },
-        {
-          provide: StoragePersistenceService,
-          useClass: mockClass(StoragePersistenceService),
-        },
-        { provide: PopUpService, useClass: mockClass(PopUpService) },
+        mockProvider(ParLoginService),
+        mockProvider(PopUpLoginService),
+        mockProvider(StandardLoginService),
+        mockProvider(StoragePersistenceService),
+        mockProvider(PopUpService),
       ],
     });
   });
@@ -75,6 +69,7 @@ describe('LoginService', () => {
     });
 
     it('stores the customParams to the storage if customParams are given', () => {
+      // arrange
       const config = { usePushedAuthorisationRequests: false };
       const storagePersistenceServiceSpy = spyOn(
         storagePersistenceService,
@@ -90,6 +85,24 @@ describe('LoginService', () => {
         config
       );
     });
+
+    it("should throw error if configuration is null and doesn't call loginPar or loginStandard", () => {
+      // arrange
+      const config = null;
+      const loginParSpy = spyOn(parLoginService, 'loginPar');
+      const standardLoginSpy = spyOn(standardLoginService, 'loginStandard');
+      const authOptions = { customParams: { custom: 'params' } };
+
+      // act
+      const fn = (): void => service.login(config, authOptions);
+
+      // assert
+      expect(fn).toThrow(
+        new Error('Please provide a configuration before setting up the module')
+      );
+      expect(loginParSpy).not.toHaveBeenCalled();
+      expect(standardLoginSpy).not.toHaveBeenCalled();
+    });
   });
 
   describe('loginWithPopUp', () => {
@@ -99,11 +112,11 @@ describe('LoginService', () => {
       const loginWithPopUpPar = spyOn(
         parLoginService,
         'loginWithPopUpPar'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as LoginResponse));
       const loginWithPopUpStandardSpy = spyOn(
         popUpLoginService,
         'loginWithPopUpStandard'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as LoginResponse));
 
       // act
       service.loginWithPopUp(config, [config]).subscribe(() => {
@@ -119,11 +132,11 @@ describe('LoginService', () => {
       const loginWithPopUpPar = spyOn(
         parLoginService,
         'loginWithPopUpPar'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as LoginResponse));
       const loginWithPopUpStandardSpy = spyOn(
         popUpLoginService,
         'loginWithPopUpStandard'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as LoginResponse));
 
       // act
       service.loginWithPopUp(config, [config]).subscribe(() => {
@@ -143,7 +156,7 @@ describe('LoginService', () => {
       const authOptions = { customParams: { custom: 'params' } };
 
       spyOn(popUpLoginService, 'loginWithPopUpStandard').and.returnValue(
-        of(null)
+        of({} as LoginResponse)
       );
 
       // act
@@ -164,11 +177,11 @@ describe('LoginService', () => {
       const loginWithPopUpPar = spyOn(
         parLoginService,
         'loginWithPopUpPar'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as LoginResponse));
       const loginWithPopUpStandardSpy = spyOn(
         popUpLoginService,
         'loginWithPopUpStandard'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as LoginResponse));
 
       spyOn(popUpService, 'isCurrentlyInPopup').and.returnValue(true);
 

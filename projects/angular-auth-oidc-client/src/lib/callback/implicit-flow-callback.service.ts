@@ -23,11 +23,11 @@ export class ImplicitFlowCallbackService {
     hash?: string
   ): Observable<CallbackContext> {
     const isRenewProcess = this.flowsDataService.isSilentRenewRunning(config);
-    const {
-      triggerAuthorizationResultEvent,
-      postLoginRoute,
-      unauthorizedRoute,
-    } = config;
+    const triggerAuthorizationResultEvent = Boolean(
+      config.triggerAuthorizationResultEvent
+    );
+    const postLoginRoute = config.postLoginRoute ?? '';
+    const unauthorizedRoute = config.unauthorizedRoute ?? '';
 
     return this.flowsService
       .processImplicitFlowCallback(config, allConfigs, hash)

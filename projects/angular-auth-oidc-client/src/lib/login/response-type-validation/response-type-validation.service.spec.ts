@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { mockClass } from '../../../test/auto-mock';
+import { mockProvider } from '../../../test/auto-mock';
 import { LoggerService } from '../../logging/logger.service';
 import { FlowHelper } from '../../utils/flowHelper/flow-helper.service';
 import { ResponseTypeValidationService } from './response-type-validation.service';
@@ -13,14 +13,8 @@ describe('ResponseTypeValidationService', () => {
       imports: [],
       providers: [
         ResponseTypeValidationService,
-        {
-          provide: LoggerService,
-          useClass: mockClass(LoggerService),
-        },
-        {
-          provide: FlowHelper,
-          useClass: mockClass(FlowHelper),
-        },
+        mockProvider(LoggerService),
+        mockProvider(FlowHelper),
       ],
     });
   });

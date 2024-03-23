@@ -1,7 +1,7 @@
 import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { delay } from 'rxjs/operators';
-import { mockClass } from '../../test/auto-mock';
+import { mockProvider } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { AuthWellKnownService } from '../config/auth-well-known/auth-well-known.service';
 import { CallbackContext } from '../flows/callback-context';
@@ -34,31 +34,16 @@ describe('RefreshSessionService ', () => {
       imports: [],
       providers: [
         FlowHelper,
-        { provide: FlowsDataService, useClass: mockClass(FlowsDataService) },
+        mockProvider(FlowsDataService),
         RefreshSessionService,
-        { provide: LoggerService, useClass: mockClass(LoggerService) },
-        {
-          provide: SilentRenewService,
-          useClass: mockClass(SilentRenewService),
-        },
-        { provide: AuthStateService, useClass: mockClass(AuthStateService) },
-        {
-          provide: AuthWellKnownService,
-          useClass: mockClass(AuthWellKnownService),
-        },
-        {
-          provide: RefreshSessionIframeService,
-          useClass: mockClass(RefreshSessionIframeService),
-        },
-        {
-          provide: StoragePersistenceService,
-          useClass: mockClass(StoragePersistenceService),
-        },
-        {
-          provide: RefreshSessionRefreshTokenService,
-          useClass: mockClass(RefreshSessionRefreshTokenService),
-        },
-        { provide: UserService, useClass: mockClass(UserService) },
+        mockProvider(LoggerService),
+        mockProvider(SilentRenewService),
+        mockProvider(AuthStateService),
+        mockProvider(AuthWellKnownService),
+        mockProvider(RefreshSessionIframeService),
+        mockProvider(StoragePersistenceService),
+        mockProvider(RefreshSessionRefreshTokenService),
+        mockProvider(UserService),
       ],
     });
   });
@@ -502,7 +487,7 @@ describe('RefreshSessionService ', () => {
 
       (refreshSessionService as any)
         .startRefreshSession()
-        .subscribe((result) => {
+        .subscribe((result: any) => {
           expect(result).toBe(null);
         });
     }));
@@ -512,7 +497,7 @@ describe('RefreshSessionService ', () => {
 
       (refreshSessionService as any)
         .startRefreshSession()
-        .subscribe((result) => {
+        .subscribe((result: any) => {
           expect(result).toBe(null);
         });
     }));
@@ -542,7 +527,7 @@ describe('RefreshSessionService ', () => {
       spyOn(
         refreshSessionRefreshTokenService,
         'refreshSessionWithRefreshTokens'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
 
       (refreshSessionService as any)
         .startRefreshSession(allConfigs[0], allConfigs)
@@ -573,7 +558,7 @@ describe('RefreshSessionService ', () => {
       const refreshSessionWithRefreshTokensSpy = spyOn(
         refreshSessionRefreshTokenService,
         'refreshSessionWithRefreshTokens'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
 
       (refreshSessionService as any)
         .startRefreshSession(allConfigs[0], allConfigs)
@@ -604,12 +589,12 @@ describe('RefreshSessionService ', () => {
       const refreshSessionWithRefreshTokensSpy = spyOn(
         refreshSessionRefreshTokenService,
         'refreshSessionWithRefreshTokens'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({} as CallbackContext));
 
       const refreshSessionWithIframeSpy = spyOn(
         refreshSessionIframeService,
         'refreshSessionWithIframe'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of(false));
 
       (refreshSessionService as any)
         .startRefreshSession(allConfigs[0], allConfigs)
