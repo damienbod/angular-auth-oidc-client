@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
@@ -13,15 +13,31 @@ import { UserCallbackHandlerService } from './callback-handling/user-callback-ha
 
 @Injectable({ providedIn: 'root' })
 export class FlowsService {
-  constructor(
-    private readonly codeFlowCallbackHandlerService: CodeFlowCallbackHandlerService,
-    private readonly implicitFlowCallbackHandlerService: ImplicitFlowCallbackHandlerService,
-    private readonly historyJwtKeysCallbackHandlerService: HistoryJwtKeysCallbackHandlerService,
-    private readonly userHandlerService: UserCallbackHandlerService,
-    private readonly stateValidationCallbackHandlerService: StateValidationCallbackHandlerService,
-    private readonly refreshSessionCallbackHandlerService: RefreshSessionCallbackHandlerService,
-    private readonly refreshTokenCallbackHandlerService: RefreshTokenCallbackHandlerService
-  ) {}
+  private readonly codeFlowCallbackHandlerService = inject(
+    CodeFlowCallbackHandlerService
+  );
+
+  private readonly implicitFlowCallbackHandlerService = inject(
+    ImplicitFlowCallbackHandlerService
+  );
+
+  private readonly historyJwtKeysCallbackHandlerService = inject(
+    HistoryJwtKeysCallbackHandlerService
+  );
+
+  private readonly userHandlerService = inject(UserCallbackHandlerService);
+
+  private readonly stateValidationCallbackHandlerService = inject(
+    StateValidationCallbackHandlerService
+  );
+
+  private readonly refreshSessionCallbackHandlerService = inject(
+    RefreshSessionCallbackHandlerService
+  );
+
+  private readonly refreshTokenCallbackHandlerService = inject(
+    RefreshTokenCallbackHandlerService
+  );
 
   processCodeFlowCallback(
     urlToCheck: string,

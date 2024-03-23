@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
@@ -10,12 +10,13 @@ import { IntervalService } from './interval.service';
 
 @Injectable({ providedIn: 'root' })
 export class ImplicitFlowCallbackService {
-  constructor(
-    private readonly flowsService: FlowsService,
-    private readonly router: Router,
-    private readonly flowsDataService: FlowsDataService,
-    private readonly intervalService: IntervalService
-  ) {}
+  private readonly flowsService = inject(FlowsService);
+
+  private readonly router = inject(Router);
+
+  private readonly flowsDataService = inject(FlowsDataService);
+
+  private readonly intervalService = inject(IntervalService);
 
   authenticatedImplicitFlowCallback(
     config: OpenIdConfiguration,

@@ -27,10 +27,15 @@ import { AutoLoginPartialRoutesGuard } from 'angular-auth-oidc-client';
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'home' },
   { path: 'home', component: HomeComponent },
-  { path: 'protected', component: ProtectedComponent, canActivate: [AutoLoginPartialRoutesGuard] },
+  {
+    path: 'protected',
+    component: ProtectedComponent,
+    canActivate: [AutoLoginPartialRoutesGuard],
+  },
   {
     path: 'customers',
-    loadChildren: () => import('./customers/customers.module').then((m) => m.CustomersModule),
+    loadChildren: () =>
+      import('./customers/customers.module').then((m) => m.CustomersModule),
     canLoad: [AutoLoginPartialRoutesGuard],
   },
   { path: 'unauthorized', component: UnauthorizedComponent },
@@ -42,12 +47,14 @@ Please make sure to call `checkAuth()` like normal in your `app.component.ts`.
 
 ```ts
 export class AppComponent implements OnInit {
-  constructor(private oidcSecurityService: OidcSecurityService) {}
+  private readonly oidcSecurityService = inject(OidcSecurityService);
 
   ngOnInit() {
-    this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated, userData, accessToken }) => {
-      // ...
-    });
+    this.oidcSecurityService
+      .checkAuth()
+      .subscribe(({ isAuthenticated, userData, accessToken }) => {
+        // ...
+      });
   }
 }
 ```
@@ -69,20 +76,31 @@ import { AutoLoginPartialRoutesGuard } from 'angular-auth-oidc-client';
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'home' },
-  { path: 'home', component: HomeComponent, canActivate: [AutoLoginPartialRoutesGuard] },
+  {
+    path: 'home',
+    component: HomeComponent,
+    canActivate: [AutoLoginPartialRoutesGuard],
+  },
   { path: 'callback', component: CallbackComponent }, // does nothing but setting up auth
 ];
 ```
+
 ### Custom Params for the guard
 
-If you need to pass custom params to the login request you can simply use the [data](https://angular.io/api/router/Route#data) attribute of the route. 
+If you need to pass custom params to the login request you can simply use the [data](https://angular.io/api/router/Route#data) attribute of the route.
 These parameters will then be appended to the login request
+
 ```ts
 import { AutoLoginPartialRoutesGuard } from 'angular-auth-oidc-client';
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'home' },
-  { path: 'home', component: HomeComponent, canActivate: [AutoLoginPartialRoutesGuard], data:{custom:'param'} },
+  {
+    path: 'home',
+    component: HomeComponent,
+    canActivate: [AutoLoginPartialRoutesGuard],
+    data: { custom: 'param' },
+  },
   { path: 'callback', component: CallbackComponent }, // does nothing but setting up auth
 ];
 ```

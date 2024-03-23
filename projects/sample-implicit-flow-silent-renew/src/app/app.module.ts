@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, inject } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { EventTypes, PublicEventsService } from 'angular-auth-oidc-client';
@@ -24,7 +24,9 @@ import { UnauthorizedComponent } from './unauthorized/unauthorized.component';
   bootstrap: [AppComponent],
 })
 export class AppModule {
-  constructor(private readonly eventService: PublicEventsService) {
+  private readonly eventService = inject(PublicEventsService);
+
+  constructor() {
     this.eventService
       .registerForEvents()
       .pipe(

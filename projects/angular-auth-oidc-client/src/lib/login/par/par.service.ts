@@ -1,5 +1,5 @@
 import { HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map, retry, switchMap } from 'rxjs/operators';
 import { DataService } from '../../api/data.service';
@@ -12,12 +12,15 @@ import { ParResponse } from './par-response';
 
 @Injectable({ providedIn: 'root' })
 export class ParService {
-  constructor(
-    private readonly loggerService: LoggerService,
-    private readonly urlService: UrlService,
-    private readonly dataService: DataService,
-    private readonly storagePersistenceService: StoragePersistenceService
-  ) {}
+  private readonly loggerService = inject(LoggerService);
+
+  private readonly urlService = inject(UrlService);
+
+  private readonly dataService = inject(DataService);
+
+  private readonly storagePersistenceService = inject(
+    StoragePersistenceService
+  );
 
   postParRequest(
     configuration: OpenIdConfiguration,

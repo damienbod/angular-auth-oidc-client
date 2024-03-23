@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
@@ -10,12 +10,13 @@ import { IntervalService } from './interval.service';
 
 @Injectable({ providedIn: 'root' })
 export class RefreshSessionRefreshTokenService {
-  constructor(
-    private readonly loggerService: LoggerService,
-    private readonly resetAuthDataService: ResetAuthDataService,
-    private readonly flowsService: FlowsService,
-    private readonly intervalService: IntervalService
-  ) {}
+  private readonly loggerService = inject(LoggerService);
+
+  private readonly resetAuthDataService = inject(ResetAuthDataService);
+
+  private readonly flowsService = inject(FlowsService);
+
+  private readonly intervalService = inject(IntervalService);
 
   refreshSessionWithRefreshTokens(
     config: OpenIdConfiguration,

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
@@ -6,9 +6,9 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
   templateUrl: 'forbidden.component.html',
 })
 export class ForbiddenComponent implements OnInit {
-  public isAuthenticated = false;
+  private readonly oidcSecurityService = inject(OidcSecurityService);
 
-  constructor(private readonly oidcSecurityService: OidcSecurityService) {}
+  public isAuthenticated = false;
 
   ngOnInit(): void {
     this.oidcSecurityService.isAuthenticated$.subscribe(

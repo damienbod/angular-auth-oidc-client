@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import {
   EventTypes,
   OidcSecurityService,
@@ -11,10 +11,8 @@ import { filter } from 'rxjs/operators';
   templateUrl: 'app.component.html',
 })
 export class AppComponent implements OnInit {
-  constructor(
-    public oidcSecurityService: OidcSecurityService,
-    private readonly eventService: PublicEventsService
-  ) {}
+  private readonly oidcSecurityService = inject(OidcSecurityService);
+  private readonly eventService = inject(PublicEventsService);
 
   ngOnInit(): void {
     this.oidcSecurityService

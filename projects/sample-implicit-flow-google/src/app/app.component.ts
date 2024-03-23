@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 
@@ -7,10 +7,9 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
   templateUrl: 'app.component.html',
 })
 export class AppComponent implements OnInit {
-  constructor(
-    public oidcSecurityService: OidcSecurityService,
-    private readonly router: Router
-  ) {}
+  private readonly oidcSecurityService = inject(OidcSecurityService);
+
+  private readonly router = inject(Router);
 
   ngOnInit(): void {
     this.oidcSecurityService

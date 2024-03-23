@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { switchMap, take } from 'rxjs/operators';
 import { AuthOptions } from '../../auth-options';
@@ -18,16 +18,23 @@ import { ParService } from './par.service';
 
 @Injectable({ providedIn: 'root' })
 export class ParLoginService {
-  constructor(
-    private readonly loggerService: LoggerService,
-    private readonly responseTypeValidationService: ResponseTypeValidationService,
-    private readonly urlService: UrlService,
-    private readonly redirectService: RedirectService,
-    private readonly authWellKnownService: AuthWellKnownService,
-    private readonly popupService: PopUpService,
-    private readonly checkAuthService: CheckAuthService,
-    private readonly parService: ParService
-  ) {}
+  private readonly loggerService = inject(LoggerService);
+
+  private readonly responseTypeValidationService = inject(
+    ResponseTypeValidationService
+  );
+
+  private readonly urlService = inject(UrlService);
+
+  private readonly redirectService = inject(RedirectService);
+
+  private readonly authWellKnownService = inject(AuthWellKnownService);
+
+  private readonly popupService = inject(PopUpService);
+
+  private readonly checkAuthService = inject(CheckAuthService);
+
+  private readonly parService = inject(ParService);
 
   loginPar(
     configuration: OpenIdConfiguration,

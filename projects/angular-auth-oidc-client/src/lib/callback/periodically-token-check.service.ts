@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { forkJoin, Observable, of, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { AuthStateService } from '../auth-state/auth-state.service';
@@ -19,20 +19,35 @@ import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-tok
 
 @Injectable({ providedIn: 'root' })
 export class PeriodicallyTokenCheckService {
-  constructor(
-    private readonly resetAuthDataService: ResetAuthDataService,
-    private readonly flowHelper: FlowHelper,
-    private readonly flowsDataService: FlowsDataService,
-    private readonly loggerService: LoggerService,
-    private readonly userService: UserService,
-    private readonly authStateService: AuthStateService,
-    private readonly refreshSessionIframeService: RefreshSessionIframeService,
-    private readonly refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService,
-    private readonly intervalService: IntervalService,
-    private readonly storagePersistenceService: StoragePersistenceService,
-    private readonly publicEventsService: PublicEventsService,
-    private readonly configurationService: ConfigurationService
-  ) {}
+  private readonly resetAuthDataService = inject(ResetAuthDataService);
+
+  private readonly flowHelper = inject(FlowHelper);
+
+  private readonly flowsDataService = inject(FlowsDataService);
+
+  private readonly loggerService = inject(LoggerService);
+
+  private readonly userService = inject(UserService);
+
+  private readonly authStateService = inject(AuthStateService);
+
+  private readonly refreshSessionIframeService = inject(
+    RefreshSessionIframeService
+  );
+
+  private readonly refreshSessionRefreshTokenService = inject(
+    RefreshSessionRefreshTokenService
+  );
+
+  private readonly intervalService = inject(IntervalService);
+
+  private readonly storagePersistenceService = inject(
+    StoragePersistenceService
+  );
+
+  private readonly publicEventsService = inject(PublicEventsService);
+
+  private readonly configurationService = inject(ConfigurationService);
 
   startTokenValidationPeriodically(
     allConfigs: OpenIdConfiguration[],

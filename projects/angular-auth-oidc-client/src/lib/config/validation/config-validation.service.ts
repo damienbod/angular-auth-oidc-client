@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { LoggerService } from '../../logging/logger.service';
 import { OpenIdConfiguration } from '../openid-configuration';
 import { Level, RuleValidationResult } from './rule';
@@ -6,7 +6,7 @@ import { allMultipleConfigRules, allRules } from './rules';
 
 @Injectable({ providedIn: 'root' })
 export class ConfigValidationService {
-  constructor(private readonly loggerService: LoggerService) {}
+  private readonly loggerService = inject(LoggerService);
 
   validateConfigs(passedConfigs: OpenIdConfiguration[]): boolean {
     return this.validateConfigsInternal(

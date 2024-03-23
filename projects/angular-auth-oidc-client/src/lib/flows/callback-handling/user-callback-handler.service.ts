@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { AuthStateService } from '../../auth-state/auth-state.service';
@@ -12,13 +12,15 @@ import { ResetAuthDataService } from '../reset-auth-data.service';
 
 @Injectable({ providedIn: 'root' })
 export class UserCallbackHandlerService {
-  constructor(
-    private readonly loggerService: LoggerService,
-    private readonly authStateService: AuthStateService,
-    private readonly flowsDataService: FlowsDataService,
-    private readonly userService: UserService,
-    private readonly resetAuthDataService: ResetAuthDataService
-  ) {}
+  private readonly loggerService = inject(LoggerService);
+
+  private readonly authStateService = inject(AuthStateService);
+
+  private readonly flowsDataService = inject(FlowsDataService);
+
+  private readonly userService = inject(UserService);
+
+  private readonly resetAuthDataService = inject(ResetAuthDataService);
 
   // STEP 5 userData
   callbackUser(

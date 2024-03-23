@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
 })
 export class AppComponent implements OnInit {
-  constructor(private oidcSecurityService: OidcSecurityService) {}
+  private readonly oidcSecurityService = inject(OidcSecurityService);
 
   ngOnInit() {
     this.oidcSecurityService

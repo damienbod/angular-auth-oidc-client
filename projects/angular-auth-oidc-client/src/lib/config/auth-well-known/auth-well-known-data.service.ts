@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { map, retry } from 'rxjs/operators';
 import { DataService } from '../../api/data.service';
@@ -10,10 +10,9 @@ const WELL_KNOWN_SUFFIX = `/.well-known/openid-configuration`;
 
 @Injectable({ providedIn: 'root' })
 export class AuthWellKnownDataService {
-  constructor(
-    private readonly http: DataService,
-    private readonly loggerService: LoggerService
-  ) {}
+  private readonly loggerService = inject(LoggerService);
+
+  private readonly http = inject(DataService);
 
   getWellKnownEndPointsForConfig(
     config: OpenIdConfiguration

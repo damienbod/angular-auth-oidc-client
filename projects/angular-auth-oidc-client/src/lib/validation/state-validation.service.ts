@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
@@ -14,14 +14,19 @@ import { ValidationResult } from './validation-result';
 
 @Injectable({ providedIn: 'root' })
 export class StateValidationService {
-  constructor(
-    private readonly storagePersistenceService: StoragePersistenceService,
-    private readonly tokenValidationService: TokenValidationService,
-    private readonly tokenHelperService: TokenHelperService,
-    private readonly loggerService: LoggerService,
-    private readonly equalityService: EqualityService,
-    private readonly flowHelper: FlowHelper
-  ) {}
+  private readonly storagePersistenceService = inject(
+    StoragePersistenceService
+  );
+
+  private readonly tokenValidationService = inject(TokenValidationService);
+
+  private readonly tokenHelperService = inject(TokenHelperService);
+
+  private readonly loggerService = inject(LoggerService);
+
+  private readonly equalityService = inject(EqualityService);
+
+  private readonly flowHelper = inject(FlowHelper);
 
   getValidatedStateResult(
     callbackContext: CallbackContext,

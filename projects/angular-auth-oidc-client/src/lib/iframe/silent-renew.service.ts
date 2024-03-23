@@ -1,5 +1,5 @@
 ﻿import { HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, Subject, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthStateService } from '../auth-state/auth-state.service';
@@ -26,17 +26,25 @@ export class SilentRenewService {
     return this.refreshSessionWithIFrameCompletedInternal$.asObservable();
   }
 
-  constructor(
-    private readonly iFrameService: IFrameService,
-    private readonly flowsService: FlowsService,
-    private readonly resetAuthDataService: ResetAuthDataService,
-    private readonly flowsDataService: FlowsDataService,
-    private readonly authStateService: AuthStateService,
-    private readonly loggerService: LoggerService,
-    private readonly flowHelper: FlowHelper,
-    private readonly implicitFlowCallbackService: ImplicitFlowCallbackService,
-    private readonly intervalService: IntervalService
-  ) {}
+  private readonly loggerService = inject(LoggerService);
+
+  private readonly iFrameService = inject(IFrameService);
+
+  private readonly flowsService = inject(FlowsService);
+
+  private readonly resetAuthDataService = inject(ResetAuthDataService);
+
+  private readonly flowsDataService = inject(FlowsDataService);
+
+  private readonly authStateService = inject(AuthStateService);
+
+  private readonly flowHelper = inject(FlowHelper);
+
+  private readonly implicitFlowCallbackService = inject(
+    ImplicitFlowCallbackService
+  );
+
+  private readonly intervalService = inject(IntervalService);
 
   getOrCreateIframe(config: OpenIdConfiguration): HTMLIFrameElement {
     const existingIframe = this.getExistingIframe();

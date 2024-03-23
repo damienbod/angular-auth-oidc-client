@@ -1,11 +1,11 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { CryptoService } from '../utils/crypto/crypto.service';
 
 @Injectable({ providedIn: 'root' })
 export class JwtWindowCryptoService {
-  constructor(private readonly cryptoService: CryptoService) {}
+  private readonly cryptoService = inject(CryptoService);
 
   generateCodeChallenge(codeVerifier: string): Observable<string> {
     return this.calcHash(codeVerifier).pipe(

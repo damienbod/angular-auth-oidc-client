@@ -112,14 +112,14 @@ export class AppModule {}
 And call the method `checkAuth()` from your `app.component.ts`. The method `checkAuth()` is needed to process the redirect from your Security Token Service and set the correct states. This method must be used to ensure the correct functioning of the library.
 
 ```ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
   /*...*/
 })
 export class AppComponent implements OnInit {
-  constructor(public oidcSecurityService: OidcSecurityService) {}
+  private readonly oidcSecurityService = inject(OidcSecurityService);
 
   ngOnInit() {
     this.oidcSecurityService

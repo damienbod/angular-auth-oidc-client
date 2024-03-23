@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { AuthOptions } from '../auth-options';
 import { OpenIdConfiguration } from '../config/openid-configuration';
@@ -12,13 +12,17 @@ import { StandardLoginService } from './standard/standard-login.service';
 
 @Injectable({ providedIn: 'root' })
 export class LoginService {
-  constructor(
-    private readonly parLoginService: ParLoginService,
-    private readonly popUpLoginService: PopUpLoginService,
-    private readonly standardLoginService: StandardLoginService,
-    private readonly storagePersistenceService: StoragePersistenceService,
-    private readonly popupService: PopUpService
-  ) {}
+  private readonly parLoginService = inject(ParLoginService);
+
+  private readonly popUpLoginService = inject(PopUpLoginService);
+
+  private readonly standardLoginService = inject(StandardLoginService);
+
+  private readonly storagePersistenceService = inject(
+    StoragePersistenceService
+  );
+
+  private readonly popupService = inject(PopUpService);
 
   login(
     configuration: OpenIdConfiguration | null,

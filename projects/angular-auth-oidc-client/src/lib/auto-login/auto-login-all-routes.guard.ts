@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   ActivatedRouteSnapshot,
   Router,
@@ -17,13 +17,15 @@ import { AutoLoginService } from './auto-login.service';
  */
 @Injectable({ providedIn: 'root' })
 export class AutoLoginAllRoutesGuard {
-  constructor(
-    private readonly autoLoginService: AutoLoginService,
-    private readonly checkAuthService: CheckAuthService,
-    private readonly loginService: LoginService,
-    private readonly configurationService: ConfigurationService,
-    private readonly router: Router
-  ) {}
+  private readonly autoLoginService = inject(AutoLoginService);
+
+  private readonly checkAuthService = inject(CheckAuthService);
+
+  private readonly loginService = inject(LoginService);
+
+  private readonly configurationService = inject(ConfigurationService);
+
+  private readonly router = inject(Router);
 
   canLoad(): Observable<boolean> {
     const url =

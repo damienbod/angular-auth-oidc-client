@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { EventTypes } from '../../public-events/event-types';
@@ -10,11 +10,13 @@ import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
 
 @Injectable({ providedIn: 'root' })
 export class AuthWellKnownService {
-  constructor(
-    private readonly dataService: AuthWellKnownDataService,
-    private readonly publicEventsService: PublicEventsService,
-    private readonly storagePersistenceService: StoragePersistenceService
-  ) {}
+  private readonly dataService = inject(AuthWellKnownDataService);
+
+  private readonly publicEventsService = inject(PublicEventsService);
+
+  private readonly storagePersistenceService = inject(
+    StoragePersistenceService
+  );
 
   storeWellKnownEndpoints(
     config: OpenIdConfiguration,

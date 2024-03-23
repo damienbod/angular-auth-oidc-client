@@ -1,11 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { AbstractLoggerService } from './abstract-logger.service';
 import { LogLevel } from './log-level';
 
 @Injectable({ providedIn: 'root' })
 export class LoggerService {
-  constructor(private readonly abstractLoggerService: AbstractLoggerService) {}
+  private readonly abstractLoggerService = inject(AbstractLoggerService);
 
   logError(
     configuration: OpenIdConfiguration,

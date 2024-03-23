@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
@@ -18,6 +18,16 @@ const DEFAULT_AUTHRESULT = {
 
 @Injectable({ providedIn: 'root' })
 export class AuthStateService {
+  private readonly storagePersistenceService = inject(
+    StoragePersistenceService
+  );
+
+  private readonly loggerService = inject(LoggerService);
+
+  private readonly publicEventsService = inject(PublicEventsService);
+
+  private readonly tokenValidationService = inject(TokenValidationService);
+
   private readonly authenticatedInternal$ =
     new BehaviorSubject<AuthenticatedResult>(DEFAULT_AUTHRESULT);
 
@@ -26,13 +36,6 @@ export class AuthStateService {
       .asObservable()
       .pipe(distinctUntilChanged());
   }
-
-  constructor(
-    private readonly storagePersistenceService: StoragePersistenceService,
-    private readonly loggerService: LoggerService,
-    private readonly publicEventsService: PublicEventsService,
-    private readonly tokenValidationService: TokenValidationService
-  ) {}
 
   setAuthenticatedAndFireEvent(allConfigs: OpenIdConfiguration[]): void {
     const result = this.composeAuthenticatedResult(allConfigs);

@@ -16,12 +16,15 @@ import { ClosestMatchingRouteService } from './closest-matching-route.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(
-    private readonly authStateService: AuthStateService,
-    private readonly configurationService: ConfigurationService,
-    private readonly loggerService: LoggerService,
-    private readonly closestMatchingRouteService: ClosestMatchingRouteService
-  ) {}
+  private readonly authStateService = inject(AuthStateService);
+
+  private readonly configurationService = inject(ConfigurationService);
+
+  private readonly loggerService = inject(LoggerService);
+
+  private readonly closestMatchingRouteService = inject(
+    ClosestMatchingRouteService
+  );
 
   intercept(
     req: HttpRequest<any>,

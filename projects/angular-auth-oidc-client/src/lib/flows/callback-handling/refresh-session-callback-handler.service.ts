@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { AuthStateService } from '../../auth-state/auth-state.service';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
@@ -9,11 +9,11 @@ import { FlowsDataService } from '../flows-data.service';
 
 @Injectable({ providedIn: 'root' })
 export class RefreshSessionCallbackHandlerService {
-  constructor(
-    private readonly loggerService: LoggerService,
-    private readonly authStateService: AuthStateService,
-    private readonly flowsDataService: FlowsDataService
-  ) {}
+  private readonly loggerService = inject(LoggerService);
+
+  private readonly authStateService = inject(AuthStateService);
+
+  private readonly flowsDataService = inject(FlowsDataService);
 
   // STEP 1 Refresh session
   refreshSessionWithRefreshTokens(

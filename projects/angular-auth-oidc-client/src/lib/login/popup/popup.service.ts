@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
@@ -9,6 +9,14 @@ import { PopupResult } from './popup-result';
 
 @Injectable({ providedIn: 'root' })
 export class PopUpService {
+  private readonly loggerService = inject(LoggerService);
+
+  private readonly storagePersistenceService = inject(
+    StoragePersistenceService
+  );
+
+  private readonly document = inject(DOCUMENT);
+
   private readonly STORAGE_IDENTIFIER = 'popupauth';
 
   private popUp: Window | null = null;
@@ -24,12 +32,6 @@ export class PopUpService {
   private get windowInternal(): Window | null {
     return this.document.defaultView;
   }
-
-  constructor(
-    @Inject(DOCUMENT) private readonly document: Document,
-    private readonly loggerService: LoggerService,
-    private readonly storagePersistenceService: StoragePersistenceService
-  ) {}
 
   isCurrentlyInPopup(config: OpenIdConfiguration): boolean {
     if (this.canAccessSessionStorage()) {

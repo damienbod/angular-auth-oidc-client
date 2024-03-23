@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
@@ -7,9 +7,9 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  title = 'sample-code-flow-auto-login-all-routes';
+  private readonly oidcSecurityService = inject(OidcSecurityService);
 
-  constructor(public oidcSecurityService: OidcSecurityService) {}
+  title = 'sample-code-flow-auto-login-all-routes';
 
   ngOnInit() {
     this.oidcSecurityService

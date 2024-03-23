@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
   forkJoin,
   Observable,
@@ -33,18 +33,31 @@ export const MAX_RETRY_ATTEMPTS = 3;
 
 @Injectable({ providedIn: 'root' })
 export class RefreshSessionService {
-  constructor(
-    private readonly flowHelper: FlowHelper,
-    private readonly flowsDataService: FlowsDataService,
-    private readonly loggerService: LoggerService,
-    private readonly silentRenewService: SilentRenewService,
-    private readonly authStateService: AuthStateService,
-    private readonly authWellKnownService: AuthWellKnownService,
-    private readonly refreshSessionIframeService: RefreshSessionIframeService,
-    private readonly storagePersistenceService: StoragePersistenceService,
-    private readonly refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService,
-    private readonly userService: UserService
-  ) {}
+  private readonly flowHelper = inject(FlowHelper);
+
+  private readonly flowsDataService = inject(FlowsDataService);
+
+  private readonly loggerService = inject(LoggerService);
+
+  private readonly silentRenewService = inject(SilentRenewService);
+
+  private readonly authStateService = inject(AuthStateService);
+
+  private readonly authWellKnownService = inject(AuthWellKnownService);
+
+  private readonly refreshSessionIframeService = inject(
+    RefreshSessionIframeService
+  );
+
+  private readonly storagePersistenceService = inject(
+    StoragePersistenceService
+  );
+
+  private readonly refreshSessionRefreshTokenService = inject(
+    RefreshSessionRefreshTokenService
+  );
+
+  private readonly userService = inject(UserService);
 
   userForceRefreshSession(
     config: OpenIdConfiguration | null,

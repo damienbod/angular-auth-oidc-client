@@ -37,7 +37,9 @@ Using the `filter` operator from RxJS you can decide which events you are intere
 ```ts
 import { PublicEventsService } from 'angular-auth-oidc-client';
 
-constructor(private eventService: PublicEventsService) {
+private readonly eventService = inject(PublicEventsService);
+
+ngOnInit() {
   this.eventService
     .registerForEvents()
     .pipe(filter((notification) => notification.type === EventTypes.CheckSessionReceived))

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { switchMap, take, tap } from 'rxjs/operators';
 import { AuthOptions } from '../../auth-options';
@@ -15,14 +15,19 @@ import { PopUpService } from './popup.service';
 
 @Injectable({ providedIn: 'root' })
 export class PopUpLoginService {
-  constructor(
-    private readonly loggerService: LoggerService,
-    private readonly responseTypeValidationService: ResponseTypeValidationService,
-    private readonly urlService: UrlService,
-    private readonly authWellKnownService: AuthWellKnownService,
-    private readonly popupService: PopUpService,
-    private readonly checkAuthService: CheckAuthService
-  ) {}
+  private readonly loggerService = inject(LoggerService);
+
+  private readonly responseTypeValidationService = inject(
+    ResponseTypeValidationService
+  );
+
+  private readonly urlService = inject(UrlService);
+
+  private readonly authWellKnownService = inject(AuthWellKnownService);
+
+  private readonly popupService = inject(PopUpService);
+
+  private readonly checkAuthService = inject(CheckAuthService);
 
   loginWithPopUpStandard(
     configuration: OpenIdConfiguration,
