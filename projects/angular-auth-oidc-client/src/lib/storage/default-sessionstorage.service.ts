@@ -3,11 +3,11 @@ import { AbstractSecurityStorage } from './abstract-security-storage';
 
 @Injectable({ providedIn: 'root' })
 export class DefaultSessionStorageService implements AbstractSecurityStorage {
-  public read(key: string): any {
+  public read(key: string): string|null {
     return sessionStorage.getItem(key);
   }
 
-  public write(key: string, value: any): void {
+  public write(key: string, value: string): void {
     sessionStorage.setItem(key, value);
   }
 

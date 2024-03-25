@@ -5,11 +5,11 @@ import { AbstractSecurityStorage } from './abstract-security-storage';
   providedIn: 'root',
 })
 export class DefaultLocalStorageService implements AbstractSecurityStorage {
-  public read(key: string): any {
+  public read(key: string): string|null {
     return localStorage.getItem(key);
   }
 
-  public write(key: string, value: any): void {
+  public write(key: string, value: string): void {
     localStorage.setItem(key, value);
   }
 

@@ -107,7 +107,7 @@ describe('AuthWellKnownDataService', () => {
       (service as any)
         .getWellKnownDocument('anyurl', { configId: 'configId1' })
         .subscribe({
-          next: (res: any) => {
+          next: (res: unknown) => {
             expect(res).toBeTruthy();
             expect(res).toEqual(DUMMY_WELL_KNOWN_DOCUMENT);
           },
@@ -144,7 +144,7 @@ describe('AuthWellKnownDataService', () => {
       );
 
       (service as any).getWellKnownDocument('anyurl', 'configId').subscribe({
-        error: (err: any) => {
+        error: (err: unknown) => {
           expect(err).toBeTruthy();
         },
       });

@@ -31,7 +31,7 @@ export class CheckSessionService implements OnDestroy {
 
   private checkSessionReceived = false;
 
-  private scheduledHeartBeatRunning: any;
+  private scheduledHeartBeatRunning: number|null= null
 
   private lastIFrameRefresh = 0;
 
@@ -45,7 +45,7 @@ export class CheckSessionService implements OnDestroy {
     false
   );
 
-  private iframeMessageEventListener: any;
+  private iframeMessageEventListener?: (this:Window, ev: MessageEvent<any>) => any;
 
   get checkSessionChanged$(): Observable<boolean> {
     return this.checkSessionChangedInternal$.asObservable();
@@ -55,7 +55,7 @@ export class CheckSessionService implements OnDestroy {
     this.stop();
     const windowAsDefaultView = this.document.defaultView;
 
-    if (windowAsDefaultView) {
+    if (windowAsDefaultView && this.iframeMessageEventListener) {
       windowAsDefaultView.removeEventListener(
         'message',
         this.iframeMessageEventListener,
@@ -224,10 +224,10 @@ export class CheckSessionService implements OnDestroy {
           }
 
           this.zone.runOutsideAngular(() => {
-            this.scheduledHeartBeatRunning = setTimeout(
+            this.scheduledHeartBeatRunning = this.document?.defaultView?.setTimeout(
               () => this.zone.run(pollServerSessionRecur),
               this.heartBeatInterval
-            );
+            ) ?? null;
           });
         });
     };
@@ -236,8 +236,10 @@ export class CheckSessionService implements OnDestroy {
   }
 
   private clearScheduledHeartBeat(): void {
-    clearTimeout(this.scheduledHeartBeatRunning);
-    this.scheduledHeartBeatRunning = null;
+    if(this.scheduledHeartBeatRunning !== null) {
+      clearTimeout(this.scheduledHeartBeatRunning);
+      this.scheduledHeartBeatRunning = null;
+    }
   }
 
   private messageHandler(configuration: OpenIdConfiguration, e: any): void {

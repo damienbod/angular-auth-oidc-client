@@ -41,7 +41,7 @@ export class UserService {
     currentConfiguration: OpenIdConfiguration,
     allConfigs: OpenIdConfiguration[],
     isRenewProcess = false,
-    idToken?: any,
+    idToken?: string,
     decodedIdToken?: any
   ): Observable<any> {
     idToken =

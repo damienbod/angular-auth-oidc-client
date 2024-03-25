@@ -10,7 +10,7 @@ export interface CallbackContext {
   isRenewProcess: boolean;
   jwtKeys: JwtKeys | null;
   validationResult: StateValidationResult | null;
-  existingIdToken: any;
+  existingIdToken: string | null;
 }
 
 export interface AuthResult {

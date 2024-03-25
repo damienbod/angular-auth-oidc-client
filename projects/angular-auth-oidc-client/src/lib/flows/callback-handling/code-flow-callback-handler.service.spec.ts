@@ -52,9 +52,9 @@ describe('CodeFlowCallbackHandlerService', () => {
         'getUrlParameter'
       ).and.returnValue('params');
 
-      getUrlParameterSpy.withArgs('any-url', 'state').and.returnValue('');
+      getUrlParameterSpy.withArgs('test-url', 'state').and.returnValue('');
 
-      service.codeFlowCallback('any-url', { configId: 'configId1' }).subscribe({
+      service.codeFlowCallback('test-url', { configId: 'configId1' }).subscribe({
         error: (err) => {
           expect(err).toBeTruthy();
         },
@@ -67,9 +67,9 @@ describe('CodeFlowCallbackHandlerService', () => {
         'getUrlParameter'
       ).and.returnValue('params');
 
-      getUrlParameterSpy.withArgs('any-url', 'code').and.returnValue('');
+      getUrlParameterSpy.withArgs('test-url', 'code').and.returnValue('');
 
-      service.codeFlowCallback('any-url', { configId: 'configId1' }).subscribe({
+      service.codeFlowCallback('test-url', { configId: 'configId1' }).subscribe({
         error: (err) => {
           expect(err).toBeTruthy();
         },
@@ -92,7 +92,7 @@ describe('CodeFlowCallbackHandlerService', () => {
       } as CallbackContext;
 
       service
-        .codeFlowCallback('any-url', { configId: 'configId1' })
+        .codeFlowCallback('test-url', { configId: 'configId1' })
         .subscribe((callbackContext) => {
           expect(callbackContext).toEqual(expectedCallbackContext);
         });

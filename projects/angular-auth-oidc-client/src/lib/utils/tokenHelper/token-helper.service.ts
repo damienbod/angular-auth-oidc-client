@@ -24,7 +24,7 @@ export class TokenHelperService {
   }
 
   getSigningInputFromToken(
-    token: any,
+    token: string|undefined|null,
     encoded: boolean,
     configuration: OpenIdConfiguration
   ): string {
@@ -47,7 +47,7 @@ export class TokenHelperService {
   }
 
   getHeaderFromToken(
-    token: any,
+    token: string|undefined|null,
     encoded: boolean,
     configuration: OpenIdConfiguration
   ): any {
@@ -59,7 +59,7 @@ export class TokenHelperService {
   }
 
   getPayloadFromToken(
-    token: any,
+    token: string|undefined|null,
     encoded: boolean,
     configuration: OpenIdConfiguration | null
   ): any {
@@ -75,7 +75,7 @@ export class TokenHelperService {
   }
 
   getSignatureFromToken(
-    token: any,
+    token: string|undefined|null,
     encoded: boolean,
     configuration: OpenIdConfiguration
   ): any {
@@ -139,9 +139,9 @@ export class TokenHelperService {
   }
 
   private tokenIsValid(
-    token: string,
+    token: string|undefined|null,
     configuration: OpenIdConfiguration
-  ): boolean {
+  ): token is string {
     if (!token) {
       this.loggerService.logError(
         configuration,

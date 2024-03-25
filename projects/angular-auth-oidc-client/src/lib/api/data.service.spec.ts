@@ -29,7 +29,7 @@ describe('Data Service', () => {
 
   describe('get', () => {
     it('get call sets the accept header', waitForAsync(() => {
-      const url = 'anyurl';
+      const url = 'testurl';
 
       dataService
         .get(url, { configId: 'configId1' })
@@ -47,7 +47,7 @@ describe('Data Service', () => {
     }));
 
     it('get call with token the accept header and the token', waitForAsync(() => {
-      const url = 'anyurl';
+      const url = 'testurl';
       const token = 'token';
 
       dataService
@@ -67,7 +67,7 @@ describe('Data Service', () => {
     }));
 
     it('call without ngsw-bypass param by default', waitForAsync(() => {
-      const url = 'anyurl';
+      const url = 'testurl';
 
       dataService
         .get(url, { configId: 'configId1' })
@@ -86,7 +86,7 @@ describe('Data Service', () => {
     }));
 
     it('call with ngsw-bypass param', waitForAsync(() => {
-      const url = 'anyurl';
+      const url = 'testurl';
 
       dataService
         .get(url, { configId: 'configId1', ngswBypass: true })
@@ -107,7 +107,7 @@ describe('Data Service', () => {
 
   describe('post', () => {
     it('call sets the accept header when no other params given', waitForAsync(() => {
-      const url = 'anyurl';
+      const url = 'testurl';
 
       dataService
         .post(url, { some: 'thing' }, { configId: 'configId1' })
@@ -123,7 +123,7 @@ describe('Data Service', () => {
     }));
 
     it('call sets custom headers ONLY (No ACCEPT header) when custom headers are given', waitForAsync(() => {
-      const url = 'anyurl';
+      const url = 'testurl';
       let headers = new HttpHeaders();
 
       headers = headers.set('X-MyHeader', 'Genesis');
@@ -143,7 +143,7 @@ describe('Data Service', () => {
     }));
 
     it('call without ngsw-bypass param by default', waitForAsync(() => {
-      const url = 'anyurl';
+      const url = 'testurl';
 
       dataService
         .post(url, { some: 'thing' }, { configId: 'configId1' })
@@ -160,7 +160,7 @@ describe('Data Service', () => {
     }));
 
     it('call with ngsw-bypass param', waitForAsync(() => {
-      const url = 'anyurl';
+      const url = 'testurl';
 
       dataService
         .post(

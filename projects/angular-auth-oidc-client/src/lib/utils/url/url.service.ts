@@ -171,7 +171,7 @@ export class UrlService {
   }
 
   createRevocationEndpointBodyAccessToken(
-    token: any,
+    token: string,
     configuration: OpenIdConfiguration
   ): string | null {
     const clientId = this.getClientId(configuration);
@@ -190,7 +190,7 @@ export class UrlService {
   }
 
   createRevocationEndpointBodyRefreshToken(
-    token: any,
+    token: string,
     configuration: OpenIdConfiguration
   ): string | null {
     const clientId = this.getClientId(configuration);

@@ -152,7 +152,7 @@ export class SilentRenewService {
         this.refreshSessionWithIFrameCompletedInternal$.next(callbackContext);
         this.flowsDataService.resetSilentRenewRunning(config);
       },
-      error: (err: any) => {
+      error: (err: unknown) => {
         this.loggerService.logError(config, 'Error: ' + err);
         this.refreshSessionWithIFrameCompletedInternal$.next(null);
         this.flowsDataService.resetSilentRenewRunning(config);

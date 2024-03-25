@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
-import { CallbackContext } from '../callback-context';
+import { AuthResult, CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
 import { ResetAuthDataService } from '../reset-auth-data.service';
 
@@ -34,7 +34,7 @@ export class ImplicitFlowCallbackHandlerService {
 
     hash = hash || this.document.location.hash.substring(1);
 
-    const authResult: any = hash
+    const authResult = hash
       .split('&')
       .reduce((resultData: any, item: string) => {
         const parts = item.split('=');
@@ -42,7 +42,7 @@ export class ImplicitFlowCallbackHandlerService {
         resultData[parts.shift() as string] = parts.join('=');
 
         return resultData;
-      }, {});
+      }, {} as AuthResult);
 
     const callbackContext: CallbackContext = {
       code: '',
