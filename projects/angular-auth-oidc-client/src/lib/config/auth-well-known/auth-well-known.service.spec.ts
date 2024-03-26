@@ -36,11 +36,22 @@ describe('AuthWellKnownService', () => {
   });
 
   describe('getAuthWellKnownEndPoints', () => {
-    it('getAuthWellKnownEndPoints return stored endpoints if they exist', waitForAsync(() => {
+    it('getAuthWellKnownEndPoints throws an error if not config provided', waitForAsync(() => {
+      service
+        .queryAndStoreAuthWellKnownEndPoints(null)
+        .subscribe({
+          error: (error) => {
+            expect(error).toEqual(new Error('Please provide a configuration before setting up the module'))
+          }
+        });
+    }));
+
+
+    it('getAuthWellKnownEndPoints calls always dataservice', waitForAsync(() => {
       const dataServiceSpy = spyOn(
         dataService,
         'getWellKnownEndPointsForConfig'
-      );
+      ).and.returnValue(of({ issuer: 'anything' }));
 
       spyOn(storagePersistenceService, 'read')
         .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
@@ -49,29 +60,13 @@ describe('AuthWellKnownService', () => {
       service
         .queryAndStoreAuthWellKnownEndPoints({ configId: 'configId1' })
         .subscribe((result) => {
-          expect(dataServiceSpy).not.toHaveBeenCalled();
-          expect(result).toEqual({ issuer: 'anything' });
-        });
-    }));
-
-    it('getAuthWellKnownEndPoints calls dataservice if none is stored', waitForAsync(() => {
-      const dataServiceSpy = spyOn(
-        dataService,
-        'getWellKnownEndPointsForConfig'
-      ).and.returnValue(of({ issuer: 'anything' }));
-
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
-        .and.returnValue(null);
-      service
-        .queryAndStoreAuthWellKnownEndPoints({ configId: 'configId1' })
-        .subscribe((result) => {
+          expect(storagePersistenceService.read).not.toHaveBeenCalled();
           expect(dataServiceSpy).toHaveBeenCalled();
           expect(result).toEqual({ issuer: 'anything' });
         });
     }));
 
-    it('getAuthWellKnownEndPoints stored the result if http cal is made', waitForAsync(() => {
+    it('getAuthWellKnownEndPoints stored the result if http call is made', waitForAsync(() => {
       const dataServiceSpy = spyOn(
         dataService,
         'getWellKnownEndPointsForConfig'
