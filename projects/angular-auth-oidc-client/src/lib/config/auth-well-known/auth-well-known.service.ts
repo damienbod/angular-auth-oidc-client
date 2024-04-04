@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { EventTypes } from '../../public-events/event-types';
 import { PublicEventsService } from '../../public-events/public-events.service';
@@ -39,15 +39,6 @@ export class AuthWellKnownService {
             'Please provide a configuration before setting up the module'
           )
       );
-    }
-
-    const alreadySavedWellKnownEndpoints = this.storagePersistenceService.read(
-      'authWellKnownEndPoints',
-      config
-    );
-
-    if (!!alreadySavedWellKnownEndpoints) {
-      return of(alreadySavedWellKnownEndpoints);
     }
 
     return this.dataService.getWellKnownEndPointsForConfig(config).pipe(
