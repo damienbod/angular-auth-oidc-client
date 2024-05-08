@@ -57,6 +57,18 @@ export class UrlService {
     return u;
   }
 
+  queryParametersExist(expected: URLSearchParams, actual: URLSearchParams): boolean {
+    let r = true;
+
+    expected.forEach((v, k) => {
+      if (!actual.has(k)) {
+        r = false;
+      }
+    });
+
+    return r;
+  }
+
     return CALLBACK_PARAMS_TO_CHECK.some(
       (x) => !!this.getUrlParameter(currentUrl, x)
     );

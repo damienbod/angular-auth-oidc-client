@@ -78,6 +78,41 @@ describe('UrlService Tests', () => {
     });
   });
 
+  describe('queryParametersExist', () => {
+    const expected = new URLSearchParams();
+
+    const params = [
+      {key: 'doot', value: 'boop'},
+      {key: 'blep', value: 'blep'},
+    ]
+
+    params.forEach((p) => {
+      expected.set(p.key, p.value);
+    });
+
+    const matchingUrls = [
+      new URL('https://any.url?doot=boop&blep=blep'),
+      new URL('https://any.url?doot=boop&blep=blep&woop=doot'),
+    ];
+
+    const nonMatchingUrls = [
+      new URL('https://any.url?doot=boop'),
+      new URL('https://any.url?blep=blep&woop=doot'),
+    ];
+
+    matchingUrls.forEach((mu) => {
+      it(`should return true for ${mu.toString()}`, () => {
+        expect(service.queryParametersExist(expected, mu.searchParams)).toBeTrue();
+      });
+    });
+
+    nonMatchingUrls.forEach((nmu) => {
+      it(`should return false for ${nmu.toString()}`, () => {
+        expect(service.queryParametersExist(expected, nmu.searchParams)).toBeFalse();
+      });
+    })
+  });
+
   describe('isCallbackFromSts', () => {
     const testingValues = [
       { param: 'code', isCallbackFromSts: true },
