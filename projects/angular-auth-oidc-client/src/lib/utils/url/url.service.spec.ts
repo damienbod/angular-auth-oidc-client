@@ -114,6 +114,36 @@ describe('UrlService Tests', () => {
   });
 
   describe('isCallbackFromSts', () => {
+    it(`should return false if config says to check redirect URI, and it doesn't match`, () => {
+      const nonMatchingUrls = [
+        {
+          url: 'https://the-redirect.url',
+          config: {
+            redirectUrl: 'https://the-redirect.url?with=parameter',
+            checkRedirectUrlWhenCheckingIfIsCallback: true
+          }
+        },
+        {
+          url: 'https://the-redirect.url?wrong=parameter',
+          config: {
+            redirectUrl: 'https://the-redirect.url?with=parameter',
+            checkRedirectUrlWhenCheckingIfIsCallback: true
+          }
+        },
+        {
+          url: 'https://not-the-redirect.url',
+          config: {
+            redirectUrl: 'https://the-redirect.url',
+            checkRedirectUrlWhenCheckingIfIsCallback: true
+          }
+        }
+      ];
+
+      nonMatchingUrls.forEach((nmu) => {
+        expect(service.isCallbackFromSts(nmu.url, nmu.config)).toBeFalse();
+      });
+    })
+
     const testingValues = [
       { param: 'code', isCallbackFromSts: true },
       { param: 'state', isCallbackFromSts: true },
