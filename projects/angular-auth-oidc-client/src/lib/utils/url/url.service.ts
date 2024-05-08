@@ -44,7 +44,6 @@ export class UrlService {
     return results === null ? '' : decodeURIComponent(results[1]);
   }
 
-  isCallbackFromSts(currentUrl: string): boolean {
   getUrlWithoutQueryParameters(url: URL): URL {
     const u = new URL(url.toString());
 
@@ -72,6 +71,19 @@ export class UrlService {
 
     return r;
   }
+
+  isCallbackFromSts(currentUrl: string, config?: OpenIdConfiguration): boolean {
+    if (config && config.checkRedirectUrlWhenCheckingIfIsCallback) {
+      const currentUrlInstance = new URL(currentUrl);
+      const redirectUriUrlInstance = new URL(this.getRedirectUrl(config));
+
+      if (
+        this.getUrlWithoutQueryParameters(redirectUriUrlInstance).toString() !== this.getUrlWithoutQueryParameters(currentUrlInstance).toString() ||
+        !this.queryParametersExist(redirectUriUrlInstance.searchParams, currentUrlInstance.searchParams)
+      ) {
+        return false;
+      }
+    }
 
     return CALLBACK_PARAMS_TO_CHECK.some(
       (x) => !!this.getUrlParameter(currentUrl, x)
