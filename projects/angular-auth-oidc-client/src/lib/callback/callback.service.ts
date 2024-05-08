@@ -26,12 +26,12 @@ export class CallbackService {
     return this.stsCallbackInternal$.asObservable();
   }
 
-  isCallback(currentUrl: string): boolean {
+  isCallback(currentUrl: string, config?: OpenIdConfiguration): boolean {
     if (!currentUrl) {
       return false;
     }
 
-    return this.urlService.isCallbackFromSts(currentUrl);
+    return this.urlService.isCallbackFromSts(currentUrl, config);
   }
 
   handleCallbackAndFireEvents(
