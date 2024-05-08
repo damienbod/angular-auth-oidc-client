@@ -41,6 +41,22 @@ export class UrlService {
   }
 
   isCallbackFromSts(currentUrl: string): boolean {
+  getUrlWithoutQueryParameters(url: URL): URL {
+    const u = new URL(url.toString());
+
+    const keys = [];
+
+    for (const key of u.searchParams.keys()) {
+      keys.push(key);
+    }
+
+    keys.forEach((key) => {
+      u.searchParams.delete(key);
+    });
+
+    return u;
+  }
+
     return CALLBACK_PARAMS_TO_CHECK.some(
       (x) => !!this.getUrlParameter(currentUrl, x)
     );

@@ -55,6 +55,29 @@ describe('UrlService Tests', () => {
     expect(service).toBeTruthy();
   });
 
+  describe('getUrlWithoutQueryParameters', () => {
+    it('should return a new instance of the passed URL without any query parameters', () => {
+      const url = new URL('https://any.url');
+
+      const params = [
+        {key: 'doot', value: 'boop'},
+        {key: 'blep', value: 'blep'},
+      ];
+
+      params.forEach((p) => {
+        url.searchParams.set(p.key, p.value);
+      });
+
+      const sut = service.getUrlWithoutQueryParameters(url);
+
+      params.forEach((p) => {
+        expect(sut.searchParams.has(p.key)).toBeFalse();
+      });
+
+      // expect(sut.searchParams.toString()).toEqual('');
+    });
+  });
+
   describe('isCallbackFromSts', () => {
     const testingValues = [
       { param: 'code', isCallbackFromSts: true },
