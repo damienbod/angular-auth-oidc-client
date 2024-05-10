@@ -1,5 +1,5 @@
 <div>Welcome to home Route</div>
 
 <br />
-Is Authenticated: {{ isAuthenticated }}
-<pre>{{ userData$ | async | json }}</pre>
+Is Authenticated: {{ authenticated().isAuthenticated }}
+<pre>{{ userData() | json }}</pre>

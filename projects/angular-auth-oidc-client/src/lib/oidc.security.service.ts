@@ -22,6 +22,7 @@ import { UserService } from './user-data/user.service';
 import { UserDataResult } from './user-data/userdata-result';
 import { TokenHelperService } from './utils/tokenHelper/token-helper.service';
 import { UrlService } from './utils/url/url.service';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({ providedIn: 'root' })
 export class OidcSecurityService {
@@ -62,6 +63,15 @@ export class OidcSecurityService {
   }
 
   /**
+   * Provides information about the user after they have logged in.
+   *
+   * @returns Returns an object containing either the user data directly (single config) or
+   * the user data per config in case you are running with multiple configs
+   */
+  userData = toSignal(this.userData$, {requireSync: true});
+
+
+  /**
    * Emits each time an authorization event occurs.
    *
    * @returns Returns an object containing if you are authenticated or not.
@@ -73,6 +83,17 @@ export class OidcSecurityService {
   get isAuthenticated$(): Observable<AuthenticatedResult> {
     return this.authStateService.authenticated$;
   }
+
+  /**
+   * Emits each time an authorization event occurs.
+   *
+   * @returns Returns an object containing if you are authenticated or not.
+   * Single Config: true if config is authenticated, false if not.
+   * Multiple Configs: true is all configs are authenticated, false if only one of them is not
+   *
+   * The `allConfigsAuthenticated` property contains the auth information _per config_.
+   */
+  authenticated = toSignal(this.isAuthenticated$, {requireSync: true});
 
   /**
    * Emits each time the server sends a CheckSession event and the value changed. This property will always return
