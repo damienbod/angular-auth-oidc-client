@@ -1,7 +1,6 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
 import { mockProvider } from '../test/auto-mock';
-import { AuthenticatedResult } from './auth-state/auth-result';
 import { AuthStateService } from './auth-state/auth-state.service';
 import { CheckAuthService } from './auth-state/check-auth.service';
 import { CallbackService } from './callback/callback.service';
@@ -15,7 +14,6 @@ import { LoginService } from './login/login.service';
 import { LogoffRevocationService } from './logoff-revoke/logoff-revocation.service';
 import { OidcSecurityService } from './oidc.security.service';
 import { UserService } from './user-data/user.service';
-import { UserDataResult } from './user-data/userdata-result';
 import { TokenHelperService } from './utils/tokenHelper/token-helper.service';
 import { UrlService } from './utils/url/url.service';
 
@@ -34,6 +32,8 @@ describe('OidcSecurityService', () => {
   let userService: UserService;
   let urlService: UrlService;
   let callbackService: CallbackService;
+  let authenticatedSpy: jasmine.Spy;
+  let userDataSpy: jasmine.Spy;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -58,10 +58,9 @@ describe('OidcSecurityService', () => {
   });
 
   beforeEach(() => {
-    oidcSecurityService = TestBed.inject(OidcSecurityService);
+    authStateService = TestBed.inject(AuthStateService);
     tokenHelperService = TestBed.inject(TokenHelperService);
     configurationService = TestBed.inject(ConfigurationService);
-    authStateService = TestBed.inject(AuthStateService);
     flowsDataService = TestBed.inject(FlowsDataService);
     logoffRevocationService = TestBed.inject(LogoffRevocationService);
     loginService = TestBed.inject(LoginService);
@@ -72,6 +71,11 @@ describe('OidcSecurityService', () => {
     authWellKnownService = TestBed.inject(AuthWellKnownService);
     checkSessionService = TestBed.inject(CheckSessionService);
     callbackService = TestBed.inject(CallbackService);
+
+    // this is required because these methods will be invoked by the signal properties when the service is created
+    authenticatedSpy = spyOnProperty(authStateService, 'authenticated$').and.returnValue(of({ isAuthenticated: false, allConfigsAuthenticated: [] }));
+    userDataSpy = spyOnProperty(userService, 'userData$').and.returnValue(of({ userData: null, allUserData: [] }));
+    oidcSecurityService = TestBed.inject(OidcSecurityService);
   });
 
   it('should create', () => {
@@ -80,26 +84,37 @@ describe('OidcSecurityService', () => {
 
   describe('userData$', () => {
     it('calls userService.userData$', waitForAsync(() => {
-      const spy = spyOnProperty(userService, 'userData$').and.returnValue(
-        of({} as UserDataResult)
-      );
-
       oidcSecurityService.userData$.subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
+        // 1x from this subscribe
+        // 1x by the signal property
+        expect(userDataSpy).toHaveBeenCalledTimes(2);
       });
+    }));
+  });
+
+  describe('userData', () => {
+    it('calls userService.userData$', waitForAsync(() => {
+      const _userdata = oidcSecurityService.userData();
+
+      expect(userDataSpy).toHaveBeenCalledTimes(1);
     }));
   });
 
   describe('isAuthenticated$', () => {
     it('calls authStateService.isAuthenticated$', waitForAsync(() => {
-      const spy = spyOnProperty(
-        authStateService,
-        'authenticated$'
-      ).and.returnValue(of({} as AuthenticatedResult));
-
       oidcSecurityService.isAuthenticated$.subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
+        // 1x from this subscribe
+        // 1x by the signal property
+        expect(authenticatedSpy).toHaveBeenCalledTimes(2);
       });
+    }));
+  });
+
+  describe('authenticated', () => {
+    it('calls authStateService.isAuthenticated$', waitForAsync(() => {
+      const _authenticated = oidcSecurityService.authenticated();
+
+      expect(authenticatedSpy).toHaveBeenCalledTimes(1);
     }));
   });
 
