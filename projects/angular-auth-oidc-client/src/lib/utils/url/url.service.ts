@@ -77,9 +77,13 @@ export class UrlService {
       const currentUrlInstance = new URL(currentUrl);
       const redirectUriUrlInstance = new URL(this.getRedirectUrl(config));
 
+      const redirectUriWithoutQueryParams = this.getUrlWithoutQueryParameters(redirectUriUrlInstance).toString();
+      const currentUrlWithoutQueryParams = this.getUrlWithoutQueryParameters(currentUrlInstance).toString();
+      const redirectUriQueryParamsArePresentInCurrentUrl = this.queryParametersExist(redirectUriUrlInstance.searchParams, currentUrlInstance.searchParams);
+
       if (
-        this.getUrlWithoutQueryParameters(redirectUriUrlInstance).toString() !== this.getUrlWithoutQueryParameters(currentUrlInstance).toString() ||
-        !this.queryParametersExist(redirectUriUrlInstance.searchParams, currentUrlInstance.searchParams)
+        redirectUriWithoutQueryParams !== currentUrlWithoutQueryParams ||
+        !redirectUriQueryParamsArePresentInCurrentUrl
       ) {
         return false;
       }
