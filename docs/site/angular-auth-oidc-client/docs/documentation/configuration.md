@@ -256,6 +256,14 @@ Allows you to set custom URLs for the Well-Known endpoints.
 
 This is the `redirect_url` which was configured on the Security Token Service (STS).
 
+### `checkRedirectUrlWhenCheckingIfIsCallback`
+
+- Type: `boolean`
+- Required: `false`
+- Default: `false` *NB:* Default will be `true` in v18.
+
+Whether to check if current URL matches the redirect URI when determining if current URL is in fact the redirect URI.
+
 ### `clientId`
 
 - Type: `string`
