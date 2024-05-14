@@ -108,6 +108,7 @@ describe('AuthWellKnownDataService', () => {
         .subscribe(() => {
           expect(dataServiceSpy).toHaveBeenCalledOnceWith(urlWithSuffix, {
             configId: 'configId1',
+            authWellknownUrlSuffix: '/.well-known/test-openid-configuration',
           });
         });
     }));
