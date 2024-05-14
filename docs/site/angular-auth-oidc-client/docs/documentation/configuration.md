@@ -260,9 +260,10 @@ This is the `redirect_url` which was configured on the Security Token Service (S
 
 - Type: `boolean`
 - Required: `false`
-- Default: `false` *NB:* Default will be `true` in v18.
 
 Whether to check if current URL matches the redirect URI when determining if current URL is in fact the redirect URI.
+
+Default = _false_ *NB:* Default will be `true` in v18.
 
 ### `clientId`
 
