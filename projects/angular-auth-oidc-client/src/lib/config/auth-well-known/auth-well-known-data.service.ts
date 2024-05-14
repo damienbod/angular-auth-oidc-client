@@ -53,8 +53,10 @@ export class AuthWellKnownDataService {
   ): Observable<any> {
     let url = wellKnownEndpoint;
 
-    if (!wellKnownEndpoint.includes(WELL_KNOWN_SUFFIX)) {
-      url = `${wellKnownEndpoint}${WELL_KNOWN_SUFFIX}`;
+    const wellKnownSuffix = config.authWellknownUrlSuffix || WELL_KNOWN_SUFFIX;
+
+    if (!wellKnownEndpoint.includes(wellKnownSuffix)) {
+      url = `${wellKnownEndpoint}${wellKnownSuffix}`;
     }
 
     return this.http.get(url, config).pipe(retry(2));

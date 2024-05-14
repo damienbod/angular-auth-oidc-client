@@ -96,6 +96,22 @@ describe('AuthWellKnownDataService', () => {
         });
     }));
 
+    it('should use the custom suffix provided in the config', waitForAsync(() => {
+      const dataServiceSpy = spyOn(dataService, 'get').and.returnValue(
+        of(null)
+      );
+      const urlWithoutSuffix = `myUrl`;
+      const urlWithSuffix = `${urlWithoutSuffix}/.well-known/test-openid-configuration`;
+
+      (service as any)
+        .getWellKnownDocument(urlWithoutSuffix, { configId: 'configId1', authWellknownUrlSuffix: '/.well-known/test-openid-configuration' })
+        .subscribe(() => {
+          expect(dataServiceSpy).toHaveBeenCalledOnceWith(urlWithSuffix, {
+            configId: 'configId1',
+          });
+        });
+    }));
+
     it('should retry once', waitForAsync(() => {
       spyOn(dataService, 'get').and.returnValue(
         createRetriableStream(
