@@ -1,4 +1,4 @@
-import { NgIf } from '@angular/common';
+
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
@@ -8,7 +8,7 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
   templateUrl: 'navigation.component.html',
   styleUrls: ['navigation.component.css'],
   standalone: true,
-  imports: [RouterLink, NgIf],
+  imports: [RouterLink],
 })
 export class NavigationComponent  {
   private readonly oidcSecurityService = inject(OidcSecurityService);
