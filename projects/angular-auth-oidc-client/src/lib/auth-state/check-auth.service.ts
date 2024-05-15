@@ -164,7 +164,7 @@ export class CheckAuthService {
       });
     }
 
-    const isCallback = this.callbackService.isCallback(currentUrl);
+    const isCallback = this.callbackService.isCallback(currentUrl, config);
 
     this.loggerService.logDebug(
       config,

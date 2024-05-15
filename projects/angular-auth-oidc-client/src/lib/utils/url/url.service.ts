@@ -40,7 +40,51 @@ export class UrlService {
     return results === null ? '' : decodeURIComponent(results[1]);
   }
 
-  isCallbackFromSts(currentUrl: string): boolean {
+  getUrlWithoutQueryParameters(url: URL): URL {
+    const u = new URL(url.toString());
+
+    const keys = [];
+
+    for (const key of u.searchParams.keys()) {
+      keys.push(key);
+    }
+
+    keys.forEach((key) => {
+      u.searchParams.delete(key);
+    });
+
+    return u;
+  }
+
+  queryParametersExist(expected: URLSearchParams, actual: URLSearchParams): boolean {
+    let r = true;
+
+    expected.forEach((v, k) => {
+      if (!actual.has(k)) {
+        r = false;
+      }
+    });
+
+    return r;
+  }
+
+  isCallbackFromSts(currentUrl: string, config?: OpenIdConfiguration): boolean {
+    if (config && config.checkRedirectUrlWhenCheckingIfIsCallback) {
+      const currentUrlInstance = new URL(currentUrl);
+      const redirectUriUrlInstance = new URL(this.getRedirectUrl(config));
+
+      const redirectUriWithoutQueryParams = this.getUrlWithoutQueryParameters(redirectUriUrlInstance).toString();
+      const currentUrlWithoutQueryParams = this.getUrlWithoutQueryParameters(currentUrlInstance).toString();
+      const redirectUriQueryParamsArePresentInCurrentUrl = this.queryParametersExist(redirectUriUrlInstance.searchParams, currentUrlInstance.searchParams);
+
+      if (
+        redirectUriWithoutQueryParams !== currentUrlWithoutQueryParams ||
+        !redirectUriQueryParamsArePresentInCurrentUrl
+      ) {
+        return false;
+      }
+    }
+
     return CALLBACK_PARAMS_TO_CHECK.some(
       (x) => !!this.getUrlParameter(currentUrl, x)
     );

@@ -21,6 +21,14 @@ export interface OpenIdConfiguration {
   /** The redirect URL defined on the Security Token Service. */
   redirectUrl?: string;
   /**
+   * Whether to check if current URL matches the redirect URI when determining
+   * if current URL is in fact the redirect URI.
+   * Default: false
+   *
+   * NB: Default will be true in v18.
+   */
+  checkRedirectUrlWhenCheckingIfIsCallback?: boolean;
+  /**
    * The Client MUST validate that the aud (audience) Claim contains its `client_id` value
    * registered at the Issuer identified by the iss (issuer) Claim as an audience.
    * The ID Token MUST be rejected if the ID Token does not list the Client as a valid audience,

@@ -23,8 +23,8 @@ export class CallbackService {
     private readonly codeFlowCallbackService: CodeFlowCallbackService
   ) {}
 
-  isCallback(currentUrl: string): boolean {
-    return this.urlService.isCallbackFromSts(currentUrl);
+  isCallback(currentUrl: string, config?: OpenIdConfiguration): boolean {
+    return this.urlService.isCallbackFromSts(currentUrl, config);
   }
 
   handleCallbackAndFireEvents(
