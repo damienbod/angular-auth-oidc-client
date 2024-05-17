@@ -1,6 +1,6 @@
 import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { delay, finalize } from 'rxjs/operators';
 import { mockProvider } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { AuthWellKnownService } from '../config/auth-well-known/auth-well-known.service';
@@ -9,6 +9,9 @@ import { FlowsDataService } from '../flows/flows-data.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/logger.service';
+import { LoginResponse } from '../login/login-response';
+import { EventTypes } from '../public-events/event-types';
+import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { UserService } from '../user-data/user.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
@@ -28,6 +31,7 @@ describe('RefreshSessionService ', () => {
   let refreshSessionIframeService: RefreshSessionIframeService;
   let refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService;
   let authWellKnownService: AuthWellKnownService;
+  let publicEventsService: PublicEventsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -44,6 +48,7 @@ describe('RefreshSessionService ', () => {
         mockProvider(StoragePersistenceService),
         mockProvider(RefreshSessionRefreshTokenService),
         mockProvider(UserService),
+        mockProvider(PublicEventsService),
       ],
     });
   });
@@ -60,6 +65,7 @@ describe('RefreshSessionService ', () => {
     silentRenewService = TestBed.inject(SilentRenewService);
     authWellKnownService = TestBed.inject(AuthWellKnownService);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
+    publicEventsService = TestBed.inject(PublicEventsService);
   });
 
   it('should create', () => {
@@ -160,6 +166,81 @@ describe('RefreshSessionService ', () => {
         .userForceRefreshSession(allConfigs[0], allConfigs)
         .subscribe(() => {
           expect(writeSpy).not.toHaveBeenCalled();
+        });
+    }));
+
+    it('should throws manual renew failed event with data in case of an error', waitForAsync(() => {
+      spyOn(refreshSessionService, 'forceRefreshSession').and.returnValue(
+        throwError(() => new Error('error'))
+      );
+      spyOn(flowsDataService, 'resetSilentRenewRunning');
+      const publicEventsServiceSpy = spyOn(publicEventsService, 'fireEvent');
+      const allConfigs = [
+        {
+          configId: 'configId1',
+          useRefreshToken: false,
+          silentRenewTimeoutInSeconds: 10,
+        },
+      ];
+
+      refreshSessionService
+        .userForceRefreshSession(allConfigs[0], allConfigs)
+        .pipe(
+          finalize(() =>
+            expect(
+              flowsDataService.resetSilentRenewRunning
+            ).toHaveBeenCalledOnceWith(allConfigs[0])
+          )
+        )
+        .subscribe({
+          next: () => {
+            fail('It should not return any result.');
+          },
+          error: (error) => {
+            expect(error).toBeInstanceOf(Error);
+          },
+          complete: () => {
+            expect(publicEventsServiceSpy.calls.allArgs()).toEqual([
+              [EventTypes.ManualRenewStarted],
+              [EventTypes.ManualRenewFailed, new Error('error')],
+            ]);
+          },
+        });
+    }));
+
+    it('should throws manual renew finished event if there is no error', waitForAsync(() => {
+      spyOn(refreshSessionService, 'forceRefreshSession').and.returnValue(
+        of({} as LoginResponse)
+      );
+      spyOn(flowsDataService, 'resetSilentRenewRunning');
+      const publicEventsServiceSpy = spyOn(publicEventsService, 'fireEvent');
+      const allConfigs = [
+        {
+          configId: 'configId1',
+          useRefreshToken: false,
+          silentRenewTimeoutInSeconds: 10,
+        },
+      ];
+
+      refreshSessionService
+        .userForceRefreshSession(allConfigs[0], allConfigs)
+        .pipe(
+          finalize(() =>
+            expect(
+              flowsDataService.resetSilentRenewRunning
+            ).toHaveBeenCalledOnceWith(allConfigs[0])
+          )
+        )
+        .subscribe({
+          error: () => {
+            fail('It should not return any error.');
+          },
+          complete: () => {
+            expect(publicEventsServiceSpy.calls.allArgs()).toEqual([
+              [EventTypes.ManualRenewStarted],
+              [EventTypes.ManualRenewFinished],
+            ]);
+          },
         });
     }));
   });
