@@ -75,7 +75,10 @@ export class RefreshSessionService {
 
     this.persistCustomParams(extraCustomParams, config);
 
-    return this.forceRefreshSession(config, allConfigs, extraCustomParams);
+    // Best place ?
+    return this.forceRefreshSession(config, allConfigs, extraCustomParams).pipe(
+      finalize(() => this.flowsDataService.resetSilentRenewRunning(config)),
+    );
   }
 
   forceRefreshSession(
@@ -143,6 +146,7 @@ export class RefreshSessionService {
               `forceRefreshSession timeout. Attempt #${currentAttempt}`
             );
 
+            // Still needed ?
             this.flowsDataService.resetSilentRenewRunning(config);
 
             return timer(currentAttempt * scalingDuration);
