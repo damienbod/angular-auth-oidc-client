@@ -14,4 +14,7 @@ export enum EventTypes {
   IdTokenExpired,
   SilentRenewStarted,
   SilentRenewFailed,
+  ManualRenewStarted,
+  ManualRenewFailed,
+  ManualRenewFinished,
 }

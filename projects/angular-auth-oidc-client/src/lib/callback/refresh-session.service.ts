@@ -8,11 +8,14 @@ import {
   timer,
 } from 'rxjs';
 import {
+  catchError,
+  finalize,
   map,
   mergeMap,
   retryWhen,
   switchMap,
   take,
+  tap,
   timeout,
 } from 'rxjs/operators';
 import { AuthStateService } from '../auth-state/auth-state.service';
@@ -24,6 +27,8 @@ import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.se
 import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/logger.service';
 import { LoginResponse } from '../login/login-response';
+import { EventTypes } from '../public-events/event-types';
+import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { UserService } from '../user-data/user.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
@@ -38,6 +43,8 @@ export class RefreshSessionService {
   private readonly flowsDataService = inject(FlowsDataService);
 
   private readonly loggerService = inject(LoggerService);
+
+  private readonly publicEventsService = inject(PublicEventsService);
 
   private readonly silentRenewService = inject(SilentRenewService);
 
@@ -76,8 +83,19 @@ export class RefreshSessionService {
     this.persistCustomParams(extraCustomParams, config);
 
     // Best place ?
+    this.publicEventsService.fireEvent(EventTypes.ManualRenewStarted);
+
     return this.forceRefreshSession(config, allConfigs, extraCustomParams).pipe(
+      catchError((error) => {
+        this.loggerService.logError(config, 'manual renew failed!', error);
+        this.publicEventsService.fireEvent(EventTypes.ManualRenewFailed, error);
+
+        return throwError(() => new Error(error));
+      }),
       finalize(() => this.flowsDataService.resetSilentRenewRunning(config)),
+      tap(() =>
+        this.publicEventsService.fireEvent(EventTypes.ManualRenewFinished)
+      )
     );
   }
 
