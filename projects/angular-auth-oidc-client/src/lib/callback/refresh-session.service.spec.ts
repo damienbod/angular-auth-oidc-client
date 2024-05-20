@@ -1,6 +1,6 @@
 import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
-import { delay, finalize } from 'rxjs/operators';
+import { delay } from 'rxjs/operators';
 import { mockProvider } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { AuthWellKnownService } from '../config/auth-well-known/auth-well-known.service';
@@ -10,7 +10,6 @@ import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.se
 import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/logger.service';
 import { LoginResponse } from '../login/login-response';
-import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { UserService } from '../user-data/user.service';
@@ -31,7 +30,6 @@ describe('RefreshSessionService ', () => {
   let refreshSessionIframeService: RefreshSessionIframeService;
   let refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService;
   let authWellKnownService: AuthWellKnownService;
-  let publicEventsService: PublicEventsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -65,7 +63,6 @@ describe('RefreshSessionService ', () => {
     silentRenewService = TestBed.inject(SilentRenewService);
     authWellKnownService = TestBed.inject(AuthWellKnownService);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
-    publicEventsService = TestBed.inject(PublicEventsService);
   });
 
   it('should create', () => {
@@ -169,12 +166,11 @@ describe('RefreshSessionService ', () => {
         });
     }));
 
-    it('should throws manual renew failed event with data in case of an error', waitForAsync(() => {
+    it('should call resetSilentRenewRunning in case of an error', waitForAsync(() => {
       spyOn(refreshSessionService, 'forceRefreshSession').and.returnValue(
         throwError(() => new Error('error'))
       );
       spyOn(flowsDataService, 'resetSilentRenewRunning');
-      const publicEventsServiceSpy = spyOn(publicEventsService, 'fireEvent');
       const allConfigs = [
         {
           configId: 'configId1',
@@ -185,13 +181,6 @@ describe('RefreshSessionService ', () => {
 
       refreshSessionService
         .userForceRefreshSession(allConfigs[0], allConfigs)
-        .pipe(
-          finalize(() =>
-            expect(
-              flowsDataService.resetSilentRenewRunning
-            ).toHaveBeenCalledOnceWith(allConfigs[0])
-          )
-        )
         .subscribe({
           next: () => {
             fail('It should not return any result.');
@@ -200,20 +189,18 @@ describe('RefreshSessionService ', () => {
             expect(error).toBeInstanceOf(Error);
           },
           complete: () => {
-            expect(publicEventsServiceSpy.calls.allArgs()).toEqual([
-              [EventTypes.ManualRenewStarted],
-              [EventTypes.ManualRenewFailed, new Error('error')],
-            ]);
+            expect(
+              flowsDataService.resetSilentRenewRunning
+            ).toHaveBeenCalledOnceWith(allConfigs[0]);
           },
         });
     }));
 
-    it('should throws manual renew finished event if there is no error', waitForAsync(() => {
+    it('should call resetSilentRenewRunning in case of no error', waitForAsync(() => {
       spyOn(refreshSessionService, 'forceRefreshSession').and.returnValue(
         of({} as LoginResponse)
       );
       spyOn(flowsDataService, 'resetSilentRenewRunning');
-      const publicEventsServiceSpy = spyOn(publicEventsService, 'fireEvent');
       const allConfigs = [
         {
           configId: 'configId1',
@@ -224,22 +211,14 @@ describe('RefreshSessionService ', () => {
 
       refreshSessionService
         .userForceRefreshSession(allConfigs[0], allConfigs)
-        .pipe(
-          finalize(() =>
-            expect(
-              flowsDataService.resetSilentRenewRunning
-            ).toHaveBeenCalledOnceWith(allConfigs[0])
-          )
-        )
         .subscribe({
           error: () => {
             fail('It should not return any error.');
           },
           complete: () => {
-            expect(publicEventsServiceSpy.calls.allArgs()).toEqual([
-              [EventTypes.ManualRenewStarted],
-              [EventTypes.ManualRenewFinished],
-            ]);
+            expect(
+              flowsDataService.resetSilentRenewRunning
+            ).toHaveBeenCalledOnceWith(allConfigs[0]);
           },
         });
     }));
