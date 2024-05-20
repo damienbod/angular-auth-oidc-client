@@ -101,6 +101,21 @@ this.userData$ = this.oidcSecurityService.userData$;
 }
 ```
 
+## userData
+
+A signal implementation of `userData$`.
+The `userData` signal returns a `Signal<UserDataResult>`.
+
+### Example
+
+```ts
+userData = this.oidcSecurityService.userData;
+
+console.log(this.userData().userData);
+console.log(this.userData().userData?.name);
+console.log(this.userData().allUserData);
+```
+
 ## isAuthenticated$
 
 The `isAuthenticated$` property returns an `Observable<AuthenticatedResult>`. This object is filled depending on with how many configurations you run. The `AuthenticatedResult` is structured as follows:
@@ -146,6 +161,20 @@ this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
     { "configId": "configId2", "isAuthenticated": false }
   ]
 }
+```
+
+## authenticated
+
+A signal implementation of `isAuthenticated$`.
+The `authenticated` signal returns a `Signal<AuthenticatedResult>`.
+
+### Example
+
+```ts
+authenticated = this.oidcSecurityService.authenticated;
+
+console.log(authenticated().isAuthenticated);
+console.log(authenticated().allConfigsAuthenticated);
 ```
 
 ## isLoading$
