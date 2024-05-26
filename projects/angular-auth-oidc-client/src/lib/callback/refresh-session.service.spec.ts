@@ -9,6 +9,8 @@ import { FlowsDataService } from '../flows/flows-data.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/logger.service';
+import { LoginResponse } from '../login/login-response';
+import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { UserService } from '../user-data/user.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
@@ -44,6 +46,7 @@ describe('RefreshSessionService ', () => {
         mockProvider(StoragePersistenceService),
         mockProvider(RefreshSessionRefreshTokenService),
         mockProvider(UserService),
+        mockProvider(PublicEventsService),
       ],
     });
   });
@@ -160,6 +163,63 @@ describe('RefreshSessionService ', () => {
         .userForceRefreshSession(allConfigs[0], allConfigs)
         .subscribe(() => {
           expect(writeSpy).not.toHaveBeenCalled();
+        });
+    }));
+
+    it('should call resetSilentRenewRunning in case of an error', waitForAsync(() => {
+      spyOn(refreshSessionService, 'forceRefreshSession').and.returnValue(
+        throwError(() => new Error('error'))
+      );
+      spyOn(flowsDataService, 'resetSilentRenewRunning');
+      const allConfigs = [
+        {
+          configId: 'configId1',
+          useRefreshToken: false,
+          silentRenewTimeoutInSeconds: 10,
+        },
+      ];
+
+      refreshSessionService
+        .userForceRefreshSession(allConfigs[0], allConfigs)
+        .subscribe({
+          next: () => {
+            fail('It should not return any result.');
+          },
+          error: (error) => {
+            expect(error).toBeInstanceOf(Error);
+          },
+          complete: () => {
+            expect(
+              flowsDataService.resetSilentRenewRunning
+            ).toHaveBeenCalledOnceWith(allConfigs[0]);
+          },
+        });
+    }));
+
+    it('should call resetSilentRenewRunning in case of no error', waitForAsync(() => {
+      spyOn(refreshSessionService, 'forceRefreshSession').and.returnValue(
+        of({} as LoginResponse)
+      );
+      spyOn(flowsDataService, 'resetSilentRenewRunning');
+      const allConfigs = [
+        {
+          configId: 'configId1',
+          useRefreshToken: false,
+          silentRenewTimeoutInSeconds: 10,
+        },
+      ];
+
+      refreshSessionService
+        .userForceRefreshSession(allConfigs[0], allConfigs)
+        .subscribe({
+          error: () => {
+            fail('It should not return any error.');
+          },
+          complete: () => {
+            expect(
+              flowsDataService.resetSilentRenewRunning
+            ).toHaveBeenCalledOnceWith(allConfigs[0]);
+          },
         });
     }));
   });
