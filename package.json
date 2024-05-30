@@ -61,7 +61,7 @@
     "@angular/platform-browser": "^18.0.1",
     "@angular/platform-browser-dynamic": "^18.0.1",
     "@angular/router": "^18.0.1",
-    "@schematics/angular": "^16.0.2",
+    "@schematics/angular": "^18.0.2",
     "rxjs": "^7.4.0",
     "shelljs": "^0.8.5",
     "tslib": "^2.1.0",
