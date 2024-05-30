@@ -1,14 +1,5 @@
-import {
-  HTTP_INTERCEPTORS,
-  HttpClient,
-  provideHttpClient,
-  withInterceptors,
-} from '@angular/common/http';
-import {
-  HttpClientTestingModule,
-  HttpTestingController,
-  provideHttpClientTesting,
-} from '@angular/common/http/testing';
+import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptors, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { mockProvider } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
@@ -27,19 +18,21 @@ describe(`AuthHttpInterceptor`, () => {
   describe(`with Class Interceptor`, () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
-        imports: [HttpClientTestingModule],
-        providers: [
-          ClosestMatchingRouteService,
-          {
+    imports: [],
+    providers: [
+        ClosestMatchingRouteService,
+        {
             provide: HTTP_INTERCEPTORS,
             useClass: AuthInterceptor,
             multi: true,
-          },
-          mockProvider(AuthStateService),
-          mockProvider(LoggerService),
-          mockProvider(ConfigurationService),
-        ],
-      });
+        },
+        mockProvider(AuthStateService),
+        mockProvider(LoggerService),
+        mockProvider(ConfigurationService),
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+    ]
+});
 
       httpClient = TestBed.inject(HttpClient);
       httpTestingController = TestBed.inject(HttpTestingController);
