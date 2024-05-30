@@ -1,5 +1,11 @@
-import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptors, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting, provideHttpClientTesting } from '@angular/common/http/testing';
+import {
+  HTTP_INTERCEPTORS,
+  HttpClient,
+  provideHttpClient,
+  withInterceptors,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { mockProvider } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
@@ -18,21 +24,21 @@ describe(`AuthHttpInterceptor`, () => {
   describe(`with Class Interceptor`, () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
-    imports: [],
-    providers: [
-        ClosestMatchingRouteService,
-        {
+        imports: [],
+        providers: [
+          ClosestMatchingRouteService,
+          {
             provide: HTTP_INTERCEPTORS,
             useClass: AuthInterceptor,
             multi: true,
-        },
-        mockProvider(AuthStateService),
-        mockProvider(LoggerService),
-        mockProvider(ConfigurationService),
-        provideHttpClient(withInterceptorsFromDi()),
-        provideHttpClientTesting(),
-    ]
-});
+          },
+          mockProvider(AuthStateService),
+          mockProvider(LoggerService),
+          mockProvider(ConfigurationService),
+          provideHttpClient(withInterceptorsFromDi()),
+          provideHttpClientTesting(),
+        ],
+      });
 
       httpClient = TestBed.inject(HttpClient);
       httpTestingController = TestBed.inject(HttpTestingController);
@@ -227,7 +233,7 @@ describe(`AuthHttpInterceptor`, () => {
       ]);
       spyOn(
         closestMatchingRouteService,
-        'getConfigIdForClosestMatchingRoute'
+        'getConfigIdForClosestMatchingRoute',
       ).and.returnValue({
         matchingRoute: null,
         matchingConfig: null,
