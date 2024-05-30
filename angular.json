@@ -113,14 +113,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4200,
-            "browserTarget": "sample-code-flow-multi-iframe:build"
+            "buildTarget": "sample-code-flow-multi-iframe:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-multi-iframe:build:production"
+              "buildTarget": "sample-code-flow-multi-iframe:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-multi-iframe:build:development"
+              "buildTarget": "sample-code-flow-multi-iframe:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -128,7 +128,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-multi-iframe:build"
+            "buildTarget": "sample-code-flow-multi-iframe:build"
           }
         },
         "test": {
@@ -225,14 +225,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4204,
-            "browserTarget": "sample-code-flow-auto-login:build"
+            "buildTarget": "sample-code-flow-auto-login:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-auto-login:build:production"
+              "buildTarget": "sample-code-flow-auto-login:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-auto-login:build:development"
+              "buildTarget": "sample-code-flow-auto-login:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -240,7 +240,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-auto-login:build"
+            "buildTarget": "sample-code-flow-auto-login:build"
           }
         },
         "test": {
@@ -337,14 +337,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4201,
-            "browserTarget": "sample-code-flow-http-config:build"
+            "buildTarget": "sample-code-flow-http-config:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-http-config:build:production"
+              "buildTarget": "sample-code-flow-http-config:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-http-config:build:development"
+              "buildTarget": "sample-code-flow-http-config:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -352,7 +352,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-http-config:build"
+            "buildTarget": "sample-code-flow-http-config:build"
           }
         },
         "test": {
@@ -448,14 +448,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 44386,
-            "browserTarget": "sample-implicit-flow-google:build"
+            "buildTarget": "sample-implicit-flow-google:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-implicit-flow-google:build:production"
+              "buildTarget": "sample-implicit-flow-google:build:production"
             },
             "development": {
-              "browserTarget": "sample-implicit-flow-google:build:development"
+              "buildTarget": "sample-implicit-flow-google:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -463,7 +463,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-implicit-flow-google:build"
+            "buildTarget": "sample-implicit-flow-google:build"
           }
         },
         "test": {
@@ -560,14 +560,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 44347,
-            "browserTarget": "sample-code-flow-azuread:build"
+            "buildTarget": "sample-code-flow-azuread:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-azuread:build:production"
+              "buildTarget": "sample-code-flow-azuread:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-azuread:build:development"
+              "buildTarget": "sample-code-flow-azuread:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -575,7 +575,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-azuread:build"
+            "buildTarget": "sample-code-flow-azuread:build"
           }
         },
         "test": {
@@ -673,14 +673,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4200,
-            "browserTarget": "sample-code-flow-azure-b2c:build"
+            "buildTarget": "sample-code-flow-azure-b2c:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-azure-b2c:build:production"
+              "buildTarget": "sample-code-flow-azure-b2c:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-azure-b2c:build:development"
+              "buildTarget": "sample-code-flow-azure-b2c:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -688,7 +688,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-azure-b2c:build"
+            "buildTarget": "sample-code-flow-azure-b2c:build"
           }
         },
         "test": {
@@ -787,14 +787,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4202,
-            "browserTarget": "sample-implicit-flow-silent-renew:build"
+            "buildTarget": "sample-implicit-flow-silent-renew:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-implicit-flow-silent-renew:build:production"
+              "buildTarget": "sample-implicit-flow-silent-renew:build:production"
             },
             "development": {
-              "browserTarget": "sample-implicit-flow-silent-renew:build:development"
+              "buildTarget": "sample-implicit-flow-silent-renew:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -802,7 +802,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-implicit-flow-silent-renew:build"
+            "buildTarget": "sample-implicit-flow-silent-renew:build"
           }
         },
         "test": {
@@ -900,14 +900,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4210,
-            "browserTarget": "sample-code-flow-auth0:build"
+            "buildTarget": "sample-code-flow-auth0:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-auth0:build:production"
+              "buildTarget": "sample-code-flow-auth0:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-auth0:build:development"
+              "buildTarget": "sample-code-flow-auth0:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -915,7 +915,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-auth0:build"
+            "buildTarget": "sample-code-flow-auth0:build"
           }
         },
         "test": {
@@ -1013,14 +1013,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4204,
-            "browserTarget": "sample-code-flow-refresh-tokens:build"
+            "buildTarget": "sample-code-flow-refresh-tokens:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-refresh-tokens:build:production"
+              "buildTarget": "sample-code-flow-refresh-tokens:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-refresh-tokens:build:development"
+              "buildTarget": "sample-code-flow-refresh-tokens:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -1028,7 +1028,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-refresh-tokens:build"
+            "buildTarget": "sample-code-flow-refresh-tokens:build"
           }
         },
         "test": {
@@ -1120,14 +1120,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4204,
-            "browserTarget": "sample-code-flow-standalone:build"
+            "buildTarget": "sample-code-flow-standalone:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-standalone:build:production"
+              "buildTarget": "sample-code-flow-standalone:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-standalone:build:development"
+              "buildTarget": "sample-code-flow-standalone:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -1135,7 +1135,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-standalone:build"
+            "buildTarget": "sample-code-flow-standalone:build"
           }
         },
         "test": {
@@ -1233,14 +1233,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4200,
-            "browserTarget": "sample-code-flow-multi-Azure-B2C:build"
+            "buildTarget": "sample-code-flow-multi-Azure-B2C:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-multi-Azure-B2C:build:production"
+              "buildTarget": "sample-code-flow-multi-Azure-B2C:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-multi-Azure-B2C:build:development"
+              "buildTarget": "sample-code-flow-multi-Azure-B2C:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -1248,7 +1248,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-multi-Azure-B2C:build"
+            "buildTarget": "sample-code-flow-multi-Azure-B2C:build"
           }
         },
         "test": {
@@ -1346,14 +1346,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4200,
-            "browserTarget": "sample-code-flow-multi-AAD:build"
+            "buildTarget": "sample-code-flow-multi-AAD:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-multi-AAD:build:production"
+              "buildTarget": "sample-code-flow-multi-AAD:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-multi-AAD:build:development"
+              "buildTarget": "sample-code-flow-multi-AAD:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -1361,7 +1361,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-multi-AAD:build"
+            "buildTarget": "sample-code-flow-multi-AAD:build"
           }
         },
         "test": {
@@ -1459,14 +1459,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4204,
-            "browserTarget": "sample-code-flow-multi-Auth0-ID4-popup:build"
+            "buildTarget": "sample-code-flow-multi-Auth0-ID4-popup:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-multi-Auth0-ID4-popup:build:production"
+              "buildTarget": "sample-code-flow-multi-Auth0-ID4-popup:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-multi-Auth0-ID4-popup:build:development"
+              "buildTarget": "sample-code-flow-multi-Auth0-ID4-popup:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -1474,7 +1474,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-multi-Auth0-ID4-popup:build"
+            "buildTarget": "sample-code-flow-multi-Auth0-ID4-popup:build"
           }
         },
         "test": {
@@ -1574,14 +1574,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4204,
-            "browserTarget": "sample-code-flow-multi-Auth0-ID4:build"
+            "buildTarget": "sample-code-flow-multi-Auth0-ID4:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-multi-Auth0-ID4:build:production"
+              "buildTarget": "sample-code-flow-multi-Auth0-ID4:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-multi-Auth0-ID4:build:development"
+              "buildTarget": "sample-code-flow-multi-Auth0-ID4:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -1589,7 +1589,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-multi-Auth0-ID4:build"
+            "buildTarget": "sample-code-flow-multi-Auth0-ID4:build"
           }
         },
         "test": {
@@ -1686,14 +1686,14 @@
           "options": {
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
-            "browserTarget": "sample-code-flow-lazy-loaded:build"
+            "buildTarget": "sample-code-flow-lazy-loaded:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-lazy-loaded:build:production"
+              "buildTarget": "sample-code-flow-lazy-loaded:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-lazy-loaded:build:development"
+              "buildTarget": "sample-code-flow-lazy-loaded:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -1701,7 +1701,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-lazy-loaded:build"
+            "buildTarget": "sample-code-flow-lazy-loaded:build"
           }
         },
         "test": {
@@ -1797,14 +1797,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4204,
-            "browserTarget": "sample-code-flow-popup:build"
+            "buildTarget": "sample-code-flow-popup:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-popup:build:production"
+              "buildTarget": "sample-code-flow-popup:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-popup:build:development"
+              "buildTarget": "sample-code-flow-popup:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -1812,7 +1812,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-popup:build"
+            "buildTarget": "sample-code-flow-popup:build"
           }
         },
         "test": {
@@ -1900,14 +1900,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4207,
-            "browserTarget": "sample-code-flow-par:build"
+            "buildTarget": "sample-code-flow-par:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-par:build:production"
+              "buildTarget": "sample-code-flow-par:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-par:build:development"
+              "buildTarget": "sample-code-flow-par:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -1915,7 +1915,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-par:build"
+            "buildTarget": "sample-code-flow-par:build"
           }
         },
         "test": {
@@ -2005,14 +2005,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4204,
-            "browserTarget": "sample-code-flow-auto-login-all-routes:build"
+            "buildTarget": "sample-code-flow-auto-login-all-routes:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-auto-login-all-routes:build:production"
+              "buildTarget": "sample-code-flow-auto-login-all-routes:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-auto-login-all-routes:build:development"
+              "buildTarget": "sample-code-flow-auto-login-all-routes:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -2020,7 +2020,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-auto-login-all-routes:build"
+            "buildTarget": "sample-code-flow-auto-login-all-routes:build"
           }
         },
         "test": {
