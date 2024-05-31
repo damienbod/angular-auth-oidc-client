@@ -1,5 +1,7 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2024-05-31 17.1.0
+
 ### 2024-02-03 17.0.0
 
 - Support Angular 17
@@ -16,11 +18,11 @@
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1812)
 - Remove provided in root for interceptor
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1806)
-- Support ng-add for standalone applications 
+- Support ng-add for standalone applications
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1800)
 - Code improvement, remove cast
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1787)
-  
+
 ### 2023-06-19 16.0.0
 
 - Add provideAuth for standalone applications
