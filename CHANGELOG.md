@@ -24,6 +24,8 @@
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1918)
 - Moving to inject function
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1917)
+- fix: adding missing field token_type from AuthResult.
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1907)
 
 ### 2024-02-03 17.0.0
 
