@@ -2,6 +2,29 @@
 
 ### 2024-05-31 17.1.0
 
+- docs: add new signal properties to public api docs
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1944)
+- fix(refresh-session): forceRefreshSession does not reset storageSilentRenewRunning
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1943)
+- refactor example to control flow syntax
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1941)
+- feat: add option to override the auth well known suffix
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1940)
+- feat: add authenticated and userData signals
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1937)
+- Bugfix: Updated URL service isCallbackFromSts
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1936)
+- fix network error detection due to potential falsy instanceof ProgressEvent evaluation if ProgressEvent is monkey patched by another library
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1934)
+- fix: refresh authWellKnownEndPoints
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1922)
+- refactor: replace any types
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1919)
+- fix: inject DOCUMENT
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1918)
+- Moving to inject function
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1917)
+
 ### 2024-02-03 17.0.0
 
 - Support Angular 17
