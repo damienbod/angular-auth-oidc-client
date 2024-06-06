@@ -1,8 +1,5 @@
-import { HttpHeaders } from '@angular/common/http';
-import {
-  HttpClientTestingModule,
-  HttpTestingController,
-} from '@angular/common/http/testing';
+import { HttpHeaders, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { DataService } from './data.service';
 import { HttpBaseService } from './http-base.service';
@@ -13,9 +10,9 @@ describe('Data Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [DataService, HttpBaseService],
-    });
+    imports: [],
+    providers: [DataService, HttpBaseService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+});
   });
 
   beforeEach(() => {
