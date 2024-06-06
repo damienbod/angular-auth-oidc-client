@@ -18,7 +18,7 @@ import { AUTH_0, AZURE_AD_REFRESH_TOKENS, AZURE_AD_SILENT_RENEW, DEFAULT_CONFIG,
 
 export function copyModuleFile(options: NgAddOptions): Rule {
   return (host: Tree, context: SchematicContext) => {
-    const project = getProject(host);
+    const [,project] = getProject(host);
 
     const { moduleFileName, filesFolder } = options.moduleInfo!;
 
