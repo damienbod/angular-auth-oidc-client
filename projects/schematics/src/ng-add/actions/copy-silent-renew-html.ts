@@ -10,7 +10,7 @@ export function copySilentRenewHtmlToRoot(options: NgAddOptions): Rule {
       return host;
     }
 
-    const project = getProject(host);
+    const [,project] = getProject(host);
     const templateSource = apply(url(`./files/silent-renew`), [move(normalize(`${project.sourceRoot}`))]);
 
     return chain([mergeWith(templateSource)]);

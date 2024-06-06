@@ -26,14 +26,14 @@ export function updateProjectInAngularJson(tree: Tree, content: WorkspaceProject
   tree.overwrite(ANGULAR_JSON_FILENAME, JSON.stringify(workspace, null, 2));
 }
 
-export function getProject(tree: Tree, projectName?: string): WorkspaceProject {
+export function getProject(tree: Tree, projectName?: string): [string, WorkspaceProject] {
   const workspace = getAngularWorkspace(tree);
   const defaultProject = getDefaultProjectName(tree);
 
   if (!!projectName) {
-    return workspace.projects[projectName as string] || null;
+    return [defaultProject, workspace.projects[projectName as string] || null];
   } else if (!!defaultProject) {
-    return workspace.projects[defaultProject as string];
+    return [defaultProject, workspace.projects[defaultProject as string]];
   }
 
   throw new SchematicsException(`Could not get project. Searched for '${projectName}',

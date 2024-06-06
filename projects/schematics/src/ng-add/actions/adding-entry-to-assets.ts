@@ -9,7 +9,7 @@ export function addSilentRenewHtmlToAssetsArrayInAngularJson(ngAddOptions: NgAdd
       return host;
     }
 
-    const project = getProject(host);
+    const [,project] = getProject(host);
 
     const options = project.architect?.build?.options;
     const srcRoot = project.sourceRoot;
