@@ -1,5 +1,9 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2024-06-06 18.0.0
+
+- Support Angular 18
+
 ### 2024-05-31 17.1.0
 
 - docs: add new signal properties to public api docs
