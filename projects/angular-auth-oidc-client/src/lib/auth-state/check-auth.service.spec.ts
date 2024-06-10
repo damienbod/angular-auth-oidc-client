@@ -608,6 +608,28 @@ describe('CheckAuthService', () => {
         ]);
       });
     }));
+
+    it('fires CheckingAuth-Event on start and finished event on end if not authenticated', waitForAsync(() => {
+      const allConfigs = [
+        { configId: 'configId1', authority: 'some-authority' },
+      ];
+
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
+      );
+      spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
+        false
+      );
+
+      const fireEventSpy = spyOn(publicEventsService, 'fireEvent');
+
+      checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe(() => {
+        expect(fireEventSpy.calls.allArgs()).toEqual([
+          [EventTypes.CheckingAuth],
+          [EventTypes.CheckingAuthFinished],
+        ]);
+      });
+    }));
   });
 
   describe('checkAuthIncludingServer', () => {
