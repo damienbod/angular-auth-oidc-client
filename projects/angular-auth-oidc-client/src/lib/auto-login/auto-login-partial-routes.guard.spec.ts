@@ -438,6 +438,37 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         });
       }));
 
+      it('should save current route and call `login` if not authenticated already and add custom params', waitForAsync(() => {
+        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
+          false
+        );
+        const checkSavedRedirectRouteAndNavigateSpy = spyOn(
+          autoLoginService,
+          'checkSavedRedirectRouteAndNavigate'
+        );
+        const saveRedirectRouteSpy = spyOn(
+          autoLoginService,
+          'saveRedirectRoute'
+        );
+        const loginSpy = spyOn(loginService, 'login');
+
+        const guard$ = TestBed.runInInjectionContext(
+          () => autoLoginPartialRoutesGuard({data: {custom: 'param'}} as unknown as ActivatedRouteSnapshot)
+        );
+
+        guard$.subscribe(() => {
+          expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith(
+            { configId: 'configId1' },
+            ''
+          );
+          expect(loginSpy).toHaveBeenCalledOnceWith(
+            { configId: 'configId1' },
+            { customParams: { custom: 'param' } }
+          );
+          expect(checkSavedRedirectRouteAndNavigateSpy).not.toHaveBeenCalled();
+        });
+      }));
+
       it('should call `checkSavedRedirectRouteAndNavigate` if authenticated already', waitForAsync(() => {
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
           true
