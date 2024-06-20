@@ -1,5 +1,14 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2024-06-21 18.0.1
+
+- Fix issue #1954: Ensure CheckingAuthFinished event fires regardless of authentication state
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1961)
+- feat: add support for route data to autoLoginPartialRoutesGuard
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1964)
+- docs: add migration docs
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1960)
+
 ### 2024-06-06 18.0.0
 
 - Support Angular 18
