@@ -1,5 +1,9 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2023-08-27 16.0.2
+
+- small fix in v16
+
 ### 2023-08-27 16.0.1
 
 - Fix problem in logoff when urlHandler option is present
@@ -12,11 +16,11 @@
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1812)
 - Remove provided in root for interceptor
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1806)
-- Support ng-add for standalone applications 
+- Support ng-add for standalone applications
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1800)
 - Code improvement, remove cast
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1787)
-  
+
 ### 2023-06-19 16.0.0
 
 - Add provideAuth for standalone applications
