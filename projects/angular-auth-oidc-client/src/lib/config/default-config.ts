@@ -6,7 +6,7 @@ export const DEFAULT_CONFIG: OpenIdConfiguration = {
   authWellknownEndpointUrl: '',
   authWellknownEndpoints: undefined,
   redirectUrl: 'https://please_set',
-  checkRedirectUrlWhenCheckingIfIsCallback: false,
+  checkRedirectUrlWhenCheckingIfIsCallback: true,
   clientId: 'please_set',
   responseType: 'code',
   scope: 'openid email profile',
