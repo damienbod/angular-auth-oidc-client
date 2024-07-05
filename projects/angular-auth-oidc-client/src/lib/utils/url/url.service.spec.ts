@@ -61,8 +61,6 @@ describe('UrlService Tests', () => {
       params.forEach((p) => {
         expect(sut.searchParams.has(p.key)).toBeFalse();
       });
-
-      // expect(sut.searchParams.toString()).toEqual('');
     });
   });
 
