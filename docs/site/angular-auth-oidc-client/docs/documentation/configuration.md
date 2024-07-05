@@ -249,6 +249,14 @@ A different well-known endpoint can be defined instead of the authority domain w
 
 Allows you to set custom URLs for the Well-Known endpoints.
 
+### `authWellknownUrlSuffix`
+
+- Type: `string`
+- Required: `false`
+- Default: `/.well-known/openid-configuration`
+
+Override the default Security Token Service well-known endpoint postfix.
+
 ### `redirectUrl`
 
 - Type: `string`

@@ -185,8 +185,9 @@ AuthModule.forRoot({
 
 ## Versions
 
-Current Version is Version 17.x
+Current Version is Version 18.x
 
+- [Info about Version 17](https://github.com/damienbod/angular-auth-oidc-client/tree/version-17)
 - [Info about Version 16](https://github.com/damienbod/angular-auth-oidc-client/tree/version-16)
 - [Info about Version 15](https://github.com/damienbod/angular-auth-oidc-client/tree/version-15)
 - [Info about Version 14](https://github.com/damienbod/angular-auth-oidc-client/tree/version-14)

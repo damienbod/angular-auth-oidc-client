@@ -257,9 +257,8 @@ export class CheckAuthService {
             this.authStateService.setAuthenticatedAndFireEvent(allConfigs);
             this.userService.publishUserDataIfExists(config, allConfigs);
           }
-
-          this.publicEventsService.fireEvent(EventTypes.CheckingAuthFinished);
         }
+        this.publicEventsService.fireEvent(EventTypes.CheckingAuthFinished);
 
         const result: LoginResponse = {
           isAuthenticated,

@@ -52,12 +52,15 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/sample-code-flow-multi-iframe",
+            "outputPath": {
+              "base": "dist/sample-code-flow-multi-iframe"
+            },
             "index": "projects/sample-code-flow-multi-iframe/src/index.html",
-            "main": "projects/sample-code-flow-multi-iframe/src/main.ts",
-            "polyfills": "projects/sample-code-flow-multi-iframe/src/polyfills.ts",
+            "polyfills": [
+              "projects/sample-code-flow-multi-iframe/src/polyfills.ts"
+            ],
             "tsConfig": "projects/sample-code-flow-multi-iframe/tsconfig.app.json",
             "aot": true,
             "assets": [
@@ -66,7 +69,8 @@
               "projects/sample-code-flow-multi-iframe/src/assets"
             ],
             "styles": ["projects/sample-code-flow-multi-iframe/src/styles.css"],
-            "scripts": []
+            "scripts": [],
+            "browser": "projects/sample-code-flow-multi-iframe/src/main.ts"
           },
           "configurations": {
             "production": {
@@ -81,8 +85,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -97,9 +99,7 @@
               ]
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
@@ -113,14 +113,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4200,
-            "browserTarget": "sample-code-flow-multi-iframe:build"
+            "buildTarget": "sample-code-flow-multi-iframe:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-multi-iframe:build:production"
+              "buildTarget": "sample-code-flow-multi-iframe:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-multi-iframe:build:development"
+              "buildTarget": "sample-code-flow-multi-iframe:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -128,7 +128,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-multi-iframe:build"
+            "buildTarget": "sample-code-flow-multi-iframe:build"
           }
         },
         "test": {
@@ -165,12 +165,15 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/sample-code-flow-auto-login",
+            "outputPath": {
+              "base": "dist/sample-code-flow-auto-login"
+            },
             "index": "projects/sample-code-flow-auto-login/src/index.html",
-            "main": "projects/sample-code-flow-auto-login/src/main.ts",
-            "polyfills": "projects/sample-code-flow-auto-login/src/polyfills.ts",
+            "polyfills": [
+              "projects/sample-code-flow-auto-login/src/polyfills.ts"
+            ],
             "tsConfig": "projects/sample-code-flow-auto-login/tsconfig.app.json",
             "aot": true,
             "assets": [
@@ -179,7 +182,8 @@
               "projects/sample-code-flow-auto-login/src/assets"
             ],
             "styles": ["projects/sample-code-flow-auto-login/src/styles.css"],
-            "scripts": []
+            "scripts": [],
+            "browser": "projects/sample-code-flow-auto-login/src/main.ts"
           },
           "configurations": {
             "production": {
@@ -194,8 +198,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -210,9 +212,7 @@
               ]
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
@@ -225,14 +225,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4204,
-            "browserTarget": "sample-code-flow-auto-login:build"
+            "buildTarget": "sample-code-flow-auto-login:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-auto-login:build:production"
+              "buildTarget": "sample-code-flow-auto-login:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-auto-login:build:development"
+              "buildTarget": "sample-code-flow-auto-login:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -240,7 +240,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-auto-login:build"
+            "buildTarget": "sample-code-flow-auto-login:build"
           }
         },
         "test": {
@@ -277,12 +277,15 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/sample-code-flow-http-config",
+            "outputPath": {
+              "base": "dist/sample-code-flow-http-config"
+            },
             "index": "projects/sample-code-flow-http-config/src/index.html",
-            "main": "projects/sample-code-flow-http-config/src/main.ts",
-            "polyfills": "projects/sample-code-flow-http-config/src/polyfills.ts",
+            "polyfills": [
+              "projects/sample-code-flow-http-config/src/polyfills.ts"
+            ],
             "tsConfig": "projects/sample-code-flow-http-config/tsconfig.app.json",
             "aot": true,
             "assets": [
@@ -291,7 +294,8 @@
               "projects/sample-code-flow-http-config/src/silent-renew.html"
             ],
             "styles": ["projects/sample-code-flow-http-config/src/styles.css"],
-            "scripts": []
+            "scripts": [],
+            "browser": "projects/sample-code-flow-http-config/src/main.ts"
           },
           "configurations": {
             "production": {
@@ -306,8 +310,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -322,9 +324,7 @@
               ]
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
@@ -337,14 +337,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4201,
-            "browserTarget": "sample-code-flow-http-config:build"
+            "buildTarget": "sample-code-flow-http-config:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-http-config:build:production"
+              "buildTarget": "sample-code-flow-http-config:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-http-config:build:development"
+              "buildTarget": "sample-code-flow-http-config:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -352,7 +352,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-http-config:build"
+            "buildTarget": "sample-code-flow-http-config:build"
           }
         },
         "test": {
@@ -389,12 +389,15 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/sample-implicit-flow-google",
+            "outputPath": {
+              "base": "dist/sample-implicit-flow-google"
+            },
             "index": "projects/sample-implicit-flow-google/src/index.html",
-            "main": "projects/sample-implicit-flow-google/src/main.ts",
-            "polyfills": "projects/sample-implicit-flow-google/src/polyfills.ts",
+            "polyfills": [
+              "projects/sample-implicit-flow-google/src/polyfills.ts"
+            ],
             "tsConfig": "projects/sample-implicit-flow-google/tsconfig.app.json",
             "aot": true,
             "assets": [
@@ -402,7 +405,8 @@
               "projects/sample-implicit-flow-google/src/assets"
             ],
             "styles": ["projects/sample-implicit-flow-google/src/styles.css"],
-            "scripts": []
+            "scripts": [],
+            "browser": "projects/sample-implicit-flow-google/src/main.ts"
           },
           "configurations": {
             "production": {
@@ -417,8 +421,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -433,9 +435,7 @@
               ]
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
@@ -448,14 +448,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 44386,
-            "browserTarget": "sample-implicit-flow-google:build"
+            "buildTarget": "sample-implicit-flow-google:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-implicit-flow-google:build:production"
+              "buildTarget": "sample-implicit-flow-google:build:production"
             },
             "development": {
-              "browserTarget": "sample-implicit-flow-google:build:development"
+              "buildTarget": "sample-implicit-flow-google:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -463,7 +463,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-implicit-flow-google:build"
+            "buildTarget": "sample-implicit-flow-google:build"
           }
         },
         "test": {
@@ -500,12 +500,15 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/sample-code-flow-azuread",
+            "outputPath": {
+              "base": "dist/sample-code-flow-azuread"
+            },
             "index": "projects/sample-code-flow-azuread/src/index.html",
-            "main": "projects/sample-code-flow-azuread/src/main.ts",
-            "polyfills": "projects/sample-code-flow-azuread/src/polyfills.ts",
+            "polyfills": [
+              "projects/sample-code-flow-azuread/src/polyfills.ts"
+            ],
             "tsConfig": "projects/sample-code-flow-azuread/tsconfig.app.json",
             "aot": true,
             "assets": [
@@ -514,7 +517,8 @@
               "projects/sample-code-flow-azuread/src/silent-renew.html"
             ],
             "styles": ["projects/sample-code-flow-azuread/src/styles.css"],
-            "scripts": []
+            "scripts": [],
+            "browser": "projects/sample-code-flow-azuread/src/main.ts"
           },
           "configurations": {
             "production": {
@@ -529,8 +533,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -545,9 +547,7 @@
               ]
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
@@ -560,14 +560,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 44347,
-            "browserTarget": "sample-code-flow-azuread:build"
+            "buildTarget": "sample-code-flow-azuread:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-azuread:build:production"
+              "buildTarget": "sample-code-flow-azuread:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-azuread:build:development"
+              "buildTarget": "sample-code-flow-azuread:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -575,7 +575,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-azuread:build"
+            "buildTarget": "sample-code-flow-azuread:build"
           }
         },
         "test": {
@@ -613,12 +613,15 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/sample-code-flow-azure-b2c",
+            "outputPath": {
+              "base": "dist/sample-code-flow-azure-b2c"
+            },
             "index": "projects/sample-code-flow-azure-b2c/src/index.html",
-            "main": "projects/sample-code-flow-azure-b2c/src/main.ts",
-            "polyfills": "projects/sample-code-flow-azure-b2c/src/polyfills.ts",
+            "polyfills": [
+              "projects/sample-code-flow-azure-b2c/src/polyfills.ts"
+            ],
             "tsConfig": "projects/sample-code-flow-azure-b2c/tsconfig.app.json",
             "aot": true,
             "assets": [
@@ -627,7 +630,8 @@
               "projects/sample-code-flow-azure-b2c/src/silent-renew.html"
             ],
             "styles": ["projects/sample-code-flow-azure-b2c/src/styles.css"],
-            "scripts": []
+            "scripts": [],
+            "browser": "projects/sample-code-flow-azure-b2c/src/main.ts"
           },
           "configurations": {
             "production": {
@@ -642,8 +646,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -658,9 +660,7 @@
               ]
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
@@ -673,14 +673,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4200,
-            "browserTarget": "sample-code-flow-azure-b2c:build"
+            "buildTarget": "sample-code-flow-azure-b2c:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-azure-b2c:build:production"
+              "buildTarget": "sample-code-flow-azure-b2c:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-azure-b2c:build:development"
+              "buildTarget": "sample-code-flow-azure-b2c:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -688,7 +688,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-azure-b2c:build"
+            "buildTarget": "sample-code-flow-azure-b2c:build"
           }
         },
         "test": {
@@ -725,12 +725,15 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/sample-implicit-flow-silent-renew",
+            "outputPath": {
+              "base": "dist/sample-implicit-flow-silent-renew"
+            },
             "index": "projects/sample-implicit-flow-silent-renew/src/index.html",
-            "main": "projects/sample-implicit-flow-silent-renew/src/main.ts",
-            "polyfills": "projects/sample-implicit-flow-silent-renew/src/polyfills.ts",
+            "polyfills": [
+              "projects/sample-implicit-flow-silent-renew/src/polyfills.ts"
+            ],
             "tsConfig": "projects/sample-implicit-flow-silent-renew/tsconfig.app.json",
             "aot": true,
             "assets": [
@@ -741,7 +744,8 @@
             "styles": [
               "projects/sample-implicit-flow-silent-renew/src/styles.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "browser": "projects/sample-implicit-flow-silent-renew/src/main.ts"
           },
           "configurations": {
             "production": {
@@ -756,8 +760,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -772,9 +774,7 @@
               ]
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
@@ -787,14 +787,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4202,
-            "browserTarget": "sample-implicit-flow-silent-renew:build"
+            "buildTarget": "sample-implicit-flow-silent-renew:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-implicit-flow-silent-renew:build:production"
+              "buildTarget": "sample-implicit-flow-silent-renew:build:production"
             },
             "development": {
-              "browserTarget": "sample-implicit-flow-silent-renew:build:development"
+              "buildTarget": "sample-implicit-flow-silent-renew:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -802,7 +802,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-implicit-flow-silent-renew:build"
+            "buildTarget": "sample-implicit-flow-silent-renew:build"
           }
         },
         "test": {
@@ -841,12 +841,15 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/sample-code-flow-auth0",
+            "outputPath": {
+              "base": "dist/sample-code-flow-auth0"
+            },
             "index": "projects/sample-code-flow-auth0/src/index.html",
-            "main": "projects/sample-code-flow-auth0/src/main.ts",
-            "polyfills": "projects/sample-code-flow-auth0/src/polyfills.ts",
+            "polyfills": [
+              "projects/sample-code-flow-auth0/src/polyfills.ts"
+            ],
             "tsConfig": "projects/sample-code-flow-auth0/tsconfig.app.json",
             "aot": true,
             "assets": [
@@ -854,7 +857,8 @@
               "projects/sample-code-flow-auth0/src/assets"
             ],
             "styles": ["projects/sample-code-flow-auth0/src/styles.css"],
-            "scripts": []
+            "scripts": [],
+            "browser": "projects/sample-code-flow-auth0/src/main.ts"
           },
           "configurations": {
             "production": {
@@ -869,8 +873,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -885,9 +887,7 @@
               ]
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
@@ -900,14 +900,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4210,
-            "browserTarget": "sample-code-flow-auth0:build"
+            "buildTarget": "sample-code-flow-auth0:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-auth0:build:production"
+              "buildTarget": "sample-code-flow-auth0:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-auth0:build:development"
+              "buildTarget": "sample-code-flow-auth0:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -915,7 +915,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-auth0:build"
+            "buildTarget": "sample-code-flow-auth0:build"
           }
         },
         "test": {
@@ -952,12 +952,15 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/sample-code-flow-refresh-tokens",
+            "outputPath": {
+              "base": "dist/sample-code-flow-refresh-tokens"
+            },
             "index": "projects/sample-code-flow-refresh-tokens/src/index.html",
-            "main": "projects/sample-code-flow-refresh-tokens/src/main.ts",
-            "polyfills": "projects/sample-code-flow-refresh-tokens/src/polyfills.ts",
+            "polyfills": [
+              "projects/sample-code-flow-refresh-tokens/src/polyfills.ts"
+            ],
             "tsConfig": "projects/sample-code-flow-refresh-tokens/tsconfig.app.json",
             "aot": true,
             "assets": [
@@ -967,7 +970,8 @@
             "styles": [
               "projects/sample-code-flow-refresh-tokens/src/styles.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "browser": "projects/sample-code-flow-refresh-tokens/src/main.ts"
           },
           "configurations": {
             "production": {
@@ -982,8 +986,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -998,9 +1000,7 @@
               ]
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
@@ -1013,14 +1013,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4204,
-            "browserTarget": "sample-code-flow-refresh-tokens:build"
+            "buildTarget": "sample-code-flow-refresh-tokens:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-refresh-tokens:build:production"
+              "buildTarget": "sample-code-flow-refresh-tokens:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-refresh-tokens:build:development"
+              "buildTarget": "sample-code-flow-refresh-tokens:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -1028,7 +1028,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-refresh-tokens:build"
+            "buildTarget": "sample-code-flow-refresh-tokens:build"
           }
         },
         "test": {
@@ -1067,11 +1067,12 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/sample-code-flow-standalone",
+            "outputPath": {
+              "base": "dist/sample-code-flow-standalone"
+            },
             "index": "projects/sample-code-flow-standalone/src/index.html",
-            "main": "projects/sample-code-flow-standalone/src/main.ts",
             "polyfills": ["zone.js"],
             "tsConfig": "projects/sample-code-flow-standalone/tsconfig.app.json",
             "aot": true,
@@ -1081,7 +1082,8 @@
               "projects/sample-code-flow-standalone/src/assets"
             ],
             "styles": ["projects/sample-code-flow-standalone/src/styles.css"],
-            "scripts": []
+            "scripts": [],
+            "browser": "projects/sample-code-flow-standalone/src/main.ts"
           },
           "configurations": {
             "production": {
@@ -1091,8 +1093,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -1107,9 +1107,7 @@
               ]
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
@@ -1122,14 +1120,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4204,
-            "browserTarget": "sample-code-flow-standalone:build"
+            "buildTarget": "sample-code-flow-standalone:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-standalone:build:production"
+              "buildTarget": "sample-code-flow-standalone:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-standalone:build:development"
+              "buildTarget": "sample-code-flow-standalone:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -1137,7 +1135,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-standalone:build"
+            "buildTarget": "sample-code-flow-standalone:build"
           }
         },
         "test": {
@@ -1174,12 +1172,15 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/sample-code-flow-multi-Azure-B2C",
+            "outputPath": {
+              "base": "dist/sample-code-flow-multi-Azure-B2C"
+            },
             "index": "projects/sample-code-flow-multi-Azure-B2C/src/index.html",
-            "main": "projects/sample-code-flow-multi-Azure-B2C/src/main.ts",
-            "polyfills": "projects/sample-code-flow-multi-Azure-B2C/src/polyfills.ts",
+            "polyfills": [
+              "projects/sample-code-flow-multi-Azure-B2C/src/polyfills.ts"
+            ],
             "tsConfig": "projects/sample-code-flow-multi-Azure-B2C/tsconfig.app.json",
             "aot": true,
             "assets": [
@@ -1189,7 +1190,8 @@
             "styles": [
               "projects/sample-code-flow-multi-Azure-B2C/src/styles.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "browser": "projects/sample-code-flow-multi-Azure-B2C/src/main.ts"
           },
           "configurations": {
             "production": {
@@ -1204,8 +1206,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -1220,9 +1220,7 @@
               ]
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
@@ -1235,14 +1233,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4200,
-            "browserTarget": "sample-code-flow-multi-Azure-B2C:build"
+            "buildTarget": "sample-code-flow-multi-Azure-B2C:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-multi-Azure-B2C:build:production"
+              "buildTarget": "sample-code-flow-multi-Azure-B2C:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-multi-Azure-B2C:build:development"
+              "buildTarget": "sample-code-flow-multi-Azure-B2C:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -1250,7 +1248,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-multi-Azure-B2C:build"
+            "buildTarget": "sample-code-flow-multi-Azure-B2C:build"
           }
         },
         "test": {
@@ -1289,12 +1287,15 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/sample-code-flow-multi-AAD",
+            "outputPath": {
+              "base": "dist/sample-code-flow-multi-AAD"
+            },
             "index": "projects/sample-code-flow-multi-AAD/src/index.html",
-            "main": "projects/sample-code-flow-multi-AAD/src/main.ts",
-            "polyfills": "projects/sample-code-flow-multi-AAD/src/polyfills.ts",
+            "polyfills": [
+              "projects/sample-code-flow-multi-AAD/src/polyfills.ts"
+            ],
             "tsConfig": "projects/sample-code-flow-multi-AAD/tsconfig.app.json",
             "aot": true,
             "assets": [
@@ -1302,7 +1303,8 @@
               "projects/sample-code-flow-multi-AAD/src/assets"
             ],
             "styles": ["projects/sample-code-flow-multi-AAD/src/styles.css"],
-            "scripts": []
+            "scripts": [],
+            "browser": "projects/sample-code-flow-multi-AAD/src/main.ts"
           },
           "configurations": {
             "production": {
@@ -1317,8 +1319,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -1333,9 +1333,7 @@
               ]
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
@@ -1348,14 +1346,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4200,
-            "browserTarget": "sample-code-flow-multi-AAD:build"
+            "buildTarget": "sample-code-flow-multi-AAD:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-multi-AAD:build:production"
+              "buildTarget": "sample-code-flow-multi-AAD:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-multi-AAD:build:development"
+              "buildTarget": "sample-code-flow-multi-AAD:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -1363,7 +1361,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-multi-AAD:build"
+            "buildTarget": "sample-code-flow-multi-AAD:build"
           }
         },
         "test": {
@@ -1400,12 +1398,15 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/sample-code-flow-multi-Auth0-ID4-popup",
+            "outputPath": {
+              "base": "dist/sample-code-flow-multi-Auth0-ID4-popup"
+            },
             "index": "projects/sample-code-flow-multi-Auth0-ID4-popup/src/index.html",
-            "main": "projects/sample-code-flow-multi-Auth0-ID4-popup/src/main.ts",
-            "polyfills": "projects/sample-code-flow-multi-Auth0-ID4-popup/src/polyfills.ts",
+            "polyfills": [
+              "projects/sample-code-flow-multi-Auth0-ID4-popup/src/polyfills.ts"
+            ],
             "tsConfig": "projects/sample-code-flow-multi-Auth0-ID4-popup/tsconfig.app.json",
             "aot": true,
             "assets": [
@@ -1415,7 +1416,8 @@
             "styles": [
               "projects/sample-code-flow-multi-Auth0-ID4-popup/src/styles.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "browser": "projects/sample-code-flow-multi-Auth0-ID4-popup/src/main.ts"
           },
           "configurations": {
             "production": {
@@ -1430,8 +1432,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -1446,9 +1446,7 @@
               ]
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
@@ -1461,14 +1459,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4204,
-            "browserTarget": "sample-code-flow-multi-Auth0-ID4-popup:build"
+            "buildTarget": "sample-code-flow-multi-Auth0-ID4-popup:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-multi-Auth0-ID4-popup:build:production"
+              "buildTarget": "sample-code-flow-multi-Auth0-ID4-popup:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-multi-Auth0-ID4-popup:build:development"
+              "buildTarget": "sample-code-flow-multi-Auth0-ID4-popup:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -1476,7 +1474,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-multi-Auth0-ID4-popup:build"
+            "buildTarget": "sample-code-flow-multi-Auth0-ID4-popup:build"
           }
         },
         "test": {
@@ -1515,12 +1513,15 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/sample-code-flow-multi-Auth0-ID4",
+            "outputPath": {
+              "base": "dist/sample-code-flow-multi-Auth0-ID4"
+            },
             "index": "projects/sample-code-flow-multi-Auth0-ID4/src/index.html",
-            "main": "projects/sample-code-flow-multi-Auth0-ID4/src/main.ts",
-            "polyfills": "projects/sample-code-flow-multi-Auth0-ID4/src/polyfills.ts",
+            "polyfills": [
+              "projects/sample-code-flow-multi-Auth0-ID4/src/polyfills.ts"
+            ],
             "tsConfig": "projects/sample-code-flow-multi-Auth0-ID4/tsconfig.app.json",
             "aot": true,
             "assets": [
@@ -1530,7 +1531,8 @@
             "styles": [
               "projects/sample-code-flow-multi-Auth0-ID4/src/styles.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "browser": "projects/sample-code-flow-multi-Auth0-ID4/src/main.ts"
           },
           "configurations": {
             "production": {
@@ -1545,8 +1547,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -1561,9 +1561,7 @@
               ]
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
@@ -1576,14 +1574,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4204,
-            "browserTarget": "sample-code-flow-multi-Auth0-ID4:build"
+            "buildTarget": "sample-code-flow-multi-Auth0-ID4:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-multi-Auth0-ID4:build:production"
+              "buildTarget": "sample-code-flow-multi-Auth0-ID4:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-multi-Auth0-ID4:build:development"
+              "buildTarget": "sample-code-flow-multi-Auth0-ID4:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -1591,7 +1589,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-multi-Auth0-ID4:build"
+            "buildTarget": "sample-code-flow-multi-Auth0-ID4:build"
           }
         },
         "test": {
@@ -1630,12 +1628,15 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/sample-code-flow-lazy-loaded",
+            "outputPath": {
+              "base": "dist/sample-code-flow-lazy-loaded"
+            },
             "index": "projects/sample-code-flow-lazy-loaded/src/index.html",
-            "main": "projects/sample-code-flow-lazy-loaded/src/main.ts",
-            "polyfills": "projects/sample-code-flow-lazy-loaded/src/polyfills.ts",
+            "polyfills": [
+              "projects/sample-code-flow-lazy-loaded/src/polyfills.ts"
+            ],
             "tsConfig": "projects/sample-code-flow-lazy-loaded/tsconfig.app.json",
             "aot": true,
             "assets": [
@@ -1643,7 +1644,8 @@
               "projects/sample-code-flow-lazy-loaded/src/assets"
             ],
             "styles": ["projects/sample-code-flow-lazy-loaded/src/styles.css"],
-            "scripts": []
+            "scripts": [],
+            "browser": "projects/sample-code-flow-lazy-loaded/src/main.ts"
           },
           "configurations": {
             "production": {
@@ -1658,8 +1660,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -1674,9 +1674,7 @@
               ]
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
@@ -1688,14 +1686,14 @@
           "options": {
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
-            "browserTarget": "sample-code-flow-lazy-loaded:build"
+            "buildTarget": "sample-code-flow-lazy-loaded:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-lazy-loaded:build:production"
+              "buildTarget": "sample-code-flow-lazy-loaded:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-lazy-loaded:build:development"
+              "buildTarget": "sample-code-flow-lazy-loaded:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -1703,7 +1701,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-lazy-loaded:build"
+            "buildTarget": "sample-code-flow-lazy-loaded:build"
           }
         },
         "test": {
@@ -1740,12 +1738,15 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/sample-code-flow-popup",
+            "outputPath": {
+              "base": "dist/sample-code-flow-popup"
+            },
             "index": "projects/sample-code-flow-popup/src/index.html",
-            "main": "projects/sample-code-flow-popup/src/main.ts",
-            "polyfills": "projects/sample-code-flow-popup/src/polyfills.ts",
+            "polyfills": [
+              "projects/sample-code-flow-popup/src/polyfills.ts"
+            ],
             "tsConfig": "projects/sample-code-flow-popup/tsconfig.app.json",
             "aot": true,
             "assets": [
@@ -1753,7 +1754,8 @@
               "projects/sample-code-flow-popup/src/assets"
             ],
             "styles": ["projects/sample-code-flow-popup/src/styles.css"],
-            "scripts": []
+            "scripts": [],
+            "browser": "projects/sample-code-flow-popup/src/main.ts"
           },
           "configurations": {
             "production": {
@@ -1768,8 +1770,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -1784,9 +1784,7 @@
               ]
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
@@ -1799,14 +1797,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4204,
-            "browserTarget": "sample-code-flow-popup:build"
+            "buildTarget": "sample-code-flow-popup:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-popup:build:production"
+              "buildTarget": "sample-code-flow-popup:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-popup:build:development"
+              "buildTarget": "sample-code-flow-popup:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -1814,7 +1812,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-popup:build"
+            "buildTarget": "sample-code-flow-popup:build"
           }
         },
         "test": {
@@ -1842,12 +1840,15 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/sample-code-flow-par",
+            "outputPath": {
+              "base": "dist/sample-code-flow-par"
+            },
             "index": "projects/sample-code-flow-par/src/index.html",
-            "main": "projects/sample-code-flow-par/src/main.ts",
-            "polyfills": "projects/sample-code-flow-par/src/polyfills.ts",
+            "polyfills": [
+              "projects/sample-code-flow-par/src/polyfills.ts"
+            ],
             "tsConfig": "projects/sample-code-flow-par/tsconfig.app.json",
             "aot": true,
             "assets": [
@@ -1856,7 +1857,8 @@
               "projects/sample-code-flow-par/src/assets"
             ],
             "styles": ["projects/sample-code-flow-par/src/styles.css"],
-            "scripts": []
+            "scripts": [],
+            "browser": "projects/sample-code-flow-par/src/main.ts"
           },
           "configurations": {
             "production": {
@@ -1871,8 +1873,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -1887,9 +1887,7 @@
               ]
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
@@ -1902,14 +1900,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4207,
-            "browserTarget": "sample-code-flow-par:build"
+            "buildTarget": "sample-code-flow-par:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-par:build:production"
+              "buildTarget": "sample-code-flow-par:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-par:build:development"
+              "buildTarget": "sample-code-flow-par:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -1917,7 +1915,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-par:build"
+            "buildTarget": "sample-code-flow-par:build"
           }
         },
         "test": {
@@ -1949,12 +1947,15 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/sample-code-flow-auto-login-all-routes",
+            "outputPath": {
+              "base": "dist/sample-code-flow-auto-login-all-routes"
+            },
             "index": "projects/sample-code-flow-auto-login-all-routes/src/index.html",
-            "main": "projects/sample-code-flow-auto-login-all-routes/src/main.ts",
-            "polyfills": "projects/sample-code-flow-auto-login-all-routes/src/polyfills.ts",
+            "polyfills": [
+              "projects/sample-code-flow-auto-login-all-routes/src/polyfills.ts"
+            ],
             "tsConfig": "projects/sample-code-flow-auto-login-all-routes/tsconfig.app.json",
             "assets": [
               "projects/sample-code-flow-auto-login-all-routes/src/favicon.ico",
@@ -1964,7 +1965,8 @@
             "styles": [
               "projects/sample-code-flow-auto-login-all-routes/src/styles.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "browser": "projects/sample-code-flow-auto-login-all-routes/src/main.ts"
           },
           "configurations": {
             "production": {
@@ -1989,9 +1991,7 @@
               "outputHashing": "all"
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
@@ -2005,14 +2005,14 @@
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
             "port": 4204,
-            "browserTarget": "sample-code-flow-auto-login-all-routes:build"
+            "buildTarget": "sample-code-flow-auto-login-all-routes:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "sample-code-flow-auto-login-all-routes:build:production"
+              "buildTarget": "sample-code-flow-auto-login-all-routes:build:production"
             },
             "development": {
-              "browserTarget": "sample-code-flow-auto-login-all-routes:build:development"
+              "buildTarget": "sample-code-flow-auto-login-all-routes:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -2020,7 +2020,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sample-code-flow-auto-login-all-routes:build"
+            "buildTarget": "sample-code-flow-auto-login-all-routes:build"
           }
         },
         "test": {

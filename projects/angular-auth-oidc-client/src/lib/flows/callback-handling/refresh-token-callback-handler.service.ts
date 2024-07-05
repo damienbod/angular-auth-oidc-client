@@ -1,4 +1,4 @@
-import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, of, throwError, timer } from 'rxjs';
 import { catchError, mergeMap, retryWhen, switchMap } from 'rxjs/operators';
@@ -8,6 +8,7 @@ import { LoggerService } from '../../logging/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { UrlService } from '../../utils/url/url.service';
 import { AuthResult, CallbackContext } from '../callback-context';
+import { isNetworkError } from './error-helper';
 
 @Injectable({ providedIn: 'root' })
 export class RefreshTokenCallbackHandlerService {
@@ -83,12 +84,7 @@ export class RefreshTokenCallbackHandlerService {
     return errors.pipe(
       mergeMap((error) => {
         // retry token refresh if there is no internet connection
-        if (
-          error &&
-          error instanceof HttpErrorResponse &&
-          error.error instanceof ProgressEvent &&
-          error.error.type === 'error'
-        ) {
+        if (isNetworkError(error)) {
           const { authority, refreshTokenRetryInSeconds } = config;
           const errorMessage = `OidcService code request ${authority} - no internet connection`;
 

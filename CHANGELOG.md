@@ -1,5 +1,45 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2024-06-21 18.0.1
+
+- Fix issue #1954: Ensure CheckingAuthFinished event fires regardless of authentication state
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1961)
+- feat: add support for route data to autoLoginPartialRoutesGuard
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1964)
+- docs: add migration docs
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1960)
+
+### 2024-06-06 18.0.0
+
+- Support Angular 18
+
+### 2024-05-31 17.1.0
+
+- docs: add new signal properties to public api docs
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1944)
+- fix(refresh-session): forceRefreshSession does not reset storageSilentRenewRunning
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1943)
+- refactor example to control flow syntax
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1941)
+- feat: add option to override the auth well known suffix
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1940)
+- feat: add authenticated and userData signals
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1937)
+- Bugfix: Updated URL service isCallbackFromSts
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1936)
+- fix network error detection due to potential falsy instanceof ProgressEvent evaluation if ProgressEvent is monkey patched by another library
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1934)
+- fix: refresh authWellKnownEndPoints
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1922)
+- refactor: replace any types
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1919)
+- fix: inject DOCUMENT
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1918)
+- Moving to inject function
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1917)
+- fix: adding missing field token_type from AuthResult.
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1907)
+
 ### 2024-02-03 17.0.0
 
 - Support Angular 17
@@ -16,11 +56,11 @@
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1812)
 - Remove provided in root for interceptor
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1806)
-- Support ng-add for standalone applications 
+- Support ng-add for standalone applications
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1800)
 - Code improvement, remove cast
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1787)
-  
+
 ### 2023-06-19 16.0.0
 
 - Add provideAuth for standalone applications

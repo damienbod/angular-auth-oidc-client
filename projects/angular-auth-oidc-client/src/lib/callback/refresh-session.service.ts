@@ -13,6 +13,7 @@ import {
   retryWhen,
   switchMap,
   take,
+  tap,
   timeout,
 } from 'rxjs/operators';
 import { AuthStateService } from '../auth-state/auth-state.service';
@@ -75,7 +76,9 @@ export class RefreshSessionService {
 
     this.persistCustomParams(extraCustomParams, config);
 
-    return this.forceRefreshSession(config, allConfigs, extraCustomParams);
+    return this.forceRefreshSession(config, allConfigs, extraCustomParams).pipe(
+      tap(() => this.flowsDataService.resetSilentRenewRunning(config))
+    );
   }
 
   forceRefreshSession(

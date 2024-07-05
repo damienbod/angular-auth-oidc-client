@@ -77,12 +77,15 @@ export class AutoLoginPartialRoutesGuard {
   }
 }
 
-export function autoLoginPartialRoutesGuard(): Observable<boolean> {
+export function autoLoginPartialRoutesGuard(route?: ActivatedRouteSnapshot): Observable<boolean> {
   const configurationService = inject(ConfigurationService);
   const authStateService = inject(AuthStateService);
   const loginService = inject(LoginService);
   const autoLoginService = inject(AutoLoginService);
   const router = inject(Router);
+  const authOptions: AuthOptions | undefined = route?.data
+    ? { customParams: route.data }
+    : undefined;
 
   const url =
     router.getCurrentNavigation()?.extractedUrl.toString().substring(1) ?? '';
@@ -92,7 +95,8 @@ export function autoLoginPartialRoutesGuard(): Observable<boolean> {
     configurationService,
     authStateService,
     autoLoginService,
-    loginService
+    loginService,
+    authOptions
   );
 }
 

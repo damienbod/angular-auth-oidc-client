@@ -6,7 +6,7 @@ import { NgAddOptions } from '../models/ng-add-options';
 
 export function addModuleToImports(options: NgAddOptions): Rule {
   return (host: Tree, context: SchematicContext) => {
-    const project = getProject(host);
+    const [,project] = getProject(host);
 
     const { moduleFileName, moduleName } = options.moduleInfo!;
 
