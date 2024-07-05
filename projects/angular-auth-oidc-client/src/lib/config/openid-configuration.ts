@@ -18,9 +18,9 @@ export interface OpenIdConfiguration {
   authWellknownEndpointUrl?: string;
   authWellknownEndpoints?: AuthWellKnownEndpoints;
 
-    /** 
-     * Override the default Security Token Service wellknown endpoint postfix. 
-     * 
+    /**
+     * Override the default Security Token Service wellknown endpoint postfix.
+     *
      * @default /.well-known/openid-configuration
      */
   authWellknownUrlSuffix?: string;
@@ -30,9 +30,7 @@ export interface OpenIdConfiguration {
   /**
    * Whether to check if current URL matches the redirect URI when determining
    * if current URL is in fact the redirect URI.
-   * Default: false
-   *
-   * NB: Default will be true in v18.
+   * Default: true
    */
   checkRedirectUrlWhenCheckingIfIsCallback?: boolean;
   /**
