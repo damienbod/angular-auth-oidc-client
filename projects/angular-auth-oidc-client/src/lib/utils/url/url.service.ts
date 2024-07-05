@@ -75,7 +75,20 @@ export class UrlService {
   isCallbackFromSts(currentUrl: string, config?: OpenIdConfiguration): boolean {
     if (config && config.checkRedirectUrlWhenCheckingIfIsCallback) {
       const currentUrlInstance = new URL(currentUrl);
-      const redirectUriUrlInstance = new URL(this.getRedirectUrl(config));
+
+      const redirectUrl = this.getRedirectUrl(config);
+
+      if (!redirectUrl) {
+        this.loggerService.logError(
+          config,
+          `UrlService.isCallbackFromSts: could not get redirectUrl from config, was: `,
+          redirectUrl
+        );
+
+        return false;
+      }
+
+      const redirectUriUrlInstance = new URL(redirectUrl);
 
       const redirectUriWithoutQueryParams = this.getUrlWithoutQueryParameters(redirectUriUrlInstance).toString();
       const currentUrlWithoutQueryParams = this.getUrlWithoutQueryParameters(currentUrlInstance).toString();
