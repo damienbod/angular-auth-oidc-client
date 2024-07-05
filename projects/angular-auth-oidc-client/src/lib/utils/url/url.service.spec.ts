@@ -48,8 +48,8 @@ describe('UrlService Tests', () => {
       const url = new URL('https://any.url');
 
       const params = [
-        {key: 'doot', value: 'boop'},
-        {key: 'blep', value: 'blep'},
+        { key: 'doot', value: 'boop' },
+        { key: 'blep', value: 'blep' },
       ];
 
       params.forEach((p) => {
@@ -70,9 +70,9 @@ describe('UrlService Tests', () => {
     const expected = new URLSearchParams();
 
     const params = [
-      {key: 'doot', value: 'boop'},
-      {key: 'blep', value: 'blep'},
-    ]
+      { key: 'doot', value: 'boop' },
+      { key: 'blep', value: 'blep' },
+    ];
 
     params.forEach((p) => {
       expected.set(p.key, p.value);
@@ -90,15 +90,19 @@ describe('UrlService Tests', () => {
 
     matchingUrls.forEach((mu) => {
       it(`should return true for ${mu.toString()}`, () => {
-        expect(service.queryParametersExist(expected, mu.searchParams)).toBeTrue();
+        expect(
+          service.queryParametersExist(expected, mu.searchParams)
+        ).toBeTrue();
       });
     });
 
     nonMatchingUrls.forEach((nmu) => {
       it(`should return false for ${nmu.toString()}`, () => {
-        expect(service.queryParametersExist(expected, nmu.searchParams)).toBeFalse();
+        expect(
+          service.queryParametersExist(expected, nmu.searchParams)
+        ).toBeFalse();
       });
-    })
+    });
   });
 
   describe('isCallbackFromSts', () => {
@@ -108,29 +112,29 @@ describe('UrlService Tests', () => {
           url: 'https://the-redirect.url',
           config: {
             redirectUrl: 'https://the-redirect.url?with=parameter',
-            checkRedirectUrlWhenCheckingIfIsCallback: true
-          }
+            checkRedirectUrlWhenCheckingIfIsCallback: true,
+          },
         },
         {
           url: 'https://the-redirect.url?wrong=parameter',
           config: {
             redirectUrl: 'https://the-redirect.url?with=parameter',
-            checkRedirectUrlWhenCheckingIfIsCallback: true
-          }
+            checkRedirectUrlWhenCheckingIfIsCallback: true,
+          },
         },
         {
           url: 'https://not-the-redirect.url',
           config: {
             redirectUrl: 'https://the-redirect.url',
-            checkRedirectUrlWhenCheckingIfIsCallback: true
-          }
-        }
+            checkRedirectUrlWhenCheckingIfIsCallback: true,
+          },
+        },
       ];
 
       nonMatchingUrls.forEach((nmu) => {
         expect(service.isCallbackFromSts(nmu.url, nmu.config)).toBeFalse();
       });
-    })
+    });
 
     const testingValues = [
       { param: 'code', isCallbackFromSts: true },

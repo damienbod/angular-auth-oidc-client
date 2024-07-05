@@ -68,8 +68,7 @@ export class OidcSecurityService {
    * @returns Returns an object containing either the user data directly (single config) or
    * the user data per config in case you are running with multiple configs
    */
-  userData = toSignal(this.userData$, {requireSync: true});
-
+  userData = toSignal(this.userData$, { requireSync: true });
 
   /**
    * Emits each time an authorization event occurs.
@@ -93,7 +92,7 @@ export class OidcSecurityService {
    *
    * The `allConfigsAuthenticated` property contains the auth information _per config_.
    */
-  authenticated = toSignal(this.isAuthenticated$, {requireSync: true});
+  authenticated = toSignal(this.isAuthenticated$, { requireSync: true });
 
   /**
    * Emits each time the server sends a CheckSession event and the value changed. This property will always return

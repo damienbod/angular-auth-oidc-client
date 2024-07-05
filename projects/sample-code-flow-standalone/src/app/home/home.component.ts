@@ -8,7 +8,7 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
   standalone: true,
   imports: [JsonPipe],
 })
-export class HomeComponent  {
+export class HomeComponent {
   private readonly oidcSecurityService = inject(OidcSecurityService);
   protected readonly userData = this.oidcSecurityService.userData;
   protected readonly authenticated = this.oidcSecurityService.authenticated;

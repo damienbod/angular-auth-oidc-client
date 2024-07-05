@@ -9,7 +9,7 @@ export class LoggerService {
 
   logError(
     configuration: OpenIdConfiguration,
-    message: string|object,
+    message: string | object,
     ...args: any[]
   ): void {
     if (this.loggingIsTurnedOff(configuration)) {
@@ -35,7 +35,7 @@ export class LoggerService {
 
   logWarning(
     configuration: OpenIdConfiguration,
-    message: string|object,
+    message: string | object,
     ...args: any[]
   ): void {
     if (!this.logLevelIsSet(configuration)) {
@@ -71,7 +71,7 @@ export class LoggerService {
 
   logDebug(
     configuration: OpenIdConfiguration | null,
-    message: string|object,
+    message: string | object,
     ...args: any[]
   ): void {
     if (!configuration) {

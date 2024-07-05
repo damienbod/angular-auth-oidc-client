@@ -142,7 +142,12 @@ export class HistoryJwtKeysCallbackHandlerService {
   ): void {
     let validationResult = ValidationResult.SecureTokenServerError;
 
-    if (result && typeof result === 'object' && 'error' in result && (result.error as string) === 'login_required') {
+    if (
+      result &&
+      typeof result === 'object' &&
+      'error' in result &&
+      (result.error as string) === 'login_required'
+    ) {
       validationResult = ValidationResult.LoginRequired;
     }
 

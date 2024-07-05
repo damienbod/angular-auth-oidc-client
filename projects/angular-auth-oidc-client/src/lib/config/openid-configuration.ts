@@ -18,11 +18,11 @@ export interface OpenIdConfiguration {
   authWellknownEndpointUrl?: string;
   authWellknownEndpoints?: AuthWellKnownEndpoints;
 
-    /**
-     * Override the default Security Token Service wellknown endpoint postfix.
-     *
-     * @default /.well-known/openid-configuration
-     */
+  /**
+   * Override the default Security Token Service wellknown endpoint postfix.
+   *
+   * @default /.well-known/openid-configuration
+   */
   authWellknownUrlSuffix?: string;
 
   /** The redirect URL defined on the Security Token Service. */

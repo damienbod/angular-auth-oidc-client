@@ -5,7 +5,7 @@ import { AbstractSecurityStorage } from './abstract-security-storage';
   providedIn: 'root',
 })
 export class DefaultLocalStorageService implements AbstractSecurityStorage {
-  public read(key: string): string|null {
+  public read(key: string): string | null {
     return localStorage.getItem(key);
   }
 

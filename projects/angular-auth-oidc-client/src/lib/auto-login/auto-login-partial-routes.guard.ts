@@ -77,7 +77,9 @@ export class AutoLoginPartialRoutesGuard {
   }
 }
 
-export function autoLoginPartialRoutesGuard(route?: ActivatedRouteSnapshot): Observable<boolean> {
+export function autoLoginPartialRoutesGuard(
+  route?: ActivatedRouteSnapshot
+): Observable<boolean> {
   const configurationService = inject(ConfigurationService);
   const authStateService = inject(AuthStateService);
   const loginService = inject(LoginService);

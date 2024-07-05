@@ -60,7 +60,10 @@ export class UrlService {
     return u;
   }
 
-  queryParametersExist(expected: URLSearchParams, actual: URLSearchParams): boolean {
+  queryParametersExist(
+    expected: URLSearchParams,
+    actual: URLSearchParams
+  ): boolean {
     let r = true;
 
     expected.forEach((v, k) => {
@@ -90,9 +93,16 @@ export class UrlService {
 
       const redirectUriUrlInstance = new URL(redirectUrl);
 
-      const redirectUriWithoutQueryParams = this.getUrlWithoutQueryParameters(redirectUriUrlInstance).toString();
-      const currentUrlWithoutQueryParams = this.getUrlWithoutQueryParameters(currentUrlInstance).toString();
-      const redirectUriQueryParamsArePresentInCurrentUrl = this.queryParametersExist(redirectUriUrlInstance.searchParams, currentUrlInstance.searchParams);
+      const redirectUriWithoutQueryParams = this.getUrlWithoutQueryParameters(
+        redirectUriUrlInstance
+      ).toString();
+      const currentUrlWithoutQueryParams =
+        this.getUrlWithoutQueryParameters(currentUrlInstance).toString();
+      const redirectUriQueryParamsArePresentInCurrentUrl =
+        this.queryParametersExist(
+          redirectUriUrlInstance.searchParams,
+          currentUrlInstance.searchParams
+        );
 
       if (
         redirectUriWithoutQueryParams !== currentUrlWithoutQueryParams ||

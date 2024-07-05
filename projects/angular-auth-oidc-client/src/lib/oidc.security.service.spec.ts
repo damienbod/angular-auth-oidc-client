@@ -73,8 +73,15 @@ describe('OidcSecurityService', () => {
     callbackService = TestBed.inject(CallbackService);
 
     // this is required because these methods will be invoked by the signal properties when the service is created
-    authenticatedSpy = spyOnProperty(authStateService, 'authenticated$').and.returnValue(of({ isAuthenticated: false, allConfigsAuthenticated: [] }));
-    userDataSpy = spyOnProperty(userService, 'userData$').and.returnValue(of({ userData: null, allUserData: [] }));
+    authenticatedSpy = spyOnProperty(
+      authStateService,
+      'authenticated$'
+    ).and.returnValue(
+      of({ isAuthenticated: false, allConfigsAuthenticated: [] })
+    );
+    userDataSpy = spyOnProperty(userService, 'userData$').and.returnValue(
+      of({ userData: null, allUserData: [] })
+    );
     oidcSecurityService = TestBed.inject(OidcSecurityService);
   });
 
