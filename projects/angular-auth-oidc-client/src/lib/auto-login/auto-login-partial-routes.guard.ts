@@ -106,8 +106,14 @@ function checkAuth(
 ): Observable<boolean> {
   return configurationService.getOpenIDConfiguration().pipe(
     map((configuration) => {
+      let configWithoutRenewTimeBefore = null
+
+      if (configuration) {
+        configWithoutRenewTimeBefore = {...configuration, renewTimeBeforeTokenExpiresInSeconds: 0}
+      }
+
       const isAuthenticated =
-        authStateService.areAuthStorageTokensValid(configuration);
+        authStateService.areAuthStorageTokensValid(configWithoutRenewTimeBefore);
 
       if (isAuthenticated) {
         autoLoginService.checkSavedRedirectRouteAndNavigate(configuration);
