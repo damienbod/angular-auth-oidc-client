@@ -17,7 +17,7 @@ export class AuthWellKnownDataService {
   getWellKnownEndPointsForConfig(
     config: OpenIdConfiguration
   ): Observable<AuthWellKnownEndpoints> {
-    const { authWellknownEndpointUrl } = config;
+    const { authWellknownEndpointUrl, authWellknownEndpoints = {} } = config;
 
     if (!authWellknownEndpointUrl) {
       const errorMessage = 'no authWellknownEndpoint given!';
@@ -43,7 +43,11 @@ export class AuthWellKnownDataService {
             parEndpoint:
               wellKnownEndpoints.pushed_authorization_request_endpoint,
           } as AuthWellKnownEndpoints)
-      )
+      ),
+      map((mappedWellKnownEndpoints) => ({
+        ...mappedWellKnownEndpoints,
+        ...authWellknownEndpoints,
+      }))
     );
   }
 

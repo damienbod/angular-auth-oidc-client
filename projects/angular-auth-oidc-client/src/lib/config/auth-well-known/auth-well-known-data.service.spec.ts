@@ -5,6 +5,7 @@ import { createRetriableStream } from '../../../test/create-retriable-stream.hel
 import { DataService } from '../../api/data.service';
 import { LoggerService } from '../../logging/logger.service';
 import { AuthWellKnownDataService } from './auth-well-known-data.service';
+import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
 
 const DUMMY_WELL_KNOWN_DOCUMENT = {
   issuer: 'https://identity-server.test/realms/main',
@@ -104,7 +105,10 @@ describe('AuthWellKnownDataService', () => {
       const urlWithSuffix = `${urlWithoutSuffix}/.well-known/test-openid-configuration`;
 
       (service as any)
-        .getWellKnownDocument(urlWithoutSuffix, { configId: 'configId1', authWellknownUrlSuffix: '/.well-known/test-openid-configuration' })
+        .getWellKnownDocument(urlWithoutSuffix, {
+          configId: 'configId1',
+          authWellknownUrlSuffix: '/.well-known/test-openid-configuration',
+        })
         .subscribe(() => {
           expect(dataServiceSpy).toHaveBeenCalledOnceWith(urlWithSuffix, {
             configId: 'configId1',
@@ -205,6 +209,29 @@ describe('AuthWellKnownDataService', () => {
           expect(error.message).toEqual('no authWellknownEndpoint given!');
         },
       });
+    }));
+
+    it('should merge the mapped endpoints with the provided endpoints', waitForAsync(() => {
+      spyOn(dataService, 'get').and.returnValue(of(DUMMY_WELL_KNOWN_DOCUMENT));
+
+      const expected: AuthWellKnownEndpoints = {
+        endSessionEndpoint: 'config-endSessionEndpoint',
+        revocationEndpoint: 'config-revocationEndpoint',
+        jwksUri: DUMMY_WELL_KNOWN_DOCUMENT.jwks_uri,
+      };
+
+      service
+        .getWellKnownEndPointsForConfig({
+          configId: 'configId1',
+          authWellknownEndpointUrl: 'any-url',
+          authWellknownEndpoints: {
+            endSessionEndpoint: 'config-endSessionEndpoint',
+            revocationEndpoint: 'config-revocationEndpoint',
+          },
+        })
+        .subscribe((result) => {
+          expect(result).toEqual(jasmine.objectContaining(expected));
+        });
     }));
   });
 });
