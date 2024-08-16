@@ -264,6 +264,15 @@ Override the default Security Token Service well-known endpoint postfix.
 
 This is the `redirect_url` which was configured on the Security Token Service (STS).
 
+### `checkRedirectUrlWhenCheckingIfIsCallback`
+
+- Type: `boolean`
+- Required: `false`
+
+Whether to check if current URL matches the redirect URI when determining if current URL is in fact the redirect URI.
+
+Default = _true_
+
 ### `clientId`
 
 - Type: `string`

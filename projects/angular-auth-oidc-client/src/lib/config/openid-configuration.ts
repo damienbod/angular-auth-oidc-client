@@ -18,15 +18,21 @@ export interface OpenIdConfiguration {
   authWellknownEndpointUrl?: string;
   authWellknownEndpoints?: AuthWellKnownEndpoints;
 
-    /** 
-     * Override the default Security Token Service wellknown endpoint postfix. 
-     * 
-     * @default /.well-known/openid-configuration
-     */
+  /**
+   * Override the default Security Token Service wellknown endpoint postfix.
+   *
+   * @default /.well-known/openid-configuration
+   */
   authWellknownUrlSuffix?: string;
 
   /** The redirect URL defined on the Security Token Service. */
   redirectUrl?: string;
+  /**
+   * Whether to check if current URL matches the redirect URI when determining
+   * if current URL is in fact the redirect URI.
+   * Default: true
+   */
+  checkRedirectUrlWhenCheckingIfIsCallback?: boolean;
   /**
    * The Client MUST validate that the aud (audience) Claim contains its `client_id` value
    * registered at the Issuer identified by the iss (issuer) Claim as an audience.

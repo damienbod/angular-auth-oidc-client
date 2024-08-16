@@ -54,11 +54,13 @@ describe('CodeFlowCallbackHandlerService', () => {
 
       getUrlParameterSpy.withArgs('test-url', 'state').and.returnValue('');
 
-      service.codeFlowCallback('test-url', { configId: 'configId1' }).subscribe({
-        error: (err) => {
-          expect(err).toBeTruthy();
-        },
-      });
+      service
+        .codeFlowCallback('test-url', { configId: 'configId1' })
+        .subscribe({
+          error: (err) => {
+            expect(err).toBeTruthy();
+          },
+        });
     }));
 
     it('throws error if no code is given', waitForAsync(() => {
@@ -69,11 +71,13 @@ describe('CodeFlowCallbackHandlerService', () => {
 
       getUrlParameterSpy.withArgs('test-url', 'code').and.returnValue('');
 
-      service.codeFlowCallback('test-url', { configId: 'configId1' }).subscribe({
-        error: (err) => {
-          expect(err).toBeTruthy();
-        },
-      });
+      service
+        .codeFlowCallback('test-url', { configId: 'configId1' })
+        .subscribe({
+          error: (err) => {
+            expect(err).toBeTruthy();
+          },
+        });
     }));
 
     it('returns callbackContext if all params are good', waitForAsync(() => {

@@ -21,7 +21,9 @@ export class ConfigValidationService {
 
   private validateConfigsInternal(
     passedConfigs: OpenIdConfiguration[],
-    allRulesToUse: ((passedConfig: OpenIdConfiguration[]) => RuleValidationResult)[]
+    allRulesToUse: ((
+      passedConfig: OpenIdConfiguration[]
+    ) => RuleValidationResult)[]
   ): boolean {
     if (passedConfigs.length === 0) {
       return false;
@@ -47,7 +49,9 @@ export class ConfigValidationService {
 
   private validateConfigInternal(
     passedConfig: OpenIdConfiguration,
-    allRulesToUse: ((passedConfig: OpenIdConfiguration) => RuleValidationResult)[]
+    allRulesToUse: ((
+      passedConfig: OpenIdConfiguration
+    ) => RuleValidationResult)[]
   ): boolean {
     const allValidationResults = allRulesToUse.map((rule) =>
       rule(passedConfig)

@@ -225,7 +225,7 @@ export class CheckAuthService {
       return of(result);
     }
 
-    const isCallback = this.callbackService.isCallback(currentUrl);
+    const isCallback = this.callbackService.isCallback(currentUrl, config);
 
     this.loggerService.logDebug(
       config,

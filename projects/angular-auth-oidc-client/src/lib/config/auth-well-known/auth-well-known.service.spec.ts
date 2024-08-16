@@ -37,15 +37,16 @@ describe('AuthWellKnownService', () => {
 
   describe('getAuthWellKnownEndPoints', () => {
     it('getAuthWellKnownEndPoints throws an error if not config provided', waitForAsync(() => {
-      service
-        .queryAndStoreAuthWellKnownEndPoints(null)
-        .subscribe({
-          error: (error) => {
-            expect(error).toEqual(new Error('Please provide a configuration before setting up the module'))
-          }
-        });
+      service.queryAndStoreAuthWellKnownEndPoints(null).subscribe({
+        error: (error) => {
+          expect(error).toEqual(
+            new Error(
+              'Please provide a configuration before setting up the module'
+            )
+          );
+        },
+      });
     }));
-
 
     it('getAuthWellKnownEndPoints calls always dataservice', waitForAsync(() => {
       const dataServiceSpy = spyOn(

@@ -452,8 +452,10 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         );
         const loginSpy = spyOn(loginService, 'login');
 
-        const guard$ = TestBed.runInInjectionContext(
-          () => autoLoginPartialRoutesGuard({data: {custom: 'param'}} as unknown as ActivatedRouteSnapshot)
+        const guard$ = TestBed.runInInjectionContext(() =>
+          autoLoginPartialRoutesGuard({
+            data: { custom: 'param' },
+          } as unknown as ActivatedRouteSnapshot)
         );
 
         guard$.subscribe(() => {

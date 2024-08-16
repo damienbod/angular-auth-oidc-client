@@ -43,7 +43,97 @@ describe('UrlService Tests', () => {
     expect(service).toBeTruthy();
   });
 
+  describe('getUrlWithoutQueryParameters', () => {
+    it('should return a new instance of the passed URL without any query parameters', () => {
+      const url = new URL('https://any.url');
+
+      const params = [
+        { key: 'doot', value: 'boop' },
+        { key: 'blep', value: 'blep' },
+      ];
+
+      params.forEach((p) => {
+        url.searchParams.set(p.key, p.value);
+      });
+
+      const sut = service.getUrlWithoutQueryParameters(url);
+
+      params.forEach((p) => {
+        expect(sut.searchParams.has(p.key)).toBeFalse();
+      });
+    });
+  });
+
+  describe('queryParametersExist', () => {
+    const expected = new URLSearchParams();
+
+    const params = [
+      { key: 'doot', value: 'boop' },
+      { key: 'blep', value: 'blep' },
+    ];
+
+    params.forEach((p) => {
+      expected.set(p.key, p.value);
+    });
+
+    const matchingUrls = [
+      new URL('https://any.url?doot=boop&blep=blep'),
+      new URL('https://any.url?doot=boop&blep=blep&woop=doot'),
+    ];
+
+    const nonMatchingUrls = [
+      new URL('https://any.url?doot=boop'),
+      new URL('https://any.url?blep=blep&woop=doot'),
+    ];
+
+    matchingUrls.forEach((mu) => {
+      it(`should return true for ${mu.toString()}`, () => {
+        expect(
+          service.queryParametersExist(expected, mu.searchParams)
+        ).toBeTrue();
+      });
+    });
+
+    nonMatchingUrls.forEach((nmu) => {
+      it(`should return false for ${nmu.toString()}`, () => {
+        expect(
+          service.queryParametersExist(expected, nmu.searchParams)
+        ).toBeFalse();
+      });
+    });
+  });
+
   describe('isCallbackFromSts', () => {
+    it(`should return false if config says to check redirect URI, and it doesn't match`, () => {
+      const nonMatchingUrls = [
+        {
+          url: 'https://the-redirect.url',
+          config: {
+            redirectUrl: 'https://the-redirect.url?with=parameter',
+            checkRedirectUrlWhenCheckingIfIsCallback: true,
+          },
+        },
+        {
+          url: 'https://the-redirect.url?wrong=parameter',
+          config: {
+            redirectUrl: 'https://the-redirect.url?with=parameter',
+            checkRedirectUrlWhenCheckingIfIsCallback: true,
+          },
+        },
+        {
+          url: 'https://not-the-redirect.url',
+          config: {
+            redirectUrl: 'https://the-redirect.url',
+            checkRedirectUrlWhenCheckingIfIsCallback: true,
+          },
+        },
+      ];
+
+      nonMatchingUrls.forEach((nmu) => {
+        expect(service.isCallbackFromSts(nmu.url, nmu.config)).toBeFalse();
+      });
+    });
+
     const testingValues = [
       { param: 'code', isCallbackFromSts: true },
       { param: 'state', isCallbackFromSts: true },

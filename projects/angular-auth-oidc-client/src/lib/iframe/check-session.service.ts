@@ -31,7 +31,7 @@ export class CheckSessionService implements OnDestroy {
 
   private checkSessionReceived = false;
 
-  private scheduledHeartBeatRunning: number|null= null
+  private scheduledHeartBeatRunning: number | null = null;
 
   private lastIFrameRefresh = 0;
 
@@ -45,7 +45,10 @@ export class CheckSessionService implements OnDestroy {
     false
   );
 
-  private iframeMessageEventListener?: (this:Window, ev: MessageEvent<any>) => any;
+  private iframeMessageEventListener?: (
+    this: Window,
+    ev: MessageEvent<any>
+  ) => any;
 
   get checkSessionChanged$(): Observable<boolean> {
     return this.checkSessionChangedInternal$.asObservable();
@@ -224,10 +227,11 @@ export class CheckSessionService implements OnDestroy {
           }
 
           this.zone.runOutsideAngular(() => {
-            this.scheduledHeartBeatRunning = this.document?.defaultView?.setTimeout(
-              () => this.zone.run(pollServerSessionRecur),
-              this.heartBeatInterval
-            ) ?? null;
+            this.scheduledHeartBeatRunning =
+              this.document?.defaultView?.setTimeout(
+                () => this.zone.run(pollServerSessionRecur),
+                this.heartBeatInterval
+              ) ?? null;
           });
         });
     };
@@ -236,7 +240,7 @@ export class CheckSessionService implements OnDestroy {
   }
 
   private clearScheduledHeartBeat(): void {
-    if(this.scheduledHeartBeatRunning !== null) {
+    if (this.scheduledHeartBeatRunning !== null) {
       clearTimeout(this.scheduledHeartBeatRunning);
       this.scheduledHeartBeatRunning = null;
     }

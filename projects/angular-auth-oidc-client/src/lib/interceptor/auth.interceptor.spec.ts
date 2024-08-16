@@ -5,7 +5,10 @@ import {
   withInterceptors,
   withInterceptorsFromDi,
 } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import {
+  HttpTestingController,
+  provideHttpClientTesting,
+} from '@angular/common/http/testing';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { mockProvider } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
@@ -233,7 +236,7 @@ describe(`AuthHttpInterceptor`, () => {
       ]);
       spyOn(
         closestMatchingRouteService,
-        'getConfigIdForClosestMatchingRoute',
+        'getConfigIdForClosestMatchingRoute'
       ).and.returnValue({
         matchingRoute: null,
         matchingConfig: null,
