@@ -60,10 +60,7 @@ export class UrlService {
     return u;
   }
 
-  queryParametersExist(
-    expected: URLSearchParams,
-    actual: URLSearchParams
-  ): boolean {
+  queryParametersExist(expected: URLSearchParams, actual: URLSearchParams): boolean {
     let r = true;
 
     expected.forEach((v, k) => {
