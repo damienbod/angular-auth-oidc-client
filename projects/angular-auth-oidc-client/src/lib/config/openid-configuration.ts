@@ -204,4 +204,8 @@ export interface OpenIdConfiguration {
    * Authorize request will be sent without code challenge.
    */
   disablePkce?: boolean;
+  /**
+   * Disable cleaning up the popup when receiving invalid messages
+   */
+  disableCleaningPopupOnInvalidMessage?: boolean
 }

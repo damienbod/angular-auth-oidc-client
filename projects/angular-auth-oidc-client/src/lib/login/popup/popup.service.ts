@@ -94,6 +94,9 @@ export class PopUpService {
 
     const listener = (event: MessageEvent): void => {
       if (!event?.data || typeof event.data !== 'string') {
+        if (config.disableCleaningPopupOnInvalidMessage) {
+          return;
+        }
         this.cleanUp(listener, config);
 
         return;
