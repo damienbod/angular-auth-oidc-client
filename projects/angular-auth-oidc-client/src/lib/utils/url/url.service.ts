@@ -60,11 +60,7 @@ export class UrlService {
     return u;
   }
 
-  queryParametersExist(expected: URLSearchParams, actual: URLSearchParams): boolean {
-  const expectedKeys = Array.from(expected.keys());
-  
-  return  expectedKeys.every(key => actual.has(key));
-}
+  queryParametersExist(
     expected: URLSearchParams,
     actual: URLSearchParams
   ): boolean {
