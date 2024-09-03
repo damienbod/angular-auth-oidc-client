@@ -71,7 +71,7 @@ jobs:
           node-version: 20
 
       - name: Download Artefact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.7
         with:
           name: angular_auth_oidc_client_artefact
           path: angular-auth-oidc-client-artefact
@@ -111,7 +111,7 @@ jobs:
           node-version: 20
 
       - name: Download Artefact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.7
         with:
           name: angular_auth_oidc_client_artefact
           path: angular-auth-oidc-client-artefact
@@ -151,7 +151,7 @@ jobs:
           node-version: 20
 
       - name: Download Artefact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.7
         with:
           name: angular_auth_oidc_client_artefact
           path: angular-auth-oidc-client-artefact
@@ -191,7 +191,7 @@ jobs:
           node-version: 20
 
       - name: Download Artefact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.7
         with:
           name: angular_auth_oidc_client_artefact
           path: angular-auth-oidc-client-artefact
@@ -235,7 +235,7 @@ jobs:
             node-version: 18
 
         - name: Download Artefact
-          uses: actions/download-artifact@v2
+          uses: actions/download-artifact@v4.1.7
           with:
             name: angular_auth_oidc_client_artefact
             path: angular-auth-oidc-client-artefact
