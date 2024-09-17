@@ -15,6 +15,7 @@ import { StoragePersistenceService } from '../storage/storage-persistence.servic
 import {
   AutoLoginPartialRoutesGuard,
   autoLoginPartialRoutesGuard,
+  autoLoginPartialRoutesGuardWithConfig,
 } from './auto-login-partial-routes.guard';
 import { AutoLoginService } from './auto-login.service';
 
@@ -495,6 +496,59 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
           expect(
             checkSavedRedirectRouteAndNavigateSpy
           ).toHaveBeenCalledOnceWith({ configId: 'configId1' });
+        });
+      }));
+    });
+
+    describe('autoLoginPartialRoutesGuardWithConfig', () => {
+      let loginService: LoginService;
+      let authStateService: AuthStateService;
+      let storagePersistenceService: StoragePersistenceService;
+      let configurationService: ConfigurationService;
+      let autoLoginService: AutoLoginService;
+
+      beforeEach(() => {
+        authStateService = TestBed.inject(AuthStateService);
+        loginService = TestBed.inject(LoginService);
+        storagePersistenceService = TestBed.inject(StoragePersistenceService);
+        configurationService = TestBed.inject(ConfigurationService);
+
+        spyOn(configurationService, 'getOpenIDConfiguration').and.callFake(
+          (configId) => of({ configId })
+        );
+
+        autoLoginService = TestBed.inject(AutoLoginService);
+      });
+
+      afterEach(() => {
+        storagePersistenceService.clear({});
+      });
+
+      it('should save current route (empty) and call `login` if not authenticated already', waitForAsync(() => {
+        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
+          false
+        );
+        const checkSavedRedirectRouteAndNavigateSpy = spyOn(
+          autoLoginService,
+          'checkSavedRedirectRouteAndNavigate'
+        );
+        const saveRedirectRouteSpy = spyOn(
+          autoLoginService,
+          'saveRedirectRoute'
+        );
+        const loginSpy = spyOn(loginService, 'login');
+
+        const guard$ = TestBed.runInInjectionContext(
+          autoLoginPartialRoutesGuardWithConfig('configId1')
+        );
+
+        guard$.subscribe(() => {
+          expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith(
+            { configId: 'configId1' },
+            ''
+          );
+          expect(loginSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
+          expect(checkSavedRedirectRouteAndNavigateSpy).not.toHaveBeenCalled();
         });
       }));
     });
