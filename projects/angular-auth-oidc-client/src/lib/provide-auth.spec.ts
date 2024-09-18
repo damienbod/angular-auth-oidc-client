@@ -1,3 +1,4 @@
+import { APP_INITIALIZER } from '@angular/core';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { mockProvider } from '../test/auto-mock';
@@ -8,7 +9,8 @@ import {
   StsConfigLoader,
   StsConfigStaticLoader,
 } from './config/loader/config-loader';
-import { provideAuth } from './provide-auth';
+import { OidcSecurityService } from './oidc.security.service';
+import { provideAuth, withAppInitializerAuthCheck } from './provide-auth';
 
 describe('provideAuth', () => {
   describe('APP_CONFIG', () => {
@@ -53,6 +55,41 @@ describe('provideAuth', () => {
       const configLoader = TestBed.inject(StsConfigLoader);
 
       expect(configLoader instanceof StsConfigHttpLoader).toBe(true);
+    });
+  });
+
+  describe('features', () => {
+    let oidcSecurityServiceMock: jasmine.SpyObj<OidcSecurityService>;
+
+    beforeEach(waitForAsync(() => {
+      oidcSecurityServiceMock = jasmine.createSpyObj<OidcSecurityService>(
+        'OidcSecurityService',
+        ['checkAuthMultiple']
+      );
+      TestBed.configureTestingModule({
+        providers: [
+          provideAuth(
+            { config: { authority: 'something' } },
+            withAppInitializerAuthCheck()
+          ),
+          mockProvider(ConfigurationService),
+          {
+            provide: OidcSecurityService,
+            useValue: oidcSecurityServiceMock,
+          },
+        ],
+      }).compileComponents();
+    }));
+
+    it('should provide APP_INITIALIZER config', () => {
+      const config = TestBed.inject(APP_INITIALIZER);
+
+      expect(config.length)
+        .withContext('Expected an APP_INITIALIZER to be registered')
+        .toBe(1);
+      expect(oidcSecurityServiceMock.checkAuthMultiple).toHaveBeenCalledTimes(
+        1
+      );
     });
   });
 });

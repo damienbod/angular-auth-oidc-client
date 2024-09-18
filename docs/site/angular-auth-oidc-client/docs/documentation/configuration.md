@@ -219,6 +219,24 @@ export const appConfig: ApplicationConfig = {
 bootstrapApplication(AppComponent, appConfig);
 ```
 
+The function `withAppInitializerAuthCheck` is provided to handle OAuth callbacks during app initialization
+phase. This replaces the need to manually call `OidcSecurityService.checkAuth(...)` or
+`OidcSecurityService.checkAuthMultiple(...)`.
+
+```ts
+...
+import { provideAuth, withAppInitializerAuthCheck } from 'angular-auth-oidc-client';
+
+...
+    provideAuth({
+      config: {
+        /* Your config here */
+      },
+    },
+    withAppInitializerAuthCheck()),
+...
+```
+
 ## Config Values
 
 ### `configId`
