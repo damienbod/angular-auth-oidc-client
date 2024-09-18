@@ -78,7 +78,8 @@ export class AutoLoginPartialRoutesGuard {
 }
 
 export function autoLoginPartialRoutesGuard(
-  route?: ActivatedRouteSnapshot
+  route?: ActivatedRouteSnapshot,
+  configId?: string
 ): Observable<boolean> {
   const configurationService = inject(ConfigurationService);
   const authStateService = inject(AuthStateService);
@@ -98,8 +99,16 @@ export function autoLoginPartialRoutesGuard(
     authStateService,
     autoLoginService,
     loginService,
-    authOptions
+    authOptions,
+    configId
   );
+}
+
+export function autoLoginPartialRoutesGuardWithConfig(
+  configId: string
+): (route?: ActivatedRouteSnapshot) => Observable<boolean> {
+  return (route?: ActivatedRouteSnapshot) =>
+    autoLoginPartialRoutesGuard(route, configId);
 }
 
 function checkAuth(
@@ -108,9 +117,10 @@ function checkAuth(
   authStateService: AuthStateService,
   autoLoginService: AutoLoginService,
   loginService: LoginService,
-  authOptions?: AuthOptions
+  authOptions?: AuthOptions,
+  configId?: string
 ): Observable<boolean> {
-  return configurationService.getOpenIDConfiguration().pipe(
+  return configurationService.getOpenIDConfiguration(configId).pipe(
     map((configuration) => {
       const isAuthenticated =
         authStateService.areAuthStorageTokensValid(configuration);
