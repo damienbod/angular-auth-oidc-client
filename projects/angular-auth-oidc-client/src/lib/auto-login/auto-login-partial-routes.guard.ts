@@ -79,6 +79,7 @@ export class AutoLoginPartialRoutesGuard {
 
 export function autoLoginPartialRoutesGuard(
   route?: ActivatedRouteSnapshot,
+  state?: RouterStateSnapshot,
   configId?: string
 ): Observable<boolean> {
   const configurationService = inject(ConfigurationService);
@@ -106,9 +107,12 @@ export function autoLoginPartialRoutesGuard(
 
 export function autoLoginPartialRoutesGuardWithConfig(
   configId: string
-): (route?: ActivatedRouteSnapshot) => Observable<boolean> {
-  return (route?: ActivatedRouteSnapshot) =>
-    autoLoginPartialRoutesGuard(route, configId);
+): (
+  route?: ActivatedRouteSnapshot,
+  state?: RouterStateSnapshot
+) => Observable<boolean> {
+  return (route?: ActivatedRouteSnapshot, state?: RouterStateSnapshot) =>
+    autoLoginPartialRoutesGuard(route, state, configId);
 }
 
 function checkAuth(
