@@ -120,9 +120,11 @@ describe('Configuration Service', () => {
 
       spyOn(configService as any, 'loadConfigs').and.returnValue(of(configs));
       spyOn(configValidationService, 'validateConfig').and.returnValue(false);
+      const consoleSpy = spyOn(console, 'warn');
 
       configService.getOpenIDConfiguration('configId1').subscribe((config) => {
         expect(config).toBeNull();
+        expect(consoleSpy).toHaveBeenCalledOnceWith(`[angular-auth-oidc-client] No configuration found for config id 'configId1'.`)
       });
     }));
 
@@ -144,6 +146,7 @@ describe('Configuration Service', () => {
 
       spyOn(configService as any, 'loadConfigs').and.returnValue(of(configs));
       spyOn(configValidationService, 'validateConfig').and.returnValue(true);
+      const consoleSpy = spyOn(console, 'warn');
 
       spyOn(storagePersistenceService, 'read').and.returnValue({
         issuer: 'auth-well-known',
@@ -153,6 +156,7 @@ describe('Configuration Service', () => {
         expect(config?.authWellknownEndpoints).toEqual({
           issuer: 'auth-well-known',
         });
+        expect(consoleSpy).not.toHaveBeenCalled()
       });
     }));
 
