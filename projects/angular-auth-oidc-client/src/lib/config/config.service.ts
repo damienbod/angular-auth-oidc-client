@@ -1,4 +1,4 @@
-﻿import { inject, Injectable } from '@angular/core';
+﻿import {inject, Injectable, isDevMode} from '@angular/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { concatMap, map } from 'rxjs/operators';
 import { LoggerService } from '../logging/logger.service';
@@ -85,7 +85,13 @@ export class ConfigurationService {
 
   private getConfig(configId?: string): OpenIdConfiguration | null {
     if (Boolean(configId)) {
-      return this.configsInternal[configId as string] || null;
+      const config = this.configsInternal[configId!];
+
+      if(!config && isDevMode()) {
+        console.warn(`[angular-auth-oidc-client] No configuration found for config id '${configId}'.`);
+      }
+
+      return config || null;
     }
 
     const [, value] = Object.entries(this.configsInternal)[0] || [[null, null]];
