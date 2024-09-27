@@ -7,7 +7,7 @@ describe('ProtectedComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ProtectedComponent],
+      imports: [ProtectedComponent],
     }).compileComponents();
   }));
 

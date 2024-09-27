@@ -1,10 +1,14 @@
+import { NgIf } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
   selector: 'app-nav-menu',
   templateUrl: './nav-menu.component.html',
   styleUrls: ['./nav-menu.component.css'],
+  imports: [RouterLink, NgIf],
+  standalone: true,
 })
 export class NavMenuComponent implements OnInit {
   private readonly oidcSecurityService = inject(OidcSecurityService);
