@@ -78,6 +78,18 @@ export class AutoLoginPartialRoutesGuard {
 }
 
 export function autoLoginPartialRoutesGuard(
+  route?: ActivatedRouteSnapshot
+): Observable<boolean> {
+  return callCheckAuthFor(route);
+}
+
+export function autoLoginPartialRoutesGuardWithConfig(
+  configId: string
+): (route?: ActivatedRouteSnapshot) => Observable<boolean> {
+  return (route?: ActivatedRouteSnapshot) => callCheckAuthFor(route, configId);
+}
+
+function callCheckAuthFor(
   route?: ActivatedRouteSnapshot,
   configId?: string
 ): Observable<boolean> {
@@ -102,13 +114,6 @@ export function autoLoginPartialRoutesGuard(
     authOptions,
     configId
   );
-}
-
-export function autoLoginPartialRoutesGuardWithConfig(
-  configId: string
-): (route?: ActivatedRouteSnapshot) => Observable<boolean> {
-  return (route?: ActivatedRouteSnapshot) =>
-    autoLoginPartialRoutesGuard(route, configId);
 }
 
 function checkAuth(
