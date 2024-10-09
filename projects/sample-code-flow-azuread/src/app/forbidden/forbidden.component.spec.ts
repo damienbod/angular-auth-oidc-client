@@ -7,7 +7,7 @@ describe('ForbiddenComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ForbiddenComponent],
+      imports: [ForbiddenComponent],
     }).compileComponents();
   }));
 

@@ -219,6 +219,51 @@ export const appConfig: ApplicationConfig = {
 bootstrapApplication(AppComponent, appConfig);
 ```
 
+Additionally, you can use the feature function `withAppInitializerAuthCheck`
+to handle OAuth callbacks during app initialization phase. This replaces the
+need to manually call `OidcSecurityService.checkAuth(...)` or
+`OidcSecurityService.checkAuthMultiple(...)`.
+
+```ts
+import { ApplicationConfig } from '@angular/core';
+import { provideAuth, withAppInitializerAuthCheck } from 'angular-auth-oidc-client';
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideAuth(
+      {
+        config: {
+          /* Your config here */
+        },
+      },
+      withAppInitializerAuthCheck()
+    ),
+  ],
+};
+```
+
+If you prefer to manually check OAuth callback state, you can omit
+`withAppInitializerAuthCheck`. However, you then need to call
+`OidcSecurityService.checkAuth(...)` or
+`OidcSecurityService.checkAuthMultiple(...)` manually in your
+`app.component.ts` (or a similar code path that is called early in your app).
+
+```ts
+// Shortened for brevity
+...
+export class AppComponent implements OnInit {
+  private readonly oidcSecurityService = inject(OidcSecurityService);
+
+  ngOnInit(): void {
+    this.oidcSecurityService
+      .checkAuth()
+      .subscribe(({ isAuthenticated, accessToken }) => {
+        console.log('app authenticated', isAuthenticated);
+        console.log(`Current access token is '${accessToken}'`);
+      });
+  }
+...
+```
+
 ## Config Values
 
 ### `configId`

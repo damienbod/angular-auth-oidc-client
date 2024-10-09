@@ -1,9 +1,13 @@
 ﻿import { Component, inject } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { NavMenuComponent } from './nav-menu/nav-menu.component';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
+  imports: [RouterOutlet, NavMenuComponent],
+  standalone: true,
 })
 export class AppComponent {
   private readonly oidcSecurityService = inject(OidcSecurityService);
