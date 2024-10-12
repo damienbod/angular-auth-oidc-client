@@ -1,5 +1,20 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2024-10-12 18.0.2
+
+- Feat: log when provided configId does not exist
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/2010)
+- Fix: auto login guard passes correct config id
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/2008)
+- Feat: add guard autoLoginPartialRoutesGuardWithConfig for specific configuration
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/2000)
+- Fix: Rudimentary fix for popup closing too early
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1988)
+- merge the well-known endpoints with the config ones
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1984)
+- Bugfix: Updated URL service isCallbackFromSts
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1976)
+
 ### 2024-06-21 18.0.1
 
 - Fix issue #1954: Ensure CheckingAuthFinished event fires regardless of authentication state
