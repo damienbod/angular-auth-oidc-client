@@ -31,6 +31,37 @@ After installing the library you can get started with the lib like below.
 
 ## Using a local configuration
 
+### Standalone
+
+Use the `provideAuth` function to configure the library.
+
+```ts
+import { ApplicationConfig } from '@angular/core';
+import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
+// ...
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideAuth({
+      config: {
+        authority: '<your authority address here>',
+        redirectUrl: window.location.origin,
+        postLogoutRedirectUri: window.location.origin,
+        clientId: '<your clientId>',
+        scope: 'openid profile email offline_access',
+        responseType: 'code',
+        silentRenew: true,
+        useRefreshToken: true,
+        logLevel: LogLevel.Debug,
+      },
+    }),
+    // ...
+  ],
+};
+```
+
+### NgModule
+
 Import the module and services in your module.
 
 ```ts
