@@ -104,9 +104,9 @@ export class CheckSessionService implements OnDestroy {
     );
   }
 
-  private init(configuration: OpenIdConfiguration): Observable<any> {
+  private init(configuration: OpenIdConfiguration): Observable<void> {
     if (this.lastIFrameRefresh + this.iframeRefreshInterval > Date.now()) {
-      return of(undefined);
+      return of();
     }
 
     const authWellKnownEndPoints = this.storagePersistenceService.read(
@@ -137,6 +137,8 @@ export class CheckSessionService implements OnDestroy {
         configuration,
         'CheckSession - init check session: checkSessionIframe is not configured to run'
       );
+
+      return of();
     }
 
     if (!contentWindow) {
