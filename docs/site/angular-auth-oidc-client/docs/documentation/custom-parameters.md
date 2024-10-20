@@ -18,15 +18,17 @@ customParamsAuthRequest?: {
 And you can pass them as an object like this:
 
 ```ts
-AuthModule.forRoot({
-  config: {
-    authority: '<your authority address here>',
-    customParamsAuthRequest: {
-      response_mode: 'fragment',
-      prompt: 'consent',
-    },
-  },
-}),
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideAuth({
+      authority: '<your authority address here>',
+      customParamsAuthRequest: {
+        response_mode: 'fragment',
+        prompt: 'consent',
+      },
+    }),
+  ],
+};
 ```
 
 ## Dynamic custom parameters
@@ -41,3 +43,19 @@ login() {
 ```
 
 > If you want to pass static parameters to the Security Token Service every time please use the custom parameters in the [Configuration](configuration.md) instead!
+
+## NgModule
+
+If you want to use custom parameters in the `NgModule`, you can do this as follows:
+
+```ts
+AuthModule.forRoot({
+  config: {
+    authority: '<your authority address here>',
+    customParamsAuthRequest: {
+      response_mode: 'fragment',
+      prompt: 'consent',
+    },
+  },
+}),
+```
