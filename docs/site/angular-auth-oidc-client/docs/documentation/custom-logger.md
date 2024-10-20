@@ -14,7 +14,28 @@ export class MyLoggerService implements AbstractLoggerService {
 }
 ```
 
-Then provide the class in the module:
+## Usage
+
+### Standalone
+
+Include the logger class within the `ApplicationConfig`:
+
+```ts
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideAuth({
+      config: {
+        // ...
+      },
+    }),
+    { provide: AbstractLoggerService, useClass: MyLoggerService },
+  ],
+};
+```
+
+### NgModule
+
+Provide the logger class in the module:
 
 ```ts
 @NgModule({
