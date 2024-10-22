@@ -32,7 +32,22 @@ export class MyStorageService implements AbstractSecurityStorage {
 }
 ```
 
-Then provide the class in the module:
+Then provide the custom storage class in the `ApplicationConfig`:
+
+```ts
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideAuth({
+      // ..
+    }),
+    { provide: AbstractSecurityStorage, useClass: MyStorageService },
+  ],
+};
+```
+
+## NgModule
+
+You can also provide the storage class in a module using the `providers` array:
 
 ```ts
 @NgModule({
