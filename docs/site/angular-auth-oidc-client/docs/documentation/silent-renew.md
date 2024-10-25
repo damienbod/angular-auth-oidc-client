@@ -22,8 +22,37 @@ Refresh tokens should be rotated and the refresh token should be revoked on a lo
 
 When an identity provider does not return an id_token in the refresh, the nonce cannot be validated in the id_token as it is not returned and needs to be deactivated. The following configuration should work for servers not returning an id_token in the refresh.
 
+### Configuration
+
+```ts
+import { LogLevel } from 'angular-auth-oidc-client';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideAuth({
+      config: {
+        authority: '--idp--',
+        redirectUrl: window.location.origin,
+        postLogoutRedirectUri: window.location.origin,
+        clientId: '--client_id--',
+        scope: 'openid profile offline_access',
+        responseType: 'code',
+        silentRenew: true,
+        useRefreshToken: true,
+        ignoreNonceAfterRefresh: true, // this is required if the id_token is not returned
+        triggerRefreshWhenIdTokenExpired: false, // required when refreshing the browser if id_token is not updated after the first authentication
+        // allowUnsafeReuseRefreshToken: true, // this is required if the refresh token is not rotated
+        autoUserInfo: false, // if the user endpoint is not supported
+        logLevel: LogLevel.Debug,
+      },
+    }),
+  ],
+};
+```
+
+### NgModule Configuration
+
 ```typescript
-import { NgModule } from '@angular/core';
 import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
 
 @NgModule({
