@@ -10,33 +10,34 @@ Prior to using the library, you must configure it with the appropriate values fo
 
 ## Configure with static config
 
-You can pass the static config with the `config` property into the `forRoot()` method like this
+You can pass the static config with the `config` property using the `provideAuth` function.
 
 ```ts
-import { NgModule } from '@angular/core';
-import { AuthModule } from 'angular-auth-oidc-client';
+import { ApplicationConfig } from '@angular/core';
+import { provideAuth } from 'angular-auth-oidc-client';
 
-@NgModule({
-  imports: [
-    AuthModule.forRoot({
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideAuth({
       config: {
         /* Your config here */
       },
     }),
   ],
-  exports: [AuthModule],
-})
-export class AuthConfigModule {}
+};
 ```
 
 ### Using multiple configs
 
-You can pass an array of configs into the `forRoot()` method. Each config will get an `configId` automatically if you do not set it for yourself.
+You can pass an array of configs into the `provideAuth()` method. Each config will get an `configId` automatically if you do not set it for yourself.
 
 ```ts
-@NgModule({
-  imports: [
-    AuthModule.forRoot({
+import { ApplicationConfig } from '@angular/core';
+import { provideAuth } from 'angular-auth-oidc-client';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideAuth({
       config: [
         {
           // config1...
@@ -51,9 +52,7 @@ You can pass an array of configs into the `forRoot()` method. Each config will g
       ],
     }),
   ],
-  exports: [AuthModule],
-})
-export class AuthConfigModule {}
+};
 ```
 
 ### Getting static config from a service (sync)
@@ -75,9 +74,9 @@ const authFactory = (configService: ConfigService) => {
   return new StsConfigStaticLoader(config);
 };
 
-@NgModule({
-  imports: [
-    AuthModule.forRoot({
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideAuth({
       loader: {
         provide: StsConfigLoader,
         useFactory: authFactory,
@@ -85,9 +84,7 @@ const authFactory = (configService: ConfigService) => {
       },
     }),
   ],
-  exports: [AuthModule],
-})
-export class AuthConfigModule {}
+};
 ```
 
 ## Load config from HTTP (async)
@@ -95,7 +92,7 @@ export class AuthConfigModule {}
 If you want to load the config from HTTP and then map it to the interface the library provides you can use the `StsConfigHttpLoader` and pass it with the `loader` property.
 
 ```ts
-import { AuthModule, StsConfigHttpLoader, StsConfigLoader } from 'angular-auth-oidc-client';
+import { provideAuth, StsConfigHttpLoader, StsConfigLoader } from 'angular-auth-oidc-client';
 
 export const httpLoaderFactory = (httpClient: HttpClient) => {
   const config$ = httpClient.get<any>(`https://...`).pipe(
@@ -110,9 +107,9 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
   return new StsConfigHttpLoader(config$);
 };
 
-@NgModule({
-  imports: [
-    AuthModule.forRoot({
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideAuth({
       loader: {
         provide: StsConfigLoader,
         useFactory: httpLoaderFactory,
@@ -120,9 +117,7 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
       },
     }),
   ],
-  exports: [AuthModule],
-})
-export class AuthConfigModule {}
+};
 ```
 
 ### Using multiple HTTP configs
@@ -130,7 +125,7 @@ export class AuthConfigModule {}
 The HTTP loader also supports multiple configs.
 
 ```ts
-import { AuthModule, StsConfigHttpLoader, StsConfigLoader } from 'angular-auth-oidc-client';
+import { provideAuth, StsConfigHttpLoader, StsConfigLoader } from 'angular-auth-oidc-client';
 
 export const httpLoaderFactory = (httpClient: HttpClient) => {
   const config1$ = httpClient.get<any>(`https://...`).pipe(
@@ -154,9 +149,9 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
   return new StsConfigHttpLoader([config1$, config2$]);
 };
 
-@NgModule({
-  imports: [
-    AuthModule.forRoot({
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideAuth({
       loader: {
         provide: StsConfigLoader,
         useFactory: httpLoaderFactory,
@@ -164,47 +159,16 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
       },
     }),
   ],
-  exports: [AuthModule],
-})
-export class AuthConfigModule {}
+};
 ```
 
 ### Using localstorage instead of default sessionstorage
 
-The angular-auth-oidc-client uses session storage by default that gets cleared whenever you open the website in a new tab, if you want to change it to localstorage then need to provide a different AbstractSecurityStorage.
-
-```ts
-import { NgModule } from '@angular/core';
-import { AuthModule, DefaultLocalStorageService, AbstractSecurityStorage } from 'angular-auth-oidc-client';
-
-@NgModule({
-  imports: [
-    AuthModule.forRoot({
-      config: {
-        /* Your config here */
-      },
-    }),
-  ],
-  exports: [AuthModule],
-  providers: [
-    {
-      provide: AbstractSecurityStorage,
-      useClass: DefaultLocalStorageService,
-    },
-  ],
-})
-export class AuthConfigModule {}
-```
-
-## Configure with standalone config
-
-To configure the auth module by using the standalone API, you can use the `provideAuth` method
+The angular-auth-oidc-client uses session storage by default that gets cleared whenever you open the website in a new tab, if you want to change it to local storage then need to provide a different `AbstractSecurityStorage`.
 
 ```ts
 import { ApplicationConfig } from '@angular/core';
-import { bootstrapApplication } from '@angular/platform-browser';
-import { provideAuth } from 'angular-auth-oidc-client';
-import { AppComponent } from './app/app.component';
+import { provideAuth, DefaultLocalStorageService, AbstractSecurityStorage } from 'angular-auth-oidc-client';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -213,20 +177,22 @@ export const appConfig: ApplicationConfig = {
         /* Your config here */
       },
     }),
+    {
+      provide: AbstractSecurityStorage,
+      useClass: DefaultLocalStorageService,
+    },
   ],
 };
-
-bootstrapApplication(AppComponent, appConfig);
 ```
 
-Additionally, you can use the feature function `withAppInitializerAuthCheck`
-to handle OAuth callbacks during app initialization phase. This replaces the
-need to manually call `OidcSecurityService.checkAuth(...)` or
-`OidcSecurityService.checkAuthMultiple(...)`.
+## OAuth Callbacks during Initialization
+
+Additionally, you can use the feature function `withAppInitializerAuthCheck` to handle OAuth callbacks during app initialization phase. This replaces the need to manually call `OidcSecurityService.checkAuth(...)` or `OidcSecurityService.checkAuthMultiple(...)`.
 
 ```ts
 import { ApplicationConfig } from '@angular/core';
 import { provideAuth, withAppInitializerAuthCheck } from 'angular-auth-oidc-client';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideAuth(
@@ -241,27 +207,41 @@ export const appConfig: ApplicationConfig = {
 };
 ```
 
-If you prefer to manually check OAuth callback state, you can omit
-`withAppInitializerAuthCheck`. However, you then need to call
-`OidcSecurityService.checkAuth(...)` or
-`OidcSecurityService.checkAuthMultiple(...)` manually in your
-`app.component.ts` (or a similar code path that is called early in your app).
+If you prefer to manually check OAuth callback state, you can omit `withAppInitializerAuthCheck`. However, you then need to call `OidcSecurityService.checkAuth(...)` or `OidcSecurityService.checkAuthMultiple(...)` manually in your `app.component.ts` (or a similar code path that is called early in your app).
 
 ```ts
-// Shortened for brevity
-...
+@Component()
 export class AppComponent implements OnInit {
   private readonly oidcSecurityService = inject(OidcSecurityService);
 
   ngOnInit(): void {
-    this.oidcSecurityService
-      .checkAuth()
-      .subscribe(({ isAuthenticated, accessToken }) => {
-        console.log('app authenticated', isAuthenticated);
-        console.log(`Current access token is '${accessToken}'`);
-      });
+    this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated, accessToken }) => {
+      console.log('app authenticated', isAuthenticated);
+      console.log(`Current access token is '${accessToken}'`);
+    });
   }
-...
+}
+```
+
+## Configure with NgModule
+
+To configure the auth module by using `NgModule`, you can use the `AuthModule.forRoot()` method
+
+```ts
+import { NgModule } from '@angular/core';
+import { AuthModule } from 'angular-auth-oidc-client';
+
+@NgModule({
+  imports: [
+    AuthModule.forRoot({
+      config: {
+        /* Your config here */
+      },
+    }),
+  ],
+  exports: [AuthModule],
+})
+export class AuthConfigModule {}
 ```
 
 ## Config Values
