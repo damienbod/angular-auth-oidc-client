@@ -56,6 +56,8 @@ export interface OpenIdConfiguration {
   silentRenew?: boolean;
   /** An optional URL to handle silent renew callbacks */
   silentRenewUrl?: string;
+  /** An optional prompt value when performing silent renew. Default is 'none' if not provided.  */
+  silentRenewPrompt?: string;
   /**
    * Sets the maximum waiting time for silent renew process. If this time is exceeded, the silent renew state will
    * be reset. Default = 20.
