@@ -1,5 +1,9 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2024-12-03 19.0.0
+
+- Angular 19
+
 ### 2024-10-12 18.0.2
 
 - Feat: log when provided configId does not exist
