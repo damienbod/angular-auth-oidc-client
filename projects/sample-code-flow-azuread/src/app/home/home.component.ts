@@ -3,10 +3,9 @@ import { Component, OnInit, inject } from '@angular/core';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: 'home.component.html',
-  imports: [AsyncPipe, JsonPipe],
-  standalone: true,
+    selector: 'app-home',
+    templateUrl: 'home.component.html',
+    imports: [AsyncPipe, JsonPipe]
 })
 export class HomeComponent implements OnInit {
   private readonly oidcSecurityService = inject(OidcSecurityService);
