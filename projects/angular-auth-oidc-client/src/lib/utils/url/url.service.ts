@@ -408,7 +408,7 @@ export class UrlService {
     const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configuration);
 
     if (authWellKnownEndPoints) {
-      return this.createAuthorizeUrl('', silentRenewUrl, nonce, state, configuration, 'none', customParams);
+      return this.createAuthorizeUrl('', silentRenewUrl, nonce, state, configuration, configuration.silentRenewPrompt, customParams);
     }
 
     this.loggerService.logError(configuration, 'authWellKnownEndpoints is undefined');
@@ -439,7 +439,7 @@ export class UrlService {
         const authWellKnownEndPoints = this.storagePersistenceService.read('authWellKnownEndPoints', configuration);
 
         if (authWellKnownEndPoints) {
-          return this.createAuthorizeUrl(codeChallenge, silentRenewUrl, nonce, state, configuration, 'none', customParams);
+          return this.createAuthorizeUrl(codeChallenge, silentRenewUrl, nonce, state, configuration,configuration.silentRenewPrompt, customParams);
         }
 
         this.loggerService.logWarning(configuration, 'authWellKnownEndpoints is undefined');
