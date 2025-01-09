@@ -105,6 +105,11 @@ export class UrlService {
         redirectUriWithoutQueryParams !== currentUrlWithoutQueryParams ||
         !redirectUriQueryParamsArePresentInCurrentUrl
       ) {
+        this.loggerService.logDebug(
+          config,
+          'UrlService.isCallbackFromSts: configured redirectUrl does not match with the current url'
+        );
+
         return false;
       }
     }
