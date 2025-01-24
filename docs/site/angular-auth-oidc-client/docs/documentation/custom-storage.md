@@ -14,11 +14,11 @@ import { AbstractSecurityStorage } from 'angular-auth-oidc-client';
 
 @Injectable()
 export class MyStorageService implements AbstractSecurityStorage {
-  read(key: string) {
+  read(key: string): string | null {
     return localStorage.getItem(key);
   }
 
-  write(key: string, value: any): void {
+  write(key: string, value: string): void {
     localStorage.setItem(key, value);
   }
 
