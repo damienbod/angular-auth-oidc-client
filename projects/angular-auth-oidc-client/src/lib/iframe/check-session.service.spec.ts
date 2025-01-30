@@ -304,6 +304,60 @@ describe('CheckSessionService', () => {
     }));
   });
 
+  describe('bindMessageEventToIframe', () => {
+    it('remove event listener when iframeMessageEventListener already exist', () => {
+      const serviceAsAny = checkSessionService as any;
+      const defaultView = serviceAsAny.document.defaultView;
+      const configuration = { configId: 'configId1' };
+      const existingListener = serviceAsAny.messageHandler.bind(
+        this,
+        configuration
+      );
+
+      serviceAsAny.iframeMessageEventListener = existingListener;
+
+      const spyRemoveEventListener = spyOn(defaultView, 'removeEventListener');
+
+      serviceAsAny.bindMessageEventToIframe(configuration);
+
+      expect(spyRemoveEventListener).toHaveBeenCalledOnceWith(
+        'message',
+        existingListener,
+        false
+      );
+    });
+
+    it('doesn\'t remove event listener when iframeMessageEventListener not exist', () => {
+      const serviceAsAny = checkSessionService as any;
+      const defaultView = serviceAsAny.document.defaultView;
+
+      serviceAsAny.iframeMessageEventListener = undefined;
+
+      const spyRemoveEventListener = spyOn(defaultView, 'removeEventListener');
+      const configuration = { configId: 'configId1' };
+
+      serviceAsAny.bindMessageEventToIframe(configuration);
+
+      expect(spyRemoveEventListener).not.toHaveBeenCalled();
+    });
+
+    it('add event listener', () => {
+      const serviceAsAny = checkSessionService as any;
+      const defaultView = serviceAsAny.document.defaultView;
+
+      const spyAddEventListener = spyOn(defaultView, 'addEventListener');
+      const configuration = { configId: 'configId1' };
+
+      serviceAsAny.bindMessageEventToIframe(configuration);
+
+      expect(spyAddEventListener).toHaveBeenCalledOnceWith(
+        'message',
+        jasmine.any(Function),
+        false
+      );
+    });
+  });
+
   describe('isCheckSessionConfigured', () => {
     it('returns true if startCheckSession on config is true', () => {
       const config = { configId: 'configId1', startCheckSession: true };
