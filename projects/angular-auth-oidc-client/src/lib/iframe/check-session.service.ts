@@ -289,12 +289,16 @@ export class CheckSessionService implements OnDestroy {
   }
 
   private bindMessageEventToIframe(configuration: OpenIdConfiguration): void {
+    const defaultView = this.document.defaultView;
+
+    if (this.iframeMessageEventListener && defaultView) {
+      defaultView.removeEventListener('message', this.iframeMessageEventListener, false);
+    }
+
     this.iframeMessageEventListener = this.messageHandler.bind(
       this,
       configuration
     );
-
-    const defaultView = this.document.defaultView;
 
     if (defaultView) {
       defaultView.addEventListener(
