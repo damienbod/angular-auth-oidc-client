@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { OpenIdConfiguration } from '../config/openid-configuration';
+import { wildcardToRegExp } from '../utils/regex/regex.helper';
 
 @Injectable({ providedIn: 'root' })
 export class ClosestMatchingRouteService {
@@ -11,7 +12,7 @@ export class ClosestMatchingRouteService {
       const { secureRoutes } = config;
 
       for (const configuredRoute of secureRoutes ?? []) {
-        if (route.startsWith(configuredRoute)) {
+        if (route.startsWith(configuredRoute) || wildcardToRegExp(configuredRoute).test(route)) {
           return {
             matchingRoute: configuredRoute,
             matchingConfig: config,

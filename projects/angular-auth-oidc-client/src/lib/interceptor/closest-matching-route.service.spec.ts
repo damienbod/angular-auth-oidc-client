@@ -151,6 +151,58 @@ describe('ClosestMatchingRouteService', () => {
       expect(matchingConfig).toBeNull();
     });
 
+    it('gets best match for configured routes - configured route with wildcards no match', () => {
+      const allConfigs = [
+        {
+          configId: 'configId1',
+          secureRoutes: [
+            'https://first-route.com/*/test',
+            'https://second-route.com/test',
+          ],
+        },
+        {
+          configId: 'configId2',
+          secureRoutes: [
+            'https://third-route.com/test2',
+            'https://fourth-route.com/test3',
+          ],
+        },
+      ];
+
+      const { matchingConfig } = service.getConfigIdForClosestMatchingRoute(
+        'https://first-route.com/test1/test2/test3',
+        allConfigs
+      );
+
+      expect(matchingConfig).toBeNull();
+    });
+
+    it('gets best match for configured routes - configured route with wildcards', () => {
+      const allConfigs = [
+        {
+          configId: 'configId1',
+          secureRoutes: [
+            'https://first-route.com/*/test',
+            'https://second-route.com/test',
+          ],
+        },
+        {
+          configId: 'configId2',
+          secureRoutes: [
+            'https://third-route.com/test2',
+            'https://fourth-route.com/test3',
+          ],
+        },
+      ];
+
+      const { matchingConfig } = service.getConfigIdForClosestMatchingRoute(
+        'https://first-route.com/test1/test2/test',
+        allConfigs
+      );
+
+      expect(matchingConfig).toEqual(allConfigs[0]);
+    });
+
     it('gets best match for configured routes - no config Id', () => {
       const allConfigs = [
         {
