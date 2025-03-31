@@ -24,9 +24,7 @@ export class CodeFlowCallbackService {
     allConfigs: OpenIdConfiguration[]
   ): Observable<CallbackContext> {
     const isRenewProcess = this.flowsDataService.isSilentRenewRunning(config);
-    const { triggerAuthorizationResultEvent } = config;
-
-    const postLoginRoute = config.postLoginRoute || '/';
+    const { triggerAuthorizationResultEvent } = config;    const postLoginRoute = config.postLoginRoute || '/';
     const unauthorizedRoute = config.unauthorizedRoute || '/';
 
     return this.flowsService

@@ -37,9 +37,7 @@ describe('Flows Data Service', () => {
 
   describe('createNonce', () => {
     it('createNonce returns nonce and stores it', () => {
-      const spy = spyOn(storagePersistenceService, 'write');
-
-      const result = service.createNonce({ configId: 'configId1' });
+      const spy = spyOn(storagePersistenceService, 'write');      const result = service.createNonce({ configId: 'configId1' });
 
       expect(result).toBeTruthy();
       expect(spy).toHaveBeenCalledOnceWith('authNonce', result, {
@@ -75,9 +73,7 @@ describe('Flows Data Service', () => {
       spyOn(storagePersistenceService, 'read')
         .withArgs('authStateControl', { configId: 'configId1' })
         .and.returnValue(null);
-      const setSpy = spyOn(storagePersistenceService, 'write');
-
-      const result = service.getExistingOrCreateAuthStateControl({
+      const setSpy = spyOn(storagePersistenceService, 'write');      const result = service.getExistingOrCreateAuthStateControl({
         configId: 'configId1',
       });
 
@@ -92,9 +88,7 @@ describe('Flows Data Service', () => {
       spyOn(storagePersistenceService, 'read')
         .withArgs('authStateControl', { configId: 'configId1' })
         .and.returnValue('someAuthStateControl');
-      const setSpy = spyOn(storagePersistenceService, 'write');
-
-      const result = service.getExistingOrCreateAuthStateControl({
+      const setSpy = spyOn(storagePersistenceService, 'write');      const result = service.getExistingOrCreateAuthStateControl({
         configId: 'configId1',
       });
 
@@ -130,9 +124,7 @@ describe('Flows Data Service', () => {
     it('getCodeVerifier returns value from the store', () => {
       const spy = spyOn(storagePersistenceService, 'read')
         .withArgs('codeVerifier', { configId: 'configId1' })
-        .and.returnValue('Genesis');
-
-      const result = service.getCodeVerifier({ configId: 'configId1' });
+        .and.returnValue('Genesis');      const result = service.getCodeVerifier({ configId: 'configId1' });
 
       expect(result).toBe('Genesis');
       expect(spy).toHaveBeenCalledOnceWith('codeVerifier', {
@@ -141,9 +133,7 @@ describe('Flows Data Service', () => {
     });
 
     it('createCodeVerifier returns random createCodeVerifier and stores it', () => {
-      const setSpy = spyOn(storagePersistenceService, 'write');
-
-      const result = service.createCodeVerifier({ configId: 'configId1' });
+      const setSpy = spyOn(storagePersistenceService, 'write');      const result = service.createCodeVerifier({ configId: 'configId1' });
 
       expect(result).toBeTruthy();
       expect(result.length).toBe(67);
@@ -168,9 +158,7 @@ describe('Flows Data Service', () => {
       spyOn(storagePersistenceService, 'read')
         .withArgs('storageCodeFlowInProgress', config)
         .and.returnValue(true);
-      const spyWrite = spyOn(storagePersistenceService, 'write');
-
-      const isCodeFlowInProgressResult = service.isCodeFlowInProgress(config);
+      const spyWrite = spyOn(storagePersistenceService, 'write');      const isCodeFlowInProgressResult = service.isCodeFlowInProgress(config);
 
       expect(spyWrite).not.toHaveBeenCalled();
       expect(isCodeFlowInProgressResult).toBeTrue();
@@ -275,9 +263,7 @@ describe('Flows Data Service', () => {
       spyOn(storagePersistenceService, 'read')
         .withArgs('storageSilentRenewRunning', config)
         .and.returnValue(JSON.stringify(storageObject));
-      const spyWrite = spyOn(storagePersistenceService, 'write');
-
-      const isSilentRenewRunningResult = service.isSilentRenewRunning(config);
+      const spyWrite = spyOn(storagePersistenceService, 'write');      const isSilentRenewRunningResult = service.isSilentRenewRunning(config);
 
       expect(spyWrite).not.toHaveBeenCalled();
       expect(isSilentRenewRunningResult).toBeTrue();
@@ -307,9 +293,7 @@ describe('Flows Data Service', () => {
       const storageObject = {
         state: 'running',
         dateOfLaunchedProcessUtc: baseTime.toISOString(),
-      };
-
-      const spy = spyOn(storagePersistenceService, 'write');
+      };      const spy = spyOn(storagePersistenceService, 'write');
 
       service.setSilentRenewRunning({ configId: 'configId1' });
       expect(spy).toHaveBeenCalledOnceWith(

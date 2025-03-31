@@ -91,9 +91,7 @@ describe('LoginService', () => {
       const config = null;
       const loginParSpy = spyOn(parLoginService, 'loginPar');
       const standardLoginSpy = spyOn(standardLoginService, 'loginStandard');
-      const authOptions = { customParams: { custom: 'params' } };
-
-      // act
+      const authOptions = { customParams: { custom: 'params' } };      // act
       const fn = (): void => service.login(config, authOptions);
 
       // assert

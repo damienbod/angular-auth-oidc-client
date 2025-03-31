@@ -42,9 +42,7 @@ export class ImplicitFlowCallbackHandlerService {
         resultData[parts.shift() as string] = parts.join('=');
 
         return resultData;
-      }, {} as AuthResult);
-
-    const callbackContext: CallbackContext = {
+      }, {} as AuthResult);    const callbackContext: CallbackContext = {
       code: '',
       refreshToken: '',
       state: '',

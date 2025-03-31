@@ -97,9 +97,7 @@ describe('ImplicitFlowCallbackHandlerService', () => {
         jwtKeys: null,
         validationResult: null,
         existingIdToken: null,
-      } as CallbackContext;
-
-      const allconfigs = [
+      } as CallbackContext;      const allconfigs = [
         {
           configId: 'configId1',
         },
@@ -124,9 +122,7 @@ describe('ImplicitFlowCallbackHandlerService', () => {
         jwtKeys: null,
         validationResult: null,
         existingIdToken: null,
-      } as CallbackContext;
-
-      const allconfigs = [
+      } as CallbackContext;      const allconfigs = [
         {
           configId: 'configId1',
         },

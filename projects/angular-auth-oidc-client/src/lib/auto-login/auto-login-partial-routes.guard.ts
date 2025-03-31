@@ -89,9 +89,7 @@ export function autoLoginPartialRoutesGuard(
   const router = inject(Router);
   const authOptions: AuthOptions | undefined = route?.data
     ? { customParams: route.data }
-    : undefined;
-
-  const url =
+    : undefined;  const url =
     router.getCurrentNavigation()?.extractedUrl.toString().substring(1) ?? '';
 
   return checkAuth(

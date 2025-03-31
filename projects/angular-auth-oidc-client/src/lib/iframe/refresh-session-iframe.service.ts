@@ -78,9 +78,7 @@ export class RefreshSessionIframeService {
     config: OpenIdConfiguration,
     allConfigs: OpenIdConfiguration[]
   ): void {
-    const instanceId = Math.random();
-
-    const initDestroyHandler = this.renderer.listen(
+    const instanceId = Math.random();    const initDestroyHandler = this.renderer.listen(
       'window',
       'oidc-silent-renew-init',
       (e: CustomEvent) => {

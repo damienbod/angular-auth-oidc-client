@@ -99,9 +99,7 @@ describe('Logout and Revoke Service', () => {
       );
       spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
       spyOn(dataService, 'post').and.returnValue(of(null));
-      const config = { configId: 'configId1' };
-
-      // Act
+      const config = { configId: 'configId1' };      // Act
       const result = service.revokeAccessToken(config);
 
       // Assert
@@ -286,9 +284,7 @@ describe('Logout and Revoke Service', () => {
       );
       spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
       spyOn(dataService, 'post').and.returnValue(of(null));
-      const config = { configId: 'configId1' };
-
-      // Act
+      const config = { configId: 'configId1' };      // Act
       const result = service.revokeRefreshToken(config);
 
       // Assert
@@ -435,9 +431,7 @@ describe('Logout and Revoke Service', () => {
         checkSessionService,
         'serverStateChanged'
       );
-      const config = { configId: 'configId1' };
-
-      // Act
+      const config = { configId: 'configId1' };      // Act
       const result$ = service.logoff(config, [config]);
 
       // Assert
@@ -452,9 +446,7 @@ describe('Logout and Revoke Service', () => {
       const redirectSpy = spyOn(redirectService, 'redirectTo');
 
       spyOn(checkSessionService, 'serverStateChanged').and.returnValue(true);
-      const config = { configId: 'configId1' };
-
-      // Act
+      const config = { configId: 'configId1' };      // Act
       const result$ = service.logoff(config, [config]);
 
       // Assert
@@ -477,9 +469,7 @@ describe('Logout and Revoke Service', () => {
       );
 
       spyOn(checkSessionService, 'serverStateChanged').and.returnValue(false);
-      const config = { configId: 'configId1' };
-
-      // Act
+      const config = { configId: 'configId1' };      // Act
       const result$ = service.logoff(config, [config], { urlHandler });
 
       // Assert
@@ -497,9 +487,7 @@ describe('Logout and Revoke Service', () => {
       const redirectSpy = spyOn(redirectService, 'redirectTo');
 
       spyOn(checkSessionService, 'serverStateChanged').and.returnValue(false);
-      const config = { configId: 'configId1' };
-
-      // Act
+      const config = { configId: 'configId1' };      // Act
       const result$ = service.logoff(config, [config]);
 
       // Assert
@@ -515,9 +503,7 @@ describe('Logout and Revoke Service', () => {
       const redirectSpy = spyOn(redirectService, 'redirectTo');
 
       spyOn(checkSessionService, 'serverStateChanged').and.returnValue(false);
-      const config = { configId: 'configId1' };
-
-      // Act
+      const config = { configId: 'configId1' };      // Act
       const result$ = service.logoff(config, [config], { logoffMethod: 'GET' });
 
       // Assert
@@ -544,9 +530,7 @@ describe('Logout and Revoke Service', () => {
         existingParams: '',
       });
       const postSpy = spyOn(dataService, 'post').and.returnValue(of(null));
-      const config = { configId: 'configId1', clientId: 'clientId' };
-
-      // Act
+      const config = { configId: 'configId1', clientId: 'clientId' };      // Act
       const result$ = service.logoff(config, [config], {
         logoffMethod: 'POST',
       });
@@ -592,9 +576,7 @@ describe('Logout and Revoke Service', () => {
         existingParams: '',
       });
       const postSpy = spyOn(dataService, 'post').and.returnValue(of(null));
-      const config = { configId: 'configId1', clientId: 'clientId' };
-
-      // Act
+      const config = { configId: 'configId1', clientId: 'clientId' };      // Act
       const result$ = service.logoff(config, [config], {
         logoffMethod: 'POST',
         customParams: {

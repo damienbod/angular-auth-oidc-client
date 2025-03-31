@@ -77,9 +77,9 @@ export class PeriodicallyTokenCheckService {
 
           configsWithSilentRenewEnabled.forEach((config) => {
             const identifier = config.configId as string;
-            const refreshEvent = this.getRefreshEvent(config, allConfigs);
 
-            objectWithConfigIdsAndRefreshEvent[identifier] = refreshEvent;
+            objectWithConfigIdsAndRefreshEvent[identifier] =
+              this.getRefreshEvent(config, allConfigs);
           });
 
           return forkJoin(objectWithConfigIdsAndRefreshEvent);
@@ -191,9 +191,7 @@ export class PeriodicallyTokenCheckService {
                 'storageCustomParamsRefresh',
                 config
               ) || {};
-
             const { customParamsRefreshTokenRequest } = config;
-
             const mergedParams = {
               ...customParamsRefreshTokenRequest,
               ...customParamsRefresh,

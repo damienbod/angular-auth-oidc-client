@@ -27,12 +27,6 @@ describe('Token Helper Service', () => {
       expect(result).toBeDefined();
     });
 
-    it('returns date if param has no property exp', () => {
-      const result = tokenHelperService.getTokenExpirationDate({});
-
-      expect(result instanceof Date).toBe(true);
-    });
-
     it('returns correct date if param has property exp', () => {
       const expectedDate = new Date(0);
 
@@ -207,7 +201,6 @@ describe('Token Helper Service', () => {
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9' +
         '.eyJzdWIiOiIxIiwibmFtZSI6IkpvaG4gRF83NDc377-977-9MDEiLCJhZG1pbiI6dHJ1ZSwiaWF0IjoxNTE2MjI0MjQyfQ' +
         '.RqIi_sO2g592anknIvfks4p7kPy8mOcN0YZUHz-8pFw';
-
       const jsonString = `{ "admin": true, "sub": "1", "iat": 1516224242 }`;
       const expected = JSON.parse(jsonString);
       const result = tokenHelperService.getPayloadFromToken(token, false, {

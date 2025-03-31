@@ -37,9 +37,7 @@ describe('ClosestMatchingRouteService', () => {
             'https://my-fourth-second-secure-url.com/',
           ],
         },
-      ];
-
-      const { matchingConfig } = service.getConfigIdForClosestMatchingRoute(
+      ];      const { matchingConfig } = service.getConfigIdForClosestMatchingRoute(
         'https://my-secure-url.com/',
         allConfigs
       );
@@ -63,9 +61,7 @@ describe('ClosestMatchingRouteService', () => {
             'https://my-fourth-second-secure-url.com/',
           ],
         },
-      ];
-
-      const { matchingConfig } = service.getConfigIdForClosestMatchingRoute(
+      ];      const { matchingConfig } = service.getConfigIdForClosestMatchingRoute(
         'https://my-secure-url.com/',
         allConfigs
       );
@@ -89,9 +85,7 @@ describe('ClosestMatchingRouteService', () => {
             'https://fourth-route.com/test3',
           ],
         },
-      ];
-
-      const { matchingConfig } = service.getConfigIdForClosestMatchingRoute(
+      ];      const { matchingConfig } = service.getConfigIdForClosestMatchingRoute(
         'https://first-route.com/',
         allConfigs
       );
@@ -115,9 +109,7 @@ describe('ClosestMatchingRouteService', () => {
             'https://fourth-route.com/test3',
           ],
         },
-      ];
-
-      const { matchingConfig } = service.getConfigIdForClosestMatchingRoute(
+      ];      const { matchingConfig } = service.getConfigIdForClosestMatchingRoute(
         'https://first-route.com/anyparam',
         allConfigs
       );
@@ -141,9 +133,7 @@ describe('ClosestMatchingRouteService', () => {
             'https://fourth-route.com/test3',
           ],
         },
-      ];
-
-      const { matchingConfig } = service.getConfigIdForClosestMatchingRoute(
+      ];      const { matchingConfig } = service.getConfigIdForClosestMatchingRoute(
         'https://third-route.com/',
         allConfigs
       );
@@ -167,9 +157,7 @@ describe('ClosestMatchingRouteService', () => {
             'https://my-secure-url.com/test2/test',
           ],
         },
-      ];
-
-      const { matchingConfig } = service.getConfigIdForClosestMatchingRoute(
+      ];      const { matchingConfig } = service.getConfigIdForClosestMatchingRoute(
         'blabla',
         allConfigs
       );

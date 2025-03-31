@@ -38,9 +38,7 @@ export class PopUpService {
       const popup = this.storagePersistenceService.read(
         this.STORAGE_IDENTIFIER,
         config
-      );
-
-      const windowIdentifier = this.windowInternal;
+      );      const windowIdentifier = this.windowInternal;
 
       if (!windowIdentifier) {
         return false;
@@ -195,9 +193,7 @@ export class PopUpService {
     }
 
     const width = options.width || popupDefaultOptions.width;
-    const height = options.height || popupDefaultOptions.height;
-
-    const left: number =
+    const height = options.height || popupDefaultOptions.height;    const left: number =
       windowIdentifier.screenLeft + (windowIdentifier.outerWidth - width) / 2;
     const top: number =
       windowIdentifier.screenTop + (windowIdentifier.outerHeight - height) / 2;

@@ -67,9 +67,8 @@ describe('ParLoginService', () => {
       ).and.returnValue(false);
       const loggerSpy = spyOn(loggerService, 'logError');
 
-      const result = service.loginPar({});
+      service.loginPar({});
 
-      expect(result).toBeUndefined();
       expect(loggerSpy).toHaveBeenCalled();
     }));
 
@@ -88,12 +87,11 @@ describe('ParLoginService', () => {
         of({ requestUri: 'requestUri' } as ParResponse)
       );
 
-      const result = service.loginPar({
+      service.loginPar({
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
       });
 
-      expect(result).toBeUndefined();
       expect(spy).toHaveBeenCalled();
     }));
 
@@ -116,11 +114,10 @@ describe('ParLoginService', () => {
         of({ requestUri: 'requestUri' } as ParResponse)
       );
 
-      const result = service.loginPar(config, {
+      service.loginPar(config, {
         customParams: { some: 'thing' },
       });
 
-      expect(result).toBeUndefined();
       expect(spy).toHaveBeenCalledOnceWith(config, {
         customParams: { some: 'thing' },
       });
@@ -147,9 +144,8 @@ describe('ParLoginService', () => {
       spyOn(urlService, 'getAuthorizeParUrl').and.returnValue('');
       const spy = spyOn(loggerService, 'logError');
 
-      const result = service.loginPar(config);
+      service.loginPar(config);
 
-      expect(result).toBeUndefined();
       expect(spy).toHaveBeenCalledTimes(1);
     }));
 
@@ -162,7 +158,6 @@ describe('ParLoginService', () => {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
       };
-
       const authOptions = {};
 
       spyOn(

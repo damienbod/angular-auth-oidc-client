@@ -46,9 +46,7 @@ describe('CodeFlowCallbackService ', () => {
         flowsService,
         'processCodeFlowCallback'
       ).and.returnValue(of({} as CallbackContext));
-      //spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ triggerAuthorizationResultEvent: true });
-
-      const config = {
+      //spyOn(configurationProvider, 'getOpenIDConfiguration').and.returnValue({ triggerAuthorizationResultEvent: true });      const config = {
         configId: 'configId1',
         triggerAuthorizationResultEvent: true,
       };
@@ -141,9 +139,7 @@ describe('CodeFlowCallbackService ', () => {
       const stopPeriodicallTokenCheckSpy = spyOn(
         intervalService,
         'stopPeriodicTokenCheck'
-      );
-
-      const config = {
+      );      const config = {
         configId: 'configId1',
         triggerAuthorizationResultEvent: false,
         postLoginRoute: 'postLoginRoute',
@@ -175,9 +171,7 @@ describe('CodeFlowCallbackService ', () => {
         intervalService,
         'stopPeriodicTokenCheck'
       );
-      const routerSpy = spyOn(router, 'navigateByUrl');
-
-      const config = {
+      const routerSpy = spyOn(router, 'navigateByUrl');      const config = {
         configId: 'configId1',
         triggerAuthorizationResultEvent: false,
         unauthorizedRoute: 'unauthorizedRoute',

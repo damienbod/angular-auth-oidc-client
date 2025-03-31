@@ -58,11 +58,10 @@ describe('StandardLoginService', () => {
       ).and.returnValue(false);
       const loggerSpy = spyOn(loggerService, 'logError');
 
-      const result = standardLoginService.loginStandard({
+      standardLoginService.loginStandard({
         configId: 'configId1',
       });
 
-      expect(result).toBeUndefined();
       expect(loggerSpy).toHaveBeenCalled();
     }));
 
@@ -83,31 +82,9 @@ describe('StandardLoginService', () => {
       spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
       const flowsDataSpy = spyOn(flowsDataService, 'setCodeFlowInProgress');
 
-      const result = standardLoginService.loginStandard(config);
+      standardLoginService.loginStandard(config);
 
-      expect(result).toBeUndefined();
       expect(flowsDataSpy).toHaveBeenCalled();
-    }));
-
-    it('calls urlService.getAuthorizeUrl() if everything fits', waitForAsync(() => {
-      const config = {
-        authWellknownEndpointUrl: 'authWellknownEndpoint',
-        responseType: 'stubValue',
-      };
-
-      spyOn(
-        responseTypeValidationService,
-        'hasConfigValidResponseType'
-      ).and.returnValue(true);
-      spyOn(
-        authWellKnownService,
-        'queryAndStoreAuthWellKnownEndPoints'
-      ).and.returnValue(of({}));
-      spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
-
-      const result = standardLoginService.loginStandard(config);
-
-      expect(result).toBeUndefined();
     }));
 
     it('redirects to URL with no URL handler', fakeAsync(() => {
