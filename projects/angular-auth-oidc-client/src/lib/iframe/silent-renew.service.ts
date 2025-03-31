@@ -72,9 +72,7 @@ export class SilentRenewService {
   ): Observable<CallbackContext> {
     const params = new HttpParams({
       fromString: urlParts[1],
-    });
-
-    const errorParam = params.get('error');
+    });    const errorParam = params.get('error');
 
     if (errorParam) {
       this.authStateService.updateAndPublishAuthState({
@@ -91,9 +89,7 @@ export class SilentRenewService {
 
     const code = params.get('code') ?? '';
     const state = params.get('state') ?? '';
-    const sessionState = params.get('session_state');
-
-    const callbackContext: CallbackContext = {
+    const sessionState = params.get('session_state');    const callbackContext: CallbackContext = {
       code,
       refreshToken: '',
       state,

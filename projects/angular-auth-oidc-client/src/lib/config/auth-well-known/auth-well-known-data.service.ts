@@ -55,9 +55,7 @@ export class AuthWellKnownDataService {
     wellKnownEndpoint: string,
     config: OpenIdConfiguration
   ): Observable<any> {
-    let url = wellKnownEndpoint;
-
-    const wellKnownSuffix = config.authWellknownUrlSuffix || WELL_KNOWN_SUFFIX;
+    let url = wellKnownEndpoint;    const wellKnownSuffix = config.authWellknownUrlSuffix || WELL_KNOWN_SUFFIX;
 
     if (!wellKnownEndpoint.includes(wellKnownSuffix)) {
       url = `${wellKnownEndpoint}${wellKnownSuffix}`;

@@ -43,9 +43,7 @@ export class RandomService {
   private randomString(length: number): string {
     let result = '';
     const characters =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-    const values = new Uint32Array(length);
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';    const values = new Uint32Array(length);
     const crypto = this.cryptoService.getCrypto();
 
     if (crypto) {

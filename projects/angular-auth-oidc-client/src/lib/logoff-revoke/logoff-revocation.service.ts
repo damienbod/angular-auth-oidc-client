@@ -53,9 +53,7 @@ export class LogoffRevocationService {
       logoutAuthOptions
     );
 
-    const { urlHandler, customParams } = logoutAuthOptions || {};
-
-    const endSessionUrl = this.urlService.getEndSessionUrl(
+    const { urlHandler, customParams } = logoutAuthOptions || {};    const endSessionUrl = this.urlService.getEndSessionUrl(
       config,
       customParams
     );

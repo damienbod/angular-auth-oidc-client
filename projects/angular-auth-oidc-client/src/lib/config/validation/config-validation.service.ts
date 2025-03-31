@@ -31,9 +31,7 @@ export class ConfigValidationService {
 
     const allValidationResults = allRulesToUse.map((rule) =>
       rule(passedConfigs)
-    );
-
-    let overallErrorCount = 0;
+    );    let overallErrorCount = 0;
 
     passedConfigs.forEach((passedConfig) => {
       const errorCount = this.processValidationResultsAndGetErrorCount(
@@ -55,9 +53,7 @@ export class ConfigValidationService {
   ): boolean {
     const allValidationResults = allRulesToUse.map((rule) =>
       rule(passedConfig)
-    );
-
-    const errorCount = this.processValidationResultsAndGetErrorCount(
+    );    const errorCount = this.processValidationResultsAndGetErrorCount(
       allValidationResults,
       passedConfig
     );

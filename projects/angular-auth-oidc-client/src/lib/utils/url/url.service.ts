@@ -45,9 +45,7 @@ export class UrlService {
   }
 
   getUrlWithoutQueryParameters(url: URL): URL {
-    const u = new URL(url.toString());
-
-    const keys = [];
+    const u = new URL(url.toString());    const keys = [];
 
     for (const key of u.searchParams.keys()) {
       keys.push(key);
@@ -74,9 +72,7 @@ export class UrlService {
 
   isCallbackFromSts(currentUrl: string, config?: OpenIdConfiguration): boolean {
     if (config && config.checkRedirectUrlWhenCheckingIfIsCallback) {
-      const currentUrlInstance = new URL(currentUrl);
-
-      const redirectUrl = this.getRedirectUrl(config);
+      const currentUrlInstance = new URL(currentUrl);      const redirectUrl = this.getRedirectUrl(config);
 
       if (!redirectUrl) {
         this.loggerService.logError(
@@ -88,9 +84,7 @@ export class UrlService {
         return false;
       }
 
-      const redirectUriUrlInstance = new URL(redirectUrl);
-
-      const redirectUriWithoutQueryParams = this.getUrlWithoutQueryParameters(
+      const redirectUriUrlInstance = new URL(redirectUrl);      const redirectUriWithoutQueryParams = this.getUrlWithoutQueryParameters(
         redirectUriUrlInstance
       ).toString();
       const currentUrlWithoutQueryParams =

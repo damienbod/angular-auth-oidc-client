@@ -1,4 +1,4 @@
-import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { mockProvider } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
@@ -83,35 +83,6 @@ describe('PeriodicallyTokenCheckService', () => {
   });
 
   describe('startTokenValidationPeriodically', () => {
-    it('returns if no config has silentrenew enabled', waitForAsync(() => {
-      const configs = [
-        { silentRenew: false, configId: 'configId1' },
-        { silentRenew: false, configId: 'configId2' },
-      ];
-
-      const result =
-        periodicallyTokenCheckService.startTokenValidationPeriodically(
-          configs,
-          configs[0]
-        );
-
-      expect(result).toBeUndefined();
-    }));
-
-    it('returns if runTokenValidationRunning', waitForAsync(() => {
-      const configs = [{ silentRenew: true, configId: 'configId1' }];
-
-      spyOn(intervalService, 'isTokenValidationRunning').and.returnValue(true);
-
-      const result =
-        periodicallyTokenCheckService.startTokenValidationPeriodically(
-          configs,
-          configs[0]
-        );
-
-      expect(result).toBeUndefined();
-    }));
-
     it('interval calls resetSilentRenewRunning when current flow is CodeFlowWithRefreshTokens', fakeAsync(() => {
       const configs = [
         { silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 },

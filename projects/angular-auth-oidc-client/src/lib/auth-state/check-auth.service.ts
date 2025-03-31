@@ -343,15 +343,11 @@ export class CheckAuthService {
   ): Observable<LoginResponse[]> {
     const allOtherConfigs = configurations.filter(
       (x) => x.configId !== activeConfig.configId
-    );
-
-    const currentConfigResult = this.checkAuthWithConfig(
+    );    const currentConfigResult = this.checkAuthWithConfig(
       activeConfig,
       configurations,
       url
-    );
-
-    const allOtherConfigResults = allOtherConfigs.map((config) => {
+    );    const allOtherConfigResults = allOtherConfigs.map((config) => {
       const { redirectUrl } = config;
 
       return this.checkAuthWithConfig(config, configurations, redirectUrl);

@@ -9,9 +9,7 @@ export function mockClass<T>(obj: new (...args: any[]) => T): any {
       return false;
     }
   });
-  const allProperties = keys.filter((x) => !allMethods.includes(x));
-
-  const mockedClass = class T {};
+  const allProperties = keys.filter((x) => !allMethods.includes(x));  const mockedClass = class T {};
 
   allMethods.forEach(
     (method: string) =>

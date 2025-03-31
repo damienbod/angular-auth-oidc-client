@@ -451,9 +451,7 @@ export class TokenValidationService {
     }
 
     const kid: string = headerData.kid;
-    const alg: string = headerData.alg;
-
-    const keys: JsonWebKey[] = jwtkeys.keys;
+    const alg: string = headerData.alg;    const keys: JsonWebKey[] = jwtkeys.keys;
     let foundKeys: JsonWebKey[];
     let key: JsonWebKey;
 
@@ -484,9 +482,7 @@ export class TokenValidationService {
       return of(false);
     }
 
-    const algorithm = getImportAlg(alg);
-
-    const signingInput = this.tokenHelperService.getSigningInputFromToken(
+    const algorithm = getImportAlg(alg);    const signingInput = this.tokenHelperService.getSigningInputFromToken(
       idToken,
       true,
       configuration
@@ -503,9 +499,7 @@ export class TokenValidationService {
       mergeMap((cryptoKey: CryptoKey) => {
         const signature: Uint8Array = base64url.parse(rawSignature, {
           loose: true,
-        });
-
-        const verifyAlgorithm = getVerifyAlg(alg);
+        });        const verifyAlgorithm = getVerifyAlg(alg);
 
         return from(
           this.jwkWindowCryptoService.verifyKey(

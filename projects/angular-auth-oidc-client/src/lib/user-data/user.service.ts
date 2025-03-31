@@ -63,9 +63,7 @@ export class UserService {
         currentConfiguration
       );
     const isCurrentFlowCodeFlow =
-      this.flowHelper.isCurrentFlowCodeFlow(currentConfiguration);
-
-    const accessToken =
+      this.flowHelper.isCurrentFlowCodeFlow(currentConfiguration);    const accessToken =
       this.storagePersistenceService.getAccessToken(currentConfiguration);
 
     if (!(isCurrentFlowImplicitFlowWithAccessToken || isCurrentFlowCodeFlow)) {
@@ -196,9 +194,7 @@ export class UserService {
     currentConfiguration: OpenIdConfiguration
   ): Observable<any> {
     const token =
-      this.storagePersistenceService.getAccessToken(currentConfiguration);
-
-    const authWellKnownEndPoints = this.storagePersistenceService.read(
+      this.storagePersistenceService.getAccessToken(currentConfiguration);    const authWellKnownEndPoints = this.storagePersistenceService.read(
       'authWellKnownEndPoints',
       currentConfiguration
     );
