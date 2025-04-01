@@ -46,7 +46,7 @@ export const appConfig: ApplicationConfig = {
 };
 ```
 
-If you configured a route to be protected, every child route underneath is protected, too. So if you configure `https://example.org/api` the token is also added to a request to the route `https://example.org/api/users`.
+If you configured a route to be protected, every child route underneath is protected, too. So if you configure `https://example.org/api` the token is also added to a request to the route `https://example.org/api/users`. It is also possible to configure wildcard routes by using `*`. If you configure `https://example.org/api/*/token` all requests to the resource `api`, ending with an access to `token` will be treated as a secured route, e.g. `https://example.org/api/applications/token` or `https://example.org/api/applications/example/token.
 
 In case you are running multiple configurations all the configured routes over all configurations are collected and compared against the currently requested route. If a match is made, the token for the configuration you added the secure route to is being taken and applied in the Authorization header.
 
