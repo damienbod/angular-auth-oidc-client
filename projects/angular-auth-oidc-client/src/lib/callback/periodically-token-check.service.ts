@@ -20,33 +20,22 @@ import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-tok
 @Injectable({ providedIn: 'root' })
 export class PeriodicallyTokenCheckService {
   private readonly resetAuthDataService = inject(ResetAuthDataService);
-
   private readonly flowHelper = inject(FlowHelper);
-
   private readonly flowsDataService = inject(FlowsDataService);
-
   private readonly loggerService = inject(LoggerService);
-
   private readonly userService = inject(UserService);
-
   private readonly authStateService = inject(AuthStateService);
-
   private readonly refreshSessionIframeService = inject(
     RefreshSessionIframeService
   );
-
   private readonly refreshSessionRefreshTokenService = inject(
     RefreshSessionRefreshTokenService
   );
-
   private readonly intervalService = inject(IntervalService);
-
   private readonly storagePersistenceService = inject(
     StoragePersistenceService
   );
-
   private readonly publicEventsService = inject(PublicEventsService);
-
   private readonly configurationService = inject(ConfigurationService);
 
   startTokenValidationPeriodically(
@@ -77,9 +66,9 @@ export class PeriodicallyTokenCheckService {
 
           configsWithSilentRenewEnabled.forEach((config) => {
             const identifier = config.configId as string;
-            const refreshEvent = this.getRefreshEvent(config, allConfigs);
 
-            objectWithConfigIdsAndRefreshEvent[identifier] = refreshEvent;
+            objectWithConfigIdsAndRefreshEvent[identifier] =
+              this.getRefreshEvent(config, allConfigs);
           });
 
           return forkJoin(objectWithConfigIdsAndRefreshEvent);
@@ -191,9 +180,7 @@ export class PeriodicallyTokenCheckService {
                 'storageCustomParamsRefresh',
                 config
               ) || {};
-
             const { customParamsRefreshTokenRequest } = config;
-
             const mergedParams = {
               ...customParamsRefreshTokenRequest,
               ...customParamsRefresh,

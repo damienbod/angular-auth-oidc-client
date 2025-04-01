@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
@@ -16,25 +16,19 @@ export class FlowsService {
   private readonly codeFlowCallbackHandlerService = inject(
     CodeFlowCallbackHandlerService
   );
-
   private readonly implicitFlowCallbackHandlerService = inject(
     ImplicitFlowCallbackHandlerService
   );
-
   private readonly historyJwtKeysCallbackHandlerService = inject(
     HistoryJwtKeysCallbackHandlerService
   );
-
   private readonly userHandlerService = inject(UserCallbackHandlerService);
-
   private readonly stateValidationCallbackHandlerService = inject(
     StateValidationCallbackHandlerService
   );
-
   private readonly refreshSessionCallbackHandlerService = inject(
     RefreshSessionCallbackHandlerService
   );
-
   private readonly refreshTokenCallbackHandlerService = inject(
     RefreshTokenCallbackHandlerService
   );

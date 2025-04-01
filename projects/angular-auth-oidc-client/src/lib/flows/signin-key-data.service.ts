@@ -1,5 +1,5 @@
 import { HttpResponse } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
@@ -11,11 +11,9 @@ import { JwtKeys } from '../validation/jwtkeys';
 @Injectable({ providedIn: 'root' })
 export class SigninKeyDataService {
   private readonly loggerService = inject(LoggerService);
-
   private readonly storagePersistenceService = inject(
     StoragePersistenceService
   );
-
   private readonly dataService = inject(DataService);
 
   getSigningKeys(

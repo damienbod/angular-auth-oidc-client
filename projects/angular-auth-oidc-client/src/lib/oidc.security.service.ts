@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { concatMap, map } from 'rxjs/operators';
 import { AuthOptions, LogoutAuthOptions } from './auth-options';
@@ -27,29 +27,17 @@ import { toSignal } from '@angular/core/rxjs-interop';
 @Injectable({ providedIn: 'root' })
 export class OidcSecurityService {
   private readonly checkSessionService = inject(CheckSessionService);
-
   private readonly checkAuthService = inject(CheckAuthService);
-
   private readonly userService = inject(UserService);
-
   private readonly tokenHelperService = inject(TokenHelperService);
-
   private readonly configurationService = inject(ConfigurationService);
-
   private readonly authStateService = inject(AuthStateService);
-
   private readonly flowsDataService = inject(FlowsDataService);
-
   private readonly callbackService = inject(CallbackService);
-
   private readonly logoffRevocationService = inject(LogoffRevocationService);
-
   private readonly loginService = inject(LoginService);
-
   private readonly refreshSessionService = inject(RefreshSessionService);
-
   private readonly urlService = inject(UrlService);
-
   private readonly authWellKnownService = inject(AuthWellKnownService);
 
   /**

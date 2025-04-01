@@ -75,7 +75,6 @@ describe(`AutoLoginAllRoutesGuard`, () => {
           'saveRedirectRoute'
         );
         const loginSpy = spyOn(loginService, 'login');
-
         const canActivate$ = guard.canActivate(
           {} as ActivatedRouteSnapshot,
           {
@@ -285,10 +284,8 @@ describe(`AutoLoginAllRoutesGuard`, () => {
           'saveRedirectRoute'
         );
         const loginSpy = spyOn(loginService, 'login');
-        const _routerSpy = spyOn(
-          router,
-          'getCurrentNavigation'
-        ).and.returnValue({
+
+        spyOn(router, 'getCurrentNavigation').and.returnValue({
           extractedUrl: router.parseUrl(
             'some-url12/with/some-param?queryParam=true'
           ),
@@ -298,6 +295,7 @@ describe(`AutoLoginAllRoutesGuard`, () => {
           previousNavigation: null,
           trigger: 'imperative',
         });
+
         const canLoad$ = guard.canLoad();
 
         canLoad$.subscribe(() => {
@@ -333,44 +331,6 @@ describe(`AutoLoginAllRoutesGuard`, () => {
           ).toHaveBeenCalledOnceWith({
             configId: 'configId1',
           });
-        });
-      }));
-
-      it('should save current route (with router extractedUrl) and call `login` if not authenticated already', waitForAsync(() => {
-        spyOn(checkAuthService, 'checkAuth').and.returnValue(
-          of({ isAuthenticated: false } as LoginResponse)
-        );
-        const checkSavedRedirectRouteAndNavigateSpy = spyOn(
-          autoLoginService,
-          'checkSavedRedirectRouteAndNavigate'
-        );
-        const saveRedirectRouteSpy = spyOn(
-          autoLoginService,
-          'saveRedirectRoute'
-        );
-        const loginSpy = spyOn(loginService, 'login');
-        const _routerSpy = spyOn(
-          router,
-          'getCurrentNavigation'
-        ).and.returnValue({
-          extractedUrl: router.parseUrl(
-            'some-url12/with/some-param?queryParam=true'
-          ),
-          extras: {},
-          id: 1,
-          initialUrl: router.parseUrl(''),
-          previousNavigation: null,
-          trigger: 'imperative',
-        });
-        const canLoad$ = guard.canLoad();
-
-        canLoad$.subscribe(() => {
-          expect(saveRedirectRouteSpy).toHaveBeenCalledOnceWith(
-            { configId: 'configId1' },
-            'some-url12/with/some-param?queryParam=true'
-          );
-          expect(loginSpy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
-          expect(checkSavedRedirectRouteAndNavigateSpy).not.toHaveBeenCalled();
         });
       }));
 

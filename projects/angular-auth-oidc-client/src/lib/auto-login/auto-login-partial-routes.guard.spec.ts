@@ -384,9 +384,7 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
           autoLoginService,
           'saveRedirectRoute'
         );
-        const loginSpy = spyOn(loginService, 'login');
-
-        const guard$ = TestBed.runInInjectionContext(
+        const loginSpy = spyOn(loginService, 'login');        const guard$ = TestBed.runInInjectionContext(
           autoLoginPartialRoutesGuard
         );
 
@@ -423,9 +421,7 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
           autoLoginService,
           'saveRedirectRoute'
         );
-        const loginSpy = spyOn(loginService, 'login');
-
-        const guard$ = TestBed.runInInjectionContext(
+        const loginSpy = spyOn(loginService, 'login');        const guard$ = TestBed.runInInjectionContext(
           autoLoginPartialRoutesGuard
         );
 
@@ -451,9 +447,7 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
           autoLoginService,
           'saveRedirectRoute'
         );
-        const loginSpy = spyOn(loginService, 'login');
-
-        const guard$ = TestBed.runInInjectionContext(() =>
+        const loginSpy = spyOn(loginService, 'login');        const guard$ = TestBed.runInInjectionContext(() =>
           autoLoginPartialRoutesGuard({
             data: { custom: 'param' },
           } as unknown as ActivatedRouteSnapshot)
@@ -484,9 +478,7 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
           autoLoginService,
           'saveRedirectRoute'
         );
-        const loginSpy = spyOn(loginService, 'login');
-
-        const guard$ = TestBed.runInInjectionContext(
+        const loginSpy = spyOn(loginService, 'login');        const guard$ = TestBed.runInInjectionContext(
           autoLoginPartialRoutesGuard
         );
 
@@ -536,9 +528,7 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
           autoLoginService,
           'saveRedirectRoute'
         );
-        const loginSpy = spyOn(loginService, 'login');
-
-        const guard$ = TestBed.runInInjectionContext(
+        const loginSpy = spyOn(loginService, 'login');        const guard$ = TestBed.runInInjectionContext(
           autoLoginPartialRoutesGuardWithConfig('configId1')
         );
 

@@ -1,5 +1,5 @@
 import { HttpHeaders } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable, of, throwError, timer } from 'rxjs';
 import { catchError, mergeMap, retryWhen, switchMap } from 'rxjs/operators';
 import { DataService } from '../../api/data.service';
@@ -13,11 +13,8 @@ import { isNetworkError } from './error-helper';
 @Injectable({ providedIn: 'root' })
 export class RefreshTokenCallbackHandlerService {
   private readonly urlService = inject(UrlService);
-
   private readonly loggerService = inject(LoggerService);
-
   private readonly dataService = inject(DataService);
-
   private readonly storagePersistenceService = inject(
     StoragePersistenceService
   );

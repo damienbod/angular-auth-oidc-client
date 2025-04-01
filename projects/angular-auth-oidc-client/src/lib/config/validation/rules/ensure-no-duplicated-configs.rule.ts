@@ -9,17 +9,13 @@ const createIdentifierToCheck = (passedConfig: OpenIdConfiguration): string => {
   const { authority, clientId, scope } = passedConfig;
 
   return `${authority}${clientId}${scope}`;
-};
-
-const arrayHasDuplicates = (array: string[]): boolean =>
+};const arrayHasDuplicates = (array: string[]): boolean =>
   new Set(array).size !== array.length;
 
 export const ensureNoDuplicatedConfigsRule = (
   passedConfigs: OpenIdConfiguration[]
 ): RuleValidationResult => {
-  const allIdentifiers = passedConfigs.map((x) => createIdentifierToCheck(x));
-
-  const someAreNotSet = allIdentifiers.some((x) => x === '');
+  const allIdentifiers = passedConfigs.map((x) => createIdentifierToCheck(x));  const someAreNotSet = allIdentifiers.some((x) => x === '');
 
   if (someAreNotSet) {
     return {

@@ -45,9 +45,7 @@ describe('UrlService Tests', () => {
 
   describe('getUrlWithoutQueryParameters', () => {
     it('should return a new instance of the passed URL without any query parameters', () => {
-      const url = new URL('https://any.url');
-
-      const params = [
+      const url = new URL('https://any.url');      const params = [
         { key: 'doot', value: 'boop' },
         { key: 'blep', value: 'blep' },
       ];
@@ -65,9 +63,7 @@ describe('UrlService Tests', () => {
   });
 
   describe('queryParametersExist', () => {
-    const expected = new URLSearchParams();
-
-    const params = [
+    const expected = new URLSearchParams();    const params = [
       { key: 'doot', value: 'boop' },
       { key: 'blep', value: 'blep' },
     ];
@@ -79,9 +75,7 @@ describe('UrlService Tests', () => {
     const matchingUrls = [
       new URL('https://any.url?doot=boop&blep=blep'),
       new URL('https://any.url?doot=boop&blep=blep&woop=doot'),
-    ];
-
-    const nonMatchingUrls = [
+    ];    const nonMatchingUrls = [
       new URL('https://any.url?doot=boop'),
       new URL('https://any.url?blep=blep&woop=doot'),
     ];
@@ -357,9 +351,7 @@ describe('UrlService Tests', () => {
         'nonce',
         'state',
         config
-      );
-
-      const expectValue =
+      );      const expectValue =
         'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
         '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
         '&response_type=code' +
@@ -397,9 +389,7 @@ describe('UrlService Tests', () => {
         'state',
         config,
         'myprompt'
-      );
-
-      const expectValue =
+      );      const expectValue =
         'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
         '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
         '&response_type=id_token%20token' +
@@ -437,9 +427,7 @@ describe('UrlService Tests', () => {
         config,
         'myprompt',
         { to: 'add', as: 'well' }
-      );
-
-      const expectValue =
+      );      const expectValue =
         'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
         '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
         '&response_type=id_token%20token' +
@@ -477,9 +465,7 @@ describe('UrlService Tests', () => {
         'nonce',
         'state',
         config
-      );
-
-      const expectValue =
+      );      const expectValue =
         'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
         '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
         '&response_type=id_token%20token' +
@@ -519,9 +505,7 @@ describe('UrlService Tests', () => {
         'nonce',
         'state',
         config
-      );
-
-      const expectValue =
+      );      const expectValue =
         'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
         '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
         '&response_type=id_token%20token' +
@@ -564,9 +548,7 @@ describe('UrlService Tests', () => {
         'nonce',
         'state',
         config
-      );
-
-      const expectValue =
+      );      const expectValue =
         'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
         '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
         '&response_type=id_token%20token' +
@@ -608,9 +590,7 @@ describe('UrlService Tests', () => {
         config,
         null,
         { to: 'add', as: 'well' }
-      );
-
-      const expectValue =
+      );      const expectValue =
         'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
         '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
         '&response_type=id_token%20token' +
@@ -649,9 +629,7 @@ describe('UrlService Tests', () => {
         config,
         null,
         { to: 'add', as: 'well' }
-      );
-
-      const expectValue =
+      );      const expectValue =
         'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
         '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
         '&response_type=id_token%20token' +
@@ -688,9 +666,7 @@ describe('UrlService Tests', () => {
         config,
         null,
         { to: 'add', as: 'well' }
-      );
-
-      const expectValue =
+      );      const expectValue =
         'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
         '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
         '&response_type=id_token%20token' +
@@ -726,9 +702,7 @@ describe('UrlService Tests', () => {
         'nonce',
         'state',
         config
-      );
-
-      const expectValue =
+      );      const expectValue =
         'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=b2c_1_sign_in' +
         '&client_id=myid' +
         '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
@@ -764,9 +738,7 @@ describe('UrlService Tests', () => {
         'nonce',
         'state',
         config
-      );
-
-      const expectValue =
+      );      const expectValue =
         'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
         '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
         '&response_type=id_token%20token' +
@@ -803,9 +775,7 @@ describe('UrlService Tests', () => {
         'state',
         config,
         'somePrompt'
-      );
-
-      const expectValue =
+      );      const expectValue =
         'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
         '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
         '&response_type=code' +
@@ -931,9 +901,7 @@ describe('UrlService Tests', () => {
           revocationEndpoint,
         });
 
-      const value = service.getRevocationEndpointUrl(config);
-
-      const expectValue = 'http://example';
+      const value = service.getRevocationEndpointUrl(config);      const expectValue = 'http://example';
 
       expect(value).toEqual(expectValue);
     });
@@ -958,9 +926,7 @@ describe('UrlService Tests', () => {
           revocationEndpoint,
         });
 
-      const value = service.getRevocationEndpointUrl(config);
-
-      const expectValue = 'http://example';
+      const value = service.getRevocationEndpointUrl(config);      const expectValue = 'http://example';
 
       expect(value).toEqual(expectValue);
     });
@@ -1040,9 +1006,7 @@ describe('UrlService Tests', () => {
         scope: 'testScope',
         hdParam: undefined,
         customParamsAuthRequest: undefined,
-      } as OpenIdConfiguration;
-
-      const authorizationEndpoint = 'authorizationEndpoint';
+      } as OpenIdConfiguration;      const authorizationEndpoint = 'authorizationEndpoint';
 
       spyOn(jwtWindowCryptoService, 'generateCodeChallenge').and.returnValue(
         of('some-code-challenge')
@@ -1449,11 +1413,7 @@ describe('UrlService Tests', () => {
 
       const config = {
         silentRenewUrl,
-      };
-
-      const serviceAsAny = service as any;
-
-      const result = serviceAsAny.createUrlImplicitFlowWithSilentRenew(config);
+      };      const serviceAsAny = service as any;      const result = serviceAsAny.createUrlImplicitFlowWithSilentRenew(config);
 
       expect(result).toBeNull();
     });
@@ -1485,9 +1445,7 @@ describe('UrlService Tests', () => {
           authorizationEndpoint,
         });
 
-      const serviceAsAny = service as any;
-
-      const result = serviceAsAny.createUrlImplicitFlowWithSilentRenew(config);
+      const serviceAsAny = service as any;      const result = serviceAsAny.createUrlImplicitFlowWithSilentRenew(config);
 
       expect(result).toBe(
         `authorizationEndpoint?client_id=${clientId}&redirect_uri=http%3A%2F%2Fany-url.com&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}&prompt=none`
@@ -1516,9 +1474,7 @@ describe('UrlService Tests', () => {
         .withArgs('authWellKnownEndPoints', config)
         .and.returnValue(null);
 
-      const serviceAsAny = service as any;
-
-      const result = serviceAsAny.createUrlImplicitFlowWithSilentRenew(config);
+      const serviceAsAny = service as any;      const result = serviceAsAny.createUrlImplicitFlowWithSilentRenew(config);
 
       expect(result).toBe(null);
     });
@@ -1546,11 +1502,7 @@ describe('UrlService Tests', () => {
 
       const config = {
         silentRenewUrl,
-      };
-
-      const serviceAsAny = service as any;
-
-      const resultObs$ = serviceAsAny.createUrlCodeFlowWithSilentRenew(config);
+      };      const serviceAsAny = service as any;      const resultObs$ = serviceAsAny.createUrlCodeFlowWithSilentRenew(config);
 
       resultObs$.subscribe((result: any) => {
         expect(result).toBe('');
@@ -1590,9 +1542,7 @@ describe('UrlService Tests', () => {
         .withArgs('authWellKnownEndPoints', config)
         .and.returnValue({ authorizationEndpoint });
 
-      const serviceAsAny = service as any;
-
-      const resultObs$ = serviceAsAny.createUrlCodeFlowWithSilentRenew(config);
+      const serviceAsAny = service as any;      const resultObs$ = serviceAsAny.createUrlCodeFlowWithSilentRenew(config);
 
       resultObs$.subscribe((result: any) => {
         expect(result).toBe(
@@ -1630,9 +1580,7 @@ describe('UrlService Tests', () => {
         .withArgs('authWellKnownEndPoints', config)
         .and.returnValue(null);
 
-      const serviceAsAny = service as any;
-
-      const resultObs$ = serviceAsAny.createUrlCodeFlowWithSilentRenew(config);
+      const serviceAsAny = service as any;      const resultObs$ = serviceAsAny.createUrlCodeFlowWithSilentRenew(config);
 
       resultObs$.subscribe((result: any) => {
         expect(result).toBe('');
@@ -1666,9 +1614,7 @@ describe('UrlService Tests', () => {
         .withArgs('authWellKnownEndPoints', config)
         .and.returnValue({ authorizationEndpoint });
 
-      const serviceAsAny = service as any;
-
-      const result = serviceAsAny.createUrlImplicitFlowAuthorize(config);
+      const serviceAsAny = service as any;      const result = serviceAsAny.createUrlImplicitFlowAuthorize(config);
 
       expect(result).toBe(
         `authorizationEndpoint?client_id=clientId&redirect_uri=http%3A%2F%2Fany-url.com&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}`
@@ -1693,9 +1639,7 @@ describe('UrlService Tests', () => {
         .withArgs('authWellKnownEndPoints', config)
         .and.returnValue(null);
 
-      const serviceAsAny = service as any;
-
-      const result = serviceAsAny.createUrlImplicitFlowAuthorize(config);
+      const serviceAsAny = service as any;      const result = serviceAsAny.createUrlImplicitFlowAuthorize(config);
 
       expect(result).toBe(null);
     });
@@ -1717,9 +1661,7 @@ describe('UrlService Tests', () => {
         .withArgs('authWellKnownEndPoints', config)
         .and.returnValue(null);
 
-      const serviceAsAny = service as any;
-
-      const result = serviceAsAny.createUrlImplicitFlowAuthorize(config);
+      const serviceAsAny = service as any;      const result = serviceAsAny.createUrlImplicitFlowAuthorize(config);
 
       expect(result).toBe(null);
     });
@@ -1740,9 +1682,7 @@ describe('UrlService Tests', () => {
       ).and.returnValue(state);
       spyOn(flowsDataService, 'createNonce').and.returnValue(nonce);
 
-      const serviceAsAny = service as any;
-
-      const resultObs$ = serviceAsAny.createUrlCodeFlowAuthorize(config);
+      const serviceAsAny = service as any;      const resultObs$ = serviceAsAny.createUrlCodeFlowAuthorize(config);
 
       resultObs$.subscribe((result: any) => {
         expect(result).toBeNull();
@@ -1781,9 +1721,7 @@ describe('UrlService Tests', () => {
         .withArgs('authWellKnownEndPoints', config)
         .and.returnValue({ authorizationEndpoint });
 
-      const serviceAsAny = service as any;
-
-      const resultObs$ = serviceAsAny.createUrlCodeFlowAuthorize(config);
+      const serviceAsAny = service as any;      const resultObs$ = serviceAsAny.createUrlCodeFlowAuthorize(config);
 
       resultObs$.subscribe((result: any) => {
         expect(result).toBe(
@@ -1827,9 +1765,7 @@ describe('UrlService Tests', () => {
         .withArgs('authWellKnownEndPoints', config)
         .and.returnValue({ authorizationEndpoint });
 
-      const serviceAsAny = service as any;
-
-      const resultObs$ = serviceAsAny.createUrlCodeFlowAuthorize(config, {
+      const serviceAsAny = service as any;      const resultObs$ = serviceAsAny.createUrlCodeFlowAuthorize(config, {
         customParams: { to: 'add', as: 'well' },
       });
 
@@ -1866,9 +1802,7 @@ describe('UrlService Tests', () => {
         .withArgs('authWellKnownEndPoints', config)
         .and.returnValue(null);
 
-      const serviceAsAny = service as any;
-
-      const resultObs$ = serviceAsAny.createUrlCodeFlowAuthorize(config);
+      const serviceAsAny = service as any;      const resultObs$ = serviceAsAny.createUrlCodeFlowAuthorize(config);
 
       resultObs$.subscribe((result: any) => {
         expect(result).toBe('');
@@ -1897,9 +1831,7 @@ describe('UrlService Tests', () => {
         });
 
       // Act
-      const value = service.getEndSessionUrl(config);
-
-      // Assert
+      const value = service.getEndSessionUrl(config);      // Assert
       const expectValue =
         'http://example?id_token_hint=mytoken&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
 
@@ -1920,9 +1852,7 @@ describe('UrlService Tests', () => {
         });
 
       // Act
-      const value = service.getEndSessionUrl(config);
-
-      // Assert
+      const value = service.getEndSessionUrl(config);      // Assert
       const expectValue =
         'http://example?post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized';
 
@@ -1943,9 +1873,7 @@ describe('UrlService Tests', () => {
         });
 
       // Act
-      const value = service.getEndSessionUrl(config, { param: 'to-add' });
-
-      // Assert
+      const value = service.getEndSessionUrl(config, { param: 'to-add' });      // Assert
       const expectValue =
         'http://example?id_token_hint=mytoken&post_logout_redirect_uri=https%3A%2F%2Flocalhost%3A44386%2FUnauthorized&param=to-add';
 
@@ -1970,9 +1898,7 @@ describe('UrlService Tests', () => {
       );
 
       // Act
-      const value = service.getEndSessionUrl(config);
-
-      // Assert
+      const value = service.getEndSessionUrl(config);      // Assert
       const expectValue =
         'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/logout?p=b2c_1_sign_in' +
         '&id_token_hint=UzI1NiIsImtpZCI6Il' +
@@ -1994,9 +1920,7 @@ describe('UrlService Tests', () => {
       spyOn(storagePersistenceService, 'getIdToken').and.returnValue('mytoken');
 
       // Act
-      const value = service.getEndSessionUrl(config);
-
-      // Assert
+      const value = service.getEndSessionUrl(config);      // Assert
       const expectValue = 'http://example?id_token_hint=mytoken';
 
       expect(value).toEqual(expectValue);
@@ -2024,12 +1948,8 @@ describe('UrlService Tests', () => {
         authority: 'something.auth0.com',
         clientId: 'someClientId',
         postLogoutRedirectUri: 'https://localhost:1234/unauthorized',
-      };
-
-      // Act
-      const value = service.getEndSessionUrl(config);
-
-      // Assert
+      };      // Act
+      const value = service.getEndSessionUrl(config);      // Assert
       const expectValue = `something.auth0.com/v2/logout?client_id=someClientId&returnTo=https://localhost:1234/unauthorized`;
 
       expect(value).toEqual(expectValue);

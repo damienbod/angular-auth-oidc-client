@@ -343,9 +343,7 @@ describe('CheckSessionService', () => {
 
     it('add event listener', () => {
       const serviceAsAny = checkSessionService as any;
-      const defaultView = serviceAsAny.document.defaultView;
-
-      const spyAddEventListener = spyOn(defaultView, 'addEventListener');
+      const defaultView = serviceAsAny.document.defaultView;      const spyAddEventListener = spyOn(defaultView, 'addEventListener');
       const configuration = { configId: 'configId1' };
 
       serviceAsAny.bindMessageEventToIframe(configuration);
@@ -360,17 +358,13 @@ describe('CheckSessionService', () => {
 
   describe('isCheckSessionConfigured', () => {
     it('returns true if startCheckSession on config is true', () => {
-      const config = { configId: 'configId1', startCheckSession: true };
-
-      const result = checkSessionService.isCheckSessionConfigured(config);
+      const config = { configId: 'configId1', startCheckSession: true };      const result = checkSessionService.isCheckSessionConfigured(config);
 
       expect(result).toBe(true);
     });
 
     it('returns true if startCheckSession on config is true', () => {
-      const config = { configId: 'configId1', startCheckSession: false };
-
-      const result = checkSessionService.isCheckSessionConfigured(config);
+      const config = { configId: 'configId1', startCheckSession: false };      const result = checkSessionService.isCheckSessionConfigured(config);
 
       expect(result).toBe(false);
     });

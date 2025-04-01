@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LoggerService } from '../logging/logger.service';
 import { AbstractSecurityStorage } from './abstract-security-storage';
@@ -6,7 +6,6 @@ import { AbstractSecurityStorage } from './abstract-security-storage';
 @Injectable({ providedIn: 'root' })
 export class BrowserStorageService {
   private readonly loggerService = inject(LoggerService);
-
   private readonly abstractSecurityStorage = inject(AbstractSecurityStorage);
 
   read(key: string, configuration: OpenIdConfiguration): any {

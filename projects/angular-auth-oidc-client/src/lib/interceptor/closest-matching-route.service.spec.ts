@@ -38,7 +38,6 @@ describe('ClosestMatchingRouteService', () => {
           ],
         },
       ];
-
       const { matchingConfig } = service.getConfigIdForClosestMatchingRoute(
         'https://my-secure-url.com/',
         allConfigs
@@ -64,7 +63,6 @@ describe('ClosestMatchingRouteService', () => {
           ],
         },
       ];
-
       const { matchingConfig } = service.getConfigIdForClosestMatchingRoute(
         'https://my-secure-url.com/',
         allConfigs
@@ -90,7 +88,6 @@ describe('ClosestMatchingRouteService', () => {
           ],
         },
       ];
-
       const { matchingConfig } = service.getConfigIdForClosestMatchingRoute(
         'https://first-route.com/',
         allConfigs
@@ -116,7 +113,6 @@ describe('ClosestMatchingRouteService', () => {
           ],
         },
       ];
-
       const { matchingConfig } = service.getConfigIdForClosestMatchingRoute(
         'https://first-route.com/anyparam',
         allConfigs
@@ -142,7 +138,6 @@ describe('ClosestMatchingRouteService', () => {
           ],
         },
       ];
-
       const { matchingConfig } = service.getConfigIdForClosestMatchingRoute(
         'https://third-route.com/',
         allConfigs
@@ -168,7 +163,6 @@ describe('ClosestMatchingRouteService', () => {
           ],
         },
       ];
-
       const { matchingConfig } = service.getConfigIdForClosestMatchingRoute(
         'https://first-route.com/test1/test2/test3',
         allConfigs
@@ -194,7 +188,6 @@ describe('ClosestMatchingRouteService', () => {
           ],
         },
       ];
-
       const { matchingConfig } = service.getConfigIdForClosestMatchingRoute(
         'https://first-route.com/test1/test2/test',
         allConfigs
@@ -220,7 +213,6 @@ describe('ClosestMatchingRouteService', () => {
           ],
         },
       ];
-
       const { matchingConfig } = service.getConfigIdForClosestMatchingRoute(
         'blabla',
         allConfigs

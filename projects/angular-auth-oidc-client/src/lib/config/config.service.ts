@@ -1,4 +1,4 @@
-﻿import {inject, Injectable, isDevMode} from '@angular/core';
+﻿import { inject, Injectable, isDevMode } from '@angular/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { concatMap, map } from 'rxjs/operators';
 import { LoggerService } from '../logging/logger.service';
@@ -14,23 +14,17 @@ import { ConfigValidationService } from './validation/config-validation.service'
 
 @Injectable({ providedIn: 'root' })
 export class ConfigurationService {
+  private configsInternal: Record<string, OpenIdConfiguration> = {};
+
   private readonly loggerService = inject(LoggerService);
-
   private readonly publicEventsService = inject(PublicEventsService);
-
   private readonly storagePersistenceService = inject(
     StoragePersistenceService
   );
-
   private readonly platformProvider = inject(PlatformProvider);
-
   private readonly authWellKnownService = inject(AuthWellKnownService);
-
   private readonly loader = inject(StsConfigLoader);
-
   private readonly configValidationService = inject(ConfigValidationService);
-
-  private configsInternal: Record<string, OpenIdConfiguration> = {};
 
   hasManyConfigs(): boolean {
     return Object.keys(this.configsInternal).length > 1;
@@ -87,8 +81,10 @@ export class ConfigurationService {
     if (Boolean(configId)) {
       const config = this.configsInternal[configId!];
 
-      if(!config && isDevMode()) {
-        console.warn(`[angular-auth-oidc-client] No configuration found for config id '${configId}'.`);
+      if (!config && isDevMode()) {
+        console.warn(
+          `[angular-auth-oidc-client] No configuration found for config id '${configId}'.`
+        );
       }
 
       return config || null;
@@ -109,12 +105,11 @@ export class ConfigurationService {
     this.createUniqueIds(passedConfigs);
 
     const allHandleConfigs$ = passedConfigs.map((x) => this.handleConfig(x));
-    const as = forkJoin(allHandleConfigs$).pipe(
+
+    return forkJoin(allHandleConfigs$).pipe(
       map((config) => config.filter((conf) => Boolean(conf))),
       map((c) => c as OpenIdConfiguration[])
     );
-
-    return as;
   }
 
   private createUniqueIds(passedConfigs: OpenIdConfiguration[]): void {

@@ -1,12 +1,11 @@
 import { DOCUMENT } from '@angular/common';
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LoggerService } from '../logging/logger.service';
 
 @Injectable({ providedIn: 'root' })
 export class IFrameService {
   private readonly document = inject(DOCUMENT);
-
   private readonly loggerService = inject(LoggerService);
 
   getExistingIFrame(identifier: string): HTMLIFrameElement | null {

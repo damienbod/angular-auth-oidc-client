@@ -1,5 +1,5 @@
 ﻿import { HttpParams } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable, Subject, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthStateService } from '../auth-state/auth-state.service';
@@ -27,23 +27,15 @@ export class SilentRenewService {
   }
 
   private readonly loggerService = inject(LoggerService);
-
   private readonly iFrameService = inject(IFrameService);
-
   private readonly flowsService = inject(FlowsService);
-
   private readonly resetAuthDataService = inject(ResetAuthDataService);
-
   private readonly flowsDataService = inject(FlowsDataService);
-
   private readonly authStateService = inject(AuthStateService);
-
   private readonly flowHelper = inject(FlowHelper);
-
   private readonly implicitFlowCallbackService = inject(
     ImplicitFlowCallbackService
   );
-
   private readonly intervalService = inject(IntervalService);
 
   getOrCreateIframe(config: OpenIdConfiguration): HTMLIFrameElement {
@@ -73,7 +65,6 @@ export class SilentRenewService {
     const params = new HttpParams({
       fromString: urlParts[1],
     });
-
     const errorParam = params.get('error');
 
     if (errorParam) {
@@ -92,7 +83,6 @@ export class SilentRenewService {
     const code = params.get('code') ?? '';
     const state = params.get('state') ?? '';
     const sessionState = params.get('session_state');
-
     const callbackContext: CallbackContext = {
       code,
       refreshToken: '',

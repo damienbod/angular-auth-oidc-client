@@ -22,10 +22,57 @@
             "format": ["PascalCase"]
           }
         ],
+        "@typescript-eslint/member-ordering": [
+          "error",
+          {
+            "default": {
+              "memberTypes": [
+                // Static members
+                "public-static-field",
+                "protected-static-field",
+                "private-static-field",
+                "#private-static-field",
+
+                // Readonly fields (grouped)
+                "private-instance-readonly-field",
+
+                // Constructors
+                "public-constructor",
+                "protected-constructor",
+                "private-constructor",
+
+                // Methods
+                "public-instance-method",
+                "protected-instance-method",
+                "private-instance-method"
+              ]
+            }
+          }
+        ],
         "max-len": "off",
-        "no-useless-constructor": "off",
-        "lines-between-class-members": ["error", "always"],
-        "newline-after-var": ["error", "always"],
+        "lines-between-class-members": [
+          "error",
+          {
+            "enforce": [
+              {
+                "blankLine": "always",
+                "prev": "method",
+                "next": "method"
+              },
+              {
+                "blankLine": "always",
+                "prev": "field",
+                "next": "method"
+              }
+            ]
+          }
+        ],
+        "padding-line-between-statements": [
+          "error",
+          { "blankLine": "always", "prev": ["const", "let", "var"], "next": "*" },
+          { "blankLine": "never", "prev": ["const", "let", "var"], "next": ["const", "let", "var"] },
+          { "blankLine": "always", "prev": "*", "next": "return" }
+        ],
         "one-var": ["error", "never"],
         "@typescript-eslint/no-useless-constructor": ["error"],
         "@typescript-eslint/prefer-readonly": ["error"],
@@ -35,7 +82,6 @@
         "no-case-declarations": ["error"],
         "no-empty": ["error"],
         "@typescript-eslint/no-empty-function": ["error"],
-        "no-unused-vars": "off",
         "@typescript-eslint/ban-types": ["error"],
         "no-useless-escape": ["error"],
         "no-prototype-builtins": ["error"],
@@ -43,7 +89,6 @@
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/typedef": ["error"],
         "@typescript-eslint/explicit-function-return-type": ["error"],
-        "newline-before-return": ["error"],
         "@typescript-eslint/no-unused-vars": [
           "error",
           {

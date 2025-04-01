@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
@@ -10,11 +10,8 @@ import { ResetAuthDataService } from '../reset-auth-data.service';
 @Injectable({ providedIn: 'root' })
 export class ImplicitFlowCallbackHandlerService {
   private readonly loggerService = inject(LoggerService);
-
   private readonly resetAuthDataService = inject(ResetAuthDataService);
-
   private readonly flowsDataService = inject(FlowsDataService);
-
   private readonly document = inject(DOCUMENT);
 
   // STEP 1 Code Flow
@@ -43,7 +40,6 @@ export class ImplicitFlowCallbackHandlerService {
 
         return resultData;
       }, {} as AuthResult);
-
     const callbackContext: CallbackContext = {
       code: '',
       refreshToken: '',

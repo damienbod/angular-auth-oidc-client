@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
@@ -21,11 +21,8 @@ export class AuthStateService {
   private readonly storagePersistenceService = inject(
     StoragePersistenceService
   );
-
   private readonly loggerService = inject(LoggerService);
-
   private readonly publicEventsService = inject(PublicEventsService);
-
   private readonly tokenValidationService = inject(TokenValidationService);
 
   private readonly authenticatedInternal$ =
@@ -190,7 +187,6 @@ export class AuthStateService {
     }
     const tokenToCheck =
       this.storagePersistenceService.getIdToken(configuration);
-
     const idTokenExpired = this.tokenValidationService.hasIdTokenExpired(
       tokenToCheck,
       configuration,
@@ -221,7 +217,6 @@ export class AuthStateService {
         configuration,
         renewTimeBeforeTokenExpiresInSeconds
       );
-
     const hasExpired = !accessTokenHasNotExpired;
 
     if (hasExpired) {
@@ -320,9 +315,8 @@ export class AuthStateService {
       configId: config.configId ?? '',
       isAuthenticated: this.isAuthenticated(config),
     }));
-
     const isAuthenticated = allConfigsAuthenticated.every(
-      (x) => !!x.isAuthenticated
+      (x) => x.isAuthenticated
     );
 
     return { allConfigsAuthenticated, isAuthenticated };

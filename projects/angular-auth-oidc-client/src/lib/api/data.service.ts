@@ -52,9 +52,7 @@ export class DataService {
   }
 
   private prepareParams(config: OpenIdConfiguration): HttpParams {
-    let params = new HttpParams();
-
-    const { ngswBypass } = config;
+    let params = new HttpParams();    const { ngswBypass } = config;
 
     if (ngswBypass) {
       params = params.set(NGSW_CUSTOM_PARAM, '');

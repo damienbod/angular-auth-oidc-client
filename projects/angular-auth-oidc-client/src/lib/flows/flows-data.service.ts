@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LoggerService } from '../logging/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
@@ -8,11 +8,9 @@ import { RandomService } from './random/random.service';
 @Injectable({ providedIn: 'root' })
 export class FlowsDataService {
   private readonly loggerService = inject(LoggerService);
-
   private readonly storagePersistenceService = inject(
     StoragePersistenceService
   );
-
   private readonly randomService = inject(RandomService);
 
   createNonce(configuration: OpenIdConfiguration): string {

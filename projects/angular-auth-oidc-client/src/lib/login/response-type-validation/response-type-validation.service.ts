@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
 import { FlowHelper } from '../../utils/flowHelper/flow-helper.service';
@@ -6,7 +6,6 @@ import { FlowHelper } from '../../utils/flowHelper/flow-helper.service';
 @Injectable({ providedIn: 'root' })
 export class ResponseTypeValidationService {
   private readonly loggerService = inject(LoggerService);
-
   private readonly flowHelper = inject(FlowHelper);
 
   hasConfigValidResponseType(configuration: OpenIdConfiguration): boolean {

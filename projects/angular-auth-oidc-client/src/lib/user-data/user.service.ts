@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { map, retry, switchMap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
@@ -24,17 +24,12 @@ export class UserService {
   }
 
   private readonly loggerService = inject(LoggerService);
-
   private readonly tokenHelperService = inject(TokenHelperService);
-
   private readonly flowHelper = inject(FlowHelper);
-
   private readonly oidcDataService = inject(DataService);
-
   private readonly storagePersistenceService = inject(
     StoragePersistenceService
   );
-
   private readonly eventService = inject(PublicEventsService);
 
   getAndPersistUserDataInStore(
@@ -64,7 +59,6 @@ export class UserService {
       );
     const isCurrentFlowCodeFlow =
       this.flowHelper.isCurrentFlowCodeFlow(currentConfiguration);
-
     const accessToken =
       this.storagePersistenceService.getAccessToken(currentConfiguration);
 
@@ -197,7 +191,6 @@ export class UserService {
   ): Observable<any> {
     const token =
       this.storagePersistenceService.getAccessToken(currentConfiguration);
-
     const authWellKnownEndPoints = this.storagePersistenceService.read(
       'authWellKnownEndPoints',
       currentConfiguration

@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, switchMap, tap } from 'rxjs/operators';
 import { AuthStateService } from '../../auth-state/auth-state.service';
@@ -18,19 +18,13 @@ const JWT_KEYS = 'jwtKeys';
 @Injectable({ providedIn: 'root' })
 export class HistoryJwtKeysCallbackHandlerService {
   private readonly loggerService = inject(LoggerService);
-
   private readonly authStateService = inject(AuthStateService);
-
   private readonly flowsDataService = inject(FlowsDataService);
-
   private readonly signInKeyDataService = inject(SigninKeyDataService);
-
   private readonly storagePersistenceService = inject(
     StoragePersistenceService
   );
-
   private readonly resetAuthDataService = inject(ResetAuthDataService);
-
   private readonly document = inject(DOCUMENT);
 
   // STEP 3 Code Flow, STEP 2 Implicit Flow, STEP 3 Refresh Token

@@ -10,7 +10,6 @@ export class ClosestMatchingRouteService {
   ): ClosestMatchingRouteResult {
     for (const config of configurations) {
       const { secureRoutes } = config;
-
       const matchingRoute = (secureRoutes ?? []).find((secureRoute) =>
         this.routeMatches(secureRoute, route)
       );

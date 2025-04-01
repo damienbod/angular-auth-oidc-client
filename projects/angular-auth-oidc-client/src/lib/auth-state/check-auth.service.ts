@@ -21,46 +21,22 @@ import { AuthStateService } from './auth-state.service';
 @Injectable({ providedIn: 'root' })
 export class CheckAuthService {
   private readonly checkSessionService = inject(CheckSessionService);
-
   private readonly currentUrlService = inject(CurrentUrlService);
-
   private readonly silentRenewService = inject(SilentRenewService);
-
   private readonly userService = inject(UserService);
-
   private readonly loggerService = inject(LoggerService);
-
   private readonly authStateService = inject(AuthStateService);
-
   private readonly callbackService = inject(CallbackService);
-
   private readonly refreshSessionService = inject(RefreshSessionService);
-
   private readonly periodicallyTokenCheckService = inject(
     PeriodicallyTokenCheckService
   );
-
   private readonly popupService = inject(PopUpService);
-
   private readonly autoLoginService = inject(AutoLoginService);
-
   private readonly storagePersistenceService = inject(
     StoragePersistenceService
   );
-
   private readonly publicEventsService = inject(PublicEventsService);
-
-  private getConfig(
-    configuration: OpenIdConfiguration,
-    url: string | undefined
-  ): OpenIdConfiguration | null {
-    const stateParamFromUrl =
-      this.currentUrlService.getStateParamFromCurrentUrl(url);
-
-    return Boolean(stateParamFromUrl)
-      ? this.getConfigurationWithUrlState([configuration], stateParamFromUrl)
-      : configuration;
-  }
 
   checkAuth(
     configuration: OpenIdConfiguration | null,
@@ -159,6 +135,18 @@ export class CheckAuthService {
           );
       })
     );
+  }
+
+  private getConfig(
+    configuration: OpenIdConfiguration,
+    url: string | undefined
+  ): OpenIdConfiguration | null {
+    const stateParamFromUrl =
+      this.currentUrlService.getStateParamFromCurrentUrl(url);
+
+    return Boolean(stateParamFromUrl)
+      ? this.getConfigurationWithUrlState([configuration], stateParamFromUrl)
+      : configuration;
   }
 
   private checkAuthWithConfig(
@@ -344,13 +332,11 @@ export class CheckAuthService {
     const allOtherConfigs = configurations.filter(
       (x) => x.configId !== activeConfig.configId
     );
-
     const currentConfigResult = this.checkAuthWithConfig(
       activeConfig,
       configurations,
       url
     );
-
     const allOtherConfigResults = allOtherConfigs.map((config) => {
       const { redirectUrl } = config;
 

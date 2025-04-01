@@ -1,5 +1,5 @@
 import { HttpHeaders } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, concatMap, retry, switchMap } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
@@ -16,19 +16,13 @@ import { UrlService } from '../utils/url/url.service';
 @Injectable({ providedIn: 'root' })
 export class LogoffRevocationService {
   private readonly loggerService = inject(LoggerService);
-
   private readonly dataService = inject(DataService);
-
   private readonly storagePersistenceService = inject(
     StoragePersistenceService
   );
-
   private readonly urlService = inject(UrlService);
-
   private readonly checkSessionService = inject(CheckSessionService);
-
   private readonly resetAuthDataService = inject(ResetAuthDataService);
-
   private readonly redirectService = inject(RedirectService);
 
   // Logs out on the server and the local client.
@@ -54,7 +48,6 @@ export class LogoffRevocationService {
     );
 
     const { urlHandler, customParams } = logoutAuthOptions || {};
-
     const endSessionUrl = this.urlService.getEndSessionUrl(
       config,
       customParams
