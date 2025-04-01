@@ -22,6 +22,33 @@
             "format": ["PascalCase"]
           }
         ],
+        "@typescript-eslint/member-ordering": [
+          "error",
+          {
+            "default": {
+              "memberTypes": [
+                // Static members
+                "public-static-field",
+                "protected-static-field",
+                "private-static-field",
+                "#private-static-field",
+
+                // Readonly fields (grouped)
+                "private-instance-readonly-field",
+
+                // Constructors
+                "public-constructor",
+                "protected-constructor",
+                "private-constructor",
+
+                // Methods
+                "public-instance-method",
+                "protected-instance-method",
+                "private-instance-method"
+              ]
+            }
+          }
+        ],
         "max-len": "off",
         "lines-between-class-members": [
           "error",

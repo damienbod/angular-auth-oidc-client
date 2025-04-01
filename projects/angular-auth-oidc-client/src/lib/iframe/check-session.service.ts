@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Injectable, NgZone, OnDestroy, inject } from '@angular/core';
+import { inject, Injectable, NgZone, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
@@ -15,40 +15,29 @@ const IFRAME_FOR_CHECK_SESSION_IDENTIFIER = 'myiFrameForCheckSession';
 
 @Injectable({ providedIn: 'root' })
 export class CheckSessionService implements OnDestroy {
-  private readonly loggerService = inject(LoggerService);
-
-  private readonly storagePersistenceService = inject(
-    StoragePersistenceService
-  );
-
-  private readonly iFrameService = inject(IFrameService);
-
-  private readonly eventService = inject(PublicEventsService);
-
-  private readonly zone = inject(NgZone);
-
-  private readonly document = inject(DOCUMENT);
-
   private checkSessionReceived = false;
-
   private scheduledHeartBeatRunning: number | null = null;
-
   private lastIFrameRefresh = 0;
-
   private outstandingMessages = 0;
-
-  private readonly heartBeatInterval = 3000;
-
-  private readonly iframeRefreshInterval = 60000;
-
-  private readonly checkSessionChangedInternal$ = new BehaviorSubject<boolean>(
-    false
-  );
-
   private iframeMessageEventListener?: (
     this: Window,
     ev: MessageEvent<any>
   ) => any;
+
+  private readonly loggerService = inject(LoggerService);
+  private readonly storagePersistenceService = inject(
+    StoragePersistenceService
+  );
+  private readonly iFrameService = inject(IFrameService);
+  private readonly eventService = inject(PublicEventsService);
+  private readonly zone = inject(NgZone);
+  private readonly document = inject(DOCUMENT);
+
+  private readonly heartBeatInterval = 3000;
+  private readonly iframeRefreshInterval = 60000;
+  private readonly checkSessionChangedInternal$ = new BehaviorSubject<boolean>(
+    false
+  );
 
   get checkSessionChanged$(): Observable<boolean> {
     return this.checkSessionChangedInternal$.asObservable();
@@ -292,7 +281,11 @@ export class CheckSessionService implements OnDestroy {
     const defaultView = this.document.defaultView;
 
     if (this.iframeMessageEventListener && defaultView) {
-      defaultView.removeEventListener('message', this.iframeMessageEventListener, false);
+      defaultView.removeEventListener(
+        'message',
+        this.iframeMessageEventListener,
+        false
+      );
     }
 
     this.iframeMessageEventListener = this.messageHandler.bind(

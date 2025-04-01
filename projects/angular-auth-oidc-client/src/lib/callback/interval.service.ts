@@ -1,14 +1,13 @@
-import { Injectable, NgZone, inject } from '@angular/core';
+import { inject, Injectable, NgZone } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 
 @Injectable({ providedIn: 'root' })
 export class IntervalService {
-  private readonly zone = inject(NgZone);
-
-  private readonly document = inject(DOCUMENT);
-
   runTokenValidationRunning: Subscription | null = null;
+
+  private readonly zone = inject(NgZone);
+  private readonly document = inject(DOCUMENT);
 
   isTokenValidationRunning(): boolean {
     return Boolean(this.runTokenValidationRunning);

@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
@@ -9,20 +9,16 @@ import { PopupResult } from './popup-result';
 
 @Injectable({ providedIn: 'root' })
 export class PopUpService {
-  private readonly loggerService = inject(LoggerService);
+  private popUp: Window | null = null;
+  private handle = -1;
 
+  private readonly loggerService = inject(LoggerService);
   private readonly storagePersistenceService = inject(
     StoragePersistenceService
   );
-
   private readonly document = inject(DOCUMENT);
 
   private readonly STORAGE_IDENTIFIER = 'popupauth';
-
-  private popUp: Window | null = null;
-
-  private handle = -1;
-
   private readonly resultInternal$ = new Subject<PopupResult>();
 
   get result$(): Observable<PopupResult> {
@@ -38,7 +34,8 @@ export class PopUpService {
       const popup = this.storagePersistenceService.read(
         this.STORAGE_IDENTIFIER,
         config
-      );      const windowIdentifier = this.windowInternal;
+      );
+      const windowIdentifier = this.windowInternal;
 
       if (!windowIdentifier) {
         return false;
@@ -193,7 +190,8 @@ export class PopUpService {
     }
 
     const width = options.width || popupDefaultOptions.width;
-    const height = options.height || popupDefaultOptions.height;    const left: number =
+    const height = options.height || popupDefaultOptions.height;
+    const left: number =
       windowIdentifier.screenLeft + (windowIdentifier.outerWidth - width) / 2;
     const top: number =
       windowIdentifier.screenTop + (windowIdentifier.outerHeight - height) / 2;
