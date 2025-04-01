@@ -1,5 +1,5 @@
 import { HttpParams } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AuthOptions } from '../../auth-options';
@@ -17,15 +17,11 @@ const AUTH0_ENDPOINT = 'auth0.com';
 @Injectable({ providedIn: 'root' })
 export class UrlService {
   private readonly loggerService = inject(LoggerService);
-
   private readonly flowsDataService = inject(FlowsDataService);
-
   private readonly flowHelper = inject(FlowHelper);
-
   private readonly storagePersistenceService = inject(
     StoragePersistenceService
   );
-
   private readonly jwtWindowCryptoService = inject(JwtWindowCryptoService);
 
   getUrlParameter(urlToCheck: string, name: string): string {
@@ -45,7 +41,8 @@ export class UrlService {
   }
 
   getUrlWithoutQueryParameters(url: URL): URL {
-    const u = new URL(url.toString());    const keys = [];
+    const u = new URL(url.toString());
+    const keys = [];
 
     for (const key of u.searchParams.keys()) {
       keys.push(key);
@@ -58,7 +55,10 @@ export class UrlService {
     return u;
   }
 
-  queryParametersExist(expected: URLSearchParams, actual: URLSearchParams): boolean {
+  queryParametersExist(
+    expected: URLSearchParams,
+    actual: URLSearchParams
+  ): boolean {
     let r = true;
 
     expected.forEach((v, k) => {
@@ -72,7 +72,8 @@ export class UrlService {
 
   isCallbackFromSts(currentUrl: string, config?: OpenIdConfiguration): boolean {
     if (config && config.checkRedirectUrlWhenCheckingIfIsCallback) {
-      const currentUrlInstance = new URL(currentUrl);      const redirectUrl = this.getRedirectUrl(config);
+      const currentUrlInstance = new URL(currentUrl);
+      const redirectUrl = this.getRedirectUrl(config);
 
       if (!redirectUrl) {
         this.loggerService.logError(
@@ -84,7 +85,8 @@ export class UrlService {
         return false;
       }
 
-      const redirectUriUrlInstance = new URL(redirectUrl);      const redirectUriWithoutQueryParams = this.getUrlWithoutQueryParameters(
+      const redirectUriUrlInstance = new URL(redirectUrl);
+      const redirectUriWithoutQueryParams = this.getUrlWithoutQueryParameters(
         redirectUriUrlInstance
       ).toString();
       const currentUrlWithoutQueryParams =

@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Injectable, RendererFactory2, inject } from '@angular/core';
+import { inject, Injectable, RendererFactory2 } from '@angular/core';
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
@@ -13,13 +13,9 @@ export class RefreshSessionIframeService {
     null,
     null
   );
-
   private readonly loggerService = inject(LoggerService);
-
   private readonly urlService = inject(UrlService);
-
   private readonly silentRenewService = inject(SilentRenewService);
-
   private readonly document = inject(DOCUMENT);
 
   refreshSessionWithIframe(
@@ -78,7 +74,8 @@ export class RefreshSessionIframeService {
     config: OpenIdConfiguration,
     allConfigs: OpenIdConfiguration[]
   ): void {
-    const instanceId = Math.random();    const initDestroyHandler = this.renderer.listen(
+    const instanceId = Math.random();
+    const initDestroyHandler = this.renderer.listen(
       'window',
       'oidc-silent-renew-init',
       (e: CustomEvent) => {

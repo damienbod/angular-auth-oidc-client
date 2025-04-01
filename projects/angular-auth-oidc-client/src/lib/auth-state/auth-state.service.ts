@@ -21,11 +21,8 @@ export class AuthStateService {
   private readonly storagePersistenceService = inject(
     StoragePersistenceService
   );
-
   private readonly loggerService = inject(LoggerService);
-
   private readonly publicEventsService = inject(PublicEventsService);
-
   private readonly tokenValidationService = inject(TokenValidationService);
 
   private readonly authenticatedInternal$ =

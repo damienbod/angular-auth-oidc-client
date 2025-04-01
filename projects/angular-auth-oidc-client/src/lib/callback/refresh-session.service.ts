@@ -35,29 +35,20 @@ export const MAX_RETRY_ATTEMPTS = 3;
 @Injectable({ providedIn: 'root' })
 export class RefreshSessionService {
   private readonly flowHelper = inject(FlowHelper);
-
   private readonly flowsDataService = inject(FlowsDataService);
-
   private readonly loggerService = inject(LoggerService);
-
   private readonly silentRenewService = inject(SilentRenewService);
-
   private readonly authStateService = inject(AuthStateService);
-
   private readonly authWellKnownService = inject(AuthWellKnownService);
-
   private readonly refreshSessionIframeService = inject(
     RefreshSessionIframeService
   );
-
   private readonly storagePersistenceService = inject(
     StoragePersistenceService
   );
-
   private readonly refreshSessionRefreshTokenService = inject(
     RefreshSessionRefreshTokenService
   );
-
   private readonly userService = inject(UserService);
 
   userForceRefreshSession(

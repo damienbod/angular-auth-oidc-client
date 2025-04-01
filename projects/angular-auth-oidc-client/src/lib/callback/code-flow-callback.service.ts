@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
@@ -11,11 +11,8 @@ import { IntervalService } from './interval.service';
 @Injectable({ providedIn: 'root' })
 export class CodeFlowCallbackService {
   private readonly flowsService = inject(FlowsService);
-
   private readonly router = inject(Router);
-
   private readonly flowsDataService = inject(FlowsDataService);
-
   private readonly intervalService = inject(IntervalService);
 
   authenticatedCallbackWithCode(
@@ -24,7 +21,8 @@ export class CodeFlowCallbackService {
     allConfigs: OpenIdConfiguration[]
   ): Observable<CallbackContext> {
     const isRenewProcess = this.flowsDataService.isSilentRenewRunning(config);
-    const { triggerAuthorizationResultEvent } = config;    const postLoginRoute = config.postLoginRoute || '/';
+    const { triggerAuthorizationResultEvent } = config;
+    const postLoginRoute = config.postLoginRoute || '/';
     const unauthorizedRoute = config.unauthorizedRoute || '/';
 
     return this.flowsService

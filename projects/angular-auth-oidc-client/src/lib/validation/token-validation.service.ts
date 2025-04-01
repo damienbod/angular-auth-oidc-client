@@ -73,13 +73,9 @@ export class TokenValidationService {
   ];
 
   private readonly tokenHelperService = inject(TokenHelperService);
-
   private readonly loggerService = inject(LoggerService);
-
   private readonly jwkExtractor = inject(JwkExtractor);
-
   private readonly jwkWindowCryptoService = inject(JwkWindowCryptoService);
-
   private readonly jwtWindowCryptoService = inject(JwtWindowCryptoService);
 
   // id_token C7: The current time MUST be before the time represented by the exp Claim
@@ -451,7 +447,8 @@ export class TokenValidationService {
     }
 
     const kid: string = headerData.kid;
-    const alg: string = headerData.alg;    const keys: JsonWebKey[] = jwtkeys.keys;
+    const alg: string = headerData.alg;
+    const keys: JsonWebKey[] = jwtkeys.keys;
     let foundKeys: JsonWebKey[];
     let key: JsonWebKey;
 
@@ -482,7 +479,8 @@ export class TokenValidationService {
       return of(false);
     }
 
-    const algorithm = getImportAlg(alg);    const signingInput = this.tokenHelperService.getSigningInputFromToken(
+    const algorithm = getImportAlg(alg);
+    const signingInput = this.tokenHelperService.getSigningInputFromToken(
       idToken,
       true,
       configuration
@@ -499,7 +497,8 @@ export class TokenValidationService {
       mergeMap((cryptoKey: CryptoKey) => {
         const signature: Uint8Array = base64url.parse(rawSignature, {
           loose: true,
-        });        const verifyAlgorithm = getVerifyAlg(alg);
+        });
+        const verifyAlgorithm = getVerifyAlg(alg);
 
         return from(
           this.jwkWindowCryptoService.verifyKey(

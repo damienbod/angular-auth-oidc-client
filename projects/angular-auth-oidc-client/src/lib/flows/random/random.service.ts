@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
 import { CryptoService } from '../../utils/crypto/crypto.service';
@@ -6,7 +6,6 @@ import { CryptoService } from '../../utils/crypto/crypto.service';
 @Injectable({ providedIn: 'root' })
 export class RandomService {
   private readonly loggerService = inject(LoggerService);
-
   private readonly cryptoService = inject(CryptoService);
 
   createRandom(
@@ -43,7 +42,8 @@ export class RandomService {
   private randomString(length: number): string {
     let result = '';
     const characters =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';    const values = new Uint32Array(length);
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const values = new Uint32Array(length);
     const crypto = this.cryptoService.getCrypto();
 
     if (crypto) {

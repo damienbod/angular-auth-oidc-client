@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
@@ -11,13 +11,10 @@ import { ImplicitFlowCallbackService } from './implicit-flow-callback.service';
 @Injectable({ providedIn: 'root' })
 export class CallbackService {
   private readonly urlService = inject(UrlService);
-
   private readonly flowHelper = inject(FlowHelper);
-
   private readonly implicitFlowCallbackService = inject(
     ImplicitFlowCallbackService
   );
-
   private readonly codeFlowCallbackService = inject(CodeFlowCallbackService);
 
   private readonly stsCallbackInternal$ = new Subject<void>();

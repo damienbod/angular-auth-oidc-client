@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
   ActivatedRouteSnapshot,
   Router,
@@ -18,13 +18,9 @@ import { AutoLoginService } from './auto-login.service';
 @Injectable({ providedIn: 'root' })
 export class AutoLoginAllRoutesGuard {
   private readonly autoLoginService = inject(AutoLoginService);
-
   private readonly checkAuthService = inject(CheckAuthService);
-
   private readonly loginService = inject(LoginService);
-
   private readonly configurationService = inject(ConfigurationService);
-
   private readonly router = inject(Router);
 
   canLoad(): Observable<boolean> {

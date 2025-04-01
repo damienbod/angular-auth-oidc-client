@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
 
@@ -8,7 +8,6 @@ const PARTS_OF_TOKEN = 3;
 @Injectable({ providedIn: 'root' })
 export class TokenHelperService {
   private readonly loggerService = inject(LoggerService);
-
   private readonly document = inject<Document>(DOCUMENT);
 
   getTokenExpirationDate(dataIdToken: any): Date {

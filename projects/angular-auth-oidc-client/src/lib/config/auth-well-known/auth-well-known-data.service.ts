@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { map, retry } from 'rxjs/operators';
 import { DataService } from '../../api/data.service';
@@ -11,7 +11,6 @@ const WELL_KNOWN_SUFFIX = `/.well-known/openid-configuration`;
 @Injectable({ providedIn: 'root' })
 export class AuthWellKnownDataService {
   private readonly loggerService = inject(LoggerService);
-
   private readonly http = inject(DataService);
 
   getWellKnownEndPointsForConfig(
@@ -55,7 +54,8 @@ export class AuthWellKnownDataService {
     wellKnownEndpoint: string,
     config: OpenIdConfiguration
   ): Observable<any> {
-    let url = wellKnownEndpoint;    const wellKnownSuffix = config.authWellknownUrlSuffix || WELL_KNOWN_SUFFIX;
+    let url = wellKnownEndpoint;
+    const wellKnownSuffix = config.authWellknownUrlSuffix || WELL_KNOWN_SUFFIX;
 
     if (!wellKnownEndpoint.includes(wellKnownSuffix)) {
       url = `${wellKnownEndpoint}${wellKnownSuffix}`;

@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
   ActivatedRouteSnapshot,
   Router,
@@ -15,13 +15,9 @@ import { AutoLoginService } from './auto-login.service';
 @Injectable({ providedIn: 'root' })
 export class AutoLoginPartialRoutesGuard {
   private readonly autoLoginService = inject(AutoLoginService);
-
   private readonly authStateService = inject(AuthStateService);
-
   private readonly loginService = inject(LoginService);
-
   private readonly configurationService = inject(ConfigurationService);
-
   private readonly router = inject(Router);
 
   canLoad(): Observable<boolean> {
@@ -89,7 +85,8 @@ export function autoLoginPartialRoutesGuard(
   const router = inject(Router);
   const authOptions: AuthOptions | undefined = route?.data
     ? { customParams: route.data }
-    : undefined;  const url =
+    : undefined;
+  const url =
     router.getCurrentNavigation()?.extractedUrl.toString().substring(1) ?? '';
 
   return checkAuth(
