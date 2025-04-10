@@ -37,7 +37,7 @@ Use the `provideAuth` function to configure the library.
 
 ```ts
 import { ApplicationConfig } from '@angular/core';
-import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
+import { provideAuth, LogLevel } from 'angular-auth-oidc-client';
 // ...
 
 export const appConfig: ApplicationConfig = {
