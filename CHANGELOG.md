@@ -1,5 +1,13 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2025-05-11 19.0.1
+
+- Wildcards in secure routes
+- New lint rules
+- Updated build
+- fix: prevent event listener accumulation
+- add debug log for redirectUrl check
+
 ### 2024-12-03 19.0.0
 
 - Angular 19
