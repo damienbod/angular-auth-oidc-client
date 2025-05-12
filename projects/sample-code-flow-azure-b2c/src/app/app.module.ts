@@ -24,12 +24,7 @@ import { UnauthorizedComponent } from './unauthorized/unauthorized.component';
     ProtectedComponent,
   ],
   bootstrap: [AppComponent],
-  imports: [
-    BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
-    FormsModule,
-    routing,
-    AuthConfigModule,
-  ],
+  imports: [BrowserModule, FormsModule, routing, AuthConfigModule],
   providers: [provideHttpClient(withInterceptorsFromDi())],
 })
 export class AppModule {}
