@@ -7,6 +7,7 @@ import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
 import { IntervalService } from './interval.service';
+import { OidcError } from '../flows/callback-handling/oidc-error';
 
 @Injectable({ providedIn: 'root' })
 export class CodeFlowCallbackService {
@@ -43,6 +44,10 @@ export class CodeFlowCallbackService {
           this.intervalService.stopPeriodicTokenCheck();
           if (!triggerAuthorizationResultEvent && !isRenewProcess) {
             this.router.navigateByUrl(unauthorizedRoute);
+          }
+
+          if (error instanceof OidcError) {
+            return throwError(() => error);
           }
 
           return throwError(() => new Error(error));
