@@ -17,6 +17,7 @@ import { StoragePersistenceService } from '../storage/storage-persistence.servic
 import { UserService } from '../user-data/user.service';
 import { CurrentUrlService } from '../utils/url/current-url.service';
 import { AuthStateService } from './auth-state.service';
+import { OidcError } from '../flows/callback-handling/oidc-error';
 
 @Injectable({ providedIn: 'root' })
 export class CheckAuthService {
@@ -263,7 +264,9 @@ export class CheckAuthService {
           this.autoLoginService.checkSavedRedirectRouteAndNavigate(config);
         }
       }),
-      catchError(({ message }) => {
+      catchError(error => {
+        const message = error.message;
+
         this.loggerService.logError(config, message);
         this.publicEventsService.fireEvent(
           EventTypes.CheckingAuthFinishedWithError,
@@ -273,6 +276,7 @@ export class CheckAuthService {
         const result: LoginResponse = {
           isAuthenticated: false,
           errorMessage: message,
+          oidcError: error instanceof OidcError ? error : undefined,
           userData: null,
           idToken: '',
           accessToken: '',
