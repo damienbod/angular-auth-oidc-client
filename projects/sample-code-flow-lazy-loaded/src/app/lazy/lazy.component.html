@@ -6,6 +6,8 @@ user is authenticated: {{ isAuthenticated }}
 <button (click)="login()">Click here to login</button>
 <br />
 
-<div *ngIf="isAuthenticated">
-  <button (click)="logout()">Click here to logout</button>
-</div>
+@if (isAuthenticated) {
+  <div>
+    <button (click)="logout()">Click here to logout</button>
+  </div>
+}
