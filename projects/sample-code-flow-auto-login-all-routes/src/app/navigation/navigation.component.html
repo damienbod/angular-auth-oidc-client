@@ -10,45 +10,56 @@
     data-target="#topNavbarCollapse"
     data-toggle="collapse"
     type="button"
-  >
+    >
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="topNavbarCollapse">
     <ul class="mr-auto navbar-nav">
       <li class="nav-item">
-        <a class="nav-link" *ngIf="isAuthenticated" [routerLink]="['home']"
-          >home</a
-        >
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" *ngIf="isAuthenticated" [routerLink]="['protected']"
-          >protected</a
-        >
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" *ngIf="isAuthenticated" [routerLink]="['forbidden']"
-          >forbidden</a
-        >
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" *ngIf="isAuthenticated" [routerLink]="['customers']"
-          >lazy customers</a
-        >
-      </li>
-      <li class="nav-item">
-        <a
-          class="nav-link"
-          *ngIf="!isAuthenticated"
-          [routerLink]="['protected']"
-          >Route to 'protected' Route & Auto Login</a
-        >
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" *ngIf="isAuthenticated" (click)="logout()"
-          >Logout</a
-        >
-      </li>
-    </ul>
-    <ul class="navbar-nav"></ul>
-  </div>
-</nav>
+        @if (isAuthenticated) {
+          <a class="nav-link" [routerLink]="['home']"
+            >home</a
+            >
+          }
+        </li>
+        <li class="nav-item">
+          @if (isAuthenticated) {
+            <a class="nav-link" [routerLink]="['protected']"
+              >protected</a
+              >
+            }
+          </li>
+          <li class="nav-item">
+            @if (isAuthenticated) {
+              <a class="nav-link" [routerLink]="['forbidden']"
+                >forbidden</a
+                >
+              }
+            </li>
+            <li class="nav-item">
+              @if (isAuthenticated) {
+                <a class="nav-link" [routerLink]="['customers']"
+                  >lazy customers</a
+                  >
+                }
+              </li>
+              <li class="nav-item">
+                @if (!isAuthenticated) {
+                  <a
+                    class="nav-link"
+                    [routerLink]="['protected']"
+                    >Route to 'protected' Route & Auto Login</a
+                    >
+                  }
+                </li>
+                <li class="nav-item">
+                  @if (isAuthenticated) {
+                    <a class="nav-link" (click)="logout()"
+                      >Logout</a
+                      >
+                    }
+                  </li>
+                </ul>
+                <ul class="navbar-nav"></ul>
+              </div>
+            </nav>

@@ -1,29 +1,26 @@
 <div>Welcome to home Route</div>
 
-<div *ngIf="isAuthenticated; else noAuth">
-  <button (click)="logout()">Logout</button>
-  <button (click)="logoffAndRevokeTokens()">Logout and revoke tokens</button>
-  <button (click)="revokeAccessToken()">Revoke access token</button>
-  <button (click)="revokeRefreshToken()">Revoke refresh token</button>
-  <button (click)="refreshSession()">Refresh session</button>
-  <hr />
-
-  <br />
-
-  Is Authenticated: {{ isAuthenticated }}
-
-  <br />
-  userData
-  <pre>{{ userData$ | async | json }}</pre>
-
-  <br />
-</div>
-
-<ng-template #noAuth>
+@if (isAuthenticated) {
+  <div>
+    <button (click)="logout()">Logout</button>
+    <button (click)="logoffAndRevokeTokens()">Logout and revoke tokens</button>
+    <button (click)="revokeAccessToken()">Revoke access token</button>
+    <button (click)="revokeRefreshToken()">Revoke refresh token</button>
+    <button (click)="refreshSession()">Refresh session</button>
+    <hr />
+    <br />
+    Is Authenticated: {{ isAuthenticated }}
+    <br />
+    userData
+    <pre>{{ userData$ | async | json }}</pre>
+    <br />
+  </div>
+} @else {
   <button (click)="login()">Login</button>
   <button (click)="loginWithPopup()">Login Popup</button>
   <hr />
-</ng-template>
+}
+
 
 Configuration loaded:
 <pre>{{ configuration$ | async | json }}</pre>
