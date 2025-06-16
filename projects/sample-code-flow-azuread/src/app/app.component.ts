@@ -4,9 +4,9 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 
 @Component({
-    selector: 'app-root',
-    templateUrl: 'app.component.html',
-    imports: [RouterOutlet, NavMenuComponent]
+  selector: 'app-root',
+  templateUrl: 'app.component.html',
+  imports: [RouterOutlet, NavMenuComponent],
 })
 export class AppComponent {
   private readonly oidcSecurityService = inject(OidcSecurityService);

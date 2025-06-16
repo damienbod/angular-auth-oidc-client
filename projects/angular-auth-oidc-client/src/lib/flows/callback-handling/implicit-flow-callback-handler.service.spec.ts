@@ -1,4 +1,3 @@
-
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { mockProvider } from '../../../test/auto-mock';
 import { LoggerService } from '../../logging/logger.service';
@@ -20,7 +19,7 @@ describe('ImplicitFlowCallbackHandlerService', () => {
         mockProvider(ResetAuthDataService),
         mockProvider(LoggerService),
         {
-          provide: DOCUMENT,
+          provide: Document,
           useValue: {
             location: {
               get hash(): string {
@@ -97,7 +96,8 @@ describe('ImplicitFlowCallbackHandlerService', () => {
         jwtKeys: null,
         validationResult: null,
         existingIdToken: null,
-      } as CallbackContext;      const allconfigs = [
+      } as CallbackContext;
+      const allconfigs = [
         {
           configId: 'configId1',
         },
@@ -122,7 +122,8 @@ describe('ImplicitFlowCallbackHandlerService', () => {
         jwtKeys: null,
         validationResult: null,
         existingIdToken: null,
-      } as CallbackContext;      const allconfigs = [
+      } as CallbackContext;
+      const allconfigs = [
         {
           configId: 'configId1',
         },

@@ -70,7 +70,8 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       const DUMMY_AUTH_RESULT = {
         refresh_token: 'dummy_refresh_token',
         id_token: 'some-id-token',
-      };      const callbackContext = {
+      };
+      const callbackContext = {
         authResult: DUMMY_AUTH_RESULT,
       } as CallbackContext;
       const allconfigs = [
@@ -103,7 +104,8 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       const DUMMY_AUTH_RESULT = {
         refresh_token: 'dummy_refresh_token',
         id_token: 'some-id-token',
-      };      const storagePersistenceServiceSpy = spyOn(
+      };
+      const storagePersistenceServiceSpy = spyOn(
         storagePersistenceService,
         'write'
       );
@@ -141,7 +143,8 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       const DUMMY_AUTH_RESULT = {
         refresh_token: 'dummy_refresh_token',
         id_token: 'some-id-token',
-      };      const storagePersistenceServiceSpy = spyOn(
+      };
+      const storagePersistenceServiceSpy = spyOn(
         storagePersistenceService,
         'write'
       );
@@ -189,7 +192,8 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
           configId: 'configId1',
           historyCleanupOff: false,
         },
-      ];      const windowSpy = spyOn(window.history, 'replaceState');
+      ];
+      const windowSpy = spyOn(window.history, 'replaceState');
 
       spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(
         of({ keys: [] } as JwtKeys)
@@ -208,7 +212,8 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     it('returns callbackContext with jwtkeys filled if everything works fine', waitForAsync(() => {
       const DUMMY_AUTH_RESULT = {
         id_token: 'some-id-token',
-      };      const callbackContext = {
+      };
+      const callbackContext = {
         isRenewProcess: false,
         authResult: DUMMY_AUTH_RESULT,
       } as CallbackContext;
@@ -240,7 +245,8 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     it('returns error if no jwtKeys have been in the call --> keys are null', waitForAsync(() => {
       const DUMMY_AUTH_RESULT = {
         id_token: 'some-id-token',
-      };      const callbackContext = {
+      };
+      const callbackContext = {
         isRenewProcess: false,
         authResult: DUMMY_AUTH_RESULT,
       } as CallbackContext;
@@ -338,7 +344,8 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
           configId: 'configId1',
           historyCleanupOff: true,
         },
-      ];      const resetAuthorizationDataSpy = spyOn(
+      ];
+      const resetAuthorizationDataSpy = spyOn(
         resetAuthDataService,
         'resetAuthorizationData'
       );
@@ -377,7 +384,8 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
           configId: 'configId1',
           historyCleanupOff: true,
         },
-      ];      const resetAuthorizationDataSpy = spyOn(
+      ];
+      const resetAuthorizationDataSpy = spyOn(
         resetAuthDataService,
         'resetAuthorizationData'
       );
@@ -409,7 +417,8 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     it('should store jwtKeys', waitForAsync(() => {
       const DUMMY_AUTH_RESULT = {
         id_token: 'some-id-token',
-      };      const initialCallbackContext = {
+      };
+      const initialCallbackContext = {
         authResult: DUMMY_AUTH_RESULT,
       } as CallbackContext;
       const allconfigs = [
@@ -456,7 +465,8 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       } as AuthResult;
       const initialCallbackContext = {
         authResult,
-      } as CallbackContext;      const allconfigs = [
+      } as CallbackContext;
+      const allconfigs = [
         {
           configId: 'configId1',
           historyCleanupOff: true,
@@ -501,7 +511,8 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       } as AuthResult;
       const initialCallbackContext = {
         authResult,
-      } as CallbackContext;      const allconfigs = [
+      } as CallbackContext;
+      const allconfigs = [
         {
           configId: 'configId1',
           historyCleanupOff: true,
@@ -541,7 +552,8 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       const authResult = {
         id_token: 'some-id-token',
         access_token: 'some-access-token',
-      } as AuthResult;      const initialCallbackContext = { authResult } as CallbackContext;
+      } as AuthResult;
+      const initialCallbackContext = { authResult } as CallbackContext;
       const allconfigs = [
         {
           configId: 'configId1',
@@ -576,7 +588,8 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       const config = {
         configId: 'configId1',
         historyCleanupOff: true,
-      };      const value = (service as any).historyCleanUpTurnedOn(config);
+      };
+      const value = (service as any).historyCleanUpTurnedOn(config);
 
       expect(value).toEqual(false);
     });
@@ -585,7 +598,8 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       const config = {
         configId: 'configId1',
         historyCleanupOff: false,
-      };      const value = (service as any).historyCleanUpTurnedOn(config);
+      };
+      const value = (service as any).historyCleanUpTurnedOn(config);
 
       expect(value).toEqual(true);
     });

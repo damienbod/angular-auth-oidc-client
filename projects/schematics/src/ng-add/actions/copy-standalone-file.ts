@@ -9,12 +9,20 @@ import {
   SchematicsException,
   template,
   Tree,
-  url
+  url,
 } from '@angular-devkit/schematics';
 import { getProject } from '../../utils/angular-utils';
 import { NgAddOptions } from '../models/ng-add-options';
 import { FlowType } from '../schema';
-import { AUTH_0, AZURE_AD_REFRESH_TOKENS, AZURE_AD_SILENT_RENEW, DEFAULT_CONFIG, IFRAME_SILENT_RENEW, OAUTH_PAR, OIDC_PLAIN } from './configs';
+import {
+  AUTH_0,
+  AZURE_AD_REFRESH_TOKENS,
+  AZURE_AD_SILENT_RENEW,
+  DEFAULT_CONFIG,
+  IFRAME_SILENT_RENEW,
+  OAUTH_PAR,
+  OIDC_PLAIN,
+} from './configs';
 
 export function copyStandaloneFile(options: NgAddOptions): Rule {
   return (host: Tree, context: SchematicContext) => {

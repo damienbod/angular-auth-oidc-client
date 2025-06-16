@@ -1,6 +1,5 @@
-import { inject, Injectable, NgZone, DOCUMENT } from '@angular/core';
+import { DOCUMENT, inject, Injectable, NgZone } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
-
 
 @Injectable({ providedIn: 'root' })
 export class IntervalService {

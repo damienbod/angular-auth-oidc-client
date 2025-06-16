@@ -1,6 +1,6 @@
-
 import { TestBed } from '@angular/core/testing';
 import { RedirectService } from './redirect.service';
+import { DOCUMENT } from '@angular/core';
 
 describe('Redirect Service Tests', () => {
   let service: RedirectService;
@@ -29,7 +29,7 @@ describe('Redirect Service Tests', () => {
 
   beforeEach(() => {
     service = TestBed.inject(RedirectService);
-    myDocument = TestBed.inject(DOCUMENT);
+    myDocument = TestBed.inject(Document);
   });
 
   it('should create', () => {

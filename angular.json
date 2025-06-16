@@ -27,6 +27,7 @@
         "test": {
           "builder": "@angular/build:karma",
           "options": {
+            "polyfills": ["zone.js", "zone.js/testing"],
             "main": "projects/angular-auth-oidc-client/src/test.ts",
             "tsConfig": "projects/angular-auth-oidc-client/tsconfig.spec.json",
             "karmaConfig": "projects/angular-auth-oidc-client/karma.conf.js",

@@ -1,4 +1,4 @@
-import { NgModule, inject } from '@angular/core';
+import { inject, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { EventTypes, PublicEventsService } from 'angular-auth-oidc-client';

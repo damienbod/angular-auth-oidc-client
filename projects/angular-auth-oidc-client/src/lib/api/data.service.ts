@@ -1,5 +1,5 @@
 import { HttpHeaders, HttpParams } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { HttpBaseService } from './http-base.service';
@@ -52,7 +52,8 @@ export class DataService {
   }
 
   private prepareParams(config: OpenIdConfiguration): HttpParams {
-    let params = new HttpParams();    const { ngswBypass } = config;
+    let params = new HttpParams();
+    const { ngswBypass } = config;
 
     if (ngswBypass) {
       params = params.set(NGSW_CUSTOM_PARAM, '');

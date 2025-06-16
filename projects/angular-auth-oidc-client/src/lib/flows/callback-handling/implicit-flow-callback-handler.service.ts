@@ -1,5 +1,4 @@
-
-import { inject, Injectable, DOCUMENT } from '@angular/core';
+import { DOCUMENT, inject, Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';

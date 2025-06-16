@@ -52,7 +52,8 @@ describe('TokenValidationService', () => {
     });
 
     it('returns false if aud is string and passed aud does not match idToken.aud', () => {
-      const dataIdToken = { aud: 'banana' };      const valueFalse = tokenValidationService.validateIdTokenAud(
+      const dataIdToken = { aud: 'banana' };
+      const valueFalse = tokenValidationService.validateIdTokenAud(
         dataIdToken,
         'bananammmm',
         { configId: 'configId1' }
@@ -64,7 +65,8 @@ describe('TokenValidationService', () => {
     it('returns true if aud is string array and passed aud is included in the array', () => {
       const dataIdToken = {
         aud: ['banana', 'apple', 'https://nice.dom'],
-      };      const audValidTrue = tokenValidationService.validateIdTokenAud(
+      };
+      const audValidTrue = tokenValidationService.validateIdTokenAud(
         dataIdToken,
         'apple',
         { configId: 'configId1' }
@@ -76,7 +78,8 @@ describe('TokenValidationService', () => {
     it('returns false if aud is string array and passed aud is NOT included in the array', () => {
       const dataIdToken = {
         aud: ['banana', 'apple', 'https://nice.dom'],
-      };      const audValidFalse = tokenValidationService.validateIdTokenAud(
+      };
+      const audValidFalse = tokenValidationService.validateIdTokenAud(
         dataIdToken,
         'https://nice.domunnnnnnkoem',
         {
@@ -200,7 +203,8 @@ describe('TokenValidationService', () => {
           '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
         ],
         azp: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
-      };      const azpInvalid = tokenValidationService.validateIdTokenAzpValid(
+      };
+      const azpInvalid = tokenValidationService.validateIdTokenAzpValid(
         dataIdToken,
         'bananammmm'
       );
@@ -216,7 +220,8 @@ describe('TokenValidationService', () => {
           '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
         ],
         azp: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
-      };      const azpValid = tokenValidationService.validateIdTokenAzpValid(
+      };
+      const azpValid = tokenValidationService.validateIdTokenAzpValid(
         dataIdToken,
         '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com'
       );
@@ -227,7 +232,8 @@ describe('TokenValidationService', () => {
     it('returns true if ID token has no azp property', () => {
       const dataIdToken = {
         noAzpProperty: 'something',
-      };      const azpValid = tokenValidationService.validateIdTokenAzpValid(
+      };
+      const azpValid = tokenValidationService.validateIdTokenAzpValid(
         dataIdToken,
         'bananammmm'
       );
@@ -245,7 +251,8 @@ describe('TokenValidationService', () => {
           '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
         ],
         azp: '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com',
-      };      const valueTrue =
+      };
+      const valueTrue =
         tokenValidationService.validateIdTokenAzpExistsIfMoreThanOneAud(
           dataIdToken
         );
@@ -256,7 +263,8 @@ describe('TokenValidationService', () => {
     it('returns true if aud is array but only has one item', () => {
       const dataIdToken = {
         aud: ['banana'],
-      };      const valueTrue =
+      };
+      const valueTrue =
         tokenValidationService.validateIdTokenAzpExistsIfMoreThanOneAud(
           dataIdToken
         );
@@ -285,7 +293,8 @@ describe('TokenValidationService', () => {
         aud: 'bad',
         exp: 1589210086,
         // iat: 1589206486,
-      };      const result = tokenValidationService.validateRequiredIdToken(
+      };
+      const result = tokenValidationService.validateRequiredIdToken(
         decodedIdToken,
         { configId: 'configId1' }
       );
@@ -300,7 +309,8 @@ describe('TokenValidationService', () => {
         aud: 'bad',
         // exp: 1589210086,
         iat: 1589206486,
-      };      const result = tokenValidationService.validateRequiredIdToken(
+      };
+      const result = tokenValidationService.validateRequiredIdToken(
         decodedIdToken,
         { configId: 'configId1' }
       );
@@ -315,7 +325,8 @@ describe('TokenValidationService', () => {
         // aud: 'bad',
         exp: 1589210086,
         iat: 1589206486,
-      };      const result = tokenValidationService.validateRequiredIdToken(
+      };
+      const result = tokenValidationService.validateRequiredIdToken(
         decodedIdToken,
         { configId: 'configId1' }
       );
@@ -330,7 +341,8 @@ describe('TokenValidationService', () => {
         aud: 'bad',
         exp: 1589210086,
         iat: 1589206486,
-      };      const result = tokenValidationService.validateRequiredIdToken(
+      };
+      const result = tokenValidationService.validateRequiredIdToken(
         decodedIdToken,
         { configId: 'configId1' }
       );
@@ -345,7 +357,8 @@ describe('TokenValidationService', () => {
         aud: 'bad',
         exp: 1589210086,
         iat: 1589206486,
-      };      const result = tokenValidationService.validateRequiredIdToken(
+      };
+      const result = tokenValidationService.validateRequiredIdToken(
         decodedIdToken,
         { configId: 'configId1' }
       );
@@ -360,7 +373,8 @@ describe('TokenValidationService', () => {
         aud: 'bad',
         exp: 1589210086,
         iat: 1589206486,
-      };      const result = tokenValidationService.validateRequiredIdToken(
+      };
+      const result = tokenValidationService.validateRequiredIdToken(
         decodedIdToken,
         { configId: 'configId1' }
       );
@@ -373,7 +387,8 @@ describe('TokenValidationService', () => {
     it('returns true if issuer matches iss in idToken', () => {
       const decodedIdToken = {
         iss: 'xc',
-      };      const valueTrue = tokenValidationService.validateIdTokenIss(
+      };
+      const valueTrue = tokenValidationService.validateIdTokenIss(
         decodedIdToken,
         'xc',
         { configId: 'configId1' }
@@ -385,7 +400,8 @@ describe('TokenValidationService', () => {
     it('returns false if issuer does not match iss in idToken', () => {
       const decodedIdToken = {
         iss: 'xc',
-      };      const valueFalse = tokenValidationService.validateIdTokenIss(
+      };
+      const valueFalse = tokenValidationService.validateIdTokenIss(
         decodedIdToken,
         'xcjjjj',
         { configId: 'configId1' }
@@ -424,7 +440,8 @@ describe('TokenValidationService', () => {
     it('returns true if time is Mon Jan 19 1970 10:26:46 GMT+0100, and the offset is big like 500000000000 seconds', () => {
       const decodedIdToken = {
         iat: 1589206486, // Mon Jan 19 1970 10:26:46 GMT+0100 (Central European Standard Time)
-      };      const valueTrue = tokenValidationService.validateIdTokenIatMaxOffset(
+      };
+      const valueTrue = tokenValidationService.validateIdTokenIatMaxOffset(
         decodedIdToken,
         500000000000,
         false,
@@ -505,7 +522,8 @@ describe('TokenValidationService', () => {
 
       const jwtKeys = {
         keys: 'someThing',
-      };      const valueFalse$ = tokenValidationService.validateSignatureIdToken(
+      };
+      const valueFalse$ = tokenValidationService.validateSignatureIdToken(
         'some-id-token',
         jwtKeys,
         { configId: 'configId1' }
@@ -523,7 +541,8 @@ describe('TokenValidationService', () => {
 
       const jwtKeys = {
         keys: 'someThing',
-      };      const valueFalse$ = tokenValidationService.validateSignatureIdToken(
+      };
+      const valueFalse$ = tokenValidationService.validateSignatureIdToken(
         'some-id-token',
         jwtKeys,
         { configId: 'configId1' }
@@ -558,7 +577,8 @@ describe('TokenValidationService', () => {
             alg: 'RS256',
           },
         ],
-      };      const valueFalse$ = tokenValidationService.validateSignatureIdToken(
+      };
+      const valueFalse$ = tokenValidationService.validateSignatureIdToken(
         'someNOTMATCHINGIdToken',
         jwtKeys,
         { configId: 'configId1' }
@@ -613,7 +633,8 @@ describe('TokenValidationService', () => {
   describe('validateIdTokenAtHash', () => {
     it('returns true if sha is sha256 and generated hash equals atHash param', (done) => {
       const accessToken = 'iGU3DhbPoDljiYtr0oepxi7zpT8BsjdU7aaXcdq-DPk';
-      const atHash = '-ODC_7Go_UIUTC8nP4k2cA';      const result$ = tokenValidationService.validateIdTokenAtHash(
+      const atHash = '-ODC_7Go_UIUTC8nP4k2cA';
+      const result$ = tokenValidationService.validateIdTokenAtHash(
         accessToken,
         atHash,
         '256',
@@ -629,7 +650,8 @@ describe('TokenValidationService', () => {
     it('returns false if sha is sha256 and generated hash does not equal atHash param', (done) => {
       const accessToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
-      const atHash = 'bad';      const result$ = tokenValidationService.validateIdTokenAtHash(
+      const atHash = 'bad';
+      const result$ = tokenValidationService.validateIdTokenAtHash(
         accessToken,
         atHash,
         '256',
@@ -668,7 +690,8 @@ describe('TokenValidationService', () => {
     it('returns false if sha is sha384 and generated hash does not equal atHash param', (done) => {
       const accessToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
-      const atHash = 'bad';      const result$ = tokenValidationService.validateIdTokenAtHash(
+      const atHash = 'bad';
+      const result$ = tokenValidationService.validateIdTokenAtHash(
         accessToken,
         atHash,
         '384',
@@ -684,7 +707,8 @@ describe('TokenValidationService', () => {
     it('returns false if sha is sha512 and generated hash does not equal atHash param', (done) => {
       const accessToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
-      const atHash = 'bad';      const result$ = tokenValidationService.validateIdTokenAtHash(
+      const atHash = 'bad';
+      const result$ = tokenValidationService.validateIdTokenAtHash(
         accessToken,
         atHash,
         '512',
@@ -736,7 +760,8 @@ describe('TokenValidationService', () => {
 
     it('returns false if token is not expired', () => {
       const idToken =
-        'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';      const notExpired = tokenValidationService.validateIdTokenExpNotExpired(
+        'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
+      const notExpired = tokenValidationService.validateIdTokenExpNotExpired(
         idToken,
         { configId: 'configId1' },
         0
@@ -783,7 +808,8 @@ describe('TokenValidationService', () => {
   describe('hasIdTokenExpired', () => {
     it('returns true if token has expired', () => {
       const idToken =
-        'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';      const result = tokenValidationService.hasIdTokenExpired(idToken, {
+        'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
+      const result = tokenValidationService.hasIdTokenExpired(idToken, {
         configId: 'configId1',
       });
 

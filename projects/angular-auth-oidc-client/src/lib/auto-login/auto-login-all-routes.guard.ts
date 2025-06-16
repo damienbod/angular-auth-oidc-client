@@ -1,10 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import {
-  ActivatedRouteSnapshot,
-  Router,
-  RouterStateSnapshot,
-  UrlTree,
-} from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, switchMap, take } from 'rxjs/operators';
 import { CheckAuthService } from '../auth-state/check-auth.service';

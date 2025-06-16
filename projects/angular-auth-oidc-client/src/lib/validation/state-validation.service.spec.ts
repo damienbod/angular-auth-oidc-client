@@ -89,7 +89,8 @@ describe('State Validation Service', () => {
       const idToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
       const refreshTokenData =
-        'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';      const configRefresh = {
+        'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';
+      const configRefresh = {
         authority: 'https://localhost:44363',
         redirectUrl: 'https://localhost:44363',
         clientId: 'singleapp',
@@ -128,7 +129,8 @@ describe('State Validation Service', () => {
         isRenewProcess: false,
         jwtKeys: null,
         validationResult: null,
-      };      const decodedIdToken = {
+      };
+      const decodedIdToken = {
         exp: 1589210086,
         nbf: 1589206486,
         ver: '1.0',
@@ -160,7 +162,8 @@ describe('State Validation Service', () => {
       const idToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
       const refreshTokenData =
-        'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';      const configRefresh = {
+        'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';
+      const configRefresh = {
         authority: 'https://localhost:44363',
         redirectUrl: 'https://localhost:44363',
         clientId: 'singleapp',
@@ -199,7 +202,8 @@ describe('State Validation Service', () => {
         isRenewProcess: false,
         jwtKeys: null,
         validationResult: null,
-      };      const decodedIdToken = {
+      };
+      const decodedIdToken = {
         exp: 1589210086,
         nbf: 1589206486,
         ver: '1.0',
@@ -231,7 +235,8 @@ describe('State Validation Service', () => {
       const idToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
       const refreshTokenData =
-        'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';      const configRefresh = {
+        'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';
+      const configRefresh = {
         authority: 'https://localhost:44363',
         redirectUrl: 'https://localhost:44363',
         clientId: 'singleapp',
@@ -270,7 +275,8 @@ describe('State Validation Service', () => {
         isRenewProcess: false,
         jwtKeys: null,
         validationResult: null,
-      };      const decodedIdToken = {
+      };
+      const decodedIdToken = {
         exp: 1589210086,
         nbf: 1589206486,
         ver: '1.0',
@@ -302,7 +308,8 @@ describe('State Validation Service', () => {
       const idToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
       const refreshTokenData =
-        'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';      const configRefresh = {
+        'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';
+      const configRefresh = {
         authority: 'https://localhost:44363',
         redirectUrl: 'https://localhost:44363',
         clientId: 'singleapp',
@@ -341,7 +348,8 @@ describe('State Validation Service', () => {
         isRenewProcess: false,
         jwtKeys: null,
         validationResult: null,
-      };      const decodedIdToken = {
+      };
+      const decodedIdToken = {
         exp: 1589210086,
         nbf: 1589206486,
         ver: '1.0',
@@ -373,7 +381,8 @@ describe('State Validation Service', () => {
       const idToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
       const refreshTokenData =
-        'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';      const configRefresh = {
+        'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';
+      const configRefresh = {
         authority: 'https://localhost:44363',
         redirectUrl: 'https://localhost:44363',
         clientId: 'singleapp',
@@ -412,7 +421,8 @@ describe('State Validation Service', () => {
         isRenewProcess: false,
         jwtKeys: null,
         validationResult: null,
-      };      const decodedIdToken = {
+      };
+      const decodedIdToken = {
         exp: 1589210086,
         nbf: 1589206486,
         ver: '1.0',
@@ -444,7 +454,8 @@ describe('State Validation Service', () => {
       const idToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
       const refreshTokenData =
-        'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';      const configRefresh = {
+        'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';
+      const configRefresh = {
         authority: 'https://localhost:44363',
         redirectUrl: 'https://localhost:44363',
         clientId: 'singleapp',
@@ -483,7 +494,8 @@ describe('State Validation Service', () => {
         isRenewProcess: false,
         jwtKeys: null,
         validationResult: null,
-      };      const decodedIdToken = {
+      };
+      const decodedIdToken = {
         exp: 1589210086,
         nbf: 1589206486,
         ver: '1.0',
@@ -515,7 +527,8 @@ describe('State Validation Service', () => {
       const idToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
       const refreshTokenData =
-        'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';      const configRefresh = {
+        'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';
+      const configRefresh = {
         authority: 'https://localhost:44363',
         redirectUrl: 'https://localhost:44363',
         clientId: 'singleapp',
@@ -554,7 +567,8 @@ describe('State Validation Service', () => {
         isRenewProcess: false,
         jwtKeys: null,
         validationResult: null,
-      };      const decodedIdToken = {
+      };
+      const decodedIdToken = {
         exp: 1589210086,
         nbf: 1589206486,
         ver: '1.0',
@@ -586,7 +600,8 @@ describe('State Validation Service', () => {
       const idToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
       const refreshTokenData =
-        'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';      const configRefresh = {
+        'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';
+      const configRefresh = {
         authority: 'https://localhost:44363',
         redirectUrl: 'https://localhost:44363',
         clientId: 'singleapp',
@@ -625,7 +640,8 @@ describe('State Validation Service', () => {
         isRenewProcess: false,
         jwtKeys: null,
         validationResult: null,
-      };      const decodedIdToken = {
+      };
+      const decodedIdToken = {
         exp: 1589210086,
         nbf: 1589206486,
         ver: '1.0',
@@ -690,7 +706,8 @@ describe('State Validation Service', () => {
         isRenewProcess: false,
         jwtKeys: null,
         validationResult: null,
-      };      const isValidObs$ = stateValidationService.getValidatedStateResult(
+      };
+      const isValidObs$ = stateValidationService.getValidatedStateResult(
         callbackContext,
         config
       );
@@ -761,7 +778,8 @@ describe('State Validation Service', () => {
 
       const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
         () => undefined
-      );      const callbackContext = {
+      );
+      const callbackContext = {
         code: 'fdffsdfsdf',
         refreshToken: '',
         state: 'fdffsdfhhhhsdf',
@@ -808,7 +826,8 @@ describe('State Validation Service', () => {
 
       const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
         () => undefined
-      );      const callbackContext = {
+      );
+      const callbackContext = {
         code: 'fdffsdfsdf',
         refreshToken: '',
         state: 'fdffsdfhhhhsdf',
@@ -951,7 +970,8 @@ describe('State Validation Service', () => {
         .and.returnValue('authStateControl');
       const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(
         () => undefined
-      );      const callbackContext = {
+      );
+      const callbackContext = {
         code: 'fdffsdfsdf',
         refreshToken: '',
         state: 'fdffsdfhhhhsdf',
@@ -964,7 +984,8 @@ describe('State Validation Service', () => {
         jwtKeys: null,
         validationResult: null,
         existingIdToken: null,
-      };      const stateObs$ = stateValidationService.getValidatedStateResult(
+      };
+      const stateObs$ = stateValidationService.getValidatedStateResult(
         callbackContext,
         config
       );
@@ -1009,7 +1030,8 @@ describe('State Validation Service', () => {
 
       const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
         () => undefined
-      );      const callbackContext = {
+      );
+      const callbackContext = {
         code: 'fdffsdfsdf',
         refreshToken: '',
         state: 'fdffsdfhhhhsdf',
@@ -1074,7 +1096,8 @@ describe('State Validation Service', () => {
       readSpy.withArgs('authNonce', config).and.returnValue('authNonce');
       const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(
         () => undefined
-      );      const callbackContext = {
+      );
+      const callbackContext = {
         code: 'fdffsdfsdf',
         refreshToken: '',
         state: 'fdffsdfhhhhsdf',
@@ -1146,7 +1169,8 @@ describe('State Validation Service', () => {
       readSpy.withArgs('authNonce', config).and.returnValue('authNonce');
       const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
         () => undefined
-      );      const callbackContext = {
+      );
+      const callbackContext = {
         code: 'fdffsdfsdf',
         refreshToken: '',
         state: 'fdffsdfhhhhsdf',
@@ -1221,7 +1245,8 @@ describe('State Validation Service', () => {
       readSpy.withArgs('authNonce', config).and.returnValue('authNonce');
       const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
         () => undefined
-      );      const callbackContext = {
+      );
+      const callbackContext = {
         code: 'fdffsdfsdf',
         refreshToken: '',
         state: 'fdffsdfhhhhsdf',
@@ -1284,7 +1309,8 @@ describe('State Validation Service', () => {
       readSpy.withArgs('authNonce', config).and.returnValue('authNonce');
       const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
         () => undefined
-      );      const callbackContext = {
+      );
+      const callbackContext = {
         code: 'fdffsdfsdf',
         refreshToken: '',
         state: 'fdffsdfhhhhsdf',
@@ -1357,7 +1383,8 @@ describe('State Validation Service', () => {
       readSpy.withArgs('authNonce', config).and.returnValue('authNonce');
       const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
         () => undefined
-      );      const callbackContext = {
+      );
+      const callbackContext = {
         code: 'fdffsdfsdf',
         refreshToken: '',
         state: 'fdffsdfhhhhsdf',
@@ -1430,7 +1457,8 @@ describe('State Validation Service', () => {
       readSpy.withArgs('authNonce', config).and.returnValue('authNonce');
       const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
         () => undefined
-      );      const callbackContext = {
+      );
+      const callbackContext = {
         code: 'fdffsdfsdf',
         refreshToken: '',
         state: 'fdffsdfhhhhsdf',
@@ -1507,7 +1535,8 @@ describe('State Validation Service', () => {
       readSpy.withArgs('authNonce', config).and.returnValue('authNonce');
       const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
         () => undefined
-      );      const callbackContext = {
+      );
+      const callbackContext = {
         code: 'fdffsdfsdf',
         refreshToken: '',
         state: 'fdffsdfhhhhsdf',
@@ -1588,7 +1617,8 @@ describe('State Validation Service', () => {
       readSpy.withArgs('authNonce', config).and.returnValue('authNonce');
       const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
         () => undefined
-      );      const callbackContext = {
+      );
+      const callbackContext = {
         code: 'fdffsdfsdf',
         refreshToken: '',
         state: 'fdffsdfhhhhsdf',
@@ -1680,7 +1710,8 @@ describe('State Validation Service', () => {
 
       const logDebugSpy = spyOn(loggerService, 'logDebug').and.callFake(
         () => undefined
-      );      const callbackContext = {
+      );
+      const callbackContext = {
         code: 'fdffsdfsdf',
         refreshToken: '',
         state: 'fdffsdfhhhhsdf',
@@ -1693,7 +1724,8 @@ describe('State Validation Service', () => {
         jwtKeys: null,
         validationResult: null,
         existingIdToken: null,
-      };      const stateObs$ = stateValidationService.getValidatedStateResult(
+      };
+      const stateObs$ = stateValidationService.getValidatedStateResult(
         callbackContext,
         config
       );
@@ -1774,7 +1806,8 @@ describe('State Validation Service', () => {
 
       const logWarningSpy = spyOn(loggerService, 'logWarning').and.callFake(
         () => undefined
-      );      const callbackContext = {
+      );
+      const callbackContext = {
         code: 'fdffsdfsdf',
         refreshToken: '',
         state: 'fdffsdfhhhhsdf',
@@ -1863,7 +1896,8 @@ describe('State Validation Service', () => {
         .and.returnValue('authStateControl');
       readSpy.withArgs('authNonce', config).and.returnValue('authNonce');
 
-      const logDebugSpy = spyOn(loggerService, 'logDebug'); // .and.callFake(() => undefined);      const callbackContext = {
+      const logDebugSpy = spyOn(loggerService, 'logDebug'); // .and.callFake(() => undefined);
+      const callbackContext = {
         code: 'fdffsdfsdf',
         refreshToken: '',
         state: 'fdffsdfhhhhsdf',
@@ -1955,7 +1989,8 @@ describe('State Validation Service', () => {
         jwtKeys: null,
         validationResult: null,
         existingIdToken: null,
-      };      const stateObs$ = stateValidationService.getValidatedStateResult(
+      };
+      const stateObs$ = stateValidationService.getValidatedStateResult(
         callbackContext,
         config
       );
@@ -1993,7 +2028,8 @@ describe('State Validation Service', () => {
         isRenewProcess: false,
         jwtKeys: null,
         validationResult: null,
-      };      const isValidObs$ = stateValidationService.getValidatedStateResult(
+      };
+      const isValidObs$ = stateValidationService.getValidatedStateResult(
         callbackContext,
         config
       );
@@ -2029,7 +2065,8 @@ describe('State Validation Service', () => {
         isRenewProcess: false,
         jwtKeys: null,
         validationResult: null,
-      };      const isValidObs$ = stateValidationService.getValidatedStateResult(
+      };
+      const isValidObs$ = stateValidationService.getValidatedStateResult(
         callbackContext,
         config
       );
@@ -2065,7 +2102,8 @@ describe('State Validation Service', () => {
         isRenewProcess: true,
         jwtKeys: null,
         validationResult: null,
-      };      const isValidObs$ = stateValidationService.getValidatedStateResult(
+      };
+      const isValidObs$ = stateValidationService.getValidatedStateResult(
         callbackContext,
         config
       );

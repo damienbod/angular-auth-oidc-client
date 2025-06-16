@@ -77,13 +77,15 @@ describe('SilentRenewService  ', () => {
     });
 
     it('returns false if refreshToken is configured true and silentRenew is configured true', () => {
-      const config = { useRefreshToken: true, silentRenew: true };      const result = silentRenewService.isSilentRenewConfigured(config);
+      const config = { useRefreshToken: true, silentRenew: true };
+      const result = silentRenewService.isSilentRenewConfigured(config);
 
       expect(result).toBe(false);
     });
 
     it('returns false if refreshToken is configured false and silentRenew is configured false', () => {
-      const config = { useRefreshToken: false, silentRenew: false };      const result = silentRenewService.isSilentRenewConfigured(config);
+      const config = { useRefreshToken: false, silentRenew: false };
+      const result = silentRenewService.isSilentRenewConfigured(config);
 
       expect(result).toBe(false);
     });
@@ -111,7 +113,8 @@ describe('SilentRenewService  ', () => {
 
       const spy = spyOn(iFrameService, 'addIFrameToWindowBody').and.returnValue(
         { name: 'anything' } as HTMLIFrameElement
-      );      const result = silentRenewService.getOrCreateIframe(config);
+      );
+      const result = silentRenewService.getOrCreateIframe(config);
 
       expect(result).toEqual({ name: 'anything' } as HTMLIFrameElement);
       expect(spy).toHaveBeenCalledTimes(1);
@@ -122,7 +125,8 @@ describe('SilentRenewService  ', () => {
   describe('codeFlowCallbackSilentRenewIframe', () => {
     it('calls processSilentRenewCodeFlowCallback with correct arguments', waitForAsync(() => {
       const config = { configId: 'configId1' };
-      const allConfigs = [config];      const spy = spyOn(
+      const allConfigs = [config];
+      const spy = spyOn(
         flowsService,
         'processSilentRenewCodeFlowCallback'
       ).and.returnValue(of({} as CallbackContext));
@@ -154,7 +158,8 @@ describe('SilentRenewService  ', () => {
 
     it('throws error if url has error param and resets everything on error', waitForAsync(() => {
       const config = { configId: 'configId1' };
-      const allConfigs = [config];      const spy = spyOn(
+      const allConfigs = [config];
+      const spy = spyOn(
         flowsService,
         'processSilentRenewCodeFlowCallback'
       ).and.returnValue(of({} as CallbackContext));
@@ -170,7 +175,8 @@ describe('SilentRenewService  ', () => {
       const stopPeriodicTokenCheckSpy = spyOn(
         intervalService,
         'stopPeriodicTokenCheck'
-      );      const url = 'url-part-1';
+      );
+      const url = 'url-part-1';
       const urlParts = 'error=some_error';
 
       silentRenewService

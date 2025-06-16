@@ -1,4 +1,3 @@
-
 import { TestBed } from '@angular/core/testing';
 import { CryptoService } from './crypto.service';
 
@@ -10,7 +9,7 @@ describe('CryptoService', () => {
       providers: [
         CryptoService,
         {
-          provide: DOCUMENT,
+          provide: Document,
           useValue: { defaultView: { crypto: 'some-thing' } },
         },
       ],
@@ -44,7 +43,7 @@ describe('CryptoService: msCrypto', () => {
       providers: [
         CryptoService,
         {
-          provide: DOCUMENT,
+          provide: Document,
           useValue: { defaultView: { msCrypto: 'some-msCrypto-thing' } },
         },
       ],

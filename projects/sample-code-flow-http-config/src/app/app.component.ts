@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import {
   EventTypes,
   OidcSecurityService,
@@ -7,9 +7,9 @@ import {
 import { filter } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-root',
-    templateUrl: 'app.component.html',
-    standalone: false
+  selector: 'app-root',
+  templateUrl: 'app.component.html',
+  standalone: false,
 })
 export class AppComponent implements OnInit {
   private readonly oidcSecurityService = inject(OidcSecurityService);

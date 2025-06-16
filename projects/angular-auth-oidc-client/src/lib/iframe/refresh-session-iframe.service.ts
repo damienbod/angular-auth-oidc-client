@@ -1,5 +1,4 @@
-
-import { inject, Injectable, RendererFactory2, DOCUMENT } from '@angular/core';
+import { DOCUMENT, inject, Injectable, RendererFactory2 } from '@angular/core';
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';

@@ -60,7 +60,8 @@ describe('PopUpService', () => {
       spyOn(storagePersistenceService, 'read').and.returnValue({
         popupauth: true,
       });
-      const config = {} as OpenIdConfiguration;      // act
+      const config = {} as OpenIdConfiguration;
+      // act
       const result = popUpService.isCurrentlyInPopup(config);
 
       // assert
@@ -75,7 +76,8 @@ describe('PopUpService', () => {
       spyOn(storagePersistenceService, 'read').and.returnValue({
         popupauth: true,
       });
-      const config = {} as OpenIdConfiguration;      // act
+      const config = {} as OpenIdConfiguration;
+      // act
       const result = popUpService.isCurrentlyInPopup(config);
 
       // assert
@@ -93,7 +95,8 @@ describe('PopUpService', () => {
       spyOn(storagePersistenceService, 'read').and.returnValue({
         popupauth: true,
       });
-      const config = {} as OpenIdConfiguration;      // act
+      const config = {} as OpenIdConfiguration;
+      // act
       const result = popUpService.isCurrentlyInPopup(config);
 
       // assert

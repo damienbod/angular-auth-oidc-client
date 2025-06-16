@@ -833,7 +833,8 @@ describe('CheckAuthService', () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority1' },
         { configId: 'configId2', authority: 'some-authority2' },
-      ];      const spy = spyOn(
+      ];
+      const spy = spyOn(
         checkAuthService as any,
         'checkAuthWithConfig'
       ).and.callThrough();
@@ -863,7 +864,8 @@ describe('CheckAuthService', () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority1' },
         { configId: 'configId2', authority: 'some-authority2' },
-      ];      const spy = spyOn(
+      ];
+      const spy = spyOn(
         checkAuthService as any,
         'checkAuthWithConfig'
       ).and.callThrough();

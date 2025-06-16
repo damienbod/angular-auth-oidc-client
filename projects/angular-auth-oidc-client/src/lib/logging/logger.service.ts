@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { AbstractLoggerService } from './abstract-logger.service';
 import { LogLevel } from './log-level';

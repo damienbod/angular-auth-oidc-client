@@ -24,7 +24,9 @@ for (let [word, { extension, matcher }] of Object.entries(words)) {
   const gitCommand = `git diff --staged -G"${matcher}" --name-only`;
   const failedFiles = execSync(gitCommand).toString();
   const filesAsArray = failedFiles.split('\n');
-  const supportedFiles = filesAsArray.filter((file) => extension.test(file.trim()));
+  const supportedFiles = filesAsArray.filter((file) =>
+    extension.test(file.trim())
+  );
 
   if (supportedFiles.length) {
     status = 1;

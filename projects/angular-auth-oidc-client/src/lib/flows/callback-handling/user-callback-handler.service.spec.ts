@@ -61,12 +61,14 @@ describe('UserCallbackHandlerService', () => {
         jwtKeys: null,
         validationResult: svr,
         existingIdToken: '',
-      } as CallbackContext;      const allConfigs = [
+      } as CallbackContext;
+      const allConfigs = [
         {
           configId: 'configId1',
           autoUserInfo: false,
         },
-      ];      const spy = spyOn(flowsDataService, 'setSessionState');
+      ];
+      const spy = spyOn(flowsDataService, 'setSessionState');
 
       service
         .callbackUser(callbackContext, allConfigs[0], allConfigs)
@@ -162,7 +164,8 @@ describe('UserCallbackHandlerService', () => {
           configId: 'configId1',
           autoUserInfo: false,
         },
-      ];      const spy = spyOn(flowsDataService, 'setSessionState');
+      ];
+      const spy = spyOn(flowsDataService, 'setSessionState');
 
       service
         .callbackUser(callbackContext, allConfigs[0], allConfigs)
@@ -189,12 +192,14 @@ describe('UserCallbackHandlerService', () => {
         jwtKeys: null,
         validationResult: svr,
         existingIdToken: null,
-      } as CallbackContext;      const allConfigs = [
+      } as CallbackContext;
+      const allConfigs = [
         {
           configId: 'configId1',
           autoUserInfo: false,
         },
-      ];      const updateAndPublishAuthStateSpy = spyOn(
+      ];
+      const updateAndPublishAuthStateSpy = spyOn(
         authStateService,
         'updateAndPublishAuthState'
       );
@@ -228,12 +233,14 @@ describe('UserCallbackHandlerService', () => {
         jwtKeys: null,
         validationResult: svr,
         existingIdToken: null,
-      } as CallbackContext;      const allConfigs = [
+      } as CallbackContext;
+      const allConfigs = [
         {
           configId: 'configId1',
           autoUserInfo: true,
         },
-      ];      const getAndPersistUserDataInStoreSpy = spyOn(
+      ];
+      const getAndPersistUserDataInStoreSpy = spyOn(
         userService,
         'getAndPersistUserDataInStore'
       ).and.returnValue(of({ user: 'some_data' }));
@@ -270,7 +277,8 @@ describe('UserCallbackHandlerService', () => {
         jwtKeys: null,
         validationResult: svr,
         existingIdToken: null,
-      } as CallbackContext;      const allConfigs = [
+      } as CallbackContext;
+      const allConfigs = [
         {
           configId: 'configId1',
           autoUserInfo: true,
@@ -315,7 +323,8 @@ describe('UserCallbackHandlerService', () => {
         jwtKeys: null,
         validationResult: svr,
         existingIdToken: null,
-      } as CallbackContext;      const allConfigs = [
+      } as CallbackContext;
+      const allConfigs = [
         {
           configId: 'configId1',
           autoUserInfo: true,
@@ -356,7 +365,8 @@ describe('UserCallbackHandlerService', () => {
         jwtKeys: null,
         validationResult: svr,
         existingIdToken: null,
-      } as CallbackContext;      const allConfigs = [
+      } as CallbackContext;
+      const allConfigs = [
         {
           configId: 'configId1',
           autoUserInfo: true,
@@ -405,7 +415,8 @@ describe('UserCallbackHandlerService', () => {
         jwtKeys: null,
         validationResult: svr,
         existingIdToken: null,
-      } as CallbackContext;      const allConfigs = [
+      } as CallbackContext;
+      const allConfigs = [
         {
           configId: 'configId1',
           autoUserInfo: true,

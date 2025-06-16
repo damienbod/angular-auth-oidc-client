@@ -1,4 +1,3 @@
-
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
@@ -27,7 +26,7 @@ describe('StateValidationCallbackHandlerService', () => {
         mockProvider(AuthStateService),
         mockProvider(ResetAuthDataService),
         {
-          provide: DOCUMENT,
+          provide: Document,
           useValue: {
             location: {
               get hash(): string {

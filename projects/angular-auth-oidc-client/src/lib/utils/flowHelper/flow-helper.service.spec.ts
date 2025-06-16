@@ -57,19 +57,22 @@ describe('Flow Helper Service', () => {
   });
 
   it('isCurrentFlowImplicitFlowWithAccessToken return true if flow is "id_token token"', () => {
-    const config = { responseType: 'id_token token' };    const result = flowHelper.isCurrentFlowImplicitFlowWithAccessToken(config);
+    const config = { responseType: 'id_token token' };
+    const result = flowHelper.isCurrentFlowImplicitFlowWithAccessToken(config);
 
     expect(result).toBeTrue();
   });
 
   it('isCurrentFlowImplicitFlowWithAccessToken return false if flow is not "id_token token"', () => {
-    const config = { responseType: 'id_token2 token2' };    const result = flowHelper.isCurrentFlowImplicitFlowWithAccessToken(config);
+    const config = { responseType: 'id_token2 token2' };
+    const result = flowHelper.isCurrentFlowImplicitFlowWithAccessToken(config);
 
     expect(result).toBeFalse();
   });
 
   it('isCurrentFlowImplicitFlowWithoutAccessToken return true if flow is "id_token"', () => {
-    const config = { responseType: 'id_token' };    const result = (
+    const config = { responseType: 'id_token' };
+    const result = (
       flowHelper as any
     ).isCurrentFlowImplicitFlowWithoutAccessToken(config);
 
@@ -77,7 +80,8 @@ describe('Flow Helper Service', () => {
   });
 
   it('isCurrentFlowImplicitFlowWithoutAccessToken return false if flow is not "id_token token"', () => {
-    const config = { responseType: 'id_token2' };    const result = (
+    const config = { responseType: 'id_token2' };
+    const result = (
       flowHelper as any
     ).isCurrentFlowImplicitFlowWithoutAccessToken(config);
 
@@ -85,19 +89,22 @@ describe('Flow Helper Service', () => {
   });
 
   it('isCurrentFlowCodeFlowWithRefreshTokens return false if flow is not code flow', () => {
-    const config = { responseType: 'not code' };    const result = flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(config);
+    const config = { responseType: 'not code' };
+    const result = flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(config);
 
     expect(result).toBeFalse();
   });
 
   it('isCurrentFlowCodeFlowWithRefreshTokens return false if useRefreshToken is set to false', () => {
-    const config = { responseType: 'not code', useRefreshToken: false };    const result = flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(config);
+    const config = { responseType: 'not code', useRefreshToken: false };
+    const result = flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(config);
 
     expect(result).toBeFalse();
   });
 
   it('isCurrentFlowCodeFlowWithRefreshTokens return true if useRefreshToken is set to true and code flow', () => {
-    const config = { responseType: 'code', useRefreshToken: true };    const result = flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(config);
+    const config = { responseType: 'code', useRefreshToken: true };
+    const result = flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(config);
 
     expect(result).toBeTrue();
   });

@@ -1,9 +1,10 @@
 import { JsonValue, Path } from '@angular-devkit/core';
 import { SchematicsException, Tree } from '@angular-devkit/schematics';
-import { ProjectDefinition, WorkspaceDefinition, getWorkspace } from '@schematics/angular/utility/workspace';
+import { getWorkspace, ProjectDefinition, WorkspaceDefinition } from '@schematics/angular/utility/workspace';
 import { WorkspaceProject, WorkspaceSchema } from '@schematics/angular/utility/workspace-models';
 import { Schema } from '../ng-add/schema';
 import ts = require('@schematics/angular/third_party/github.com/Microsoft/TypeScript/lib/typescript');
+
 export const ANGULAR_JSON_FILENAME = 'angular.json';
 
 export function getAngularWorkspace(tree: Tree): WorkspaceSchema {
@@ -81,7 +82,7 @@ export async function isStandaloneSchematic(host: Tree, options: Schema): Promis
   return isStandaloneApp(host, getProjectMainFile(project));
 }
 
-// TODO: replace with the following when NG 15 supprt is dropped 
+// TODO: replace with the following when NG 15 supprt is dropped
 // import { isStandaloneApp } from '@schematics/angular/utility/ng-ast-utils';
 function isStandaloneApp(host: Tree, mainPath: string): boolean {
   const source = ts.createSourceFile(

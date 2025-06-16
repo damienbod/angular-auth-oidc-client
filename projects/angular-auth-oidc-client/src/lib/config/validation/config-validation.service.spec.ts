@@ -118,8 +118,10 @@ describe('Config Validation Service', () => {
         silentRenew: true,
         useRefreshToken: true,
         scopes: 'scope1 scope2 but_no_offline_access',
-      };      const loggerSpy = spyOn(loggerService, 'logError');
-      const loggerWarningSpy = spyOn(loggerService, 'logWarning');      const result = configValidationService.validateConfig(config);
+      };
+      const loggerSpy = spyOn(loggerService, 'logError');
+      const loggerWarningSpy = spyOn(loggerService, 'logWarning');
+      const result = configValidationService.validateConfig(config);
 
       expect(result).toBeTrue();
       expect(loggerSpy).not.toHaveBeenCalled();
@@ -140,8 +142,10 @@ describe('Config Validation Service', () => {
         silentRenew: true,
         useRefreshToken: true,
         scopes: 'scope1 scope2 but_no_offline_access',
-      };      const loggerErrorSpy = spyOn(loggerService, 'logError');
-      const loggerWarningSpy = spyOn(loggerService, 'logWarning');      const result = configValidationService.validateConfigs([
+      };
+      const loggerErrorSpy = spyOn(loggerService, 'logError');
+      const loggerWarningSpy = spyOn(loggerService, 'logWarning');
+      const result = configValidationService.validateConfigs([
         config1,
         config2,
       ]);
@@ -159,7 +163,8 @@ describe('Config Validation Service', () => {
     });
 
     it('should return false and a better error message when config is not passed as object with config property', () => {
-      const loggerWarningSpy = spyOn(loggerService, 'logWarning');      const result = configValidationService.validateConfigs([]);
+      const loggerWarningSpy = spyOn(loggerService, 'logWarning');
+      const result = configValidationService.validateConfigs([]);
 
       expect(result).toBeFalse();
       expect(loggerWarningSpy).not.toHaveBeenCalled();
@@ -171,7 +176,8 @@ describe('Config Validation Service', () => {
       const spy = spyOn(
         configValidationService as any,
         'validateConfigsInternal'
-      ).and.callThrough();      const result = configValidationService.validateConfigs([]);
+      ).and.callThrough();
+      const result = configValidationService.validateConfigs([]);
 
       expect(result).toBeFalse();
       expect(spy).toHaveBeenCalledOnceWith([], allMultipleConfigRules);

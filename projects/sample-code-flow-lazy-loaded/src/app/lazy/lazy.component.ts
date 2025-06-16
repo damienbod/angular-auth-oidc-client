@@ -1,11 +1,11 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
-    selector: 'app-lazy',
-    templateUrl: './lazy.component.html',
-    styleUrls: ['./lazy.component.css'],
-    standalone: false
+  selector: 'app-lazy',
+  templateUrl: './lazy.component.html',
+  styleUrls: ['./lazy.component.css'],
+  standalone: false,
 })
 export class LazyComponent implements OnInit {
   private readonly oidcSecurityService = inject(OidcSecurityService);

@@ -1,14 +1,5 @@
-import {
-  APP_INITIALIZER,
-  EnvironmentProviders,
-  makeEnvironmentProviders,
-  Provider,
-} from '@angular/core';
-import {
-  createStaticLoader,
-  PASSED_CONFIG,
-  PassedInitialConfig,
-} from './auth-config';
+import { APP_INITIALIZER, EnvironmentProviders, makeEnvironmentProviders, Provider } from '@angular/core';
+import { createStaticLoader, PASSED_CONFIG, PassedInitialConfig } from './auth-config';
 import { StsConfigLoader } from './config/loader/config-loader';
 import { AbstractLoggerService } from './logging/abstract-logger.service';
 import { ConsoleLoggerService } from './logging/console-logger.service';

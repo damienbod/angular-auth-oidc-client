@@ -207,5 +207,5 @@ export interface OpenIdConfiguration {
   /**
    * Disable cleaning up the popup when receiving invalid messages
    */
-  disableCleaningPopupOnInvalidMessage?: boolean
+  disableCleaningPopupOnInvalidMessage?: boolean;
 }

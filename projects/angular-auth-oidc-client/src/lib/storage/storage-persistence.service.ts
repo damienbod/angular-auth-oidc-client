@@ -1,4 +1,4 @@
-﻿import { Injectable, inject } from '@angular/core';
+﻿import { inject, Injectable } from '@angular/core';
 import { AuthResult } from '../flows/callback-context';
 import { OpenIdConfiguration } from './../config/openid-configuration';
 import { BrowserStorageService } from './browser-storage.service';

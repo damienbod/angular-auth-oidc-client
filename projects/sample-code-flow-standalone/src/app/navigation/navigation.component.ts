@@ -3,10 +3,10 @@ import { RouterLink } from '@angular/router';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
-    selector: 'app-navigation',
-    templateUrl: 'navigation.component.html',
-    styleUrls: ['navigation.component.css'],
-    imports: [RouterLink]
+  selector: 'app-navigation',
+  templateUrl: 'navigation.component.html',
+  styleUrls: ['navigation.component.css'],
+  imports: [RouterLink],
 })
 export class NavigationComponent {
   private readonly oidcSecurityService = inject(OidcSecurityService);

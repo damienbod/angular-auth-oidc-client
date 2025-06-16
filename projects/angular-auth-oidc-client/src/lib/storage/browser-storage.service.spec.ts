@@ -78,7 +78,8 @@ describe('BrowserStorageService', () => {
       const writeSpy = spyOn(
         abstractSecurityStorage,
         'write'
-      ).and.callThrough();      const result = service.write({ anyKey: 'anyvalue' }, config);
+      ).and.callThrough();
+      const result = service.write({ anyKey: 'anyvalue' }, config);
 
       expect(result).toBe(true);
       expect(writeSpy).toHaveBeenCalledOnceWith(
@@ -96,7 +97,8 @@ describe('BrowserStorageService', () => {
         abstractSecurityStorage,
         'write'
       ).and.callThrough();
-      const somethingFalsy = '';      const result = service.write(somethingFalsy, config);
+      const somethingFalsy = '';
+      const result = service.write(somethingFalsy, config);
 
       expect(result).toBe(true);
       expect(writeSpy).toHaveBeenCalledOnceWith(
@@ -116,10 +118,12 @@ describe('BrowserStorageService', () => {
 
     it('returns true if removeItem is called', () => {
       spyOn(service as any, 'hasStorage').and.returnValue(true);
-      const config = { configId: 'configId1' };      const setItemSpy = spyOn(
+      const config = { configId: 'configId1' };
+      const setItemSpy = spyOn(
         abstractSecurityStorage,
         'remove'
-      ).and.callThrough();      const result = service.remove('anyKey', config);
+      ).and.callThrough();
+      const result = service.remove('anyKey', config);
 
       expect(result).toBe(true);
       expect(setItemSpy).toHaveBeenCalledOnceWith('anyKey');
@@ -141,7 +145,8 @@ describe('BrowserStorageService', () => {
         abstractSecurityStorage,
         'clear'
       ).and.callThrough();
-      const config = { configId: 'configId1' };      const result = service.clear(config);
+      const config = { configId: 'configId1' };
+      const result = service.clear(config);
 
       expect(result).toBe(true);
       expect(setItemSpy).toHaveBeenCalledTimes(1);

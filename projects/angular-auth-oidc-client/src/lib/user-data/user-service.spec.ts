@@ -61,7 +61,8 @@ describe('User Service', () => {
       const isRenewProcess = false;
       const idToken = '';
       const decodedIdToken = 'decodedIdToken';
-      const userDataInstore = '';      const config = {
+      const userDataInstore = '';
+      const config = {
         responseType: 'notcode',
         configId: 'configId1',
       } as OpenIdConfiguration;
@@ -87,7 +88,8 @@ describe('User Service', () => {
       const isRenewProcess = false;
       const idToken = '';
       const decodedIdToken = 'decodedIdToken';
-      const userDataInstore = '';      const config = {
+      const userDataInstore = '';
+      const config = {
         responseType: 'notcode',
         configId: 'configId1',
       } as OpenIdConfiguration;
@@ -116,7 +118,8 @@ describe('User Service', () => {
       const isRenewProcess = true;
       const idToken = '';
       const decodedIdToken = 'decodedIdToken';
-      const userDataInstore = 'userDataInstore';      const config = {
+      const userDataInstore = 'userDataInstore';
+      const config = {
         responseType: 'code',
         configId: 'configId1',
       } as OpenIdConfiguration;
@@ -143,7 +146,8 @@ describe('User Service', () => {
       const idToken = '';
       const decodedIdToken = 'decodedIdToken';
       const userDataInstore = '';
-      const userDataFromSts = 'userDataFromSts';      const config = {
+      const userDataFromSts = 'userDataFromSts';
+      const config = {
         responseType: 'code',
         configId: 'configId1',
       } as OpenIdConfiguration;
@@ -178,7 +182,8 @@ describe('User Service', () => {
       const idToken = '';
       const decodedIdToken = 'decodedIdToken';
       const userDataInstore = '';
-      const userDataFromSts = 'userDataFromSts';      const config = {
+      const userDataFromSts = 'userDataFromSts';
+      const config = {
         responseType: 'code',
         configId: 'configId1',
       } as OpenIdConfiguration;
@@ -219,7 +224,8 @@ describe('User Service', () => {
       const idToken = '';
       const decodedIdToken = { sub: 'decodedIdToken' };
       const userDataInstore = '';
-      const userDataFromSts = null;      const config = {
+      const userDataFromSts = null;
+      const config = {
         responseType: 'code',
         configId: 'configId1',
       } as OpenIdConfiguration;
@@ -262,7 +268,8 @@ describe('User Service', () => {
       const idToken = '';
       const decodedIdToken = 'decodedIdToken';
       const userDataInstore = 'userDataInStore';
-      const userDataFromSts = 'userDataFromSts';      const config = {
+      const userDataFromSts = 'userDataFromSts';
+      const config = {
         responseType: 'code',
         renewUserInfoAfterTokenRenew: true,
         configId: 'configId1',
@@ -326,7 +333,8 @@ describe('User Service', () => {
     });
 
     it('userDataInternal$ is called when userData is set', () => {
-      const config = { configId: 'configId1' };      const spy = spyOn((userService as any).userDataInternal$, 'next');
+      const config = { configId: 'configId1' };
+      const spy = spyOn((userService as any).userDataInternal$, 'next');
 
       userService.setUserDataToStore('userDataForTest', config, [config]);
 
@@ -458,7 +466,8 @@ describe('User Service', () => {
   describe('validateUserDataSubIdToken', () => {
     it('with no idTokenSub returns false', () => {
       const serviceAsAny = userService as any;
-      const config = { configId: 'configId1' };      const result = serviceAsAny.validateUserDataSubIdToken(
+      const config = { configId: 'configId1' };
+      const result = serviceAsAny.validateUserDataSubIdToken(
         config,
         '',
         'anything'
@@ -469,7 +478,8 @@ describe('User Service', () => {
 
     it('with no userDataSub returns false', () => {
       const serviceAsAny = userService as any;
-      const config = { configId: 'configId1' };      const result = serviceAsAny.validateUserDataSubIdToken(
+      const config = { configId: 'configId1' };
+      const result = serviceAsAny.validateUserDataSubIdToken(
         config,
         'something',
         ''
@@ -481,7 +491,8 @@ describe('User Service', () => {
     it('with idTokenSub and userDataSub not match logs and returns false', () => {
       const serviceAsAny = userService as any;
       const loggerSpy = spyOn(loggerService, 'logDebug');
-      const config = { configId: 'configId1' };      const result = serviceAsAny.validateUserDataSubIdToken(
+      const config = { configId: 'configId1' };
+      const result = serviceAsAny.validateUserDataSubIdToken(
         config,
         'something',
         'something2'

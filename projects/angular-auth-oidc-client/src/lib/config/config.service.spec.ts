@@ -124,7 +124,9 @@ describe('Configuration Service', () => {
 
       configService.getOpenIDConfiguration('configId1').subscribe((config) => {
         expect(config).toBeNull();
-        expect(consoleSpy).toHaveBeenCalledOnceWith(`[angular-auth-oidc-client] No configuration found for config id 'configId1'.`)
+        expect(consoleSpy).toHaveBeenCalledOnceWith(
+          `[angular-auth-oidc-client] No configuration found for config id 'configId1'.`
+        );
       });
     }));
 
@@ -156,7 +158,7 @@ describe('Configuration Service', () => {
         expect(config?.authWellknownEndpoints).toEqual({
           issuer: 'auth-well-known',
         });
-        expect(consoleSpy).not.toHaveBeenCalled()
+        expect(consoleSpy).not.toHaveBeenCalled();
       });
     }));
 

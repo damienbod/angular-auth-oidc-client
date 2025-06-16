@@ -1,5 +1,5 @@
 import { Rule, SchematicContext, Tree } from '@angular-devkit/schematics';
-import { NodeDependency, NodeDependencyType, addPackageJsonDependency } from '@schematics/angular/utility/dependencies';
+import { addPackageJsonDependency, NodeDependency, NodeDependencyType } from '@schematics/angular/utility/dependencies';
 import { NgAddOptions } from '../models/ng-add-options';
 
 const dependenciesToAdd: any[] = [

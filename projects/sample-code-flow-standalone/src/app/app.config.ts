@@ -5,9 +5,9 @@ import {
   withEnabledBlockingInitialNavigation,
 } from '@angular/router';
 import {
-  LogLevel,
   authInterceptor,
   autoLoginPartialRoutesGuard,
+  LogLevel,
   provideAuth,
 } from 'angular-auth-oidc-client';
 import { ForbiddenComponent } from './forbidden/forbidden.component';

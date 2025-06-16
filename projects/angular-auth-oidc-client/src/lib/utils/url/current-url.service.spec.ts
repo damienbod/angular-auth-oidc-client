@@ -1,9 +1,9 @@
-
 import { TestBed } from '@angular/core/testing';
 import { CurrentUrlService } from './current-url.service';
 
 describe('CurrentUrlService with existing Url', () => {
-  let service: CurrentUrlService;  const documentValue = {
+  let service: CurrentUrlService;
+  const documentValue = {
     defaultView: { location: 'http://my-url.com?state=my-state' },
   };
 
@@ -11,7 +11,7 @@ describe('CurrentUrlService with existing Url', () => {
     TestBed.configureTestingModule({
       providers: [
         {
-          provide: DOCUMENT,
+          provide: Document,
           useValue: documentValue,
         },
       ],

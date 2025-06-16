@@ -1,4 +1,4 @@
-import { Tree, noop } from '@angular-devkit/schematics';
+import { noop, Tree } from '@angular-devkit/schematics';
 import { Schema } from '../schema';
 import { addPackageJsonDependencies } from './add-dependencies';
 import { addModuleToImports } from './add-module-import';
@@ -18,13 +18,13 @@ export async function getAllActions(host: Tree, options: Schema) {
     runChecks(),
     addPackageJsonDependencies(ngAddOptions),
     installPackageJsonDependencies(),
-    
+
     ngAddOptions.moduleInfo ? copyModuleFile(ngAddOptions) : noop(),
     ngAddOptions.moduleInfo ? addModuleToImports(ngAddOptions) : noop(),
-    
+
     ngAddOptions.standaloneInfo ? copyStandaloneFile(ngAddOptions) : noop(),
     ngAddOptions.standaloneInfo ? addStandaloneConfigsToProviders(ngAddOptions) : noop(),
-    
+
     addSilentRenewHtmlToAssetsArrayInAngularJson(ngAddOptions),
     copySilentRenewHtmlToRoot(ngAddOptions),
   ];
