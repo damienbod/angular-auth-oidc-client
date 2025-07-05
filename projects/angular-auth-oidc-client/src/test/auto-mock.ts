@@ -5,7 +5,7 @@ export function mockClass<T>(obj: new (...args: any[]) => T): any {
   const allMethods = keys.filter((key) => {
     try {
       return typeof obj.prototype[key] === 'function';
-    } catch (error) {
+    } catch (_error) {
       return false;
     }
   });

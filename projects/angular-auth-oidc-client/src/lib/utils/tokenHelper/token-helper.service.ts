@@ -132,7 +132,7 @@ export class TokenHelperService {
           )
           .join('')
       );
-    } catch (err) {
+    } catch (_err) {
       return decoded;
     }
   }
