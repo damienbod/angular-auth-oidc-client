@@ -15,7 +15,7 @@ import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { ValidationResult } from '../validation/validation-result';
 import { IFrameService } from './existing-iframe.service';
 
-const IFRAME_FOR_SILENT_RENEW_IDENTIFIER = 'myiFrameForSilentRenew';
+export const IFRAME_FOR_SILENT_RENEW_IDENTIFIER = 'myiFrameForSilentRenew';
 
 @Injectable({ providedIn: 'root' })
 export class SilentRenewService {
@@ -39,14 +39,20 @@ export class SilentRenewService {
   private readonly intervalService = inject(IntervalService);
 
   getOrCreateIframe(config: OpenIdConfiguration): HTMLIFrameElement {
-    const existingIframe = this.getExistingIframe();
+    // Create unique iframe identifier for each configuration
+    const iframeId = `${IFRAME_FOR_SILENT_RENEW_IDENTIFIER}_${config.configId}`;
+    const existingIframe = this.iFrameService.getExistingIFrame(iframeId);
 
     if (!existingIframe) {
+      this.loggerService.logDebug(config, `Creating new iframe: ${iframeId}`);
+
       return this.iFrameService.addIFrameToWindowBody(
-        IFRAME_FOR_SILENT_RENEW_IDENTIFIER,
+        iframeId,
         config
       );
     }
+
+    this.loggerService.logDebug(config, `Using existing iframe: ${iframeId}`);
 
     return existingIframe;
   }
@@ -148,11 +154,5 @@ export class SilentRenewService {
         this.flowsDataService.resetSilentRenewRunning(config);
       },
     });
-  }
-
-  private getExistingIframe(): HTMLIFrameElement | null {
-    return this.iFrameService.getExistingIFrame(
-      IFRAME_FOR_SILENT_RENEW_IDENTIFIER
-    );
   }
 }

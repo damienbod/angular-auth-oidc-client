@@ -12,8 +12,14 @@
       window.onload = function () {
         /* The parent window hosts the Angular application */
         var parent = window.parent;
+        
         /* Send the id_token information to the oidc message handler */
-        var event = new CustomEvent('oidc-silent-renew-message', { detail: window.location });
+        var event = new CustomEvent('oidc-silent-renew-message', { 
+          detail: {
+            url: window.location,
+            srcFrameId: window.frameElement?.id
+          }
+        });
         parent.dispatchEvent(event);
       };
     </script>
