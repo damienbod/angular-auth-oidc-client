@@ -20,9 +20,9 @@ export const IFRAME_FOR_SILENT_RENEW_IDENTIFIER = 'myiFrameForSilentRenew';
 @Injectable({ providedIn: 'root' })
 export class SilentRenewService {
   private readonly refreshSessionWithIFrameCompletedInternal$ =
-    new Subject<CallbackContext | null>();
+    new Subject<CallbackContext & {configId?:string} |{configId?:string} >();
 
-  get refreshSessionWithIFrameCompleted$(): Observable<CallbackContext | null> {
+  get refreshSessionWithIFrameCompleted$(): Observable<CallbackContext & {configId?:string} | {configId?:string}> {
     return this.refreshSessionWithIFrameCompletedInternal$.asObservable();
   }
 
@@ -78,6 +78,7 @@ export class SilentRenewService {
         isAuthenticated: false,
         validationResult: ValidationResult.LoginRequired,
         isRenewProcess: true,
+        configId: config.configId,
       });
       this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
       this.flowsDataService.setNonce('', config);
@@ -145,12 +146,12 @@ export class SilentRenewService {
 
     callback$.subscribe({
       next: (callbackContext) => {
-        this.refreshSessionWithIFrameCompletedInternal$.next(callbackContext);
+        this.refreshSessionWithIFrameCompletedInternal$.next({...callbackContext, configId: config.configId});
         this.flowsDataService.resetSilentRenewRunning(config);
       },
       error: (err: unknown) => {
         this.loggerService.logError(config, 'Error: ' + err);
-        this.refreshSessionWithIFrameCompletedInternal$.next(null);
+        this.refreshSessionWithIFrameCompletedInternal$.next({configId: config.configId});
         this.flowsDataService.resetSilentRenewRunning(config);
       },
     });

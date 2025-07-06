@@ -4,4 +4,5 @@ export interface AuthStateResult {
   isAuthenticated: boolean;
   validationResult: ValidationResult;
   isRenewProcess: boolean;
+  configId?: string;
 }

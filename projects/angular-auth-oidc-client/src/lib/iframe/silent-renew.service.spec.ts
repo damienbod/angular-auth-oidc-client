@@ -181,6 +181,7 @@ describe('SilentRenewService  ', () => {
               isAuthenticated: false,
               validationResult: ValidationResult.LoginRequired,
               isRenewProcess: true,
+              configId: 'configId1',
             });
             expect(resetAuthorizationDataSpy).toHaveBeenCalledOnceWith(
               config,
@@ -301,7 +302,8 @@ describe('SilentRenewService  ', () => {
         (result) => {
           expect(result).toEqual({
             refreshToken: 'callbackContext',
-          } as CallbackContext);
+            configId: 'configId1',
+          } as CallbackContext & { configId?: string });
         }
       );
 
@@ -348,7 +350,7 @@ describe('SilentRenewService  ', () => {
 
       silentRenewService.refreshSessionWithIFrameCompleted$.subscribe(
         (result) => {
-          expect(result).toBeNull();
+          expect(result).toEqual({ configId: 'configId1' });
         }
       );
 

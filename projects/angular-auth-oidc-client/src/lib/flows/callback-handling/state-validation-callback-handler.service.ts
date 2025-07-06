@@ -49,7 +49,8 @@ export class StateValidationCallbackHandlerService {
             );
             this.publishUnauthorizedState(
               callbackContext.validationResult,
-              callbackContext.isRenewProcess
+              callbackContext.isRenewProcess,
+              configuration
             );
 
             throw new Error(errorMessage);
@@ -60,12 +61,14 @@ export class StateValidationCallbackHandlerService {
 
   private publishUnauthorizedState(
     stateValidationResult: StateValidationResult,
-    isRenewProcess: boolean
+    isRenewProcess: boolean,
+    config: OpenIdConfiguration
   ): void {
     this.authStateService.updateAndPublishAuthState({
       isAuthenticated: false,
       validationResult: stateValidationResult.state,
       isRenewProcess,
+      configId: config.configId,
     });
   }
 }

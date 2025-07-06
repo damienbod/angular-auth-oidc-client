@@ -336,7 +336,7 @@ describe('RefreshSessionService ', () => {
       spyOnProperty(
         silentRenewService,
         'refreshSessionWithIFrameCompleted$'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({ configId: 'configId1' }));
       const allConfigs = [
         {
           configId: 'configId1',
@@ -370,7 +370,7 @@ describe('RefreshSessionService ', () => {
       spyOnProperty(
         silentRenewService,
         'refreshSessionWithIFrameCompleted$'
-      ).and.returnValue(of(null).pipe(delay(11000)));
+      ).and.returnValue(of({ configId: 'configId1' }).pipe(delay(11000)));
 
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
         false
@@ -418,7 +418,7 @@ describe('RefreshSessionService ', () => {
       spyOnProperty(
         silentRenewService,
         'refreshSessionWithIFrameCompleted$'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({ configId: 'configId1' }));
       spyOn(
         refreshSessionService as any,
         'startRefreshSession'
@@ -469,7 +469,7 @@ describe('RefreshSessionService ', () => {
         spyOnProperty(
           silentRenewService,
           'refreshSessionWithIFrameCompleted$'
-        ).and.returnValue(of(null));
+        ).and.returnValue(of({ configId: 'configId1' }));
 
         refreshSessionService
           .forceRefreshSession(allConfigs[0], allConfigs)

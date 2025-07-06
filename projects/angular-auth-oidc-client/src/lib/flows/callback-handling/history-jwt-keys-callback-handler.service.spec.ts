@@ -362,6 +362,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
               isAuthenticated: false,
               validationResult: ValidationResult.SecureTokenServerError,
               isRenewProcess: false,
+              configId: 'configId1',
             });
           },
         });
@@ -401,6 +402,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
               isAuthenticated: false,
               validationResult: ValidationResult.LoginRequired,
               isRenewProcess: false,
+              configId: 'configId1',
             });
           },
         });

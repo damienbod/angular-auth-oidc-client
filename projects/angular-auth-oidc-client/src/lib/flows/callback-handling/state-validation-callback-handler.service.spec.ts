@@ -138,6 +138,7 @@ describe('StateValidationCallbackHandlerService', () => {
               isAuthenticated: false,
               validationResult: ValidationResult.LoginRequired,
               isRenewProcess: true,
+              configId: 'configId1',
             });
           },
         });

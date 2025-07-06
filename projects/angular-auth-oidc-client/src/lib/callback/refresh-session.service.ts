@@ -8,6 +8,7 @@ import {
   timer,
 } from 'rxjs';
 import {
+  filter,
   map,
   mergeMap,
   retryWhen,
@@ -116,7 +117,10 @@ export class RefreshSessionService {
 
     return forkJoin([
       this.startRefreshSession(config, allConfigs, extraCustomParams),
-      this.silentRenewService.refreshSessionWithIFrameCompleted$.pipe(take(1)),
+      this.silentRenewService.refreshSessionWithIFrameCompleted$.pipe(
+        filter((result) => result?.configId === config.configId),
+        take(1)
+      ),
     ]).pipe(
       timeout(timeOutTime),
       retryWhen((errors) => {
@@ -148,9 +152,14 @@ export class RefreshSessionService {
           this.authStateService.areAuthStorageTokensValid(config);
 
         if (isAuthenticated) {
+
+          const authResult = callbackContext && 'authResult' in callbackContext
+            ? callbackContext.authResult
+            : null;
+
           return {
-            idToken: callbackContext?.authResult?.id_token ?? '',
-            accessToken: callbackContext?.authResult?.access_token ?? '',
+            idToken: authResult?.id_token ?? '',
+            accessToken: authResult?.access_token ?? '',
             userData: this.userService.getUserDataFromStore(config),
             isAuthenticated,
             configId,

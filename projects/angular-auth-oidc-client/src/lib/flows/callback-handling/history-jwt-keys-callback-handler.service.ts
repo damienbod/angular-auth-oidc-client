@@ -74,7 +74,8 @@ export class HistoryJwtKeysCallbackHandlerService {
       this.flowsDataService.setNonce('', config);
       this.handleResultErrorFromCallback(
         callbackContext.authResult,
-        callbackContext.isRenewProcess
+        callbackContext.isRenewProcess,
+        config
       );
 
       return throwError(() => new Error(errorMessage));
@@ -132,7 +133,8 @@ export class HistoryJwtKeysCallbackHandlerService {
 
   private handleResultErrorFromCallback(
     result: unknown,
-    isRenewProcess: boolean
+    isRenewProcess: boolean,
+    config: OpenIdConfiguration
   ): void {
     let validationResult = ValidationResult.SecureTokenServerError;
 
@@ -149,6 +151,7 @@ export class HistoryJwtKeysCallbackHandlerService {
       isAuthenticated: false,
       validationResult,
       isRenewProcess,
+      configId: config.configId,
     });
   }
 
