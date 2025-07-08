@@ -132,16 +132,16 @@ export class RefreshSessionIframeService {
     config: OpenIdConfiguration
   ): boolean {
 
-    if (e?.detail == null) {
+    if (!e?.detail) {
       this.loggerService.logDebug(
         config,
-        `Silent renew event has no payload: ${e?.detail}`
+        `Silent renew event has no valid payload: ${e?.detail}`
       );
 
       return false;
     }
 
-    if (e.detail.srcFrameId != null) {
+    if (e.detail.srcFrameId) {
 
       const frameIdPrefix = `${IFRAME_FOR_SILENT_RENEW_IDENTIFIER}_`;
       let eventConfigId: string | null = null;
@@ -171,7 +171,7 @@ export class RefreshSessionIframeService {
 
   private convertToLegacyEvent(e: CustomEvent): CustomEvent {
     // If event has the new format with url property, convert it to legacy format
-    if (e?.detail?.url != null) {
+    if (e?.detail?.url) {
       return new CustomEvent(e.type, { detail: e.detail.url });
     }
 
