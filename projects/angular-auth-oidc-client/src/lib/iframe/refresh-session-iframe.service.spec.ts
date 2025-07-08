@@ -71,13 +71,13 @@ describe('RefreshSessionIframeService ', () => {
     }));
   });
 
-  describe('shouldProcessEvent', () => {
+  describe('shouldProcessRenewMessage', () => {
     it('returns true when srcFrameId contains matching configId', () => {
       const config = { configId: 'testConfigId' };
       const event = new CustomEvent('oidc-silent-renew-message', {
         detail: { url: 'http://example.com', srcFrameId: `${IFRAME_FOR_SILENT_RENEW_IDENTIFIER}_testConfigId` }
       });
-      const result = (refreshSessionIframeService as any).shouldProcessEvent(event, config);
+      const result = (refreshSessionIframeService as any).shouldProcessRenewMessage(event, config);
 
       expect(result).toBe(true);
     });
@@ -87,7 +87,7 @@ describe('RefreshSessionIframeService ', () => {
       const event = new CustomEvent('oidc-silent-renew-message', {
         detail: { url: 'http://example.com', srcFrameId: `${IFRAME_FOR_SILENT_RENEW_IDENTIFIER}_differentConfigId` }
       });
-      const result = (refreshSessionIframeService as any).shouldProcessEvent(event, config);
+      const result = (refreshSessionIframeService as any).shouldProcessRenewMessage(event, config);
 
       expect(result).toBe(false);
     });
@@ -97,7 +97,7 @@ describe('RefreshSessionIframeService ', () => {
       const event = new CustomEvent('oidc-silent-renew-message', {
         detail: { url: 'http://example.com', srcFrameId: 'someOtherFrame_testConfigId' }
       });
-      const result = (refreshSessionIframeService as any).shouldProcessEvent(event, config);
+      const result = (refreshSessionIframeService as any).shouldProcessRenewMessage(event, config);
 
       expect(result).toBe(false);
     });
@@ -107,7 +107,7 @@ describe('RefreshSessionIframeService ', () => {
       const event = new CustomEvent('oidc-silent-renew-message', {
         detail: 'http://example.com'
       });
-      const result = (refreshSessionIframeService as any).shouldProcessEvent(event, config);
+      const result = (refreshSessionIframeService as any).shouldProcessRenewMessage(event, config);
 
       expect(result).toBe(true);
     });
@@ -115,7 +115,7 @@ describe('RefreshSessionIframeService ', () => {
     it('returns false when event has no detail', () => {
       const config = { configId: 'testConfigId' };
       const event = new CustomEvent('oidc-silent-renew-message');
-      const result = (refreshSessionIframeService as any).shouldProcessEvent(event, config);
+      const result = (refreshSessionIframeService as any).shouldProcessRenewMessage(event, config);
 
       expect(result).toBe(false);
     });

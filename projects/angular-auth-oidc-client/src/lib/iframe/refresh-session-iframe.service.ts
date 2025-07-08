@@ -108,7 +108,7 @@ export class RefreshSessionIframeService {
       'oidc-silent-renew-message',
       (e: CustomEvent) => {
 
-        if (this.shouldProcessEvent(e, config)) {
+        if (this.shouldProcessRenewMessage(e, config)) {
           const eventToPass = this.convertToLegacyEvent(e);
 
           this.silentRenewService.silentRenewEventHandler(eventToPass, config, allConfigs);
@@ -127,7 +127,7 @@ export class RefreshSessionIframeService {
     );
   }
 
-  private shouldProcessEvent(
+  private shouldProcessRenewMessage(
     e: CustomEvent,
     config: OpenIdConfiguration
   ): boolean {
