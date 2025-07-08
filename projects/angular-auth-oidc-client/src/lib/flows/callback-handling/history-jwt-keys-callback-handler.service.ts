@@ -75,7 +75,7 @@ export class HistoryJwtKeysCallbackHandlerService {
       this.handleResultErrorFromCallback(
         callbackContext.authResult,
         callbackContext.isRenewProcess,
-        config
+        config.configId
       );
 
       return throwError(() => new Error(errorMessage));
@@ -134,7 +134,7 @@ export class HistoryJwtKeysCallbackHandlerService {
   private handleResultErrorFromCallback(
     result: unknown,
     isRenewProcess: boolean,
-    config: OpenIdConfiguration
+    configId?: string
   ): void {
     let validationResult = ValidationResult.SecureTokenServerError;
 
@@ -151,7 +151,7 @@ export class HistoryJwtKeysCallbackHandlerService {
       isAuthenticated: false,
       validationResult,
       isRenewProcess,
-      configId: config.configId,
+      configId,
     });
   }
 
