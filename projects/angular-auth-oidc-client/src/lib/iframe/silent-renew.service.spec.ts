@@ -77,13 +77,15 @@ describe('SilentRenewService  ', () => {
     });
 
     it('returns false if refreshToken is configured true and silentRenew is configured true', () => {
-      const config = { useRefreshToken: true, silentRenew: true };      const result = silentRenewService.isSilentRenewConfigured(config);
+      const config = { useRefreshToken: true, silentRenew: true };
+      const result = silentRenewService.isSilentRenewConfigured(config);
 
       expect(result).toBe(false);
     });
 
     it('returns false if refreshToken is configured false and silentRenew is configured false', () => {
-      const config = { useRefreshToken: false, silentRenew: false };      const result = silentRenewService.isSilentRenewConfigured(config);
+      const config = { useRefreshToken: false, silentRenew: false };
+      const result = silentRenewService.isSilentRenewConfigured(config);
 
       expect(result).toBe(false);
     });
@@ -93,7 +95,7 @@ describe('SilentRenewService  ', () => {
     it('returns iframe if iframe is truthy', () => {
       const config = { configId: 'configId1' };
       const mockIframe = { name: 'anything' } as HTMLIFrameElement;
-      
+
       spyOn(iFrameService, 'getExistingIFrame').and.returnValue(mockIframe);
 
       const result = silentRenewService.getOrCreateIframe(config);
@@ -109,7 +111,8 @@ describe('SilentRenewService  ', () => {
 
       const spy = spyOn(iFrameService, 'addIFrameToWindowBody').and.returnValue(
         { name: 'anything' } as HTMLIFrameElement
-      );      const result = silentRenewService.getOrCreateIframe(config);
+      );
+      const result = silentRenewService.getOrCreateIframe(config);
 
       expect(result).toEqual({ name: 'anything' } as HTMLIFrameElement);
       expect(spy).toHaveBeenCalledTimes(1);
@@ -120,7 +123,8 @@ describe('SilentRenewService  ', () => {
   describe('codeFlowCallbackSilentRenewIframe', () => {
     it('calls processSilentRenewCodeFlowCallback with correct arguments', waitForAsync(() => {
       const config = { configId: 'configId1' };
-      const allConfigs = [config];      const spy = spyOn(
+      const allConfigs = [config];
+      const spy = spyOn(
         flowsService,
         'processSilentRenewCodeFlowCallback'
       ).and.returnValue(of({} as CallbackContext));
@@ -152,7 +156,8 @@ describe('SilentRenewService  ', () => {
 
     it('throws error if url has error param and resets everything on error', waitForAsync(() => {
       const config = { configId: 'configId1' };
-      const allConfigs = [config];      const spy = spyOn(
+      const allConfigs = [config];
+      const spy = spyOn(
         flowsService,
         'processSilentRenewCodeFlowCallback'
       ).and.returnValue(of({} as CallbackContext));
@@ -168,7 +173,8 @@ describe('SilentRenewService  ', () => {
       const stopPeriodicTokenCheckSpy = spyOn(
         intervalService,
         'stopPeriodicTokenCheck'
-      );      const url = 'url-part-1';
+      );
+      const url = 'url-part-1';
       const urlParts = 'error=some_error';
 
       silentRenewService
@@ -293,7 +299,9 @@ describe('SilentRenewService  ', () => {
         silentRenewService,
         'codeFlowCallbackSilentRenewIframe'
       ).and.returnValue(
-        of({ refreshToken: 'callbackContext' } as CallbackContext)
+        of({
+          authResult: { id_token: 'test-token', access_token: 'test-access' }
+        } as CallbackContext)
       );
       const eventData = { detail: 'detail?detail2' } as CustomEvent;
       const allConfigs = [{ configId: 'configId1' }];
@@ -301,9 +309,10 @@ describe('SilentRenewService  ', () => {
       silentRenewService.refreshSessionWithIFrameCompleted$.subscribe(
         (result) => {
           expect(result).toEqual({
-            refreshToken: 'callbackContext',
+            success: true,
+            authResult: { id_token: 'test-token', access_token: 'test-access' },
             configId: 'configId1',
-          } as CallbackContext & { configId?: string });
+          });
         }
       );
 
@@ -350,7 +359,7 @@ describe('SilentRenewService  ', () => {
 
       silentRenewService.refreshSessionWithIFrameCompleted$.subscribe(
         (result) => {
-          expect(result).toEqual({ configId: 'configId1' });
+          expect(result).toEqual({ success: false, configId: 'configId1' });
         }
       );
 

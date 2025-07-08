@@ -147,15 +147,12 @@ export class RefreshSessionService {
           })
         );
       }),
-      map(([_, callbackContext]) => {
+      map(([_, refreshCompleted]) => {
         const isAuthenticated =
           this.authStateService.areAuthStorageTokensValid(config);
 
         if (isAuthenticated) {
-
-          const authResult = callbackContext && 'authResult' in callbackContext
-            ? callbackContext.authResult
-            : null;
+          const authResult = refreshCompleted.success ? refreshCompleted.authResult : null
 
           return {
             idToken: authResult?.id_token ?? '',

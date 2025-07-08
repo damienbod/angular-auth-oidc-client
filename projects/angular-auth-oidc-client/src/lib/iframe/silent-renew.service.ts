@@ -6,7 +6,7 @@ import { AuthStateService } from '../auth-state/auth-state.service';
 import { ImplicitFlowCallbackService } from '../callback/implicit-flow-callback.service';
 import { IntervalService } from '../callback/interval.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
-import { CallbackContext } from '../flows/callback-context';
+import { AuthResult, CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
@@ -18,13 +18,14 @@ import { IFrameService } from './existing-iframe.service';
 const IFRAME_FOR_SILENT_RENEW_IDENTIFIER = 'myiFrameForSilentRenew';
 
 export const getFrameId = (configId?: string): string => `${IFRAME_FOR_SILENT_RENEW_IDENTIFIER}_${configId}`;
-
+type RefreshSessionWithIFrameCompleted =
+  {success: true, authResult: AuthResult | null, configId?: string } | {success: false, configId?: string};
 @Injectable({ providedIn: 'root' })
 export class SilentRenewService {
   private readonly refreshSessionWithIFrameCompletedInternal$ =
-    new Subject<CallbackContext & {configId?:string} |{configId?:string} >();
+    new Subject<RefreshSessionWithIFrameCompleted>();
 
-  get refreshSessionWithIFrameCompleted$(): Observable<CallbackContext & {configId?:string} | {configId?:string}> {
+  get refreshSessionWithIFrameCompleted$(): Observable<RefreshSessionWithIFrameCompleted> {
     return this.refreshSessionWithIFrameCompletedInternal$.asObservable();
   }
 
@@ -147,13 +148,13 @@ export class SilentRenewService {
     }
 
     callback$.subscribe({
-      next: (callbackContext) => {
-        this.refreshSessionWithIFrameCompletedInternal$.next({...callbackContext, configId: config.configId});
+      next: ({authResult}) => {
+        this.refreshSessionWithIFrameCompletedInternal$.next({authResult, configId: config.configId, success: true});
         this.flowsDataService.resetSilentRenewRunning(config);
       },
       error: (err: unknown) => {
         this.loggerService.logError(config, 'Error: ' + err);
-        this.refreshSessionWithIFrameCompletedInternal$.next({configId: config.configId});
+        this.refreshSessionWithIFrameCompletedInternal$.next({configId: config.configId, success: false});
         this.flowsDataService.resetSilentRenewRunning(config);
       },
     });
