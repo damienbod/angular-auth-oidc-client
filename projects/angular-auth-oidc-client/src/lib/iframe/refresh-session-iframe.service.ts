@@ -87,17 +87,11 @@ export class RefreshSessionIframeService {
       (e: CustomEvent) => {
         const eventData = e.detail;
 
-        if (typeof eventData === 'object' && eventData.configId && eventData.instanceId) {
-          if (eventData.configId === config.configId && eventData.instanceId !== instanceId) {
-            this.loggerService.logDebug(
-              config,
-              `Destroying old handlers for config: ${config.configId} (old instance: ${instanceId}, new instance: ${eventData.instanceId})`
-            );
-            initDestroyHandler();
-            renewDestroyHandler();
-          }
-        } else if (e.detail !== instanceId) {
-          // Fallback for backward compatibility
+        if (eventData.configId === config.configId && eventData.instanceId !== instanceId) {
+          this.loggerService.logDebug(
+            config,
+            `Destroying old handlers for config: ${config.configId} (old instance: ${instanceId}, new instance: ${eventData.instanceId})`
+          );
           initDestroyHandler();
           renewDestroyHandler();
         }
