@@ -15,7 +15,9 @@ import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { ValidationResult } from '../validation/validation-result';
 import { IFrameService } from './existing-iframe.service';
 
-export const IFRAME_FOR_SILENT_RENEW_IDENTIFIER = 'myiFrameForSilentRenew';
+const IFRAME_FOR_SILENT_RENEW_IDENTIFIER = 'myiFrameForSilentRenew';
+
+export const getFrameId = (configId?: string): string => `${IFRAME_FOR_SILENT_RENEW_IDENTIFIER}_${configId}`;
 
 @Injectable({ providedIn: 'root' })
 export class SilentRenewService {
@@ -40,7 +42,7 @@ export class SilentRenewService {
 
   getOrCreateIframe(config: OpenIdConfiguration): HTMLIFrameElement {
     // Create unique iframe identifier for each configuration
-    const iframeId = `${IFRAME_FOR_SILENT_RENEW_IDENTIFIER}_${config.configId}`;
+    const iframeId = getFrameId(config.configId);
     const existingIframe = this.iFrameService.getExistingIFrame(iframeId);
 
     if (!existingIframe) {

@@ -4,7 +4,7 @@ import { mockProvider } from '../../test/auto-mock';
 import { LoggerService } from '../logging/logger.service';
 import { UrlService } from '../utils/url/url.service';
 import { RefreshSessionIframeService } from './refresh-session-iframe.service';
-import { SilentRenewService, IFRAME_FOR_SILENT_RENEW_IDENTIFIER } from './silent-renew.service';
+import { SilentRenewService, getFrameId } from './silent-renew.service';
 
 describe('RefreshSessionIframeService ', () => {
   let refreshSessionIframeService: RefreshSessionIframeService;
@@ -75,7 +75,7 @@ describe('RefreshSessionIframeService ', () => {
     it('returns true when srcFrameId contains matching configId', () => {
       const config = { configId: 'testConfigId' };
       const event = new CustomEvent('oidc-silent-renew-message', {
-        detail: { url: 'http://example.com', srcFrameId: `${IFRAME_FOR_SILENT_RENEW_IDENTIFIER}_testConfigId` }
+        detail: { url: 'http://example.com', srcFrameId: getFrameId('testConfigId') }
       });
       const result = (refreshSessionIframeService as any).shouldProcessRenewMessage(event, config);
 
@@ -85,7 +85,7 @@ describe('RefreshSessionIframeService ', () => {
     it('returns false when srcFrameId contains different configId', () => {
       const config = { configId: 'testConfigId' };
       const event = new CustomEvent('oidc-silent-renew-message', {
-        detail: { url: 'http://example.com', srcFrameId: `${IFRAME_FOR_SILENT_RENEW_IDENTIFIER}_differentConfigId` }
+        detail: { url: 'http://example.com', srcFrameId: getFrameId('differentConfigId') }
       });
       const result = (refreshSessionIframeService as any).shouldProcessRenewMessage(event, config);
 
@@ -124,7 +124,7 @@ describe('RefreshSessionIframeService ', () => {
   describe('convertToLegacyEvent', () => {
     it('converts new format event to legacy format', () => {
       const newFormatEvent = new CustomEvent('oidc-silent-renew-message', {
-        detail: { url: 'http://example.com?code=123', srcFrameId: `${IFRAME_FOR_SILENT_RENEW_IDENTIFIER}_testConfigId` }
+        detail: { url: 'http://example.com?code=123', srcFrameId: getFrameId('testConfigId') }
       });
       const result = (refreshSessionIframeService as any).convertToLegacyEvent(newFormatEvent);
 

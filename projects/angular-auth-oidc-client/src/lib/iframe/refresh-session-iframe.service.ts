@@ -5,7 +5,7 @@ import { switchMap } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { LoggerService } from '../logging/logger.service';
 import { UrlService } from '../utils/url/url.service';
-import { SilentRenewService, IFRAME_FOR_SILENT_RENEW_IDENTIFIER } from './silent-renew.service';
+import { SilentRenewService, getFrameId } from './silent-renew.service';
 
 @Injectable({ providedIn: 'root' })
 export class RefreshSessionIframeService {
@@ -136,19 +136,11 @@ export class RefreshSessionIframeService {
     }
 
     if (e.detail.srcFrameId) {
-
-      const frameIdPrefix = `${IFRAME_FOR_SILENT_RENEW_IDENTIFIER}_`;
-      let eventConfigId: string | null = null;
-
-      if (e.detail.srcFrameId.startsWith(frameIdPrefix)) {
-        eventConfigId = e.detail.srcFrameId.substring(frameIdPrefix.length);
-      }
-
-      const shouldProcess = eventConfigId === config.configId;
+      const shouldProcess = getFrameId(config.configId) === e.detail.srcFrameId;
 
       this.loggerService.logDebug(
         config,
-        `Silent renew event from frame: ${e.detail.srcFrameId}, extracted configId: ${eventConfigId}, current configId: ${config.configId}, processing: ${shouldProcess}`
+        `Silent renew event from frame: ${e.detail.srcFrameId}, current configId: ${config.configId}, processing: ${shouldProcess}`
       );
 
       return shouldProcess;
