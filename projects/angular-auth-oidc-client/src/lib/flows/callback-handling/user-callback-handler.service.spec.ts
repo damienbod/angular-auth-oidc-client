@@ -206,6 +206,7 @@ describe('UserCallbackHandlerService', () => {
             isAuthenticated: true,
             validationResult: ValidationResult.NotSet,
             isRenewProcess: false,
+            configId: 'configId1',
           });
           expect(resultCallbackContext).toEqual(callbackContext);
         });
@@ -292,6 +293,7 @@ describe('UserCallbackHandlerService', () => {
             isAuthenticated: true,
             validationResult: ValidationResult.MaxOffsetExpired,
             isRenewProcess: false,
+            configId: 'configId1',
           });
           expect(resultCallbackContext).toEqual(callbackContext);
         });
@@ -379,6 +381,7 @@ describe('UserCallbackHandlerService', () => {
               isAuthenticated: false,
               validationResult: ValidationResult.MaxOffsetExpired,
               isRenewProcess: false,
+              configId: 'configId1',
             });
             expect(err.message).toEqual(
               'Failed to retrieve user info with error:  Error: Called for userData but they were null'

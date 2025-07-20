@@ -89,7 +89,8 @@ describe('RefreshSessionService ', () => {
           useRefreshToken: true,
           silentRenewTimeoutInSeconds: 10,
         },
-      ];      const extraCustomParams = { extra: 'custom' };
+      ];
+      const extraCustomParams = { extra: 'custom' };
 
       refreshSessionService
         .userForceRefreshSession(allConfigs[0], allConfigs, extraCustomParams)
@@ -121,7 +122,8 @@ describe('RefreshSessionService ', () => {
           silentRenewTimeoutInSeconds: 10,
         },
       ];
-      const writeSpy = spyOn(storagePersistenceService, 'write');      const extraCustomParams = { extra: 'custom' };
+      const writeSpy = spyOn(storagePersistenceService, 'write');
+      const extraCustomParams = { extra: 'custom' };
 
       refreshSessionService
         .userForceRefreshSession(allConfigs[0], allConfigs, extraCustomParams)
@@ -300,11 +302,13 @@ describe('RefreshSessionService ', () => {
         'refreshSessionWithIFrameCompleted$'
       ).and.returnValue(
         of({
+          success: true,
           authResult: {
             id_token: 'some-id_token',
             access_token: 'some-access_token',
           },
-        } as CallbackContext)
+          configId: 'configId1'
+        })
       );
       const allConfigs = [
         {
@@ -336,7 +340,7 @@ describe('RefreshSessionService ', () => {
       spyOnProperty(
         silentRenewService,
         'refreshSessionWithIFrameCompleted$'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({ success: false, configId: 'configId1' }));
       const allConfigs = [
         {
           configId: 'configId1',
@@ -370,7 +374,7 @@ describe('RefreshSessionService ', () => {
       spyOnProperty(
         silentRenewService,
         'refreshSessionWithIFrameCompleted$'
-      ).and.returnValue(of(null).pipe(delay(11000)));
+      ).and.returnValue(of({success: false, configId: 'configId1' } as const).pipe(delay(11000)));
 
       spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
         false
@@ -380,7 +384,8 @@ describe('RefreshSessionService ', () => {
           configId: 'configId1',
           silentRenewTimeoutInSeconds: 10,
         },
-      ];      const resetSilentRenewRunningSpy = spyOn(
+      ];
+      const resetSilentRenewRunningSpy = spyOn(
         flowsDataService,
         'resetSilentRenewRunning'
       );
@@ -409,7 +414,8 @@ describe('RefreshSessionService ', () => {
           configId: 'configId1',
           silentRenewTimeoutInSeconds: 10,
         },
-      ];      const expectedErrorMessage = 'Test error message';
+      ];
+      const expectedErrorMessage = 'Test error message';
 
       spyOn(
         flowHelper,
@@ -418,7 +424,7 @@ describe('RefreshSessionService ', () => {
       spyOnProperty(
         silentRenewService,
         'refreshSessionWithIFrameCompleted$'
-      ).and.returnValue(of(null));
+      ).and.returnValue(of({ success: false, configId: 'configId1' }));
       spyOn(
         refreshSessionService as any,
         'startRefreshSession'
@@ -469,7 +475,7 @@ describe('RefreshSessionService ', () => {
         spyOnProperty(
           silentRenewService,
           'refreshSessionWithIFrameCompleted$'
-        ).and.returnValue(of(null));
+        ).and.returnValue(of({ success: false, configId: 'configId1' }));
 
         refreshSessionService
           .forceRefreshSession(allConfigs[0], allConfigs)
@@ -506,11 +512,13 @@ describe('RefreshSessionService ', () => {
           'refreshSessionWithIFrameCompleted$'
         ).and.returnValue(
           of({
+            success: true,
             authResult: {
               id_token: 'some-id_token',
               access_token: 'some-access_token',
             },
-          } as CallbackContext)
+            configId: 'configId1'
+          })
         );
         const spyInsideMap = spyOn(
           authStateService,
@@ -641,7 +649,8 @@ describe('RefreshSessionService ', () => {
       const refreshSessionWithRefreshTokensSpy = spyOn(
         refreshSessionRefreshTokenService,
         'refreshSessionWithRefreshTokens'
-      ).and.returnValue(of({} as CallbackContext));      const refreshSessionWithIframeSpy = spyOn(
+      ).and.returnValue(of({} as CallbackContext));
+      const refreshSessionWithIframeSpy = spyOn(
         refreshSessionIframeService,
         'refreshSessionWithIframe'
       ).and.returnValue(of(false));

@@ -10,9 +10,19 @@ export function addModuleToImports(options: NgAddOptions): Rule {
 
     const { moduleFileName, moduleName } = options.moduleInfo!;
 
+    // Try to find the app module file with different naming conventions
+    const appModulePath = findAppModulePath(host, project.sourceRoot);
+    
+    if (!appModulePath) {
+      throw new Error(
+        'Could not find app module file. Tried: app.module.ts, app-module.ts. ' +
+        'Please ensure your app module exists in the src/app directory.'
+      );
+    }
+
     const modulesToImport = [
       {
-        target: `${project.sourceRoot}/app/app.module.ts`,
+        target: appModulePath,
         moduleName,
         modulePath: `./auth/${moduleFileName}`,
       },
@@ -26,6 +36,22 @@ export function addModuleToImports(options: NgAddOptions): Rule {
 
     return host;
   };
+}
+
+function findAppModulePath(host: Tree, sourceRoot: string): string | null {
+  // Try common naming conventions for app module
+  const possiblePaths = [
+    `${sourceRoot}/app/app.module.ts`,     // Traditional Angular CLI naming
+    `${sourceRoot}/app/app-module.ts`,     // Newer Angular CLI naming convention
+  ];
+  
+  for (const path of possiblePaths) {
+    if (host.exists(path)) {
+      return path;
+    }
+  }
+  
+  return null;
 }
 
 function addImport(host: Tree, context: SchematicContext, moduleName: string, source: string, target: string) {

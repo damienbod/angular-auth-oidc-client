@@ -97,12 +97,20 @@ Both the access token and the id_token are used to start this process.
 window.onload = function () {
   /* The parent window hosts the Angular application */
   const parent = window.parent;
+  
   /* Send the id_token information to the oidc message handler */
-  const event = new CustomEvent('oidc-silent-renew-message', { detail: window.location });
+  const event = new CustomEvent('oidc-silent-renew-message', { 
+    detail: {
+      url: window.location,
+      srcFrameId: window.frameElement?.id
+    }
+  });
   parent.dispatchEvent(event);
 };
 </script>
 ```
+
+**Note:** When using multiple authentication configurations, each iframe is created with a unique identifier that includes the configId. The silent-renew.html script includes the iframe's id in the event as `srcFrameId`, allowing the library to extract the configId and correctly route the authentication response to the appropriate configuration.
 
 If you are working with the [Angular CLI](https://angular.io/cli) make sure you add the `silent-renew.html` file to the assets configuration in your `angular.json`. This has already been done for you if you used the `ng add` schematics to install and setup the library.
 
@@ -119,8 +127,14 @@ If you are working with the [Angular CLI](https://angular.io/cli) make sure you 
 window.onload = function () {
   /* The parent window hosts the Angular application */
   const parent = window.parent;
+  
   /* Send the id_token information to the oidc message handler */
-  const event = new CustomEvent('oidc-silent-renew-message', { detail: window.location.hash.substr(1) });
+  const event = new CustomEvent('oidc-silent-renew-message', { 
+    detail: {
+      url: window.location.hash.substr(1),
+      srcFrameId: window.frameElement?.id
+    }
+  });
   parent.dispatchEvent(event);
 };
 </script>

@@ -6,7 +6,7 @@ import { AuthStateService } from '../auth-state/auth-state.service';
 import { ImplicitFlowCallbackService } from '../callback/implicit-flow-callback.service';
 import { IntervalService } from '../callback/interval.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
-import { CallbackContext } from '../flows/callback-context';
+import { AuthResult, CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
@@ -17,12 +17,15 @@ import { IFrameService } from './existing-iframe.service';
 
 const IFRAME_FOR_SILENT_RENEW_IDENTIFIER = 'myiFrameForSilentRenew';
 
+export const getFrameId = (configId?: string): string => `${IFRAME_FOR_SILENT_RENEW_IDENTIFIER}_${configId}`;
+type RefreshSessionWithIFrameCompleted =
+  {success: true, authResult: AuthResult | null, configId?: string } | {success: false, configId?: string};
 @Injectable({ providedIn: 'root' })
 export class SilentRenewService {
   private readonly refreshSessionWithIFrameCompletedInternal$ =
-    new Subject<CallbackContext | null>();
+    new Subject<RefreshSessionWithIFrameCompleted>();
 
-  get refreshSessionWithIFrameCompleted$(): Observable<CallbackContext | null> {
+  get refreshSessionWithIFrameCompleted$(): Observable<RefreshSessionWithIFrameCompleted> {
     return this.refreshSessionWithIFrameCompletedInternal$.asObservable();
   }
 
@@ -39,14 +42,20 @@ export class SilentRenewService {
   private readonly intervalService = inject(IntervalService);
 
   getOrCreateIframe(config: OpenIdConfiguration): HTMLIFrameElement {
-    const existingIframe = this.getExistingIframe();
+    // Create unique iframe identifier for each configuration
+    const iframeId = getFrameId(config.configId);
+    const existingIframe = this.iFrameService.getExistingIFrame(iframeId);
 
     if (!existingIframe) {
+      this.loggerService.logDebug(config, `Creating new iframe: ${iframeId}`);
+
       return this.iFrameService.addIFrameToWindowBody(
-        IFRAME_FOR_SILENT_RENEW_IDENTIFIER,
+        iframeId,
         config
       );
     }
+
+    this.loggerService.logDebug(config, `Using existing iframe: ${iframeId}`);
 
     return existingIframe;
   }
@@ -72,6 +81,7 @@ export class SilentRenewService {
         isAuthenticated: false,
         validationResult: ValidationResult.LoginRequired,
         isRenewProcess: true,
+        configId: config.configId,
       });
       this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
       this.flowsDataService.setNonce('', config);
@@ -138,21 +148,15 @@ export class SilentRenewService {
     }
 
     callback$.subscribe({
-      next: (callbackContext) => {
-        this.refreshSessionWithIFrameCompletedInternal$.next(callbackContext);
+      next: ({authResult}) => {
+        this.refreshSessionWithIFrameCompletedInternal$.next({authResult, configId: config.configId, success: true});
         this.flowsDataService.resetSilentRenewRunning(config);
       },
       error: (err: unknown) => {
         this.loggerService.logError(config, 'Error: ' + err);
-        this.refreshSessionWithIFrameCompletedInternal$.next(null);
+        this.refreshSessionWithIFrameCompletedInternal$.next({configId: config.configId, success: false});
         this.flowsDataService.resetSilentRenewRunning(config);
       },
     });
-  }
-
-  private getExistingIframe(): HTMLIFrameElement | null {
-    return this.iFrameService.getExistingIFrame(
-      IFRAME_FOR_SILENT_RENEW_IDENTIFIER
-    );
   }
 }

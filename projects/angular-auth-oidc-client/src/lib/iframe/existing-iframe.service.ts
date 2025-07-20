@@ -51,7 +51,7 @@ export class IFrameService {
       }
 
       return null;
-    } catch (e) {
+    } catch (_e) {
       return null;
     }
   }
