@@ -3,7 +3,7 @@
 ### 2025-07-22 19.0.2
 
 - Fix silent refresh iframe with multiple idps
-  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/2017)
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/2107)
 
 ### 2025-05-11 19.0.1
 
