@@ -10,7 +10,7 @@
       "prefix": "lib",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "builder": "@angular/build:ng-packagr",
           "options": {
             "tsConfig": "projects/angular-auth-oidc-client/tsconfig.lib.json",
             "project": "projects/angular-auth-oidc-client/ng-package.json"
@@ -25,7 +25,7 @@
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "main": "projects/angular-auth-oidc-client/src/test.ts",
             "tsConfig": "projects/angular-auth-oidc-client/tsconfig.spec.json",
@@ -52,7 +52,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": {
               "base": "dist/sample-code-flow-multi-iframe"
@@ -108,7 +108,7 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
@@ -126,13 +126,13 @@
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular/build:extract-i18n",
           "options": {
             "buildTarget": "sample-code-flow-multi-iframe:build"
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "main": "projects/sample-code-flow-multi-iframe/src/test.ts",
             "polyfills": "projects/sample-code-flow-multi-iframe/src/polyfills.ts",
@@ -165,7 +165,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": {
               "base": "dist/sample-code-flow-auto-login"
@@ -220,7 +220,7 @@
           }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
@@ -238,13 +238,13 @@
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular/build:extract-i18n",
           "options": {
             "buildTarget": "sample-code-flow-auto-login:build"
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "main": "projects/sample-code-flow-auto-login/src/test.ts",
             "polyfills": "projects/sample-code-flow-auto-login/src/polyfills.ts",
@@ -277,7 +277,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": {
               "base": "dist/sample-code-flow-http-config"
@@ -332,7 +332,7 @@
           }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
@@ -350,13 +350,13 @@
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular/build:extract-i18n",
           "options": {
             "buildTarget": "sample-code-flow-http-config:build"
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "main": "projects/sample-code-flow-http-config/src/test.ts",
             "polyfills": "projects/sample-code-flow-http-config/src/polyfills.ts",
@@ -389,7 +389,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": {
               "base": "dist/sample-implicit-flow-google"
@@ -443,7 +443,7 @@
           }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
@@ -461,13 +461,13 @@
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular/build:extract-i18n",
           "options": {
             "buildTarget": "sample-implicit-flow-google:build"
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "main": "projects/sample-implicit-flow-google/src/test.ts",
             "polyfills": "projects/sample-implicit-flow-google/src/polyfills.ts",
@@ -500,7 +500,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": {
               "base": "dist/sample-code-flow-azuread"
@@ -555,7 +555,7 @@
           }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
@@ -573,13 +573,13 @@
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular/build:extract-i18n",
           "options": {
             "buildTarget": "sample-code-flow-azuread:build"
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "main": "projects/sample-code-flow-azuread/src/test.ts",
             "polyfills": "projects/sample-code-flow-azuread/src/polyfills.ts",
@@ -613,7 +613,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": {
               "base": "dist/sample-code-flow-azure-b2c"
@@ -668,7 +668,7 @@
           }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
@@ -686,13 +686,13 @@
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular/build:extract-i18n",
           "options": {
             "buildTarget": "sample-code-flow-azure-b2c:build"
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "main": "projects/sample-code-flow-azure-b2c/src/test.ts",
             "polyfills": "projects/sample-code-flow-azure-b2c/src/polyfills.ts",
@@ -725,7 +725,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": {
               "base": "dist/sample-implicit-flow-silent-renew"
@@ -782,7 +782,7 @@
           }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
@@ -800,13 +800,13 @@
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular/build:extract-i18n",
           "options": {
             "buildTarget": "sample-implicit-flow-silent-renew:build"
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "main": "projects/sample-implicit-flow-silent-renew/src/test.ts",
             "polyfills": "projects/sample-implicit-flow-silent-renew/src/polyfills.ts",
@@ -841,7 +841,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": {
               "base": "dist/sample-code-flow-auth0"
@@ -895,7 +895,7 @@
           }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
@@ -913,13 +913,13 @@
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular/build:extract-i18n",
           "options": {
             "buildTarget": "sample-code-flow-auth0:build"
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "main": "projects/sample-code-flow-auth0/src/test.ts",
             "polyfills": "projects/sample-code-flow-auth0/src/polyfills.ts",
@@ -952,7 +952,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": {
               "base": "dist/sample-code-flow-refresh-tokens"
@@ -1008,7 +1008,7 @@
           }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
@@ -1026,13 +1026,13 @@
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular/build:extract-i18n",
           "options": {
             "buildTarget": "sample-code-flow-refresh-tokens:build"
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "main": "projects/sample-code-flow-refresh-tokens/src/test.ts",
             "polyfills": "projects/sample-code-flow-refresh-tokens/src/polyfills.ts",
@@ -1067,7 +1067,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": {
               "base": "dist/sample-code-flow-standalone"
@@ -1115,7 +1115,7 @@
           }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
@@ -1133,13 +1133,13 @@
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular/build:extract-i18n",
           "options": {
             "buildTarget": "sample-code-flow-standalone:build"
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "main": "projects/sample-code-flow-standalone/src/test.ts",
             "polyfills": ["zone.js", "zone.js/testing"],
@@ -1172,7 +1172,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": {
               "base": "dist/sample-code-flow-multi-Azure-B2C"
@@ -1228,7 +1228,7 @@
           }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
@@ -1246,13 +1246,13 @@
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular/build:extract-i18n",
           "options": {
             "buildTarget": "sample-code-flow-multi-Azure-B2C:build"
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "main": "projects/sample-code-flow-multi-Azure-B2C/src/test.ts",
             "polyfills": "projects/sample-code-flow-multi-Azure-B2C/src/polyfills.ts",
@@ -1287,7 +1287,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": {
               "base": "dist/sample-code-flow-multi-AAD"
@@ -1341,7 +1341,7 @@
           }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
@@ -1359,13 +1359,13 @@
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular/build:extract-i18n",
           "options": {
             "buildTarget": "sample-code-flow-multi-AAD:build"
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "main": "projects/sample-code-flow-multi-AAD/src/test.ts",
             "polyfills": "projects/sample-code-flow-multi-AAD/src/polyfills.ts",
@@ -1398,7 +1398,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": {
               "base": "dist/sample-code-flow-multi-Auth0-ID4-popup"
@@ -1454,7 +1454,7 @@
           }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
@@ -1472,13 +1472,13 @@
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular/build:extract-i18n",
           "options": {
             "buildTarget": "sample-code-flow-multi-Auth0-ID4-popup:build"
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "main": "projects/sample-code-flow-multi-Auth0-ID4-popup/src/test.ts",
             "polyfills": "projects/sample-code-flow-multi-Auth0-ID4-popup/src/polyfills.ts",
@@ -1513,7 +1513,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": {
               "base": "dist/sample-code-flow-multi-Auth0-ID4"
@@ -1569,7 +1569,7 @@
           }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
@@ -1587,13 +1587,13 @@
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular/build:extract-i18n",
           "options": {
             "buildTarget": "sample-code-flow-multi-Auth0-ID4:build"
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "main": "projects/sample-code-flow-multi-Auth0-ID4/src/test.ts",
             "polyfills": "projects/sample-code-flow-multi-Auth0-ID4/src/polyfills.ts",
@@ -1628,7 +1628,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": {
               "base": "dist/sample-code-flow-lazy-loaded"
@@ -1682,7 +1682,7 @@
           }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
@@ -1699,13 +1699,13 @@
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular/build:extract-i18n",
           "options": {
             "buildTarget": "sample-code-flow-lazy-loaded:build"
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "main": "projects/sample-code-flow-lazy-loaded/src/test.ts",
             "polyfills": "projects/sample-code-flow-lazy-loaded/src/polyfills.ts",
@@ -1738,7 +1738,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": {
               "base": "dist/sample-code-flow-popup"
@@ -1792,7 +1792,7 @@
           }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
@@ -1810,13 +1810,13 @@
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular/build:extract-i18n",
           "options": {
             "buildTarget": "sample-code-flow-popup:build"
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "main": "projects/sample-code-flow-popup/src/test.ts",
             "polyfills": "projects/sample-code-flow-popup/src/polyfills.ts",
@@ -1840,7 +1840,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": {
               "base": "dist/sample-code-flow-par"
@@ -1895,7 +1895,7 @@
           }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
@@ -1913,13 +1913,13 @@
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular/build:extract-i18n",
           "options": {
             "buildTarget": "sample-code-flow-par:build"
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "main": "projects/sample-code-flow-par/src/test.ts",
             "polyfills": "projects/sample-code-flow-par/src/polyfills.ts",
@@ -1947,7 +1947,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": {
               "base": "dist/sample-code-flow-auto-login-all-routes"
@@ -2000,7 +2000,7 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
             "sslKey": "certs/dev_localhost.key",
             "sslCert": "certs/dev_localhost.pem",
@@ -2018,13 +2018,13 @@
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular/build:extract-i18n",
           "options": {
             "buildTarget": "sample-code-flow-auto-login-all-routes:build"
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "main": "projects/sample-code-flow-auto-login-all-routes/src/test.ts",
             "polyfills": "projects/sample-code-flow-auto-login-all-routes/src/polyfills.ts",
@@ -2075,7 +2075,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": "dist/integration-tests",
             "index": "projects/integration-tests/src/index.html",
@@ -2120,7 +2120,7 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
               "buildTarget": "integration-tests:build:production"
@@ -2132,10 +2132,10 @@
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n"
+          "builder": "@angular/build:extract-i18n"
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
             "polyfills": [
               "zone.js",
@@ -2158,5 +2158,31 @@
   },
   "cli": {
     "analytics": "b91d4847-f3d9-4b77-91da-efc9e14ed237"
+  },
+  "schematics": {
+    "@schematics/angular:component": {
+      "type": "component"
+    },
+    "@schematics/angular:directive": {
+      "type": "directive"
+    },
+    "@schematics/angular:service": {
+      "type": "service"
+    },
+    "@schematics/angular:guard": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:interceptor": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:module": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:pipe": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:resolver": {
+      "typeSeparator": "."
+    }
   }
 }
