@@ -28,7 +28,7 @@ describe('PopUpService', () => {
 
   let store: any = {};
   const mockStorage = {
-    getItem: (key: string): string => {
+    getItem: (key: string): string | null => {
       return key in store ? store[key] : null;
     },
     setItem: (key: string, value: string): void => {
@@ -60,7 +60,8 @@ describe('PopUpService', () => {
       spyOn(storagePersistenceService, 'read').and.returnValue({
         popupauth: true,
       });
-      const config = {} as OpenIdConfiguration;      // act
+      const config = {} as OpenIdConfiguration;
+      // act
       const result = popUpService.isCurrentlyInPopup(config);
 
       // assert
@@ -75,7 +76,8 @@ describe('PopUpService', () => {
       spyOn(storagePersistenceService, 'read').and.returnValue({
         popupauth: true,
       });
-      const config = {} as OpenIdConfiguration;      // act
+      const config = {} as OpenIdConfiguration;
+      // act
       const result = popUpService.isCurrentlyInPopup(config);
 
       // assert
@@ -93,7 +95,8 @@ describe('PopUpService', () => {
       spyOn(storagePersistenceService, 'read').and.returnValue({
         popupauth: true,
       });
-      const config = {} as OpenIdConfiguration;      // act
+      const config = {} as OpenIdConfiguration;
+      // act
       const result = popUpService.isCurrentlyInPopup(config);
 
       // assert

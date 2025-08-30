@@ -28,6 +28,7 @@
           "builder": "@angular/build:karma",
           "options": {
             "main": "projects/angular-auth-oidc-client/src/test.ts",
+            "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "projects/angular-auth-oidc-client/tsconfig.spec.json",
             "karmaConfig": "projects/angular-auth-oidc-client/karma.conf.js",
             "codeCoverageExclude": ["/**/*mock*.ts", "**/*.md"]
@@ -506,9 +507,7 @@
               "base": "dist/sample-code-flow-azuread"
             },
             "index": "projects/sample-code-flow-azuread/src/index.html",
-            "polyfills": [
-              "projects/sample-code-flow-azuread/src/polyfills.ts"
-            ],
+            "polyfills": ["projects/sample-code-flow-azuread/src/polyfills.ts"],
             "tsConfig": "projects/sample-code-flow-azuread/tsconfig.app.json",
             "aot": true,
             "assets": [
@@ -847,9 +846,7 @@
               "base": "dist/sample-code-flow-auth0"
             },
             "index": "projects/sample-code-flow-auth0/src/index.html",
-            "polyfills": [
-              "projects/sample-code-flow-auth0/src/polyfills.ts"
-            ],
+            "polyfills": ["projects/sample-code-flow-auth0/src/polyfills.ts"],
             "tsConfig": "projects/sample-code-flow-auth0/tsconfig.app.json",
             "aot": true,
             "assets": [
@@ -1744,9 +1741,7 @@
               "base": "dist/sample-code-flow-popup"
             },
             "index": "projects/sample-code-flow-popup/src/index.html",
-            "polyfills": [
-              "projects/sample-code-flow-popup/src/polyfills.ts"
-            ],
+            "polyfills": ["projects/sample-code-flow-popup/src/polyfills.ts"],
             "tsConfig": "projects/sample-code-flow-popup/tsconfig.app.json",
             "aot": true,
             "assets": [
@@ -1846,9 +1841,7 @@
               "base": "dist/sample-code-flow-par"
             },
             "index": "projects/sample-code-flow-par/src/index.html",
-            "polyfills": [
-              "projects/sample-code-flow-par/src/polyfills.ts"
-            ],
+            "polyfills": ["projects/sample-code-flow-par/src/polyfills.ts"],
             "tsConfig": "projects/sample-code-flow-par/tsconfig.app.json",
             "aot": true,
             "assets": [
@@ -2080,9 +2073,7 @@
             "outputPath": "dist/integration-tests",
             "index": "projects/integration-tests/src/index.html",
             "browser": "projects/integration-tests/src/main.ts",
-            "polyfills": [
-              "zone.js"
-            ],
+            "polyfills": ["zone.js"],
             "tsConfig": "projects/integration-tests/tsconfig.app.json",
             "assets": [
               {
@@ -2090,9 +2081,7 @@
                 "input": "projects/integration-tests/public"
               }
             ],
-            "styles": [
-              "projects/integration-tests/src/styles.css"
-            ],
+            "styles": ["projects/integration-tests/src/styles.css"],
             "scripts": []
           },
           "configurations": {
@@ -2137,10 +2126,7 @@
         "test": {
           "builder": "@angular/build:karma",
           "options": {
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ],
+            "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "projects/integration-tests/tsconfig.spec.json",
             "assets": [
               {

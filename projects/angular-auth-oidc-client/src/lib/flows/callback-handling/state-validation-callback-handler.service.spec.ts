@@ -1,4 +1,4 @@
-
+import { DOCUMENT } from '@angular/core';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
