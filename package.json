@@ -8,7 +8,7 @@
   "bugs": {
     "url": "https://github.com/damienbod/angular-auth-oidc-client/issues"
   },
-  "version": "19.0.2",
+  "version": "20.0.0",
   "scripts": {
     "ng": "ng",
     "build": "npm run build-lib",

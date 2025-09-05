@@ -36,7 +36,7 @@
     "authorization"
   ],
   "license": "MIT",
-  "version": "19.0.2",
+  "version": "20.0.0",
   "description": "Angular Lib for OpenID Connect & OAuth2",
   "schematics": "./schematics/collection.json",
   "ng-add": {
