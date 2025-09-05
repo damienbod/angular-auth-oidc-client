@@ -308,6 +308,7 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
           initialUrl: router.parseUrl(''),
           previousNavigation: null,
           trigger: 'imperative',
+          abort: () => void 0,
         });
 
         guard.canLoad().subscribe(() => {
@@ -384,7 +385,8 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
           autoLoginService,
           'saveRedirectRoute'
         );
-        const loginSpy = spyOn(loginService, 'login');        const guard$ = TestBed.runInInjectionContext(
+        const loginSpy = spyOn(loginService, 'login');
+        const guard$ = TestBed.runInInjectionContext(
           autoLoginPartialRoutesGuard
         );
 
@@ -408,6 +410,7 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
           initialUrl: router.parseUrl(''),
           previousNavigation: null,
           trigger: 'imperative',
+          abort: () => void 0,
         });
 
         spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
@@ -421,7 +424,8 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
           autoLoginService,
           'saveRedirectRoute'
         );
-        const loginSpy = spyOn(loginService, 'login');        const guard$ = TestBed.runInInjectionContext(
+        const loginSpy = spyOn(loginService, 'login');
+        const guard$ = TestBed.runInInjectionContext(
           autoLoginPartialRoutesGuard
         );
 
@@ -447,7 +451,8 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
           autoLoginService,
           'saveRedirectRoute'
         );
-        const loginSpy = spyOn(loginService, 'login');        const guard$ = TestBed.runInInjectionContext(() =>
+        const loginSpy = spyOn(loginService, 'login');
+        const guard$ = TestBed.runInInjectionContext(() =>
           autoLoginPartialRoutesGuard({
             data: { custom: 'param' },
           } as unknown as ActivatedRouteSnapshot)
@@ -478,7 +483,8 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
           autoLoginService,
           'saveRedirectRoute'
         );
-        const loginSpy = spyOn(loginService, 'login');        const guard$ = TestBed.runInInjectionContext(
+        const loginSpy = spyOn(loginService, 'login');
+        const guard$ = TestBed.runInInjectionContext(
           autoLoginPartialRoutesGuard
         );
 
@@ -528,7 +534,8 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
           autoLoginService,
           'saveRedirectRoute'
         );
-        const loginSpy = spyOn(loginService, 'login');        const guard$ = TestBed.runInInjectionContext(
+        const loginSpy = spyOn(loginService, 'login');
+        const guard$ = TestBed.runInInjectionContext(
           autoLoginPartialRoutesGuardWithConfig('configId1')
         );
 

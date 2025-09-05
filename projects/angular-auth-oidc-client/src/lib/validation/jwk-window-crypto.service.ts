@@ -23,7 +23,7 @@ export class JwkWindowCryptoService {
   verifyKey(
     verifyAlgorithm: AlgorithmIdentifier | RsaPssParams | EcdsaParams | null,
     cryptoKey: CryptoKey,
-    signature: BufferSource,
+    signature: Uint8Array,
     signingInput: string
   ): Promise<boolean> {
     return this.cryptoService

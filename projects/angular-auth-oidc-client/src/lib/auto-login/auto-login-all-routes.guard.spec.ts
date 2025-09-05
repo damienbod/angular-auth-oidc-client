@@ -294,6 +294,7 @@ describe(`AutoLoginAllRoutesGuard`, () => {
           initialUrl: router.parseUrl(''),
           previousNavigation: null,
           trigger: 'imperative',
+          abort: () => void 0,
         });
 
         const canLoad$ = guard.canLoad();
