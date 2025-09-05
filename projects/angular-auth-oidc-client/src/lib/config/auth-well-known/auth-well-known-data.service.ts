@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
-import { map, retry } from 'rxjs/operators';
+import { map, retry, tap } from 'rxjs/operators';
 import { DataService } from '../../api/data.service';
 import { LoggerService } from '../../logging/logger.service';
 import { OpenIdConfiguration } from '../openid-configuration';
@@ -46,7 +46,20 @@ export class AuthWellKnownDataService {
       map((mappedWellKnownEndpoints) => ({
         ...mappedWellKnownEndpoints,
         ...authWellknownEndpoints,
-      }))
+      })),
+      tap(
+        (wellKnownEndpoints) => {
+          const issuer = wellKnownEndpoints.issuer || "";
+          const wellKnownSuffix = config.authWellknownUrlSuffix || WELL_KNOWN_SUFFIX;
+
+          if (issuer !== authWellknownEndpointUrl.replace(wellKnownSuffix, "")) {
+            const errorMessage = `Issuer mismatch. Well known issuer ${wellKnownEndpoints.issuer} does not match configured well known url ${authWellknownEndpointUrl}`;
+
+            this.loggerService.logError(config, errorMessage);
+            throw new Error(errorMessage);
+          }
+        }
+      )
     );
   }
 

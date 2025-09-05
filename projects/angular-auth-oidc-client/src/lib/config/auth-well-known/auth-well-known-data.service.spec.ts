@@ -24,6 +24,7 @@ const DUMMY_WELL_KNOWN_DOCUMENT = {
   introspection_endpoint:
     'https://identity-server.test/realms/main/protocol/openid-connect/token/introspect',
 };
+const DUMMY_MALICIOUS_URL = 'https://malicious.test/realms/main';
 
 describe('AuthWellKnownDataService', () => {
   let service: AuthWellKnownDataService;
@@ -174,7 +175,10 @@ describe('AuthWellKnownDataService', () => {
 
   describe('getWellKnownEndPointsForConfig', () => {
     it('calling internal getWellKnownDocument and maps', waitForAsync(() => {
-      spyOn(dataService, 'get').and.returnValue(of({ jwks_uri: 'jwks_uri' }));
+      spyOn(dataService, 'get').and.returnValue(of({
+        issuer: 'localhost',
+        jwks_uri: 'jwks_uri'
+      }));
 
       const spy = spyOn(
         service as any,
@@ -184,12 +188,13 @@ describe('AuthWellKnownDataService', () => {
       service
         .getWellKnownEndPointsForConfig({
           configId: 'configId1',
-          authWellknownEndpointUrl: 'any-url',
+          authWellknownEndpointUrl: 'localhost',
         })
         .subscribe((result) => {
           expect(spy).toHaveBeenCalled();
           expect((result as any).jwks_uri).toBeUndefined();
           expect(result.jwksUri).toBe('jwks_uri');
+          expect(result.issuer).toBe('localhost');
         });
     }));
 
@@ -217,16 +222,78 @@ describe('AuthWellKnownDataService', () => {
       const expected: AuthWellKnownEndpoints = {
         endSessionEndpoint: 'config-endSessionEndpoint',
         revocationEndpoint: 'config-revocationEndpoint',
-        jwksUri: DUMMY_WELL_KNOWN_DOCUMENT.jwks_uri,
+        jwksUri: DUMMY_WELL_KNOWN_DOCUMENT.jwks_uri
       };
 
       service
         .getWellKnownEndPointsForConfig({
           configId: 'configId1',
-          authWellknownEndpointUrl: 'any-url',
+          authWellknownEndpointUrl: DUMMY_WELL_KNOWN_DOCUMENT.issuer,
           authWellknownEndpoints: {
             endSessionEndpoint: 'config-endSessionEndpoint',
             revocationEndpoint: 'config-revocationEndpoint',
+          },
+        })
+        .subscribe((result) => {
+          expect(result).toEqual(jasmine.objectContaining(expected));
+        });
+    }));
+
+    it('throws error and logs if well known issuer does not match authwellknownUrl', waitForAsync(() => {
+      const loggerSpy = spyOn(loggerService, 'logError');
+      const maliciousWellKnown = {
+        ...DUMMY_WELL_KNOWN_DOCUMENT,
+        issuer: DUMMY_MALICIOUS_URL
+      };
+
+      spyOn(dataService, 'get').and.returnValue(
+        createRetriableStream(
+          of(maliciousWellKnown)
+        )
+      );
+
+      const config = {
+        configId: 'configId1',
+        authWellknownEndpointUrl: DUMMY_WELL_KNOWN_DOCUMENT.issuer,
+      };
+
+      service.getWellKnownEndPointsForConfig(config).subscribe({
+        next: (result) => {
+          fail(`Retrieval was supposed to fail. Well known endpoints returned : ${JSON.stringify(result)}`);
+        },
+        error: (error) => {
+          expect(loggerSpy).toHaveBeenCalledOnceWith(
+            config,
+            `Issuer mismatch. Well known issuer ${DUMMY_MALICIOUS_URL} does not match configured well known url ${DUMMY_WELL_KNOWN_DOCUMENT.issuer}`
+          );
+          expect(error.message).toEqual(`Issuer mismatch. Well known issuer ${DUMMY_MALICIOUS_URL} does not match configured well known url ${DUMMY_WELL_KNOWN_DOCUMENT.issuer}`);
+        }
+      });
+    }));
+
+    it('should merge the mapped endpoints with the provided endpoints and ignore issuer/authwellknownUrl mismatch', waitForAsync(() => {
+      const maliciousWellKnown = {
+        ...DUMMY_WELL_KNOWN_DOCUMENT,
+        issuer: DUMMY_MALICIOUS_URL
+      };
+
+      spyOn(dataService, 'get').and.returnValue(of(maliciousWellKnown));
+
+      const expected: AuthWellKnownEndpoints = {
+        endSessionEndpoint: 'config-endSessionEndpoint',
+        revocationEndpoint: 'config-revocationEndpoint',
+        jwksUri: DUMMY_WELL_KNOWN_DOCUMENT.jwks_uri,
+        issuer: DUMMY_WELL_KNOWN_DOCUMENT.issuer,
+      };
+
+      service
+        .getWellKnownEndPointsForConfig({
+          configId: 'configId1',
+          authWellknownEndpointUrl: DUMMY_WELL_KNOWN_DOCUMENT.issuer,
+          authWellknownEndpoints: {
+            endSessionEndpoint: 'config-endSessionEndpoint',
+            revocationEndpoint: 'config-revocationEndpoint',
+            issuer: DUMMY_WELL_KNOWN_DOCUMENT.issuer
           },
         })
         .subscribe((result) => {
