@@ -1,5 +1,9 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2025-09-05 20.0.0
+
+- Angular 20.2.3
+
 ### 2025-07-22 19.0.2
 
 - Fix silent refresh iframe with multiple idps
