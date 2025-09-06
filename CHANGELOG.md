@@ -3,6 +3,8 @@
 ### 2025-09-05 20.0.0
 
 - Angular 20.2.3
+- Feat: Strict issuer validation on OIDC Discovery document retrieval
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/2116)
 
 ### 2025-07-22 19.0.2
 
