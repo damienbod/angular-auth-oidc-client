@@ -271,6 +271,28 @@ describe('AuthWellKnownDataService', () => {
       });
     }));
 
+    it('should not throws error and logs if well known issuer has a trailing slash compared to authwellknownUrl ', waitForAsync(() => {
+      const trailingSlashIssuerWellKnown = {
+        ...DUMMY_WELL_KNOWN_DOCUMENT,
+        issuer: DUMMY_WELL_KNOWN_DOCUMENT.issuer+"/"
+      };
+
+      spyOn(dataService, 'get').and.returnValue(of(trailingSlashIssuerWellKnown));
+
+      const expected: AuthWellKnownEndpoints = {
+        issuer: DUMMY_WELL_KNOWN_DOCUMENT.issuer+"/",
+      };
+
+      service
+        .getWellKnownEndPointsForConfig({
+          configId: 'configId1',
+          authWellknownEndpointUrl: DUMMY_WELL_KNOWN_DOCUMENT.issuer
+        })
+        .subscribe((result) => {
+          expect(result).toEqual(jasmine.objectContaining(expected));
+        });
+    }));
+
     it('should merge the mapped endpoints with the provided endpoints and ignore issuer/authwellknownUrl mismatch', waitForAsync(() => {
       const maliciousWellKnown = {
         ...DUMMY_WELL_KNOWN_DOCUMENT,

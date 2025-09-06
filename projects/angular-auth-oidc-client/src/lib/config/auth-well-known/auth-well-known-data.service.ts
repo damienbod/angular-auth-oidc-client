@@ -51,8 +51,9 @@ export class AuthWellKnownDataService {
         (wellKnownEndpoints) => {
           const issuer = wellKnownEndpoints.issuer || "";
           const wellKnownSuffix = config.authWellknownUrlSuffix || WELL_KNOWN_SUFFIX;
-
-          if (issuer !== authWellknownEndpointUrl.replace(wellKnownSuffix, "")) {
+          const configuredWellKnownEndpoint = authWellknownEndpointUrl.replace(wellKnownSuffix, "");
+          
+          if (issuer !== configuredWellKnownEndpoint && issuer !== `${configuredWellKnownEndpoint}/`) {
             const errorMessage = `Issuer mismatch. Well known issuer ${wellKnownEndpoints.issuer} does not match configured well known url ${authWellknownEndpointUrl}`;
 
             this.loggerService.logError(config, errorMessage);
