@@ -1,6 +1,5 @@
-import { inject, Injectable, NgZone, DOCUMENT } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
-
+import { DOCUMENT, inject, Injectable, NgZone } from '@angular/core';
+import { Observable, Subscriber, Subscription } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class IntervalService {
@@ -23,7 +22,7 @@ export class IntervalService {
   startPeriodicTokenCheck(repeatAfterSeconds: number): Observable<unknown> {
     const millisecondsDelayBetweenTokenCheck = repeatAfterSeconds * 1000;
 
-    return new Observable((subscriber) => {
+    return new Observable((subscriber: Subscriber<void>) => {
       let intervalId: number | undefined;
 
       this.zone.runOutsideAngular(() => {
