@@ -13,9 +13,9 @@
   "license": "MIT",
   "schematics": "./src/collection.json",
   "dependencies": {
-    "@schematics/angular": "^19.0.2",
-    "@angular-devkit/core": "^19.0.2",
-    "@angular-devkit/schematics": "^19.0.2",
+    "@schematics/angular": "^20.2.2",
+    "@angular-devkit/core": "^20.2.2",
+    "@angular-devkit/schematics": "^20.2.2",
     "typescript": "~5.4.5"
   }
 }
