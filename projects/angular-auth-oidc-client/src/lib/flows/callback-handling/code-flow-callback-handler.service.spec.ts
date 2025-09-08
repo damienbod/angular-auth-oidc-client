@@ -11,6 +11,7 @@ import { TokenValidationService } from '../../validation/token-validation.servic
 import { CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
 import { CodeFlowCallbackHandlerService } from './code-flow-callback-handler.service';
+import { OidcError } from './oidc-error';
 
 describe('CodeFlowCallbackHandlerService', () => {
   let service: CodeFlowCallbackHandlerService;
@@ -80,8 +81,32 @@ describe('CodeFlowCallbackHandlerService', () => {
         });
     }));
 
+    it('throws oidc error if error parameter is returned in callback', waitForAsync(() => {
+      const getUrlParameterSpy = spyOn(
+        urlService,
+        'getUrlParameter'
+      ).and.returnValue('params');
+
+      getUrlParameterSpy.withArgs('test-url', 'error').and.returnValue('FAILED_AUTH');
+      getUrlParameterSpy.withArgs('test-url', 'error_description').and.returnValue('Failed auth');
+
+      service
+        .codeFlowCallback('test-url', { configId: 'configId1' })
+        .subscribe({
+          error: (err) => {
+            expect(err).toBeInstanceOf(OidcError);
+          },
+        });
+    }));
+
     it('returns callbackContext if all params are good', waitForAsync(() => {
-      spyOn(urlService, 'getUrlParameter').and.returnValue('params');
+      spyOn(urlService, 'getUrlParameter').and.callFake((urlToCheck: string, name: string) => {
+        if (name === 'error') {
+          return '';
+        }
+
+        return 'params';
+      });
 
       const expectedCallbackContext = {
         code: 'params',

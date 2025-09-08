@@ -11,6 +11,7 @@ import { TokenValidationService } from '../../validation/token-validation.servic
 import { AuthResult, CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
 import { isNetworkError } from './error-helper';
+import { OidcError } from './oidc-error';
 
 @Injectable({ providedIn: 'root' })
 export class CodeFlowCallbackHandlerService {
@@ -30,6 +31,9 @@ export class CodeFlowCallbackHandlerService {
   ): Observable<CallbackContext> {
     const code = this.urlService.getUrlParameter(urlToCheck, 'code');
     const state = this.urlService.getUrlParameter(urlToCheck, 'state');
+    const error = this.urlService.getUrlParameter(urlToCheck, 'error');
+    const errorDescription = this.urlService.getUrlParameter(urlToCheck, 'error_description');
+    const errorUri = this.urlService.getUrlParameter(urlToCheck, 'error_uri');
     const sessionState = this.urlService.getUrlParameter(
       urlToCheck,
       'session_state'
@@ -39,6 +43,12 @@ export class CodeFlowCallbackHandlerService {
       this.loggerService.logDebug(config, 'no state in url');
 
       return throwError(() => new Error('no state in url'));
+    }
+
+    if (error) {
+      this.loggerService.logDebug(config, 'error in callback', error);
+
+      return throwError(() => new OidcError(error, errorDescription, errorUri));
     }
 
     if (!code) {
