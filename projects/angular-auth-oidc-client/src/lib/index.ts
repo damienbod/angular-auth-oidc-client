@@ -11,6 +11,7 @@ export * from './config/auth-well-known/auth-well-known-endpoints';
 export * from './config/config.service';
 export * from './config/loader/config-loader';
 export * from './config/openid-configuration';
+export { AuthResult } from './flows/callback-context';
 export * from './interceptor/auth.interceptor';
 export * from './logging/abstract-logger.service';
 export * from './logging/log-level';
