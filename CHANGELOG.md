@@ -1,5 +1,11 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2025-09-10 20.0.1
+
+- Angular 20.2.3
+- Bug: AuthResult type is no longer exported since 20.0.0
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/2128)
+
 ### 2025-09-05 20.0.0
 
 - Angular 20.2.3
