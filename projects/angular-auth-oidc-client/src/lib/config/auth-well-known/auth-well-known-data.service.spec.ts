@@ -271,6 +271,37 @@ describe('AuthWellKnownDataService', () => {
       });
     }));
 
+    it('throws no error if well known issuer does not match authwellknownUrl and validation is disabled', waitForAsync(() => {
+      const loggerSpy = spyOn(loggerService, 'logError');
+      const maliciousWellKnown = {
+        ...DUMMY_WELL_KNOWN_DOCUMENT,
+        issuer: DUMMY_MALICIOUS_URL
+      };
+
+      spyOn(dataService, 'get').and.returnValue(
+        createRetriableStream(
+          of(maliciousWellKnown)
+        )
+      );
+
+      const config = {
+        configId: 'configId1',
+        authWellknownEndpointUrl: DUMMY_WELL_KNOWN_DOCUMENT.issuer,
+        strictIssuerValidationOnWellKnownRetrievalOff: true,
+      };
+
+      service.getWellKnownEndPointsForConfig(config).subscribe({
+        next: (result) => {
+          expect(result.issuer).toBe(DUMMY_MALICIOUS_URL);
+          expect(loggerSpy).not.toHaveBeenCalled();
+        },
+        error: (err) => {
+          fail(err);
+        },
+      });
+    }));
+
+
     it('should not throws error and logs if well known issuer has a trailing slash compared to authwellknownUrl ', waitForAsync(() => {
       const trailingSlashIssuerWellKnown = {
         ...DUMMY_WELL_KNOWN_DOCUMENT,

@@ -132,6 +132,8 @@ export interface OpenIdConfiguration {
   logLevel?: LogLevel;
   /** Make it possible to turn off the iss validation per configuration. **You should not turn this off!** */
   issValidationOff?: boolean;
+  /** Skip validation of issuer against well-known url */
+  strictIssuerValidationOnWellKnownRetrievalOff?: boolean;
   /**
    * If this is active, the history is not cleaned up on an authorize callback.
    * This can be used when the application needs to preserve the history.
