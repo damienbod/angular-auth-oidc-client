@@ -446,6 +446,14 @@ Sets the log level displayed in the console.
 
 Makes it possible to turn the `iss` validation off per configuration. **You should not turn this off!**
 
+### `strictIssuerValidationOnWellKnownRetrievalOff`
+
+
+- Type: `boolean`
+- Required: `false`
+
+Makes it possible to turn the strict issuer validation on well known retrieval off per configuration.
+
 ### `historyCleanupOff`
 
 - Type: `boolean`

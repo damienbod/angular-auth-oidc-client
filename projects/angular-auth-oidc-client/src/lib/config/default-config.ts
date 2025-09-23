@@ -28,6 +28,7 @@ export const DEFAULT_CONFIG: OpenIdConfiguration = {
   triggerAuthorizationResultEvent: false,
   logLevel: LogLevel.Warn,
   issValidationOff: false,
+  strictIssuerValidationOnWellKnownRetrievalOff: false,
   historyCleanupOff: false,
   maxIdTokenIatOffsetAllowedInSeconds: 120,
   disableIatOffsetValidation: false,
