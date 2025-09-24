@@ -1,5 +1,12 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2025-09-24 20.0.2
+
+- Fix: update peerDependencies to Angular 20
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/2133)
+- Fix: Config to disable strict issuer validation upon wellknown
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/2138)
+
 ### 2025-09-10 20.0.1
 
 - Angular 20.2.3
