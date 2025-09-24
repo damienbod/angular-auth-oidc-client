@@ -17,6 +17,7 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
         responseType: 'code',
         silentRenew: true,
         useRefreshToken: true,
+        strictIssuerValidationOnWellKnownRetrievalOff: true,
         ignoreNonceAfterRefresh: true,
         maxIdTokenIatOffsetAllowedInSeconds: 600,
         issValidationOff: false, // this needs to be true if using a common endpoint in Azure

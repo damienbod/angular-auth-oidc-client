@@ -35,6 +35,7 @@ export const appConfig: ApplicationConfig = {
           maxIdTokenIatOffsetAllowedInSeconds: 600,
           issValidationOff: true,
           autoUserInfo: false,
+          strictIssuerValidationOnWellKnownRetrievalOff: true,
           // silentRenewUrl: window.location.origin + '/silent-renew.html',
           useRefreshToken: true,
           logLevel: LogLevel.Debug,
