@@ -5,7 +5,7 @@
 - Fix: update peerDependencies to Angular 20
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/2133)
 - Fix: Config to disable strict issuer validation upon wellknown
-  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/2138)
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/2136)
 
 ### 2025-09-10 20.0.1
 
