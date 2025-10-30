@@ -114,15 +114,22 @@ describe('BrowserStorageService', () => {
       expect(service.remove('anything', config)).toBeFalse();
     });
 
-    it('returns true if removeItem is called', () => {
+    it('returns false if configId is missing', () => {
+      const config = { configId: '' };
+
       spyOn(service as any, 'hasStorage').and.returnValue(true);
-      const config = { configId: 'configId1' };      const setItemSpy = spyOn(
+      expect(service.remove('anyKey', config)).toBeFalse();
+    });
+
+    it('removes the entire config blob for the configId', () => {
+      spyOn(service as any, 'hasStorage').and.returnValue(true);
+      const config = { configId: 'configId1' };      const removeSpy = spyOn(
         abstractSecurityStorage,
         'remove'
       ).and.callThrough();      const result = service.remove('anyKey', config);
 
       expect(result).toBe(true);
-      expect(setItemSpy).toHaveBeenCalledOnceWith('anyKey');
+      expect(removeSpy).toHaveBeenCalledOnceWith('configId1');
     });
   });
 
@@ -134,17 +141,74 @@ describe('BrowserStorageService', () => {
       expect(service.clear(config)).toBeFalse();
     });
 
-    it('returns true if clear is called', () => {
+    it('returns false if configId is missing', () => {
+      const config = { configId: '' };
+
+      spyOn(service as any, 'hasStorage').and.returnValue(true);
+      expect(service.clear(config)).toBeFalse();
+    });
+
+    it('removes only the config blob for the specified configId', () => {
       spyOn(service as any, 'hasStorage').and.returnValue(true);
 
-      const setItemSpy = spyOn(
+      const removeSpy = spyOn(
         abstractSecurityStorage,
-        'clear'
+        'remove'
       ).and.callThrough();
       const config = { configId: 'configId1' };      const result = service.clear(config);
 
       expect(result).toBe(true);
-      expect(setItemSpy).toHaveBeenCalledTimes(1);
+      expect(removeSpy).toHaveBeenCalledOnceWith('configId1');
+    });
+  });
+
+  describe('multi-config isolation', () => {
+    it('clear() should only remove the specified config, not other configs', () => {
+      spyOn(service as any, 'hasStorage').and.returnValue(true);
+      const config1 = { configId: 'configId1' };      const removeSpy = spyOn(abstractSecurityStorage, 'remove');
+
+      service.clear(config1);
+
+      expect(removeSpy).toHaveBeenCalledOnceWith('configId1');
+      expect(removeSpy).not.toHaveBeenCalledWith('configId2');
+    });
+
+    it('remove() should only remove the specified config blob, not other configs', () => {
+      spyOn(service as any, 'hasStorage').and.returnValue(true);
+      const config1 = { configId: 'configId1' };      const removeSpy = spyOn(abstractSecurityStorage, 'remove');
+
+      service.remove('anyKey', config1);
+
+      expect(removeSpy).toHaveBeenCalledOnceWith('configId1');
+      expect(removeSpy).not.toHaveBeenCalledWith('configId2');
+    });
+  });
+
+  describe('storage scope safety', () => {
+    it('clear() should not call abstractSecurityStorage.clear() which would destroy all storage', () => {
+      spyOn(service as any, 'hasStorage').and.returnValue(true);
+      const config = { configId: 'configId1' };      const clearSpy = spyOn(abstractSecurityStorage, 'clear');
+      const removeSpy = spyOn(abstractSecurityStorage, 'remove');
+
+      service.clear(config);
+
+      // Should use remove(configId), NOT clear()
+      // This ensures other configs and consumer app data remain intact
+      expect(clearSpy).not.toHaveBeenCalled();
+      expect(removeSpy).toHaveBeenCalledOnceWith('configId1');
+    });
+
+    it('remove() should not call abstractSecurityStorage.clear() which would destroy all storage', () => {
+      spyOn(service as any, 'hasStorage').and.returnValue(true);
+      const config = { configId: 'configId1' };      const clearSpy = spyOn(abstractSecurityStorage, 'clear');
+      const removeSpy = spyOn(abstractSecurityStorage, 'remove');
+
+      service.remove('anyKey', config);
+
+      // Should use remove(configId), NOT clear()
+      // This ensures other configs and consumer app data remain intact
+      expect(clearSpy).not.toHaveBeenCalled();
+      expect(removeSpy).toHaveBeenCalledOnceWith('configId1');
     });
   });
 
