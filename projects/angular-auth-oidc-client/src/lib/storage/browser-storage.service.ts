@@ -67,6 +67,17 @@ export class BrowserStorageService {
   }
 
   remove(key: string, configuration: OpenIdConfiguration): boolean {
+    const { configId } = configuration;
+
+    if (!configId) {
+      this.loggerService.logDebug(
+        configuration,
+        `Wanted to remove '${key}' but configId was '${configId}'`
+      );
+
+      return false;
+    }
+
     if (!this.hasStorage()) {
       this.loggerService.logDebug(
         configuration,
@@ -76,20 +87,23 @@ export class BrowserStorageService {
       return false;
     }
 
-    // const storage = this.getStorage(configuration);
-    // if (!storage) {
-    //   this.loggerService.logDebug(configuration, `Wanted to write '${key}' but Storage was falsy`);
-
-    //   return false;
-    // }
-
-    this.abstractSecurityStorage.remove(key);
+    this.abstractSecurityStorage.remove(configId);
 
     return true;
   }
 
-  // TODO THIS STORAGE WANTS AN ID BUT CLEARS EVERYTHING
   clear(configuration: OpenIdConfiguration): boolean {
+    const { configId } = configuration;
+
+    if (!configId) {
+      this.loggerService.logDebug(
+        configuration,
+        `Wanted to clear storage but configId was '${configId}'`
+      );
+
+      return false;
+    }
+
     if (!this.hasStorage()) {
       this.loggerService.logDebug(
         configuration,
@@ -99,14 +113,7 @@ export class BrowserStorageService {
       return false;
     }
 
-    // const storage = this.getStorage(configuration);
-    // if (!storage) {
-    //   this.loggerService.logDebug(configuration, `Wanted to clear storage but Storage was falsy`);
-
-    //   return false;
-    // }
-
-    this.abstractSecurityStorage.clear();
+    this.abstractSecurityStorage.remove(configId);
 
     return true;
   }
