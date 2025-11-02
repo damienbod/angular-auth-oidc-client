@@ -1,5 +1,10 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2025-11-02 20.0.3
+
+- Fix: prevent clear() from destroying all sessionStorage
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/2144)
+
 ### 2025-09-24 20.0.2
 
 - Fix: update peerDependencies to Angular 20
