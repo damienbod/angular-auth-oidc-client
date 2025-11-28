@@ -285,7 +285,7 @@ describe(`AutoLoginAllRoutesGuard`, () => {
         );
         const loginSpy = spyOn(loginService, 'login');
 
-        spyOn(router, 'getCurrentNavigation').and.returnValue({
+        spyOn(router, 'currentNavigation').and.returnValue({
           extractedUrl: router.parseUrl(
             'some-url12/with/some-param?queryParam=true'
           ),
