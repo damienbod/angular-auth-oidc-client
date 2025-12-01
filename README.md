@@ -122,14 +122,11 @@ export class AppComponent implements OnInit {
   private readonly oidcSecurityService = inject(OidcSecurityService);
 
   ngOnInit() {
-    this.oidcSecurityService
-      .checkAuth()
-      .subscribe((loginResponse: LoginResponse) => {
-        const { isAuthenticated, userData, accessToken, idToken, configId } =
-          loginResponse;
+    this.oidcSecurityService.checkAuth().subscribe((loginResponse: LoginResponse) => {
+      const { isAuthenticated, userData, accessToken, idToken, configId } = loginResponse;
 
-        /*...*/
-      });
+      /*...*/
+    });
   }
 
   login() {
@@ -137,9 +134,7 @@ export class AppComponent implements OnInit {
   }
 
   logout() {
-    this.oidcSecurityService
-      .logoff()
-      .subscribe((result) => console.log(result));
+    this.oidcSecurityService.logoff().subscribe((result) => console.log(result));
   }
 }
 ```
@@ -185,8 +180,9 @@ AuthModule.forRoot({
 
 ## Versions
 
-Current Version is Version 20.x
+Current Version is Version 21.x
 
+- [Info about Version 20](https://github.com/damienbod/angular-auth-oidc-client/tree/version-20)
 - [Info about Version 19](https://github.com/damienbod/angular-auth-oidc-client/tree/version-19)
 - [Info about Version 18](https://github.com/damienbod/angular-auth-oidc-client/tree/version-18)
 - [Info about Version 17](https://github.com/damienbod/angular-auth-oidc-client/tree/version-17)
