@@ -299,7 +299,7 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         );
         const loginSpy = spyOn(loginService, 'login');
 
-        spyOn(router, 'getCurrentNavigation').and.returnValue({
+        spyOn(router, 'currentNavigation').and.returnValue({
           extractedUrl: router.parseUrl(
             'some-url12/with/some-param?queryParam=true'
           ),
@@ -401,7 +401,7 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
       }));
 
       it('should save current route (with router extractedUrl) and call `login` if not authenticated already', waitForAsync(() => {
-        spyOn(router, 'getCurrentNavigation').and.returnValue({
+        spyOn(router, 'currentNavigation').and.returnValue({
           extractedUrl: router.parseUrl(
             'some-url12/with/some-param?queryParam=true'
           ),

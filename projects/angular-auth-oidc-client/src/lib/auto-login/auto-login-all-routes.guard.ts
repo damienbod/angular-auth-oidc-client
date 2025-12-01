@@ -26,7 +26,7 @@ export class AutoLoginAllRoutesGuard {
   canLoad(): Observable<boolean> {
     const url =
       this.router
-        .getCurrentNavigation()
+        .currentNavigation()
         ?.extractedUrl.toString()
         .substring(1) ?? '';
 

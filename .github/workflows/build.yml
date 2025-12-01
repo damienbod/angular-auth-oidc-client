@@ -94,7 +94,7 @@ jobs:
 
       - name: Test Angular Application
         working-directory: ./angular-auth-oidc-client-test
-        run: npm test -- --watch=false --browsers=ChromeHeadless
+        run: npm test
 
       - name: Build Angular Application
         working-directory: ./angular-auth-oidc-client-test
@@ -134,7 +134,7 @@ jobs:
 
       - name: Test Angular Application
         working-directory: ./angular-auth-oidc-client-test
-        run: npm test -- --watch=false --browsers=ChromeHeadless
+        run: npm test
 
       - name: Build Angular Application
         working-directory: ./angular-auth-oidc-client-test
@@ -174,7 +174,7 @@ jobs:
 
       - name: Test Angular Application
         working-directory: ./angular-auth-oidc-client-test
-        run: npm test -- --watch=false --browsers=ChromeHeadless
+        run: npm test
 
       - name: Build Angular Application
         working-directory: ./angular-auth-oidc-client-test

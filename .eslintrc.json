@@ -6,8 +6,7 @@
       "files": ["*.ts"],
       "parserOptions": {
         "project": ["tsconfig.json"],
-        "createDefaultProgram": true,
-        "tsconfigRootDir": "./"
+        "createDefaultProgram": true
       },
       "extends": [
         "plugin:@angular-eslint/recommended",
@@ -69,8 +68,16 @@
         ],
         "padding-line-between-statements": [
           "error",
-          { "blankLine": "always", "prev": ["const", "let", "var"], "next": "*" },
-          { "blankLine": "never", "prev": ["const", "let", "var"], "next": ["const", "let", "var"] },
+          {
+            "blankLine": "always",
+            "prev": ["const", "let", "var"],
+            "next": "*"
+          },
+          {
+            "blankLine": "never",
+            "prev": ["const", "let", "var"],
+            "next": ["const", "let", "var"]
+          },
           { "blankLine": "always", "prev": "*", "next": "return" }
         ],
         "one-var": ["error", "never"],

@@ -23,7 +23,7 @@ export class AutoLoginPartialRoutesGuard {
   canLoad(): Observable<boolean> {
     const url =
       this.router
-        .getCurrentNavigation()
+        .currentNavigation()
         ?.extractedUrl.toString()
         .substring(1) ?? '';
 
@@ -87,7 +87,7 @@ export function autoLoginPartialRoutesGuard(
     ? { customParams: route.data }
     : undefined;
   const url =
-    router.getCurrentNavigation()?.extractedUrl.toString().substring(1) ?? '';
+    router.currentNavigation()?.extractedUrl.toString().substring(1) ?? '';
 
   return checkAuth(
     url,
