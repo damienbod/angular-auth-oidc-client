@@ -1,5 +1,9 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2025-11-02 21.0.0
+
+- Angular 21
+
 ### 2025-11-02 20.0.3
 
 - Fix: prevent clear() from destroying all sessionStorage
