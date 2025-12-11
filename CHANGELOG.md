@@ -1,5 +1,10 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2025-11-02 21.0.1
+
+- Disabe PKCE bug fix.
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/2159)
+
 ### 2025-11-02 21.0.0
 
 - Angular 21
