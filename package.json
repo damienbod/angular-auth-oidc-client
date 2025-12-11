@@ -78,7 +78,7 @@
     "@angular-eslint/schematics": "^21.0.1",
     "@angular-eslint/template-parser": "^21.0.1",
     "@angular/build": "^21.0.1",
-    "@angular/cli": "^21.0.1",
+    "@angular/cli": "^21.0.3",
     "@angular/compiler-cli": "^21.0.1",
     "@evilmartians/lefthook": "^1.0.3",
     "@types/jasmine": "^4.0.0",
