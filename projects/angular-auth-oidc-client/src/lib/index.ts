@@ -17,6 +17,7 @@ export * from './logging/abstract-logger.service';
 export * from './logging/log-level';
 export * from './login/login-response';
 export * from './login/popup/popup-options';
+export * from './login/popup/popup-result';
 export * from './login/popup/popup.service';
 export * from './oidc.security.service';
 export * from './provide-auth';
@@ -30,3 +31,4 @@ export * from './user-data/userdata-result';
 export * from './validation/jwtkeys';
 export * from './validation/state-validation-result';
 export * from './validation/validation-result';
+
