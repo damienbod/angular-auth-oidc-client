@@ -7,7 +7,7 @@
     "dev": "export PORT=8081; nodemon --exec ts-node src/index.ts"
   },
   "dependencies": {
-    "express": "^4.18.2",
+    "express": "^4.22.1",
     "jose": "^5.2.0",
     "cors": "^2.8.5",
     "cookie-parser": "^1.4.6"
