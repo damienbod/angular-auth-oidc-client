@@ -109,6 +109,12 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
 export class AppModule {}
 ```
 
+When using `silentRenew` together with `useRefreshToken`, requesting the
+`offline_access` scope is common and remains the default recommendation.
+Some providers support refresh token renewal in the browser without
+`offline_access`. In those cases, you can suppress the configuration warning
+with `disableRefreshTokenOfflineAccessScopeWarning: true`.
+
 And call the method `checkAuth()` from your `app.component.ts`. The method `checkAuth()` is needed to process the redirect from your Security Token Service and set the correct states. This method must be used to ensure the correct functioning of the library.
 
 ```ts
