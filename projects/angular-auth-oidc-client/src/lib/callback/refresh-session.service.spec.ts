@@ -1,5 +1,5 @@
 import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { delay } from 'rxjs/operators';
 import { mockProvider } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
@@ -10,6 +10,7 @@ import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.se
 import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/logger.service';
 import { LoginResponse } from '../login/login-response';
+import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { UserService } from '../user-data/user.service';
@@ -30,6 +31,8 @@ describe('RefreshSessionService ', () => {
   let refreshSessionIframeService: RefreshSessionIframeService;
   let refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService;
   let authWellKnownService: AuthWellKnownService;
+  let publicEventsService: PublicEventsService;
+  let userService: UserService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -63,6 +66,8 @@ describe('RefreshSessionService ', () => {
     silentRenewService = TestBed.inject(SilentRenewService);
     authWellKnownService = TestBed.inject(AuthWellKnownService);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
+    publicEventsService = TestBed.inject(PublicEventsService);
+    userService = TestBed.inject(UserService);
   });
 
   it('should create', () => {
@@ -283,6 +288,143 @@ describe('RefreshSessionService ', () => {
             configId: 'configId1',
           });
         });
+    }));
+
+    it('returns tokens from the completed refresh result when auth-state getters are stale', waitForAsync(() => {
+      const allConfigs = [
+        {
+          configId: 'configId1',
+          silentRenewTimeoutInSeconds: 10,
+        },
+      ];
+      const refreshResult = {
+        authResult: {
+          id_token: 'fresh-id-token',
+          access_token: 'fresh-access-token',
+        },
+      } as CallbackContext;
+
+      spyOn(
+        flowHelper,
+        'isCurrentFlowCodeFlowWithRefreshTokens'
+      ).and.returnValue(true);
+      spyOn(
+        refreshSessionService as any,
+        'waitForRunningRefreshSessionIfRequired'
+      ).and.returnValue(of(false));
+      spyOn(
+        refreshSessionService as any,
+        'startRefreshSession'
+      ).and.returnValue(of(refreshResult));
+      spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
+        true
+      );
+      spyOn(authStateService, 'getIdToken').and.returnValue('stale-id-token');
+      spyOn(authStateService, 'getAccessToken').and.returnValue(
+        'stale-access-token'
+      );
+      spyOn(userService, 'getUserDataFromStore').and.returnValue({
+        sub: '123',
+      } as any);
+
+      refreshSessionService
+        .forceRefreshSession(allConfigs[0], allConfigs)
+        .subscribe((result) => {
+          expect(result).toEqual({
+            idToken: 'fresh-id-token',
+            accessToken: 'fresh-access-token',
+            userData: { sub: '123' },
+            isAuthenticated: true,
+            configId: 'configId1',
+          });
+        });
+    }));
+
+    it('falls back to auth-state getters when no refresh auth result is available', waitForAsync(() => {
+      const allConfigs = [
+        {
+          configId: 'configId1',
+          silentRenewTimeoutInSeconds: 10,
+        },
+      ];
+
+      spyOn(
+        flowHelper,
+        'isCurrentFlowCodeFlowWithRefreshTokens'
+      ).and.returnValue(true);
+      spyOn(
+        refreshSessionService as any,
+        'waitForRunningRefreshSessionIfRequired'
+      ).and.returnValue(of(false));
+      spyOn(
+        refreshSessionService as any,
+        'startRefreshSession'
+      ).and.returnValue(of(null));
+      spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
+        true
+      );
+      spyOn(authStateService, 'getIdToken').and.returnValue('stored-id-token');
+      spyOn(authStateService, 'getAccessToken').and.returnValue(
+        'stored-access-token'
+      );
+
+      refreshSessionService
+        .forceRefreshSession(allConfigs[0], allConfigs)
+        .subscribe((result) => {
+          expect(result.idToken).toBe('stored-id-token');
+          expect(result.accessToken).toBe('stored-access-token');
+        });
+    }));
+
+    it('waits for the running renew process to publish a refresh result before emitting', fakeAsync(() => {
+      const allConfigs = [
+        {
+          configId: 'configId1',
+          silentRenewTimeoutInSeconds: 10,
+        },
+      ];
+      const events$ = new Subject<any>();
+      let actualResult: LoginResponse | undefined;
+
+      spyOn(
+        flowHelper,
+        'isCurrentFlowCodeFlowWithRefreshTokens'
+      ).and.returnValue(true);
+      spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(true);
+      spyOn(publicEventsService, 'registerForEvents').and.returnValue(events$);
+      spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
+        true
+      );
+      spyOn(authStateService, 'getIdToken').and.returnValue('updated-id-token');
+      spyOn(authStateService, 'getAccessToken').and.returnValue(
+        'updated-access-token'
+      );
+
+      refreshSessionService
+        .forceRefreshSession(allConfigs[0], allConfigs)
+        .subscribe((result) => {
+          actualResult = result;
+        });
+
+      tick();
+      expect(actualResult).toBeUndefined();
+
+      events$.next({
+        type: EventTypes.NewAuthenticationResult,
+        value: {
+          configId: 'configId1',
+          isRenewProcess: true,
+        },
+      });
+      tick();
+
+      expect(actualResult).toEqual({
+        idToken: 'updated-id-token',
+        accessToken: 'updated-access-token',
+        userData: undefined,
+        isAuthenticated: true,
+        configId: 'configId1',
+      });
     }));
 
     it('calls start refresh session and waits for completed, returns idtoken and accesstoken if auth is true', waitForAsync(() => {
