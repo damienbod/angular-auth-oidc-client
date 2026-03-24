@@ -169,7 +169,7 @@ You can pass in LogoutAuthOptions following optional parameters:
 - `customParams` - to send custom parameters to OIDC Provider
 - `logoffMethod` - Which can be `GET` or `POST`. `GET` is default here.
 
-According to the [OIDC Standard](https://openid.net/specs/openid-connect-rpinitiated-1_0.html) only the customParams `state`, `logout_hint` and `ui_locales` are configurable. Other values are being created, being read from storage or taken from your config.
+According to the [OIDC Standard](https://openid.net/specs/openid-connect-rpinitiated-1_0.html) only the customParams `state`, `logout_hint` `post_logout_redirect_uri` and `ui_locales` are configurable. Other values are being created, being read from storage or taken from your config.
 
 You can pass an `logoutAuthOptions` parameter if you want to control the behavior more.
 

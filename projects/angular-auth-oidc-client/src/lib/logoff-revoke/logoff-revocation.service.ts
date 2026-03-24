@@ -228,10 +228,12 @@ export class LogoffRevocationService {
       return of(null);
     }
 
-    const { state, logout_hint, ui_locales } = customParams || {};
+    const { state, logout_hint, ui_locales, post_logout_redirect_uri } =
+      customParams || {};
     const { clientId } = config;
     const idToken = this.storagePersistenceService.getIdToken(config);
     const postLogoutRedirectUrl =
+      post_logout_redirect_uri ??
       this.urlService.getPostLogoutRedirectUrl(config);
     const headers = this.getHeaders();
     const { url } = this.urlService.getEndSessionEndpoint(config);
