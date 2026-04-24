@@ -4,7 +4,6 @@ import { concatMap, map } from 'rxjs/operators';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
-import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
 import { AuthWellKnownService } from './auth-well-known/auth-well-known.service';
 import { DEFAULT_CONFIG } from './default-config';
@@ -18,9 +17,6 @@ export class ConfigurationService {
 
   private readonly loggerService = inject(LoggerService);
   private readonly publicEventsService = inject(PublicEventsService);
-  private readonly storagePersistenceService = inject(
-    StoragePersistenceService
-  );
   private readonly platformProvider = inject(PlatformProvider);
   private readonly authWellKnownService = inject(AuthWellKnownService);
   private readonly loader = inject(StsConfigLoader);
@@ -154,19 +150,6 @@ export class ConfigurationService {
   private enhanceConfigWithWellKnownEndpoint(
     configuration: OpenIdConfiguration
   ): OpenIdConfiguration {
-    const alreadyExistingAuthWellKnownEndpoints =
-      this.storagePersistenceService.read(
-        'authWellKnownEndPoints',
-        configuration
-      );
-
-    if (!!alreadyExistingAuthWellKnownEndpoints) {
-      configuration.authWellknownEndpoints =
-        alreadyExistingAuthWellKnownEndpoints;
-
-      return configuration;
-    }
-
     const passedAuthWellKnownEndpoints = configuration.authWellknownEndpoints;
 
     if (!!passedAuthWellKnownEndpoints) {
@@ -174,9 +157,6 @@ export class ConfigurationService {
         configuration,
         passedAuthWellKnownEndpoints
       );
-      configuration.authWellknownEndpoints = passedAuthWellKnownEndpoints;
-
-      return configuration;
     }
 
     return configuration;

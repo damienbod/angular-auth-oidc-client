@@ -4,7 +4,6 @@ import { mockAbstractProvider, mockProvider } from '../../test/auto-mock';
 import { LoggerService } from '../logging/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
-import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { PlatformProvider } from '../utils/platform-provider/platform.provider';
 import { AuthWellKnownService } from './auth-well-known/auth-well-known.service';
 import { ConfigurationService } from './config.service';
@@ -16,7 +15,6 @@ describe('Configuration Service', () => {
   let configService: ConfigurationService;
   let publicEventsService: PublicEventsService;
   let authWellKnownService: AuthWellKnownService;
-  let storagePersistenceService: StoragePersistenceService;
   let configValidationService: ConfigValidationService;
   let platformProvider: PlatformProvider;
   let stsConfigLoader: StsConfigLoader;
@@ -27,7 +25,6 @@ describe('Configuration Service', () => {
         ConfigurationService,
         mockProvider(LoggerService),
         PublicEventsService,
-        mockProvider(StoragePersistenceService),
         ConfigValidationService,
         mockProvider(PlatformProvider),
         mockProvider(AuthWellKnownService),
@@ -40,7 +37,6 @@ describe('Configuration Service', () => {
     configService = TestBed.inject(ConfigurationService);
     publicEventsService = TestBed.inject(PublicEventsService);
     authWellKnownService = TestBed.inject(AuthWellKnownService);
-    storagePersistenceService = TestBed.inject(StoragePersistenceService);
     stsConfigLoader = TestBed.inject(StsConfigLoader);
     platformProvider = TestBed.inject(PlatformProvider);
     configValidationService = TestBed.inject(ConfigValidationService);
@@ -141,33 +137,24 @@ describe('Configuration Service', () => {
         });
     }));
 
-    it(`sets authWellKnownEndPoints on config if authWellKnownEndPoints is stored`, waitForAsync(() => {
+    it(`does not set authWellknownEndpoints on config from storage`, waitForAsync(() => {
       const configs = [{ configId: 'configId1' }];
 
       spyOn(configService as any, 'loadConfigs').and.returnValue(of(configs));
       spyOn(configValidationService, 'validateConfig').and.returnValue(true);
       const consoleSpy = spyOn(console, 'warn');
 
-      spyOn(storagePersistenceService, 'read').and.returnValue({
-        issuer: 'auth-well-known',
-      });
-
       configService.getOpenIDConfiguration('configId1').subscribe((config) => {
-        expect(config?.authWellknownEndpoints).toEqual({
-          issuer: 'auth-well-known',
-        });
-        expect(consoleSpy).not.toHaveBeenCalled()
+        expect(config?.authWellknownEndpoints).toBeUndefined();
+        expect(consoleSpy).not.toHaveBeenCalled();
       });
     }));
 
-    it(`fires ConfigLoaded if authWellKnownEndPoints is stored`, waitForAsync(() => {
+    it(`fires ConfigLoaded when configuration is loaded`, waitForAsync(() => {
       const configs = [{ configId: 'configId1' }];
 
       spyOn(configService as any, 'loadConfigs').and.returnValue(of(configs));
       spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-      spyOn(storagePersistenceService, 'read').and.returnValue({
-        issuer: 'auth-well-known',
-      });
 
       const spy = spyOn(publicEventsService, 'fireEvent');
 
@@ -189,7 +176,6 @@ describe('Configuration Service', () => {
 
       spyOn(configService as any, 'loadConfigs').and.returnValue(of(configs));
       spyOn(configValidationService, 'validateConfig').and.returnValue(true);
-      spyOn(storagePersistenceService, 'read').and.returnValue(null);
 
       const fireEventSpy = spyOn(publicEventsService, 'fireEvent');
       const storeWellKnownEndpointsSpy = spyOn(
