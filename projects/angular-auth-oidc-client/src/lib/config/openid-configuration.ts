@@ -92,6 +92,12 @@ export interface OpenIdConfiguration {
    */
   useRefreshToken?: boolean;
   /**
+   * Suppresses the warning that recommends the `offline_access` scope when
+   * using refresh tokens together with silent renew. Some providers support
+   * this setup without requesting `offline_access`.
+   */
+  disableRefreshTokenOfflineAccessScopeWarning?: boolean;
+  /**
    * Activates Pushed Authorisation Requests for login and popup login.
    * Not compatible with iframe renew.
    */
@@ -209,5 +215,5 @@ export interface OpenIdConfiguration {
   /**
    * Disable cleaning up the popup when receiving invalid messages
    */
-  disableCleaningPopupOnInvalidMessage?: boolean
+  disableCleaningPopupOnInvalidMessage?: boolean;
 }
