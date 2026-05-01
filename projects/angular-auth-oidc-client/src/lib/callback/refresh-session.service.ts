@@ -8,6 +8,7 @@ import {
   timer,
 } from 'rxjs';
 import {
+  catchError,
   filter,
   map,
   mergeMap,
@@ -26,6 +27,8 @@ import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.se
 import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/logger.service';
 import { LoginResponse } from '../login/login-response';
+import { EventTypes } from '../public-events/event-types';
+import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { UserService } from '../user-data/user.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
@@ -50,6 +53,7 @@ export class RefreshSessionService {
   private readonly refreshSessionRefreshTokenService = inject(
     RefreshSessionRefreshTokenService
   );
+  private readonly publicEventsService = inject(PublicEventsService);
   private readonly userService = inject(UserService);
 
   userForceRefreshSession(
@@ -85,15 +89,31 @@ export class RefreshSessionService {
     };
 
     if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(config)) {
-      return this.startRefreshSession(config, allConfigs, mergedParams).pipe(
-        map(() => {
+      return this.waitForRunningRefreshSessionIfRequired(config).pipe(
+        switchMap((shouldWaitForRunningRenew) => {
+          if (shouldWaitForRunningRenew) {
+            return of(null);
+          }
+
+          return this.startRefreshSession(config, allConfigs, mergedParams);
+        }),
+        map((refreshSessionResult) => {
           const isAuthenticated =
             this.authStateService.areAuthStorageTokensValid(config);
 
           if (isAuthenticated) {
+            const authResult =
+              refreshSessionResult && typeof refreshSessionResult !== 'boolean'
+                ? refreshSessionResult.authResult
+                : null;
+
             return {
-              idToken: this.authStateService.getIdToken(config),
-              accessToken: this.authStateService.getAccessToken(config),
+              idToken:
+                authResult?.id_token ??
+                this.authStateService.getIdToken(config),
+              accessToken:
+                authResult?.access_token ??
+                this.authStateService.getAccessToken(config),
               userData: this.userService.getUserDataFromStore(config),
               isAuthenticated,
               configId,
@@ -216,12 +236,17 @@ export class RefreshSessionService {
       return of(null);
     }
 
+    this.flowsDataService.setSilentRenewRunning(config);
+
     return this.authWellKnownService
       .queryAndStoreAuthWellKnownEndPoints(config)
       .pipe(
-        switchMap(() => {
-          this.flowsDataService.setSilentRenewRunning(config);
+        catchError((error) => {
+          this.flowsDataService.resetSilentRenewRunning(config);
 
+          return throwError(() => error);
+        }),
+        switchMap(() => {
           if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(config)) {
             // Refresh Session using Refresh tokens
             return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(
@@ -238,5 +263,37 @@ export class RefreshSessionService {
           );
         })
       );
+  }
+
+  private waitForRunningRefreshSessionIfRequired(
+    config: OpenIdConfiguration
+  ): Observable<boolean> {
+    const isSilentRenewRunning =
+      this.flowsDataService.isSilentRenewRunning(config);
+
+    if (!isSilentRenewRunning) {
+      return of(false);
+    }
+
+    return this.publicEventsService.registerForEvents().pipe(
+      filter(
+        (notification) =>
+          notification.type === EventTypes.NewAuthenticationResult
+      ),
+      map((notification) => notification.value),
+      filter(
+        (
+          authStateResult
+        ): authStateResult is {
+          isRenewProcess: boolean;
+          configId?: string;
+        } =>
+          !!authStateResult &&
+          authStateResult.isRenewProcess === true &&
+          authStateResult.configId === config.configId
+      ),
+      take(1),
+      map(() => true)
+    );
   }
 }

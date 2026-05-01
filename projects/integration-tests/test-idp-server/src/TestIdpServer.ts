@@ -1,9 +1,9 @@
-import express, { Application, Request, Response, NextFunction } from 'express';
-import { Server } from 'http';
-import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import { SignJWT, exportJWK, importPKCS8, KeyLike } from 'jose';
+import cors from 'cors';
 import crypto from 'crypto';
+import express, { Application, NextFunction, Request, Response } from 'express';
+import { Server } from 'http';
+import { exportJWK, importPKCS8, KeyLike, SignJWT } from 'jose';
 
 export interface TestIdpServerOptions {
   port?: number;
@@ -34,6 +34,7 @@ export class TestIdpServer {
   private realms: string[];
   private keyPairs: Record<string, KeyPair> = {};
   private activeSessions: Map<string, Session> = new Map();
+  private refreshTokenSessions: Map<string, Session> = new Map();
   private loggedOutSessions: Set<string> = new Set();
 
   constructor(options: TestIdpServerOptions = {}) {
@@ -72,26 +73,39 @@ export class TestIdpServer {
     const realmPath = `/${realm}`;
 
     // OIDC Discovery endpoint
-    this.app.get(`${realmPath}/.well-known/openid-configuration`, (req: Request, res: Response) => {
-      res.json({
-        issuer: `http://localhost:${this.port}${realmPath}`,
-        authorization_endpoint: `http://localhost:${this.port}${realmPath}/authorize`,
-        token_endpoint: `http://localhost:${this.port}${realmPath}/token`,
-        userinfo_endpoint: `http://localhost:${this.port}${realmPath}/userinfo`,
-        end_session_endpoint: `http://localhost:${this.port}${realmPath}/logout`,
-        jwks_uri: `http://localhost:${this.port}${realmPath}/jwks`,
-        scopes_supported: this.getSupportedScopes(realm),
-        response_types_supported: ['code'],
-        grant_types_supported: ['authorization_code'],
-        subject_types_supported: ['public'],
-        id_token_signing_alg_values_supported: ['RS256'],
-        code_challenge_methods_supported: ['S256', 'plain']
-      });
-    });
+    this.app.get(
+      `${realmPath}/.well-known/openid-configuration`,
+      (req: Request, res: Response) => {
+        res.json({
+          issuer: `http://localhost:${this.port}${realmPath}`,
+          authorization_endpoint: `http://localhost:${this.port}${realmPath}/authorize`,
+          token_endpoint: `http://localhost:${this.port}${realmPath}/token`,
+          userinfo_endpoint: `http://localhost:${this.port}${realmPath}/userinfo`,
+          end_session_endpoint: `http://localhost:${this.port}${realmPath}/logout`,
+          jwks_uri: `http://localhost:${this.port}${realmPath}/jwks`,
+          scopes_supported: this.getSupportedScopes(realm),
+          response_types_supported: ['code'],
+          grant_types_supported: ['authorization_code', 'refresh_token'],
+          subject_types_supported: ['public'],
+          id_token_signing_alg_values_supported: ['RS256'],
+          code_challenge_methods_supported: ['S256', 'plain'],
+        });
+      }
+    );
 
     // Authorization endpoint
     this.app.get(`${realmPath}/authorize`, (req: Request, res: Response) => {
-      const { response_type, client_id, redirect_uri, scope, state, prompt, code_challenge, code_challenge_method } = req.query;
+      const {
+        response_type,
+        client_id,
+        redirect_uri,
+        scope,
+        state,
+        prompt,
+        code_challenge,
+        code_challenge_method,
+        test_response_mode,
+      } = req.query;
 
       console.log(`Test IDP: ${realm} authorize request:`, {
         response_type,
@@ -129,7 +143,15 @@ export class TestIdpServer {
         redirectUrl.searchParams.set('code', code);
         redirectUrl.searchParams.set('state', state as string);
 
-        console.log(`Test IDP: ${realm} silent auth success, redirecting to:`, redirectUrl.toString());
+        console.log(
+          `Test IDP: ${realm} silent auth success, redirecting to:`,
+          redirectUrl.toString()
+        );
+
+        if (test_response_mode === 'json') {
+          return res.json({ redirect_to: redirectUrl.toString() });
+        }
+
         return res.redirect(redirectUrl.toString());
       }
 
@@ -143,20 +165,57 @@ export class TestIdpServer {
       res.cookie('SSO_SESSION', 'active', {
         httpOnly: true,
         sameSite: 'lax',
-        maxAge: 3600000 // 1 hour
+        maxAge: 3600000, // 1 hour
       });
+
+      if (test_response_mode === 'json') {
+        return res.json({ redirect_to: redirectUrl.toString() });
+      }
+
       res.redirect(redirectUrl.toString());
     });
 
     // Token endpoint
     this.app.post(`${realmPath}/token`, async (req: Request, res: Response) => {
-      const { grant_type, code, redirect_uri, client_id, code_verifier } = req.body;
+      const {
+        grant_type,
+        code,
+        redirect_uri,
+        client_id,
+        code_verifier,
+        refresh_token,
+      } = req.body;
 
       console.log(`Test IDP: ${realm} token request:`, {
         grant_type,
         code,
-        code_verifier: code_verifier ? 'present' : 'missing'
+        refresh_token,
+        code_verifier: code_verifier ? 'present' : 'missing',
       });
+
+      if (grant_type === 'refresh_token') {
+        const session = this.refreshTokenSessions.get(refresh_token);
+
+        if (!session || session.realm !== realm) {
+          return res.status(400).json({ error: 'invalid_grant' });
+        }
+
+        this.refreshTokenSessions.delete(refresh_token);
+
+        const nextRefreshToken = this.createRefreshToken(realm);
+        this.refreshTokenSessions.set(nextRefreshToken, session);
+
+        const tokenData = await this.getTokenForRealm(realm, session, false);
+
+        return res.json({
+          access_token: `${realm}-access-token-${Date.now()}`,
+          id_token: tokenData,
+          refresh_token: nextRefreshToken,
+          token_type: 'Bearer',
+          expires_in: 300,
+          scope: session.scope || this.getScopeString(realm),
+        });
+      }
 
       if (grant_type !== 'authorization_code') {
         return res.status(400).json({ error: 'unsupported_grant_type' });
@@ -172,16 +231,29 @@ export class TestIdpServer {
       if (session.codeChallenge) {
         if (!code_verifier) {
           console.log(`Test IDP: ${realm} missing code_verifier for PKCE flow`);
-          return res.status(400).json({ error: 'invalid_request', error_description: 'code_verifier required' });
+          return res
+            .status(400)
+            .json({
+              error: 'invalid_request',
+              error_description: 'code_verifier required',
+            });
         }
 
         // Verify the code_verifier matches the code_challenge
         const verifierBuffer = Buffer.from(code_verifier, 'utf-8');
-        const challenge = crypto.createHash('sha256').update(verifierBuffer).digest('base64url');
+        const challenge = crypto
+          .createHash('sha256')
+          .update(verifierBuffer)
+          .digest('base64url');
 
         if (challenge !== session.codeChallenge) {
           console.log(`Test IDP: ${realm} code_verifier validation failed`);
-          return res.status(400).json({ error: 'invalid_grant', error_description: 'code_verifier validation failed' });
+          return res
+            .status(400)
+            .json({
+              error: 'invalid_grant',
+              error_description: 'code_verifier validation failed',
+            });
         }
 
         console.log(`Test IDP: ${realm} PKCE validation successful`);
@@ -190,15 +262,27 @@ export class TestIdpServer {
       // Remove used authorization code
       this.activeSessions.delete(code);
 
+      const supportsRefreshTokens = session.scope
+        ?.split(' ')
+        .includes('offline_access');
+      const refreshToken = supportsRefreshTokens
+        ? this.createRefreshToken(realm)
+        : undefined;
+
+      if (refreshToken) {
+        this.refreshTokenSessions.set(refreshToken, session);
+      }
+
       // Get the appropriate test token for this realm with session data
       const tokenData = await this.getTokenForRealm(realm, session);
 
       res.json({
         access_token: `${realm}-access-token-${Date.now()}`,
         id_token: tokenData,
+        ...(refreshToken ? { refresh_token: refreshToken } : {}),
         token_type: 'Bearer',
         expires_in: 300, // 5 minutes to match ID token
-        scope: session.scope || this.getScopeString(realm)
+        scope: session.scope || this.getScopeString(realm),
       });
       return;
     });
@@ -216,12 +300,13 @@ export class TestIdpServer {
       const authHeader = req.headers.authorization;
 
       if (!authHeader || !authHeader.includes(`${realm}-access-token`)) {
-        res.status(401).json({ error: 'unauthorized' });
-        return;
-      }
+          res.status(401).json({ error: 'unauthorized' });
+          return;
+        }
 
-      res.json(this.getUserInfoForRealm(realm));
-    });
+        res.json(this.getUserInfoForRealm(realm));
+      }
+    );
 
     // Logout endpoint (OIDC end_session_endpoint)
     this.app.get(`${realmPath}/logout`, async (req: Request, res: Response) => {
@@ -279,19 +364,19 @@ export class TestIdpServer {
   private getSupportedScopes(realm: string): string[] {
     switch (realm) {
       case 'master-idp':
-        return ['openid', 'profile', 'email'];
+        return ['openid', 'profile', 'email', 'offline_access'];
       case 'secondary-idp-1':
-        return ['openid', 'profile'];
+        return ['openid', 'profile', 'offline_access'];
       case 'secondary-idp-2':
-        return ['openid', 'email'];
+        return ['openid', 'email', 'offline_access'];
       case 'idp1':
-        return ['openid', 'profile', 'email'];
+        return ['openid', 'profile', 'email', 'offline_access'];
       case 'idp2':
-        return ['openid', 'profile'];
+        return ['openid', 'profile', 'offline_access'];
       case 'idp3':
-        return ['openid', 'email'];
+        return ['openid', 'email', 'offline_access'];
       default:
-        return ['openid'];
+        return ['openid', 'offline_access'];
     }
   }
 
@@ -299,9 +384,13 @@ export class TestIdpServer {
     return this.getSupportedScopes(realm).join(' ');
   }
 
-  private async getTokenForRealm(realm: string, session?: Session): Promise<string> {
+  private async getTokenForRealm(
+    realm: string,
+    session?: Session,
+    includeNonce = true
+  ): Promise<string> {
     const keyPair = this.getKeyPairForRealm(realm);
-    const claims = this.getClaimsForRealm(realm, session);
+    const claims = this.getClaimsForRealm(realm, session, includeNonce);
 
     // Add a unique timestamp with millisecond precision to ensure different IATs
     // Add light jitter (0-10ms) based on realm to ensure different IATs
@@ -318,6 +407,12 @@ export class TestIdpServer {
       .sign(keyPair.privateKey);
 
     return jwt;
+  }
+
+  private createRefreshToken(realm: string): string {
+    return `${realm}-refresh-token-${Date.now()}-${Math.random()
+      .toString(36)
+      .slice(2)}`;
   }
 
   private getKeyPairForRealm(realm: string): KeyPair {
@@ -375,21 +470,25 @@ export class TestIdpServer {
     }
   }
 
-  private getClaimsForRealm(realm: string, session?: Session): any {
+  private getClaimsForRealm(
+    realm: string,
+    session?: Session,
+    includeNonce = true
+  ): any {
     const userInfo = this.getUserInfoForRealm(realm);
     const scope = session?.scope || this.getScopeString(realm);
 
     // Parse the scope to bp: prefixed roles
     const scopes = scope.split(' ');
     const bpRoles = scopes
-      .filter(s => s.startsWith('bp:'))
-      .map(s => s.substring(3));
+      .filter((s) => s.startsWith('bp:'))
+      .map((s) => s.substring(3));
 
     return {
       ...userInfo,
-      nonce: session?.nonce || 'test-nonce',
+      ...(includeNonce ? { nonce: session?.nonce || 'test-nonce' } : {}),
       azp: session?.clientId || this.getClientIdForRealm(realm),
-      scope: scope
+      scope: scope,
     };
   }
 
@@ -440,15 +539,24 @@ export class TestIdpServer {
 
   private async generateTestData(): Promise<void> {
     // Generate key pairs for each realm
-    const keyRealms = ['master', 'secondary1', 'secondary2', 'idp1', 'idp2', 'idp3'];
+    const keyRealms = [
+      'master',
+      'secondary1',
+      'secondary2',
+      'idp1',
+      'idp2',
+      'idp3',
+    ];
     for (const realm of keyRealms) {
       const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
         modulusLength: 2048,
         publicKeyEncoding: { type: 'spki', format: 'pem' },
-        privateKeyEncoding: { type: 'pkcs8', format: 'pem' }
+        privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
       });
 
-      const kid = `${realm}-key-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+      const kid = `${realm}-key-${Date.now()}-${Math.random()
+        .toString(36)
+        .substring(7)}`;
       const privateKeyJose = await importPKCS8(privateKey, 'RS256');
       const publicKeyBuffer = crypto.createPublicKey(publicKey);
       const publicJWK = await exportJWK(publicKeyBuffer);
