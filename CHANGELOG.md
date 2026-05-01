@@ -1,5 +1,9 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2026-05-01 21.0.2
+
+- Update packages
+
 ### 2025-11-02 21.0.1
 
 - Disabe PKCE bug fix.
