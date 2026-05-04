@@ -52,6 +52,8 @@ export class UrlService {
       u.searchParams.delete(key);
     });
 
+    u.hash = '';
+
     return u;
   }
 
