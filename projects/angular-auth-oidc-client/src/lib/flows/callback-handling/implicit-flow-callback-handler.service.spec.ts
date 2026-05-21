@@ -1,4 +1,4 @@
-import { DOCUMENT } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { mockProvider } from '../../../test/auto-mock';
 import { LoggerService } from '../../logging/logger.service';
