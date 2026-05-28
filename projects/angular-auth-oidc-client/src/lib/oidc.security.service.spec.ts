@@ -627,7 +627,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('logoffLocal', () => {
-    it('calls logoffRevocationService.logoffLocal', waitForAsync(() => {
+    it('does not call logoffRevocationService.logoffLocal until subscribed', waitForAsync(() => {
       const config = { configId: 'configId1' };
 
       spyOn(configurationService, 'getOpenIDConfigurations').and.returnValue(
@@ -636,12 +636,24 @@ describe('OidcSecurityService', () => {
       const spy = spyOn(logoffRevocationService, 'logoffLocal');
 
       oidcSecurityService.logoffLocal();
+      expect(spy).not.toHaveBeenCalled();
+    }));
+
+    it('calls logoffRevocationService.logoffLocal when subscribed', waitForAsync(() => {
+      const config = { configId: 'configId1' };
+
+      spyOn(configurationService, 'getOpenIDConfigurations').and.returnValue(
+        of({ allConfigs: [config], currentConfig: config })
+      );
+      const spy = spyOn(logoffRevocationService, 'logoffLocal');
+
+      oidcSecurityService.logoffLocal().subscribe();
       expect(spy).toHaveBeenCalledOnceWith(config, [config]);
     }));
   });
 
   describe('logoffLocalMultiple', () => {
-    it('calls logoffRevocationService.logoffLocalMultiple', waitForAsync(() => {
+    it('does not call logoffRevocationService.logoffLocalMultiple until subscribed', waitForAsync(() => {
       const config = { configId: 'configId1' };
 
       spyOn(configurationService, 'getOpenIDConfigurations').and.returnValue(
@@ -650,6 +662,18 @@ describe('OidcSecurityService', () => {
       const spy = spyOn(logoffRevocationService, 'logoffLocalMultiple');
 
       oidcSecurityService.logoffLocalMultiple();
+      expect(spy).not.toHaveBeenCalled();
+    }));
+
+    it('calls logoffRevocationService.logoffLocalMultiple when subscribed', waitForAsync(() => {
+      const config = { configId: 'configId1' };
+
+      spyOn(configurationService, 'getOpenIDConfigurations').and.returnValue(
+        of({ allConfigs: [config], currentConfig: config })
+      );
+      const spy = spyOn(logoffRevocationService, 'logoffLocalMultiple');
+
+      oidcSecurityService.logoffLocalMultiple().subscribe();
       expect(spy).toHaveBeenCalledOnceWith([config]);
     }));
   });
