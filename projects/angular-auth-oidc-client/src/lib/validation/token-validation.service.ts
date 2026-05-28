@@ -56,6 +56,11 @@ import { alg2kty, getImportAlg, getVerifyAlg } from './token-validation.helper';
 
 @Injectable({ providedIn: 'root' })
 export class TokenValidationService {
+  /**
+   * @deprecated No longer written to storage. Kept only so external
+   * consumers that previously imported the symbol still compile.
+   * Will be removed in a future major release.
+   */
   static refreshTokenNoncePlaceholder = '--RefreshToken--';
 
   keyAlgorithms: string[] = [
@@ -282,13 +287,34 @@ export class TokenValidationService {
     dataIdToken: any,
     localNonce: any,
     ignoreNonceAfterRefresh: boolean,
-    configuration: OpenIdConfiguration
+    configuration: OpenIdConfiguration,
+    isRefreshTokenFlow = false
   ): boolean {
-    const isFromRefreshToken =
-      (dataIdToken.nonce === undefined || ignoreNonceAfterRefresh) &&
-      localNonce === TokenValidationService.refreshTokenNoncePlaceholder;
+    if (isRefreshTokenFlow) {
+      if (dataIdToken.nonce === undefined) {
+        return true;
+      }
 
-    if (!isFromRefreshToken && dataIdToken.nonce !== localNonce) {
+      if (ignoreNonceAfterRefresh) {
+        return true;
+      }
+
+      if (dataIdToken.nonce === localNonce) {
+        return true;
+      }
+
+      this.loggerService.logDebug(
+        configuration,
+        'Validate_id_token_nonce failed in refresh-token flow, dataIdToken.nonce: ' +
+          dataIdToken.nonce +
+          ' local_nonce:' +
+          localNonce
+      );
+
+      return false;
+    }
+
+    if (dataIdToken.nonce !== localNonce) {
       this.loggerService.logDebug(
         configuration,
         'Validate_id_token_nonce failed, dataIdToken.nonce: ' +

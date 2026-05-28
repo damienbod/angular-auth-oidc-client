@@ -139,7 +139,8 @@ export class StateValidationService {
                 toReturn.decodedIdToken,
                 authNonce,
                 Boolean(ignoreNonceAfterRefresh),
-                configuration
+                configuration,
+                isInRefreshTokenFlow
               )
             ) {
               this.loggerService.logWarning(

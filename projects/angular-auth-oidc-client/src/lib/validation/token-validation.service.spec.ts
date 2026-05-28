@@ -111,56 +111,52 @@ describe('TokenValidationService', () => {
       ).toBe(false);
     });
 
-    it('should validate id token nonce after refresh token grant when undefined and no ignore', () => {
+    it('validates refresh-token flow when id_token contains no nonce (spec-compliant IdP)', () => {
       expect(
         tokenValidationService.validateIdTokenNonce(
           { nonce: undefined },
-          TokenValidationService.refreshTokenNoncePlaceholder,
+          'realNonce',
           false,
-          {
-            configId: 'configId1',
-          }
+          { configId: 'configId1' },
+          true
         )
       ).toBe(true);
     });
 
-    it('should validate id token nonce after refresh token grant when undefined and ignore', () => {
+    it('validates refresh-token flow when id_token nonce matches the original nonce (Keycloak case)', () => {
       expect(
         tokenValidationService.validateIdTokenNonce(
-          { nonce: undefined },
-          TokenValidationService.refreshTokenNoncePlaceholder,
-          true,
-          {
-            configId: 'configId1',
-          }
-        )
-      ).toBe(true);
-    });
-
-    it('should validate id token nonce after refresh token grant when defined and ignore', () => {
-      expect(
-        tokenValidationService.validateIdTokenNonce(
-          { nonce: 'test1' },
-          TokenValidationService.refreshTokenNoncePlaceholder,
-          true,
-          {
-            configId: 'configId1',
-          }
-        )
-      ).toBe(true);
-    });
-
-    it('should not validate id token nonce after refresh token grant when defined and no ignore', () => {
-      expect(
-        tokenValidationService.validateIdTokenNonce(
-          { nonce: 'test1' },
-          TokenValidationService.refreshTokenNoncePlaceholder,
+          { nonce: 'realNonce' },
+          'realNonce',
           false,
-          {
-            configId: 'configId1',
-          }
+          { configId: 'configId1' },
+          true
+        )
+      ).toBe(true);
+    });
+
+    it('rejects refresh-token flow when id_token nonce differs from original and ignoreNonceAfterRefresh is false', () => {
+      expect(
+        tokenValidationService.validateIdTokenNonce(
+          { nonce: 'tamperedNonce' },
+          'realNonce',
+          false,
+          { configId: 'configId1' },
+          true
         )
       ).toBe(false);
+    });
+
+    it('validates refresh-token flow when ignoreNonceAfterRefresh is true regardless of returned nonce', () => {
+      expect(
+        tokenValidationService.validateIdTokenNonce(
+          { nonce: 'anythingFromIdP' },
+          'realNonce',
+          true,
+          { configId: 'configId1' },
+          true
+        )
+      ).toBe(true);
     });
   });
 

@@ -78,5 +78,23 @@ describe('RefreshSessionCallbackHandlerService', () => {
           },
         });
     }));
+
+    it('does not overwrite the stored nonce when a refresh token exists', waitForAsync(() => {
+      spyOn(
+        flowsDataService,
+        'getExistingOrCreateAuthStateControl'
+      ).and.returnValue('state-data');
+      spyOn(authStateService, 'getRefreshToken').and.returnValue(
+        'henlo-furiend'
+      );
+      spyOn(authStateService, 'getIdToken').and.returnValue('henlo-legger');
+      const setNonceSpy = spyOn(flowsDataService, 'setNonce');
+
+      service
+        .refreshSessionWithRefreshTokens({ configId: 'configId1' })
+        .subscribe(() => {
+          expect(setNonceSpy).not.toHaveBeenCalled();
+        });
+    }));
   });
 });
