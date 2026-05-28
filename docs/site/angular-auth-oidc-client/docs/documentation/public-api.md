@@ -609,9 +609,9 @@ this.oidcSecurityService
 
 ## logoffAndRevokeTokens(configId?: string, authOptions?: AuthOptions)
 
-With this method the user is being logged out and the refresh token and and the access token are revoked on the server. If the refresh token does not exist only the access token is revoked. Then the logout runs normally.
+With this method the user is being logged out and the refresh token and the access token are revoked on the server. If the refresh token does not exist only the access token is revoked. Then the logout runs normally.
 
-This method takes a `configId` and and `authOptions` as parameter and returns an observable. If you are running with multiple configs and pass the `configId` the passed config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
+This method takes a `configId` and `authOptions` as parameter and returns an observable. If you are running with multiple configs and pass the `configId` the passed config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
 
 ```ts
 this.oidcSecurityService.logoffAndRevokeTokens().subscribe(/* ... */);

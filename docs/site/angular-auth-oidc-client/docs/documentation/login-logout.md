@@ -134,7 +134,7 @@ A simplified page (instead of the application url) can be used. Here's an exampl
 
 ### Popup Sample
 
-[app.component.ts](../../../../../projects/sample-code-flow-popup/src/app/)
+[app.component.ts](https://github.com/damienbod/angular-auth-oidc-client/blob/main/projects/sample-code-flow-popup/src/app/app.component.ts)
 
 ## Logout
 

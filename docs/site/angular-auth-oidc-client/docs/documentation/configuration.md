@@ -29,7 +29,7 @@ export const appConfig: ApplicationConfig = {
 
 ### Using multiple configs
 
-You can pass an array of configs into the `provideAuth()` method. Each config will get an `configId` automatically if you do not set it for yourself.
+You can pass an array of configs into the `provideAuth()` method. Each config will get a `configId` automatically if you do not set it for yourself.
 
 ```ts
 import { ApplicationConfig } from '@angular/core';
@@ -532,7 +532,7 @@ Default = _3_
 - Required: `false`
 
 An array of secure urls to which the token should be sent if the interceptor is added to the `HTTP_INTERCEPTORS`. <br/>
-See [Http Interceptor](using-access-tokens.md/#http-interceptor)
+See [Http Interceptor](interceptors.md)
 
 ### `usePushedAuthorisationRequests`
 
