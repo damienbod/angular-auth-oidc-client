@@ -44,6 +44,6 @@ export class HomeComponent implements OnInit {
   }
 
   logoffLocal(): void {
-    this.oidcSecurityService.logoffLocal();
+    this.oidcSecurityService.logoffLocal().subscribe();
   }
 }

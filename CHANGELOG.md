@@ -1,5 +1,10 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### Unreleased
+
+- **BREAKING**: `OidcSecurityService.logoffLocal()` and `logoffLocalMultiple()` now return `Observable<unknown>` instead of `void`. Callers must `.subscribe()` for the logoff to fire. Aligns with the other `logoff*` / `revoke*` methods on the service.
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/2212)
+
 ### 2026-05-01 21.0.2
 
 - Update packages

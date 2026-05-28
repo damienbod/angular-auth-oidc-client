@@ -458,24 +458,35 @@ export class OidcSecurityService {
    * Use this method if you have _one_ config enabled.
    *
    * @param configId The configId to perform the action in behalf of. If not passed, the first configs will be taken
+   *
+   * @returns An observable that performs the local logoff when subscribed.
+   *   You MUST subscribe (or pipe into another observable that is subscribed)
+   *   for the logoff to actually happen.
    */
-  logoffLocal(configId?: string): void {
-    this.configurationService
+  logoffLocal(configId?: string): Observable<unknown> {
+    return this.configurationService
       .getOpenIDConfigurations(configId)
-      .subscribe(({ allConfigs, currentConfig }) =>
-        this.logoffRevocationService.logoffLocal(currentConfig, allConfigs)
+      .pipe(
+        map(({ allConfigs, currentConfig }) =>
+          this.logoffRevocationService.logoffLocal(currentConfig, allConfigs)
+        )
       );
   }
 
   /**
    * Logs the user out of the application for all configs without logging them out of the server.
    * Use this method if you have _multiple_ configs enabled.
+   *
+   * @returns An observable that performs the local logoff for all configs when
+   *   subscribed. You MUST subscribe for the logoff to actually happen.
    */
-  logoffLocalMultiple(): void {
-    this.configurationService
+  logoffLocalMultiple(): Observable<unknown> {
+    return this.configurationService
       .getOpenIDConfigurations()
-      .subscribe(({ allConfigs }) =>
-        this.logoffRevocationService.logoffLocalMultiple(allConfigs)
+      .pipe(
+        map(({ allConfigs }) =>
+          this.logoffRevocationService.logoffLocalMultiple(allConfigs)
+        )
       );
   }
 
