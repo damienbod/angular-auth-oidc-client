@@ -7,7 +7,7 @@ sidebar_position: 11
 
 The `HttpClient` allows you to implement [HTTP interceptors](https://angular.dev/guide/http/interceptors#interceptors) to tap into requests and responses. A common use case would be to intercept any outgoing HTTP request and add an authorization header.
 
-:::warn
+:::warning
 
 Do not send the access token with requests for which the access token is not intended!
 
