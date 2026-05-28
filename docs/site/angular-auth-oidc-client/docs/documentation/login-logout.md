@@ -238,8 +238,24 @@ The method also takes `configId` and `logoutAuthOptions` parameters if needed.
 
 The `logoffLocal()` method is used to reset your local session in the browser, but does not send anything to the server. It also accepts the `configId` parameter.
 
+`logoffLocal()` returns an `Observable`. You **must subscribe** for the logoff to actually happen.
+
 ```ts
 logoffLocal() {
-  this.oidcSecurityService.logoffLocal();
+  this.oidcSecurityService.logoffLocal().subscribe();
 }
 ```
+
+> **Breaking change (since v21.x):** `logoffLocal()` previously returned `void` and subscribed internally. It now returns `Observable<unknown>` to match `logoff()` / `logoffAndRevokeTokens()`. Add `.subscribe()` to existing calls — otherwise the logoff will not fire.
+
+### `logoffLocalMultiple()`
+
+Same as `logoffLocal()` but applies to every configured provider at once. Use this when you have more than one config enabled.
+
+```ts
+logoffLocalMultiple() {
+  this.oidcSecurityService.logoffLocalMultiple().subscribe();
+}
+```
+
+> **Breaking change (since v21.x):** `logoffLocalMultiple()` previously returned `void`. It now returns `Observable<unknown>` and must be subscribed to.
