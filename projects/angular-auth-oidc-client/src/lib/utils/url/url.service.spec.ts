@@ -61,6 +61,14 @@ describe('UrlService Tests', () => {
         expect(sut.searchParams.has(p.key)).toBeFalse();
       });
     });
+
+    it('should also strip the hash fragment', () => {
+      const url = new URL('https://any.url/path?q=1#anything');
+      const sut = service.getUrlWithoutQueryParameters(url);
+
+      expect(sut.hash).toBe('');
+      expect(sut.searchParams.has('q')).toBeFalse();
+    });
   });
 
   describe('queryParametersExist', () => {
@@ -129,6 +137,39 @@ describe('UrlService Tests', () => {
       nonMatchingUrls.forEach((nmu) => {
         expect(service.isCallbackFromSts(nmu.url, nmu.config)).toBeFalse();
       });
+    });
+
+    it('should return true when currentUrl has an extra hash fragment vs redirectUrl (Facebook #_=_ regression)', () => {
+      // Facebook appends "#_=_" to OAuth redirects. With
+      // checkRedirectUrlWhenCheckingIfIsCallback enabled, the trailing hash
+      // made currentUrl != redirectUrl after stripping query, so
+      // isCallbackFromSts returned false and the page got stuck on the
+      // callback URL.
+      // https://github.com/damienbod/angular-auth-oidc-client/issues/2143
+      const result = service.isCallbackFromSts(
+        'https://example.com/auth-callback?state=abc&iss=xyz&code=def#_=_',
+        {
+          redirectUrl: 'https://example.com/auth-callback',
+          checkRedirectUrlWhenCheckingIfIsCallback: true,
+        }
+      );
+
+      expect(result).toBeTrue();
+    });
+
+    it('should return true when currentUrl carries the response in the fragment (implicit flow)', () => {
+      // Implicit flow puts the auth response in the URL fragment by design.
+      // The URL comparison must not be tripped up by the presence of that
+      // fragment.
+      const result = service.isCallbackFromSts(
+        'https://example.com/auth-callback#access_token=xyz&state=abc&token_type=Bearer',
+        {
+          redirectUrl: 'https://example.com/auth-callback',
+          checkRedirectUrlWhenCheckingIfIsCallback: true,
+        }
+      );
+
+      expect(result).toBeTrue();
     });
 
     const testingValues = [
