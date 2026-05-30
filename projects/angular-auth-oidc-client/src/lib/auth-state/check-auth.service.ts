@@ -6,6 +6,7 @@ import { CallbackService } from '../callback/callback.service';
 import { PeriodicallyTokenCheckService } from '../callback/periodically-token-check.service';
 import { RefreshSessionService } from '../callback/refresh-session.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
+import { FlowsDataService } from '../flows/flows-data.service';
 import { CheckSessionService } from '../iframe/check-session.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/logger.service';
@@ -37,6 +38,7 @@ export class CheckAuthService {
     StoragePersistenceService
   );
   private readonly publicEventsService = inject(PublicEventsService);
+  private readonly flowsDataService = inject(FlowsDataService);
 
   checkAuth(
     configuration: OpenIdConfiguration | null,
@@ -214,6 +216,14 @@ export class CheckAuthService {
     }
 
     const isCallback = this.callbackService.isCallback(currentUrl, config);
+
+    if (!isCallback) {
+      // No authorization callback present, so any previously started code flow
+      // was abandoned (e.g. the user returned to the app without the callback
+      // URL). Reset the flag so the periodic token check is not blocked
+      // indefinitely after authenticating via silent renew. See issue #2221.
+      this.flowsDataService.resetCodeFlowInProgress(config);
+    }
 
     this.loggerService.logDebug(
       config,
