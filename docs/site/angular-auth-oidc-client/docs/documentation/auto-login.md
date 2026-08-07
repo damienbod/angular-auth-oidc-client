@@ -7,6 +7,8 @@ sidebar_position: 9
 
 The library supports route-based automatic login thanks to the functional route guard: `autoLoginPartialRoutesGuard`. The guard implements the necessary handlers for both `canActivate` and `canMatch`, and will preserve the route upon completing a successful login.
 
+The preserved route is kept per browser tab (`sessionStorage`), so logins running in multiple tabs at the same time each return to their own route.
+
 ## Common Scenarios
 
 Here are a couple of the common use cases.
