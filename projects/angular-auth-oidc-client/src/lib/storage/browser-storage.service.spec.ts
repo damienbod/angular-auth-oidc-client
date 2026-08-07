@@ -235,9 +235,11 @@ describe('BrowserStorageService', () => {
 
   describe('hasStorage', () => {
     it('returns false if there is no storage', () => {
+      const originalStorage = Storage;
+
       (Storage as any) = undefined;
       expect((service as any).hasStorage()).toBeFalse();
-      Storage = Storage;
+      (Storage as any) = originalStorage;
     });
   });
 });
