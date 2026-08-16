@@ -16,7 +16,7 @@ export class AuthWellKnownDataService {
   getWellKnownEndPointsForConfig(
     config: OpenIdConfiguration
   ): Observable<AuthWellKnownEndpoints> {
-    const { authWellknownEndpointUrl, authWellknownEndpoints = {} } = config;
+    const { authWellknownEndpointUrl } = config;
 
     if (!authWellknownEndpointUrl) {
       const errorMessage = 'no authWellknownEndpoint given!';
@@ -43,16 +43,12 @@ export class AuthWellKnownDataService {
               wellKnownEndpoints.pushed_authorization_request_endpoint,
           } as AuthWellKnownEndpoints)
       ),
-      map((mappedWellKnownEndpoints) => ({
-        ...mappedWellKnownEndpoints,
-        ...authWellknownEndpoints,
-      })),
       tap(
         (wellKnownEndpoints) => {
           const issuer = wellKnownEndpoints.issuer || "";
           const wellKnownSuffix = config.authWellknownUrlSuffix || WELL_KNOWN_SUFFIX;
           const configuredWellKnownEndpoint = authWellknownEndpointUrl.replace(wellKnownSuffix, "");
-          
+
           if (!config.strictIssuerValidationOnWellKnownRetrievalOff && issuer !== configuredWellKnownEndpoint && issuer !== `${configuredWellKnownEndpoint}/`) {
             const errorMessage = `Issuer mismatch. Well known issuer ${wellKnownEndpoints.issuer} does not match configured well known url ${authWellknownEndpointUrl}`;
 

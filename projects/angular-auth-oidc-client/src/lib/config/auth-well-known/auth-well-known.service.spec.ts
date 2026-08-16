@@ -48,7 +48,7 @@ describe('AuthWellKnownService', () => {
       });
     }));
 
-    it('getAuthWellKnownEndPoints calls always dataservice', waitForAsync(() => {
+    it('calls dataservice when no explicit endpoints are configured', waitForAsync(() => {
       const dataServiceSpy = spyOn(
         dataService,
         'getWellKnownEndPointsForConfig'
@@ -104,6 +104,59 @@ describe('AuthWellKnownService', () => {
               null
             );
           },
+        });
+    }));
+
+    it('does not call dataservice when authWellknownEndpoints is explicitly configured', waitForAsync(() => {
+      const explicitEndpoints = { issuer: 'https://explicit.example.com', tokenEndpoint: 'https://explicit.example.com/token' };
+      const dataServiceSpy = spyOn(dataService, 'getWellKnownEndPointsForConfig');
+
+      service
+        .queryAndStoreAuthWellKnownEndPoints({
+          configId: 'configId1',
+          authWellknownEndpoints: explicitEndpoints,
+        })
+        .subscribe((result) => {
+          expect(dataServiceSpy).not.toHaveBeenCalled();
+          expect(result).toEqual(explicitEndpoints);
+        });
+    }));
+
+    it('stores and returns explicit endpoints without discovery request', waitForAsync(() => {
+      const explicitEndpoints = { issuer: 'https://explicit.example.com', tokenEndpoint: 'https://explicit.example.com/token' };
+      const storeSpy = spyOn(service, 'storeWellKnownEndpoints');
+
+      spyOn(dataService, 'getWellKnownEndPointsForConfig');
+
+      service
+        .queryAndStoreAuthWellKnownEndPoints({
+          configId: 'configId1',
+          authWellknownEndpoints: explicitEndpoints,
+        })
+        .subscribe((result) => {
+          expect(storeSpy).toHaveBeenCalledOnceWith(
+            jasmine.objectContaining({ configId: 'configId1' }),
+            explicitEndpoints
+          );
+          expect(result).toEqual(explicitEndpoints);
+        });
+    }));
+
+    it('always fetches fresh endpoints in discovery mode, ignoring previously stored values', waitForAsync(() => {
+      const freshEndpoints = { issuer: 'https://server.example.com', tokenEndpoint: 'https://server.example.com/token/fresh' };
+      const dataServiceSpy = spyOn(dataService, 'getWellKnownEndPointsForConfig').and.returnValue(of(freshEndpoints));
+      const storeSpy = spyOn(service, 'storeWellKnownEndpoints');
+
+      // config has NO explicit authWellknownEndpoints → discovery path
+      service
+        .queryAndStoreAuthWellKnownEndPoints({ configId: 'configId1' })
+        .subscribe((result) => {
+          expect(dataServiceSpy).toHaveBeenCalled();
+          expect(storeSpy).toHaveBeenCalledOnceWith(
+            jasmine.objectContaining({ configId: 'configId1' }),
+            freshEndpoints
+          );
+          expect(result).toEqual(freshEndpoints);
         });
     }));
   });

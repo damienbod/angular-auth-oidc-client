@@ -216,12 +216,12 @@ describe('AuthWellKnownDataService', () => {
       });
     }));
 
-    it('should merge the mapped endpoints with the provided endpoints', waitForAsync(() => {
+    it('maps only server-fetched endpoints without merging config overrides', waitForAsync(() => {
       spyOn(dataService, 'get').and.returnValue(of(DUMMY_WELL_KNOWN_DOCUMENT));
 
       const expected: AuthWellKnownEndpoints = {
-        endSessionEndpoint: 'config-endSessionEndpoint',
-        revocationEndpoint: 'config-revocationEndpoint',
+        endSessionEndpoint: DUMMY_WELL_KNOWN_DOCUMENT.end_session_endpoint,
+        tokenEndpoint: DUMMY_WELL_KNOWN_DOCUMENT.token_endpoint,
         jwksUri: DUMMY_WELL_KNOWN_DOCUMENT.jwks_uri
       };
 
@@ -236,6 +236,10 @@ describe('AuthWellKnownDataService', () => {
         })
         .subscribe((result) => {
           expect(result).toEqual(jasmine.objectContaining(expected));
+          expect(result.endSessionEndpoint).not.toBe('config-endSessionEndpoint');
+          expect(result.tokenEndpoint).toBe(
+            DUMMY_WELL_KNOWN_DOCUMENT.token_endpoint
+          );
         });
     }));
 
@@ -324,7 +328,8 @@ describe('AuthWellKnownDataService', () => {
         });
     }));
 
-    it('should merge the mapped endpoints with the provided endpoints and ignore issuer/authwellknownUrl mismatch', waitForAsync(() => {
+    it('throws error for issuer mismatch even when authWellknownEndpoints has issuer override', waitForAsync(() => {
+      const loggerSpy = spyOn(loggerService, 'logError');
       const maliciousWellKnown = {
         ...DUMMY_WELL_KNOWN_DOCUMENT,
         issuer: DUMMY_MALICIOUS_URL
@@ -332,26 +337,28 @@ describe('AuthWellKnownDataService', () => {
 
       spyOn(dataService, 'get').and.returnValue(of(maliciousWellKnown));
 
-      const expected: AuthWellKnownEndpoints = {
-        endSessionEndpoint: 'config-endSessionEndpoint',
-        revocationEndpoint: 'config-revocationEndpoint',
-        jwksUri: DUMMY_WELL_KNOWN_DOCUMENT.jwks_uri,
-        issuer: DUMMY_WELL_KNOWN_DOCUMENT.issuer,
+      const config = {
+        configId: 'configId1',
+        authWellknownEndpointUrl: DUMMY_WELL_KNOWN_DOCUMENT.issuer,
+        authWellknownEndpoints: {
+          endSessionEndpoint: 'config-endSessionEndpoint',
+          revocationEndpoint: 'config-revocationEndpoint',
+          issuer: DUMMY_WELL_KNOWN_DOCUMENT.issuer
+        },
       };
 
-      service
-        .getWellKnownEndPointsForConfig({
-          configId: 'configId1',
-          authWellknownEndpointUrl: DUMMY_WELL_KNOWN_DOCUMENT.issuer,
-          authWellknownEndpoints: {
-            endSessionEndpoint: 'config-endSessionEndpoint',
-            revocationEndpoint: 'config-revocationEndpoint',
-            issuer: DUMMY_WELL_KNOWN_DOCUMENT.issuer
-          },
-        })
-        .subscribe((result) => {
-          expect(result).toEqual(jasmine.objectContaining(expected));
-        });
+      service.getWellKnownEndPointsForConfig(config).subscribe({
+        next: (result) => {
+          fail(`Retrieval was supposed to fail. Well known endpoints returned : ${JSON.stringify(result)}`);
+        },
+        error: (error) => {
+          expect(loggerSpy).toHaveBeenCalledOnceWith(
+            config,
+            `Issuer mismatch. Well known issuer ${DUMMY_MALICIOUS_URL} does not match configured well known url ${DUMMY_WELL_KNOWN_DOCUMENT.issuer}`
+          );
+          expect(error.message).toEqual(`Issuer mismatch. Well known issuer ${DUMMY_MALICIOUS_URL} does not match configured well known url ${DUMMY_WELL_KNOWN_DOCUMENT.issuer}`);
+        }
+      });
     }));
   });
 });
