@@ -12,6 +12,7 @@ import {
 } from '../config/loader/config-loader';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { CallbackContext } from '../flows/callback-context';
+import { FlowsDataService } from '../flows/flows-data.service';
 import { CheckSessionService } from '../iframe/check-session.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/logger.service';
@@ -39,6 +40,7 @@ describe('CheckAuthService', () => {
   let storagePersistenceService: StoragePersistenceService;
   let currentUrlService: CurrentUrlService;
   let publicEventsService: PublicEventsService;
+  let flowsDataService: FlowsDataService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -58,6 +60,7 @@ describe('CheckAuthService', () => {
         mockAbstractProvider(StsConfigLoader, StsConfigStaticLoader),
         AutoLoginService,
         mockProvider(StoragePersistenceService),
+        mockProvider(FlowsDataService),
       ],
     });
   });
@@ -78,6 +81,7 @@ describe('CheckAuthService', () => {
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
     currentUrlService = TestBed.inject(CurrentUrlService);
     publicEventsService = TestBed.inject(PublicEventsService);
+    flowsDataService = TestBed.inject(FlowsDataService);
   });
 
   afterEach(() => {
@@ -630,6 +634,47 @@ describe('CheckAuthService', () => {
         ]);
       });
     }));
+
+    it('resets a previously abandoned code flow when the current url is NOT a callback', waitForAsync(() => {
+      const allConfigs = [
+        { configId: 'configId1', authority: 'some-authority' },
+      ];
+
+      spyOn(callBackService, 'isCallback').and.returnValue(false);
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
+      );
+      spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
+        false
+      );
+      const resetSpy = spyOn(flowsDataService, 'resetCodeFlowInProgress');
+
+      checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe(() => {
+        expect(resetSpy).toHaveBeenCalledOnceWith(allConfigs[0]);
+      });
+    }));
+
+    it('does NOT reset the code flow when the current url IS a callback', waitForAsync(() => {
+      const allConfigs = [
+        { configId: 'configId1', authority: 'some-authority' },
+      ];
+
+      spyOn(callBackService, 'isCallback').and.returnValue(true);
+      spyOn(callBackService, 'handleCallbackAndFireEvents').and.returnValue(
+        of({} as CallbackContext)
+      );
+      spyOn(currentUrlService, 'getCurrentUrl').and.returnValue(
+        'http://localhost:4200'
+      );
+      spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
+        false
+      );
+      const resetSpy = spyOn(flowsDataService, 'resetCodeFlowInProgress');
+
+      checkAuthService.checkAuth(allConfigs[0], allConfigs).subscribe(() => {
+        expect(resetSpy).not.toHaveBeenCalled();
+      });
+    }));
   });
 
   describe('checkAuthIncludingServer', () => {
@@ -833,7 +878,8 @@ describe('CheckAuthService', () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority1' },
         { configId: 'configId2', authority: 'some-authority2' },
-      ];      const spy = spyOn(
+      ];
+      const spy = spyOn(
         checkAuthService as any,
         'checkAuthWithConfig'
       ).and.callThrough();
@@ -863,7 +909,8 @@ describe('CheckAuthService', () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority1' },
         { configId: 'configId2', authority: 'some-authority2' },
-      ];      const spy = spyOn(
+      ];
+      const spy = spyOn(
         checkAuthService as any,
         'checkAuthWithConfig'
       ).and.callThrough();
