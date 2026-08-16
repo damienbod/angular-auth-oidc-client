@@ -52,6 +52,14 @@ export class UrlService {
       u.searchParams.delete(key);
     });
 
+    // Also drop the hash fragment. Some identity providers (e.g. Facebook)
+    // append "#_=_" to their redirect URL, and implicit flow puts the auth
+    // response in the fragment by design. Either way, the fragment is not
+    // part of the configured redirect URL and must not factor into the
+    // base-URL comparison done by isCallbackFromSts.
+    // https://github.com/damienbod/angular-auth-oidc-client/issues/2143
+    u.hash = '';
+
     return u;
   }
 
