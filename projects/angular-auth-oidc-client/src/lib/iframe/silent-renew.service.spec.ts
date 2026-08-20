@@ -367,7 +367,7 @@ describe('SilentRenewService  ', () => {
       expect(logErrorSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('calls next on refreshSessionWithIFrameCompleted with null in case of error', async () => {
+    it('should call next on refreshSessionWithIFrameCompleted with success false and the error message in case of an error', async () => {
       vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
       vi.spyOn(
         silentRenewService,
@@ -375,11 +375,10 @@ describe('SilentRenewService  ', () => {
       ).mockReturnValue(throwError(() => new Error('ERROR')));
       const eventData = { detail: 'detail?detail2' } as CustomEvent;
       const allConfigs = [{ configId: 'configId1' }];
+      let result: unknown;
 
       silentRenewService.refreshSessionWithIFrameCompleted$.subscribe(
-        (result) => {
-          expect(result).toEqual({ success: false, configId: 'configId1' });
-        }
+        (completed) => (result = completed)
       );
 
       silentRenewService.silentRenewEventHandler(
@@ -388,6 +387,67 @@ describe('SilentRenewService  ', () => {
         allConfigs
       );
       await vi.advanceTimersByTimeAsync(1000);
+
+      expect(result).toEqual({
+        success: false,
+        configId: 'configId1',
+        errorMessage: 'ERROR',
+      });
+    });
+
+    it('should emit the error of the silent renew callback url on refreshSessionWithIFrameCompleted', async () => {
+      vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
+      const eventData = {
+        detail:
+          'https://localhost/silent-renew?error=login_required&state=state',
+      } as CustomEvent;
+      const allConfigs = [{ configId: 'configId1' }];
+      let result: unknown;
+
+      silentRenewService.refreshSessionWithIFrameCompleted$.subscribe(
+        (completed) => (result = completed)
+      );
+
+      silentRenewService.silentRenewEventHandler(
+        eventData,
+        allConfigs[0],
+        allConfigs
+      );
+      await vi.advanceTimersByTimeAsync(1000);
+
+      expect(result).toEqual({
+        success: false,
+        configId: 'configId1',
+        errorMessage: 'login_required',
+      });
+    });
+
+    it('should emit a non error rejection as error message on refreshSessionWithIFrameCompleted', async () => {
+      vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(false);
+      vi.spyOn(
+        implicitFlowCallbackService,
+        'authenticatedImplicitFlowCallback'
+      ).mockReturnValue(throwError(() => 'some error'));
+      const eventData = { detail: 'detail' } as CustomEvent;
+      const allConfigs = [{ configId: 'configId1' }];
+      let result: unknown;
+
+      silentRenewService.refreshSessionWithIFrameCompleted$.subscribe(
+        (completed) => (result = completed)
+      );
+
+      silentRenewService.silentRenewEventHandler(
+        eventData,
+        allConfigs[0],
+        allConfigs
+      );
+      await vi.advanceTimersByTimeAsync(1000);
+
+      expect(result).toEqual({
+        success: false,
+        configId: 'configId1',
+        errorMessage: 'some error',
+      });
     });
   });
 });
