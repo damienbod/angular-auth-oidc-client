@@ -52,22 +52,21 @@ describe('JwkWindowCryptoService', () => {
   });
 
   describe('importVerificationKey', () => {
-    it('returns instance of CryptoKey when valid input is provided', (done) => {
+    it('returns instance of CryptoKey when valid input is provided', async () => {
       const promises = keys.map((key) =>
         service.importVerificationKey(key, alg)
       );
 
-      Promise.all(promises).then((values) => {
+      await Promise.all(promises).then((values) => {
         values.forEach((value) => {
           expect(value).toBeInstanceOf(CryptoKey);
         });
-        done();
       });
     });
   });
 
   describe('verifyKey', () => {
-    it('returns true when valid input is provided', (done) => {
+    it('returns true when valid input is provided', async () => {
       const headerAndPayloadString =
         'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0';
       const signatureString =
@@ -76,16 +75,13 @@ describe('JwkWindowCryptoService', () => {
         loose: true,
       });
 
-      service
+      await service
         .importVerificationKey(key3, alg)
         .then((c) =>
           service.verifyKey(alg, c, signature, headerAndPayloadString)
         )
         .then((value) => {
           expect(value).toEqual(true);
-        })
-        .finally(() => {
-          done();
         });
     });
   });

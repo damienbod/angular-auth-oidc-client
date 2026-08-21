@@ -32,7 +32,9 @@ describe('ResponseTypeValidationService', () => {
 
   describe('hasConfigValidResponseType', () => {
     it('returns true if current configured flow is any implicit flow', () => {
-      spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').and.returnValue(true);
+      vi.spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').mockReturnValue(
+        true
+      );
 
       const result = responseTypeValidationService.hasConfigValidResponseType({
         configId: 'configId1',
@@ -42,8 +44,10 @@ describe('ResponseTypeValidationService', () => {
     });
 
     it('returns true if current configured flow is code flow', () => {
-      spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').and.returnValue(false);
-      spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
+      vi.spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').mockReturnValue(
+        false
+      );
+      vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
 
       const result = responseTypeValidationService.hasConfigValidResponseType({
         configId: 'configId1',
@@ -53,8 +57,10 @@ describe('ResponseTypeValidationService', () => {
     });
 
     it('returns false if current configured flow is neither code nor implicit flow', () => {
-      spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').and.returnValue(false);
-      spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
+      vi.spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').mockReturnValue(
+        false
+      );
+      vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(false);
 
       const result = responseTypeValidationService.hasConfigValidResponseType({
         configId: 'configId1',

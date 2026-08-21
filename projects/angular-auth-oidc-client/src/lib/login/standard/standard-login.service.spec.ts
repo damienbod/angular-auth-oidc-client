@@ -52,11 +52,13 @@ describe('StandardLoginService', () => {
 
   describe('loginStandard', () => {
     it('does nothing if it has an invalid response type', waitForAsync(() => {
-      spyOn(
+      vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
-      ).and.returnValue(false);
-      const loggerSpy = spyOn(loggerService, 'logError');
+      ).mockReturnValue(false);
+      const loggerSpy = vi
+        .spyOn(loggerService, 'logError')
+        .mockReturnValue(undefined);
 
       standardLoginService.loginStandard({
         configId: 'configId1',
@@ -71,16 +73,18 @@ describe('StandardLoginService', () => {
         responseType: 'stubValue',
       };
 
-      spyOn(
+      vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
-      ).and.returnValue(true);
-      spyOn(
+      ).mockReturnValue(true);
+      vi.spyOn(
         authWellKnownService,
         'queryAndStoreAuthWellKnownEndPoints'
-      ).and.returnValue(of({}));
-      spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
-      const flowsDataSpy = spyOn(flowsDataService, 'setCodeFlowInProgress');
+      ).mockReturnValue(of({}));
+      vi.spyOn(urlService, 'getAuthorizeUrl').mockReturnValue(of('someUrl'));
+      const flowsDataSpy = vi
+        .spyOn(flowsDataService, 'setCodeFlowInProgress')
+        .mockReturnValue(undefined);
 
       standardLoginService.loginStandard(config);
 
@@ -93,23 +97,21 @@ describe('StandardLoginService', () => {
         responseType: 'stubValue',
       };
 
-      spyOn(
+      vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
-      ).and.returnValue(true);
-      spyOn(
+      ).mockReturnValue(true);
+      vi.spyOn(
         authWellKnownService,
         'queryAndStoreAuthWellKnownEndPoints'
-      ).and.returnValue(of({}));
-      spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
-      const redirectSpy = spyOn(
-        redirectService,
-        'redirectTo'
-      ).and.callThrough();
+      ).mockReturnValue(of({}));
+      vi.spyOn(urlService, 'getAuthorizeUrl').mockReturnValue(of('someUrl'));
+      const redirectSpy = vi.spyOn(redirectService, 'redirectTo');
 
       standardLoginService.loginStandard(config);
       tick();
-      expect(redirectSpy).toHaveBeenCalledOnceWith('someUrl');
+      expect(redirectSpy).toHaveBeenCalledTimes(1);
+      expect(redirectSpy).toHaveBeenCalledWith('someUrl');
     }));
 
     it('redirects to URL with URL handler when urlHandler is given', fakeAsync(() => {
@@ -118,26 +120,27 @@ describe('StandardLoginService', () => {
         responseType: 'stubValue',
       };
 
-      spyOn(
+      vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
-      ).and.returnValue(true);
-      spyOn(
+      ).mockReturnValue(true);
+      vi.spyOn(
         authWellKnownService,
         'queryAndStoreAuthWellKnownEndPoints'
-      ).and.returnValue(of({}));
-      spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
-      const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(
-        () => undefined
-      );
-      const spy = jasmine.createSpy();
+      ).mockReturnValue(of({}));
+      vi.spyOn(urlService, 'getAuthorizeUrl').mockReturnValue(of('someUrl'));
+      const redirectSpy = vi
+        .spyOn(redirectService, 'redirectTo')
+        .mockImplementation(() => undefined);
+      const spy = vi.fn();
       const urlHandler = (url: any): void => {
         spy(url);
       };
 
       standardLoginService.loginStandard(config, { urlHandler });
       tick();
-      expect(spy).toHaveBeenCalledOnceWith('someUrl');
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith('someUrl');
       expect(redirectSpy).not.toHaveBeenCalled();
     }));
 
@@ -147,16 +150,18 @@ describe('StandardLoginService', () => {
         responseType: 'stubValue',
       };
 
-      spyOn(
+      vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
-      ).and.returnValue(true);
-      spyOn(
+      ).mockReturnValue(true);
+      vi.spyOn(
         authWellKnownService,
         'queryAndStoreAuthWellKnownEndPoints'
-      ).and.returnValue(of({}));
-      spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
-      const flowsDataSpy = spyOn(flowsDataService, 'resetSilentRenewRunning');
+      ).mockReturnValue(of({}));
+      vi.spyOn(urlService, 'getAuthorizeUrl').mockReturnValue(of('someUrl'));
+      const flowsDataSpy = vi
+        .spyOn(flowsDataService, 'resetSilentRenewRunning')
+        .mockReturnValue(undefined);
 
       standardLoginService.loginStandard(config, {});
       tick();
@@ -170,28 +175,29 @@ describe('StandardLoginService', () => {
         responseType: 'stubValue',
       };
 
-      spyOn(
+      vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
-      ).and.returnValue(true);
-      spyOn(
+      ).mockReturnValue(true);
+      vi.spyOn(
         authWellKnownService,
         'queryAndStoreAuthWellKnownEndPoints'
-      ).and.returnValue(of({}));
-      const getAuthorizeUrlSpy = spyOn(
-        urlService,
-        'getAuthorizeUrl'
-      ).and.returnValue(of('someUrl'));
-      const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(
-        () => undefined
-      );
+      ).mockReturnValue(of({}));
+      const getAuthorizeUrlSpy = vi
+        .spyOn(urlService, 'getAuthorizeUrl')
+        .mockReturnValue(of('someUrl'));
+      const redirectSpy = vi
+        .spyOn(redirectService, 'redirectTo')
+        .mockImplementation(() => undefined);
 
       standardLoginService.loginStandard(config, {
         customParams: { to: 'add', as: 'well' },
       });
       tick();
-      expect(redirectSpy).toHaveBeenCalledOnceWith('someUrl');
-      expect(getAuthorizeUrlSpy).toHaveBeenCalledOnceWith(config, {
+      expect(redirectSpy).toHaveBeenCalledTimes(1);
+      expect(redirectSpy).toHaveBeenCalledWith('someUrl');
+      expect(getAuthorizeUrlSpy).toHaveBeenCalledTimes(1);
+      expect(getAuthorizeUrlSpy).toHaveBeenCalledWith(config, {
         customParams: { to: 'add', as: 'well' },
       });
     }));
@@ -202,24 +208,27 @@ describe('StandardLoginService', () => {
         responseType: 'stubValue',
       };
 
-      spyOn(
+      vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
-      ).and.returnValue(true);
-      spyOn(
+      ).mockReturnValue(true);
+      vi.spyOn(
         authWellKnownService,
         'queryAndStoreAuthWellKnownEndPoints'
-      ).and.returnValue(of({}));
-      const loggerSpy = spyOn(loggerService, 'logError');
+      ).mockReturnValue(of({}));
+      const loggerSpy = vi
+        .spyOn(loggerService, 'logError')
+        .mockReturnValue(undefined);
 
-      spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of(''));
-      const redirectSpy = spyOn(redirectService, 'redirectTo').and.callFake(
-        () => undefined
-      );
+      vi.spyOn(urlService, 'getAuthorizeUrl').mockReturnValue(of(''));
+      const redirectSpy = vi
+        .spyOn(redirectService, 'redirectTo')
+        .mockImplementation(() => undefined);
 
       standardLoginService.loginStandard(config);
       tick();
-      expect(loggerSpy).toHaveBeenCalledOnceWith(
+      expect(loggerSpy).toHaveBeenCalledTimes(1);
+      expect(loggerSpy).toHaveBeenCalledWith(
         config,
         'Could not create URL',
         ''

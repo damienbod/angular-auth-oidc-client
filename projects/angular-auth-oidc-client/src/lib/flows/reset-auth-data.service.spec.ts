@@ -38,18 +38,15 @@ describe('ResetAuthDataService', () => {
   describe('resetAuthorizationData', () => {
     it('does nothing if no current configuration is provided', () => {
       // arrange
-      const resetUserDataInStoreSpy = spyOn(
-        userService,
-        'resetUserDataInStore'
-      );
-      const resetStorageFlowDataSpy = spyOn(
-        flowsDataService,
-        'resetStorageFlowData'
-      );
-      const setUnauthenticatedAndFireEventSpy = spyOn(
-        authStateService,
-        'setUnauthenticatedAndFireEvent'
-      );
+      const resetUserDataInStoreSpy = vi
+        .spyOn(userService, 'resetUserDataInStore')
+        .mockReturnValue(undefined);
+      const resetStorageFlowDataSpy = vi
+        .spyOn(flowsDataService, 'resetStorageFlowData')
+        .mockReturnValue(undefined);
+      const setUnauthenticatedAndFireEventSpy = vi
+        .spyOn(authStateService, 'setUnauthenticatedAndFireEvent')
+        .mockReturnValue(undefined);
 
       // act
       service.resetAuthorizationData(null, [{ configId: 'configId1' }]);
@@ -61,10 +58,9 @@ describe('ResetAuthDataService', () => {
     });
 
     it('calls resetUserDataInStore when autoUserInfo is true', () => {
-      const resetUserDataInStoreSpy = spyOn(
-        userService,
-        'resetUserDataInStore'
-      );
+      const resetUserDataInStoreSpy = vi
+        .spyOn(userService, 'resetUserDataInStore')
+        .mockReturnValue(undefined);
       const allConfigs = [
         {
           configId: 'configId1',
@@ -76,14 +72,12 @@ describe('ResetAuthDataService', () => {
     });
 
     it('calls correct methods', () => {
-      const resetStorageFlowDataSpy = spyOn(
-        flowsDataService,
-        'resetStorageFlowData'
-      );
-      const setUnauthorizedAndFireEventSpy = spyOn(
-        authStateService,
-        'setUnauthenticatedAndFireEvent'
-      );
+      const resetStorageFlowDataSpy = vi
+        .spyOn(flowsDataService, 'resetStorageFlowData')
+        .mockReturnValue(undefined);
+      const setUnauthorizedAndFireEventSpy = vi
+        .spyOn(authStateService, 'setUnauthenticatedAndFireEvent')
+        .mockReturnValue(undefined);
       const allConfigs = [
         {
           configId: 'configId1',

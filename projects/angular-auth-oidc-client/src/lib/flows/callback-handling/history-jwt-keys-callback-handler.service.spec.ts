@@ -63,14 +63,14 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
 
   describe('callbackHistoryAndResetJwtKeys', () => {
     it('writes authResult into the storage', waitForAsync(() => {
-      const storagePersistenceServiceSpy = spyOn(
-        storagePersistenceService,
-        'write'
-      );
+      const storagePersistenceServiceSpy = vi
+        .spyOn(storagePersistenceService, 'write')
+        .mockReturnValue(undefined as any);
       const DUMMY_AUTH_RESULT = {
         refresh_token: 'dummy_refresh_token',
         id_token: 'some-id-token',
-      };      const callbackContext = {
+      };
+      const callbackContext = {
         authResult: DUMMY_AUTH_RESULT,
       } as CallbackContext;
       const allconfigs = [
@@ -80,7 +80,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         },
       ];
 
-      spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(
+      vi.spyOn(signInKeyDataService, 'getSigningKeys').mockReturnValue(
         of({ keys: [] } as JwtKeys)
       );
       service
@@ -90,7 +90,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
           allconfigs
         )
         .subscribe(() => {
-          expect(storagePersistenceServiceSpy.calls.allArgs()).toEqual([
+          expect(vi.mocked(storagePersistenceServiceSpy).mock.calls).toEqual([
             ['authnResult', DUMMY_AUTH_RESULT, allconfigs[0]],
             ['jwtKeys', { keys: [] }, allconfigs[0]],
           ]);
@@ -103,10 +103,10 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       const DUMMY_AUTH_RESULT = {
         refresh_token: 'dummy_refresh_token',
         id_token: 'some-id-token',
-      };      const storagePersistenceServiceSpy = spyOn(
-        storagePersistenceService,
-        'write'
-      );
+      };
+      const storagePersistenceServiceSpy = vi
+        .spyOn(storagePersistenceService, 'write')
+        .mockReturnValue(undefined as any);
       const callbackContext = {
         authResult: DUMMY_AUTH_RESULT,
       } as CallbackContext;
@@ -117,7 +117,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         },
       ];
 
-      spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(
+      vi.spyOn(signInKeyDataService, 'getSigningKeys').mockReturnValue(
         of({ keys: [] } as JwtKeys)
       );
 
@@ -128,7 +128,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
           allconfigs
         )
         .subscribe(() => {
-          expect(storagePersistenceServiceSpy.calls.allArgs()).toEqual([
+          expect(vi.mocked(storagePersistenceServiceSpy).mock.calls).toEqual([
             ['authnResult', DUMMY_AUTH_RESULT, allconfigs[0]],
             ['jwtKeys', { keys: [] }, allconfigs[0]],
           ]);
@@ -141,10 +141,10 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       const DUMMY_AUTH_RESULT = {
         refresh_token: 'dummy_refresh_token',
         id_token: 'some-id-token',
-      };      const storagePersistenceServiceSpy = spyOn(
-        storagePersistenceService,
-        'write'
-      );
+      };
+      const storagePersistenceServiceSpy = vi
+        .spyOn(storagePersistenceService, 'write')
+        .mockReturnValue(undefined as any);
       const callbackContext = {
         authResult: DUMMY_AUTH_RESULT,
       } as CallbackContext;
@@ -156,7 +156,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         },
       ];
 
-      spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(
+      vi.spyOn(signInKeyDataService, 'getSigningKeys').mockReturnValue(
         of({ keys: [] } as JwtKeys)
       );
       service
@@ -166,7 +166,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
           allconfigs
         )
         .subscribe(() => {
-          expect(storagePersistenceServiceSpy.calls.allArgs()).toEqual([
+          expect(vi.mocked(storagePersistenceServiceSpy).mock.calls).toEqual([
             ['authnResult', DUMMY_AUTH_RESULT, allconfigs[0]],
             ['reusable_refresh_token', 'dummy_refresh_token', allconfigs[0]],
             ['jwtKeys', { keys: [] }, allconfigs[0]],
@@ -189,9 +189,12 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
           configId: 'configId1',
           historyCleanupOff: false,
         },
-      ];      const windowSpy = spyOn(window.history, 'replaceState');
+      ];
+      const windowSpy = vi
+        .spyOn(window.history, 'replaceState')
+        .mockReturnValue(undefined);
 
-      spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(
+      vi.spyOn(signInKeyDataService, 'getSigningKeys').mockReturnValue(
         of({ keys: [] } as JwtKeys)
       );
       service
@@ -208,7 +211,8 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     it('returns callbackContext with jwtkeys filled if everything works fine', waitForAsync(() => {
       const DUMMY_AUTH_RESULT = {
         id_token: 'some-id-token',
-      };      const callbackContext = {
+      };
+      const callbackContext = {
         isRenewProcess: false,
         authResult: DUMMY_AUTH_RESULT,
       } as CallbackContext;
@@ -219,7 +223,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         },
       ];
 
-      spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(
+      vi.spyOn(signInKeyDataService, 'getSigningKeys').mockReturnValue(
         of({ keys: [{ kty: 'henlo' } as JwtKey] } as JwtKeys)
       );
       service
@@ -240,7 +244,8 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     it('returns error if no jwtKeys have been in the call --> keys are null', waitForAsync(() => {
       const DUMMY_AUTH_RESULT = {
         id_token: 'some-id-token',
-      };      const callbackContext = {
+      };
+      const callbackContext = {
         isRenewProcess: false,
         authResult: DUMMY_AUTH_RESULT,
       } as CallbackContext;
@@ -251,7 +256,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         },
       ];
 
-      spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(
+      vi.spyOn(signInKeyDataService, 'getSigningKeys').mockReturnValue(
         of({} as JwtKeys)
       );
       service
@@ -284,7 +289,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         },
       ];
 
-      spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(
+      vi.spyOn(signInKeyDataService, 'getSigningKeys').mockReturnValue(
         throwError(() => new Error('error'))
       );
       service
@@ -338,15 +343,16 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
           configId: 'configId1',
           historyCleanupOff: true,
         },
-      ];      const resetAuthorizationDataSpy = spyOn(
-        resetAuthDataService,
-        'resetAuthorizationData'
-      );
-      const setNonceSpy = spyOn(flowsDataService, 'setNonce');
-      const updateAndPublishAuthStateSpy = spyOn(
-        authStateService,
-        'updateAndPublishAuthState'
-      );
+      ];
+      const resetAuthorizationDataSpy = vi
+        .spyOn(resetAuthDataService, 'resetAuthorizationData')
+        .mockReturnValue(undefined);
+      const setNonceSpy = vi
+        .spyOn(flowsDataService, 'setNonce')
+        .mockReturnValue(undefined);
+      const updateAndPublishAuthStateSpy = vi
+        .spyOn(authStateService, 'updateAndPublishAuthState')
+        .mockReturnValue(undefined);
 
       service
         .callbackHistoryAndResetJwtKeys(
@@ -358,7 +364,8 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
           error: () => {
             expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
             expect(setNonceSpy).toHaveBeenCalledTimes(1);
-            expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
+            expect(updateAndPublishAuthStateSpy).toHaveBeenCalledTimes(1);
+            expect(updateAndPublishAuthStateSpy).toHaveBeenCalledWith({
               isAuthenticated: false,
               validationResult: ValidationResult.SecureTokenServerError,
               isRenewProcess: false,
@@ -378,15 +385,16 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
           configId: 'configId1',
           historyCleanupOff: true,
         },
-      ];      const resetAuthorizationDataSpy = spyOn(
-        resetAuthDataService,
-        'resetAuthorizationData'
-      );
-      const setNonceSpy = spyOn(flowsDataService, 'setNonce');
-      const updateAndPublishAuthStateSpy = spyOn(
-        authStateService,
-        'updateAndPublishAuthState'
-      );
+      ];
+      const resetAuthorizationDataSpy = vi
+        .spyOn(resetAuthDataService, 'resetAuthorizationData')
+        .mockReturnValue(undefined);
+      const setNonceSpy = vi
+        .spyOn(flowsDataService, 'setNonce')
+        .mockReturnValue(undefined);
+      const updateAndPublishAuthStateSpy = vi
+        .spyOn(authStateService, 'updateAndPublishAuthState')
+        .mockReturnValue(undefined);
 
       service
         .callbackHistoryAndResetJwtKeys(
@@ -398,7 +406,8 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
           error: () => {
             expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
             expect(setNonceSpy).toHaveBeenCalledTimes(1);
-            expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
+            expect(updateAndPublishAuthStateSpy).toHaveBeenCalledTimes(1);
+            expect(updateAndPublishAuthStateSpy).toHaveBeenCalledWith({
               isAuthenticated: false,
               validationResult: ValidationResult.LoginRequired,
               isRenewProcess: false,
@@ -411,7 +420,8 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     it('should store jwtKeys', waitForAsync(() => {
       const DUMMY_AUTH_RESULT = {
         id_token: 'some-id-token',
-      };      const initialCallbackContext = {
+      };
+      const initialCallbackContext = {
         authResult: DUMMY_AUTH_RESULT,
       } as CallbackContext;
       const allconfigs = [
@@ -420,12 +430,11 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
           historyCleanupOff: true,
         },
       ];
-      const storagePersistenceServiceSpy = spyOn(
-        storagePersistenceService,
-        'write'
-      );
+      const storagePersistenceServiceSpy = vi
+        .spyOn(storagePersistenceService, 'write')
+        .mockReturnValue(undefined as any);
 
-      spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(
+      vi.spyOn(signInKeyDataService, 'getSigningKeys').mockReturnValue(
         of(DUMMY_JWT_KEYS)
       );
 
@@ -438,7 +447,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         .subscribe({
           next: (callbackContext: CallbackContext) => {
             expect(storagePersistenceServiceSpy).toHaveBeenCalledTimes(2);
-            expect(storagePersistenceServiceSpy.calls.allArgs()).toEqual([
+            expect(vi.mocked(storagePersistenceServiceSpy).mock.calls).toEqual([
               ['authnResult', DUMMY_AUTH_RESULT, allconfigs[0]],
               ['jwtKeys', DUMMY_JWT_KEYS, allconfigs[0]],
             ]);
@@ -458,18 +467,18 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       } as AuthResult;
       const initialCallbackContext = {
         authResult,
-      } as CallbackContext;      const allconfigs = [
+      } as CallbackContext;
+      const allconfigs = [
         {
           configId: 'configId1',
           historyCleanupOff: true,
         },
       ];
-      const storagePersistenceServiceSpy = spyOn(
-        storagePersistenceService,
-        'write'
-      );
+      const storagePersistenceServiceSpy = vi
+        .spyOn(storagePersistenceService, 'write')
+        .mockReturnValue(undefined as any);
 
-      spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(
+      vi.spyOn(signInKeyDataService, 'getSigningKeys').mockReturnValue(
         throwError(() => new Error('Error'))
       );
 
@@ -487,7 +496,10 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
             expect(err).toBeTruthy();
 
             // storagePersistenceService.write() should not have been called with jwtKeys
-            expect(storagePersistenceServiceSpy).toHaveBeenCalledOnceWith(
+            expect(storagePersistenceServiceSpy).toHaveBeenCalledTimes(1);
+
+            // storagePersistenceService.write() should not have been called with jwtKeys
+            expect(storagePersistenceServiceSpy).toHaveBeenCalledWith(
               'authnResult',
               authResult,
               allconfigs[0]
@@ -503,19 +515,19 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       } as AuthResult;
       const initialCallbackContext = {
         authResult,
-      } as CallbackContext;      const allconfigs = [
+      } as CallbackContext;
+      const allconfigs = [
         {
           configId: 'configId1',
           historyCleanupOff: true,
         },
       ];
-      const storagePersistenceServiceSpy = spyOn(
-        storagePersistenceService,
-        'read'
-      );
+      const storagePersistenceServiceSpy = vi
+        .spyOn(storagePersistenceService, 'read')
+        .mockReturnValue(undefined);
 
-      storagePersistenceServiceSpy.and.returnValue(DUMMY_JWT_KEYS);
-      spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(
+      storagePersistenceServiceSpy.mockReturnValue(DUMMY_JWT_KEYS);
+      vi.spyOn(signInKeyDataService, 'getSigningKeys').mockReturnValue(
         throwError(() => new Error('Error'))
       );
 
@@ -527,7 +539,8 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         )
         .subscribe({
           next: (callbackContext: CallbackContext) => {
-            expect(storagePersistenceServiceSpy).toHaveBeenCalledOnceWith(
+            expect(storagePersistenceServiceSpy).toHaveBeenCalledTimes(1);
+            expect(storagePersistenceServiceSpy).toHaveBeenCalledWith(
               'jwtKeys',
               allconfigs[0]
             );
@@ -543,7 +556,8 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       const authResult = {
         id_token: 'some-id-token',
         access_token: 'some-access-token',
-      } as AuthResult;      const initialCallbackContext = { authResult } as CallbackContext;
+      } as AuthResult;
+      const initialCallbackContext = { authResult } as CallbackContext;
       const allconfigs = [
         {
           configId: 'configId1',
@@ -551,8 +565,8 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         },
       ];
 
-      spyOn(storagePersistenceService, 'read').and.returnValue(null);
-      spyOn(signInKeyDataService, 'getSigningKeys').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'read').mockReturnValue(null);
+      vi.spyOn(signInKeyDataService, 'getSigningKeys').mockReturnValue(
         throwError(() => new Error('Error'))
       );
 
@@ -578,7 +592,8 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       const config = {
         configId: 'configId1',
         historyCleanupOff: true,
-      };      const value = (service as any).historyCleanUpTurnedOn(config);
+      };
+      const value = (service as any).historyCleanUpTurnedOn(config);
 
       expect(value).toEqual(false);
     });
@@ -587,7 +602,8 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       const config = {
         configId: 'configId1',
         historyCleanupOff: false,
-      };      const value = (service as any).historyCleanUpTurnedOn(config);
+      };
+      const value = (service as any).historyCleanUpTurnedOn(config);
 
       expect(value).toEqual(true);
     });

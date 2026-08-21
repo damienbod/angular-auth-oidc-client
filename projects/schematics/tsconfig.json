@@ -17,7 +17,7 @@
     "strictNullChecks": true,
     "target": "es6",
     "outDir": "../../dist/angular-auth-oidc-client/schematics",
-    "types": ["jasmine", "node"]
+    "types": ["node"]
   },
   "include": ["src/**/*"],
   "exclude": ["src/*/files/**/*"]

@@ -1,3 +1,4 @@
+import type { MockedObject } from 'vitest';
 import { APP_INITIALIZER } from '@angular/core';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
@@ -59,13 +60,14 @@ describe('provideAuth', () => {
   });
 
   describe('features', () => {
-    let oidcSecurityServiceMock: jasmine.SpyObj<OidcSecurityService>;
+    let oidcSecurityServiceMock: MockedObject<OidcSecurityService>;
 
     beforeEach(waitForAsync(() => {
-      oidcSecurityServiceMock = jasmine.createSpyObj<OidcSecurityService>(
-        'OidcSecurityService',
-        ['checkAuthMultiple']
-      );
+      oidcSecurityServiceMock = {
+        checkAuthMultiple: vi
+          .fn()
+          .mockName('OidcSecurityService.checkAuthMultiple'),
+      } as unknown as MockedObject<OidcSecurityService>;
       TestBed.configureTestingModule({
         providers: [
           provideAuth(
@@ -84,9 +86,10 @@ describe('provideAuth', () => {
     it('should provide APP_INITIALIZER config', () => {
       const config = TestBed.inject(APP_INITIALIZER);
 
-      expect(config.length)
-        .withContext('Expected an APP_INITIALIZER to be registered')
-        .toBe(1);
+      expect(
+        config.length,
+        'Expected an APP_INITIALIZER to be registered'
+      ).toBe(1);
       expect(oidcSecurityServiceMock.checkAuthMultiple).toHaveBeenCalledTimes(
         1
       );

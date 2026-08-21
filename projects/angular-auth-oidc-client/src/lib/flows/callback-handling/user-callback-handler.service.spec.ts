@@ -61,17 +61,22 @@ describe('UserCallbackHandlerService', () => {
         jwtKeys: null,
         validationResult: svr,
         existingIdToken: '',
-      } as CallbackContext;      const allConfigs = [
+      } as CallbackContext;
+      const allConfigs = [
         {
           configId: 'configId1',
           autoUserInfo: false,
         },
-      ];      const spy = spyOn(flowsDataService, 'setSessionState');
+      ];
+      const spy = vi
+        .spyOn(flowsDataService, 'setSessionState')
+        .mockReturnValue(undefined);
 
       service
         .callbackUser(callbackContext, allConfigs[0], allConfigs)
         .subscribe((resultCallbackContext) => {
-          expect(spy).toHaveBeenCalledOnceWith('mystate', allConfigs[0]);
+          expect(spy).toHaveBeenCalledTimes(1);
+          expect(spy).toHaveBeenCalledWith('mystate', allConfigs[0]);
           expect(resultCallbackContext).toEqual(callbackContext);
         });
     }));
@@ -100,7 +105,9 @@ describe('UserCallbackHandlerService', () => {
           autoUserInfo: false,
         },
       ];
-      const spy = spyOn(flowsDataService, 'setSessionState');
+      const spy = vi
+        .spyOn(flowsDataService, 'setSessionState')
+        .mockReturnValue(undefined);
 
       service
         .callbackUser(callbackContext, allConfigs[0], allConfigs)
@@ -134,7 +141,9 @@ describe('UserCallbackHandlerService', () => {
           autoUserInfo: false,
         },
       ];
-      const spy = spyOn(flowsDataService, 'setSessionState');
+      const spy = vi
+        .spyOn(flowsDataService, 'setSessionState')
+        .mockReturnValue(undefined);
 
       service
         .callbackUser(callbackContext, allConfigs[0], allConfigs)
@@ -162,7 +171,10 @@ describe('UserCallbackHandlerService', () => {
           configId: 'configId1',
           autoUserInfo: false,
         },
-      ];      const spy = spyOn(flowsDataService, 'setSessionState');
+      ];
+      const spy = vi
+        .spyOn(flowsDataService, 'setSessionState')
+        .mockReturnValue(undefined);
 
       service
         .callbackUser(callbackContext, allConfigs[0], allConfigs)
@@ -189,20 +201,22 @@ describe('UserCallbackHandlerService', () => {
         jwtKeys: null,
         validationResult: svr,
         existingIdToken: null,
-      } as CallbackContext;      const allConfigs = [
+      } as CallbackContext;
+      const allConfigs = [
         {
           configId: 'configId1',
           autoUserInfo: false,
         },
-      ];      const updateAndPublishAuthStateSpy = spyOn(
-        authStateService,
-        'updateAndPublishAuthState'
-      );
+      ];
+      const updateAndPublishAuthStateSpy = vi
+        .spyOn(authStateService, 'updateAndPublishAuthState')
+        .mockReturnValue(undefined);
 
       service
         .callbackUser(callbackContext, allConfigs[0], allConfigs)
         .subscribe((resultCallbackContext) => {
-          expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
+          expect(updateAndPublishAuthStateSpy).toHaveBeenCalledTimes(1);
+          expect(updateAndPublishAuthStateSpy).toHaveBeenCalledWith({
             isAuthenticated: true,
             validationResult: ValidationResult.NotSet,
             isRenewProcess: false,
@@ -229,20 +243,22 @@ describe('UserCallbackHandlerService', () => {
         jwtKeys: null,
         validationResult: svr,
         existingIdToken: null,
-      } as CallbackContext;      const allConfigs = [
+      } as CallbackContext;
+      const allConfigs = [
         {
           configId: 'configId1',
           autoUserInfo: true,
         },
-      ];      const getAndPersistUserDataInStoreSpy = spyOn(
-        userService,
-        'getAndPersistUserDataInStore'
-      ).and.returnValue(of({ user: 'some_data' }));
+      ];
+      const getAndPersistUserDataInStoreSpy = vi
+        .spyOn(userService, 'getAndPersistUserDataInStore')
+        .mockReturnValue(of({ user: 'some_data' }));
 
       service
         .callbackUser(callbackContext, allConfigs[0], allConfigs)
         .subscribe((resultCallbackContext) => {
-          expect(getAndPersistUserDataInStoreSpy).toHaveBeenCalledOnceWith(
+          expect(getAndPersistUserDataInStoreSpy).toHaveBeenCalledTimes(1);
+          expect(getAndPersistUserDataInStoreSpy).toHaveBeenCalledWith(
             allConfigs[0],
             allConfigs,
             false,
@@ -271,25 +287,26 @@ describe('UserCallbackHandlerService', () => {
         jwtKeys: null,
         validationResult: svr,
         existingIdToken: null,
-      } as CallbackContext;      const allConfigs = [
+      } as CallbackContext;
+      const allConfigs = [
         {
           configId: 'configId1',
           autoUserInfo: true,
         },
       ];
 
-      spyOn(userService, 'getAndPersistUserDataInStore').and.returnValue(
+      vi.spyOn(userService, 'getAndPersistUserDataInStore').mockReturnValue(
         of({ user: 'some_data' })
       );
-      const updateAndPublishAuthStateSpy = spyOn(
-        authStateService,
-        'updateAndPublishAuthState'
-      );
+      const updateAndPublishAuthStateSpy = vi
+        .spyOn(authStateService, 'updateAndPublishAuthState')
+        .mockReturnValue(undefined);
 
       service
         .callbackUser(callbackContext, allConfigs[0], allConfigs)
         .subscribe((resultCallbackContext) => {
-          expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
+          expect(updateAndPublishAuthStateSpy).toHaveBeenCalledTimes(1);
+          expect(updateAndPublishAuthStateSpy).toHaveBeenCalledWith({
             isAuthenticated: true,
             validationResult: ValidationResult.MaxOffsetExpired,
             isRenewProcess: false,
@@ -317,22 +334,26 @@ describe('UserCallbackHandlerService', () => {
         jwtKeys: null,
         validationResult: svr,
         existingIdToken: null,
-      } as CallbackContext;      const allConfigs = [
+      } as CallbackContext;
+      const allConfigs = [
         {
           configId: 'configId1',
           autoUserInfo: true,
         },
       ];
 
-      spyOn(userService, 'getAndPersistUserDataInStore').and.returnValue(
+      vi.spyOn(userService, 'getAndPersistUserDataInStore').mockReturnValue(
         of({ user: 'some_data' })
       );
-      const setSessionStateSpy = spyOn(flowsDataService, 'setSessionState');
+      const setSessionStateSpy = vi
+        .spyOn(flowsDataService, 'setSessionState')
+        .mockReturnValue(undefined);
 
       service
         .callbackUser(callbackContext, allConfigs[0], allConfigs)
         .subscribe((resultCallbackContext) => {
-          expect(setSessionStateSpy).toHaveBeenCalledOnceWith(
+          expect(setSessionStateSpy).toHaveBeenCalledTimes(1);
+          expect(setSessionStateSpy).toHaveBeenCalledWith(
             'mystate',
             allConfigs[0]
           );
@@ -358,26 +379,27 @@ describe('UserCallbackHandlerService', () => {
         jwtKeys: null,
         validationResult: svr,
         existingIdToken: null,
-      } as CallbackContext;      const allConfigs = [
+      } as CallbackContext;
+      const allConfigs = [
         {
           configId: 'configId1',
           autoUserInfo: true,
         },
       ];
 
-      spyOn(userService, 'getAndPersistUserDataInStore').and.returnValue(
+      vi.spyOn(userService, 'getAndPersistUserDataInStore').mockReturnValue(
         of(null)
       );
-      const updateAndPublishAuthStateSpy = spyOn(
-        authStateService,
-        'updateAndPublishAuthState'
-      );
+      const updateAndPublishAuthStateSpy = vi
+        .spyOn(authStateService, 'updateAndPublishAuthState')
+        .mockReturnValue(undefined);
 
       service
         .callbackUser(callbackContext, allConfigs[0], allConfigs)
         .subscribe({
           error: (err) => {
-            expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
+            expect(updateAndPublishAuthStateSpy).toHaveBeenCalledTimes(1);
+            expect(updateAndPublishAuthStateSpy).toHaveBeenCalledWith({
               isAuthenticated: false,
               validationResult: ValidationResult.MaxOffsetExpired,
               isRenewProcess: false,
@@ -408,20 +430,20 @@ describe('UserCallbackHandlerService', () => {
         jwtKeys: null,
         validationResult: svr,
         existingIdToken: null,
-      } as CallbackContext;      const allConfigs = [
+      } as CallbackContext;
+      const allConfigs = [
         {
           configId: 'configId1',
           autoUserInfo: true,
         },
       ];
 
-      spyOn(userService, 'getAndPersistUserDataInStore').and.returnValue(
+      vi.spyOn(userService, 'getAndPersistUserDataInStore').mockReturnValue(
         of(null)
       );
-      const resetAuthorizationDataSpy = spyOn(
-        resetAuthDataService,
-        'resetAuthorizationData'
-      );
+      const resetAuthorizationDataSpy = vi
+        .spyOn(resetAuthDataService, 'resetAuthorizationData')
+        .mockReturnValue(undefined);
 
       service
         .callbackUser(callbackContext, allConfigs[0], allConfigs)

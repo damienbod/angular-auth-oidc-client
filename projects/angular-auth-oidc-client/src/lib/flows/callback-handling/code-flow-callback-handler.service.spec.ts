@@ -47,12 +47,15 @@ describe('CodeFlowCallbackHandlerService', () => {
 
   describe('codeFlowCallback', () => {
     it('throws error if no state is given', waitForAsync(() => {
-      const getUrlParameterSpy = spyOn(
-        urlService,
-        'getUrlParameter'
-      ).and.returnValue('params');
+      vi.spyOn(urlService, 'getUrlParameter').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'test-url' && args[1] === 'state') {
+            return '';
+          }
 
-      getUrlParameterSpy.withArgs('test-url', 'state').and.returnValue('');
+          return 'params';
+        }
+      );
 
       service
         .codeFlowCallback('test-url', { configId: 'configId1' })
@@ -64,12 +67,15 @@ describe('CodeFlowCallbackHandlerService', () => {
     }));
 
     it('throws error if no code is given', waitForAsync(() => {
-      const getUrlParameterSpy = spyOn(
-        urlService,
-        'getUrlParameter'
-      ).and.returnValue('params');
+      vi.spyOn(urlService, 'getUrlParameter').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'test-url' && args[1] === 'code') {
+            return '';
+          }
 
-      getUrlParameterSpy.withArgs('test-url', 'code').and.returnValue('');
+          return 'params';
+        }
+      );
 
       service
         .codeFlowCallback('test-url', { configId: 'configId1' })
@@ -81,7 +87,7 @@ describe('CodeFlowCallbackHandlerService', () => {
     }));
 
     it('returns callbackContext if all params are good', waitForAsync(() => {
-      spyOn(urlService, 'getUrlParameter').and.returnValue('params');
+      vi.spyOn(urlService, 'getUrlParameter').mockReturnValue('params');
 
       const expectedCallbackContext = {
         code: 'params',
@@ -113,10 +119,10 @@ describe('CodeFlowCallbackHandlerService', () => {
     });
 
     it('throws error if state is not correct', waitForAsync(() => {
-      spyOn(
+      vi.spyOn(
         tokenValidationService,
         'validateStateFromHashCallback'
-      ).and.returnValue(false);
+      ).mockReturnValue(false);
 
       service
         .codeFlowCodeRequest({} as CallbackContext, { configId: 'configId1' })
@@ -128,13 +134,19 @@ describe('CodeFlowCallbackHandlerService', () => {
     }));
 
     it('throws error if authWellknownEndpoints is null is given', waitForAsync(() => {
-      spyOn(
+      vi.spyOn(
         tokenValidationService,
         'validateStateFromHashCallback'
-      ).and.returnValue(true);
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
-        .and.returnValue(null);
+      ).mockReturnValue(true);
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return null;
+          }
+
+          return undefined;
+        }
+      );
 
       service
         .codeFlowCodeRequest({} as CallbackContext, { configId: 'configId1' })
@@ -146,13 +158,19 @@ describe('CodeFlowCallbackHandlerService', () => {
     }));
 
     it('throws error if tokenendpoint is null is given', waitForAsync(() => {
-      spyOn(
+      vi.spyOn(
         tokenValidationService,
         'validateStateFromHashCallback'
-      ).and.returnValue(true);
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
-        .and.returnValue({ tokenEndpoint: null });
+      ).mockReturnValue(true);
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { tokenEndpoint: null };
+          }
+
+          return undefined;
+        }
+      );
 
       service
         .codeFlowCodeRequest({} as CallbackContext, { configId: 'configId1' })
@@ -164,54 +182,67 @@ describe('CodeFlowCallbackHandlerService', () => {
     }));
 
     it('calls dataService if all params are good', waitForAsync(() => {
-      const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
+      const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(of({}));
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
-        .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { tokenEndpoint: 'tokenEndpoint' };
+          }
 
-      spyOn(
+          return undefined;
+        }
+      );
+
+      vi.spyOn(
         tokenValidationService,
         'validateStateFromHashCallback'
-      ).and.returnValue(true);
+      ).mockReturnValue(true);
 
       service
         .codeFlowCodeRequest({} as CallbackContext, { configId: 'configId1' })
         .subscribe(() => {
-          expect(postSpy).toHaveBeenCalledOnceWith(
+          expect(postSpy).toHaveBeenCalledTimes(1);
+          expect(postSpy).toHaveBeenCalledWith(
             'tokenEndpoint',
             undefined,
             { configId: 'configId1' },
-            jasmine.any(HttpHeaders)
+            expect.any(HttpHeaders)
           );
         });
     }));
 
     it('calls url service with custom token params', waitForAsync(() => {
-      const urlServiceSpy = spyOn(
-        urlService,
-        'createBodyForCodeFlowCodeRequest'
-      );
+      const urlServiceSpy = vi
+        .spyOn(urlService, 'createBodyForCodeFlowCodeRequest')
+        .mockReturnValue(undefined as any);
       const config = {
         configId: 'configId1',
         customParamsCodeRequest: { foo: 'bar' },
       };
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', config)
-        .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { tokenEndpoint: 'tokenEndpoint' };
+          }
 
-      spyOn(
+          return undefined;
+        }
+      );
+
+      vi.spyOn(
         tokenValidationService,
         'validateStateFromHashCallback'
-      ).and.returnValue(true);
+      ).mockReturnValue(true);
 
-      const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
+      const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(of({}));
 
       service
         .codeFlowCodeRequest({ code: 'foo' } as CallbackContext, config)
         .subscribe(() => {
-          expect(urlServiceSpy).toHaveBeenCalledOnceWith('foo', config, {
+          expect(urlServiceSpy).toHaveBeenCalledTimes(1);
+          expect(urlServiceSpy).toHaveBeenCalledWith('foo', config, {
             foo: 'bar',
           });
           expect(postSpy).toHaveBeenCalledTimes(1);
@@ -219,27 +250,34 @@ describe('CodeFlowCallbackHandlerService', () => {
     }));
 
     it('calls dataService with correct headers if all params are good', waitForAsync(() => {
-      const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
+      const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(of({}));
       const config = {
         configId: 'configId1',
         customParamsCodeRequest: { foo: 'bar' },
       };
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', config)
-        .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { tokenEndpoint: 'tokenEndpoint' };
+          }
 
-      spyOn(
+          return undefined;
+        }
+      );
+
+      vi.spyOn(
         tokenValidationService,
         'validateStateFromHashCallback'
-      ).and.returnValue(true);
+      ).mockReturnValue(true);
 
       service
         .codeFlowCodeRequest({} as CallbackContext, config)
         .subscribe(() => {
-          const httpHeaders = postSpy.calls.mostRecent().args[3] as HttpHeaders;
+          const httpHeaders = vi.mocked(postSpy).mock
+            .lastCall![3] as HttpHeaders;
 
-          expect(httpHeaders.has('Content-Type')).toBeTrue();
+          expect(httpHeaders.has('Content-Type')).toBe(true);
           expect(httpHeaders.get('Content-Type')).toBe(
             'application/x-www-form-urlencoded'
           );
@@ -247,16 +285,24 @@ describe('CodeFlowCallbackHandlerService', () => {
     }));
 
     it('returns error in case of http error', waitForAsync(() => {
-      spyOn(dataService, 'post').and.returnValue(throwError(() => HTTP_ERROR));
+      vi.spyOn(dataService, 'post').mockReturnValue(
+        throwError(() => HTTP_ERROR)
+      );
       const config = {
         configId: 'configId1',
         customParamsCodeRequest: { foo: 'bar' },
         authority: 'authority',
       };
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', config)
-        .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { tokenEndpoint: 'tokenEndpoint' };
+          }
+
+          return undefined;
+        }
+      );
 
       service.codeFlowCodeRequest({} as CallbackContext, config).subscribe({
         error: (err) => {
@@ -266,7 +312,7 @@ describe('CodeFlowCallbackHandlerService', () => {
     }));
 
     it('retries request in case of no connection http error and succeeds', waitForAsync(() => {
-      const postSpy = spyOn(dataService, 'post').and.returnValue(
+      const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(
         createRetriableStream(
           throwError(() => CONNECTION_ERROR),
           of({})
@@ -278,14 +324,20 @@ describe('CodeFlowCallbackHandlerService', () => {
         authority: 'authority',
       };
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', config)
-        .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { tokenEndpoint: 'tokenEndpoint' };
+          }
 
-      spyOn(
+          return undefined;
+        }
+      );
+
+      vi.spyOn(
         tokenValidationService,
         'validateStateFromHashCallback'
-      ).and.returnValue(true);
+      ).mockReturnValue(true);
 
       service.codeFlowCodeRequest({} as CallbackContext, config).subscribe({
         next: (res) => {
@@ -300,7 +352,7 @@ describe('CodeFlowCallbackHandlerService', () => {
     }));
 
     it('retries request in case of no connection http error and fails because of http error afterwards', waitForAsync(() => {
-      const postSpy = spyOn(dataService, 'post').and.returnValue(
+      const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(
         createRetriableStream(
           throwError(() => CONNECTION_ERROR),
           throwError(() => HTTP_ERROR)
@@ -312,14 +364,20 @@ describe('CodeFlowCallbackHandlerService', () => {
         authority: 'authority',
       };
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', config)
-        .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { tokenEndpoint: 'tokenEndpoint' };
+          }
 
-      spyOn(
+          return undefined;
+        }
+      );
+
+      vi.spyOn(
         tokenValidationService,
         'validateStateFromHashCallback'
-      ).and.returnValue(true);
+      ).mockReturnValue(true);
 
       service.codeFlowCodeRequest({} as CallbackContext, config).subscribe({
         next: (res) => {

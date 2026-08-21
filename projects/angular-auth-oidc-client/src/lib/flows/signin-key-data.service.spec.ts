@@ -54,9 +54,15 @@ describe('Signin Key Data Service', () => {
 
   describe('getSigningKeys', () => {
     it('throws error when no wellKnownEndpoints given', waitForAsync(() => {
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
-        .and.returnValue(null);
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return null;
+          }
+
+          return undefined;
+        }
+      );
       const result = service.getSigningKeys({ configId: 'configId1' });
 
       result.subscribe({
@@ -67,9 +73,15 @@ describe('Signin Key Data Service', () => {
     }));
 
     it('throws error when no jwksUri given', waitForAsync(() => {
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
-        .and.returnValue({ jwksUri: null });
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { jwksUri: null };
+          }
+
+          return undefined;
+        }
+      );
       const result = service.getSigningKeys({ configId: 'configId1' });
 
       result.subscribe({
@@ -80,14 +92,22 @@ describe('Signin Key Data Service', () => {
     }));
 
     it('calls dataservice if jwksurl is given', waitForAsync(() => {
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
-        .and.returnValue({ jwksUri: 'someUrl' });
-      const spy = spyOn(dataService, 'get').and.callFake(() => of());      const result = service.getSigningKeys({ configId: 'configId1' });
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { jwksUri: 'someUrl' };
+          }
+
+          return undefined;
+        }
+      );
+      const spy = vi.spyOn(dataService, 'get').mockImplementation(() => of());
+      const result = service.getSigningKeys({ configId: 'configId1' });
 
       result.subscribe({
         complete: () => {
-          expect(spy).toHaveBeenCalledOnceWith('someUrl', {
+          expect(spy).toHaveBeenCalledTimes(1);
+          expect(spy).toHaveBeenCalledWith('someUrl', {
             configId: 'configId1',
           });
         },
@@ -95,10 +115,16 @@ describe('Signin Key Data Service', () => {
     }));
 
     it('should retry once', waitForAsync(() => {
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
-        .and.returnValue({ jwksUri: 'someUrl' });
-      spyOn(dataService, 'get').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { jwksUri: 'someUrl' };
+          }
+
+          return undefined;
+        }
+      );
+      vi.spyOn(dataService, 'get').mockReturnValue(
         createRetriableStream(
           throwError(() => new Error('Error')),
           of(DUMMY_JWKS)
@@ -114,10 +140,16 @@ describe('Signin Key Data Service', () => {
     }));
 
     it('should retry twice', waitForAsync(() => {
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
-        .and.returnValue({ jwksUri: 'someUrl' });
-      spyOn(dataService, 'get').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { jwksUri: 'someUrl' };
+          }
+
+          return undefined;
+        }
+      );
+      vi.spyOn(dataService, 'get').mockReturnValue(
         createRetriableStream(
           throwError(() => new Error('Error')),
           throwError(() => new Error('Error')),
@@ -134,10 +166,16 @@ describe('Signin Key Data Service', () => {
     }));
 
     it('should fail after three tries', waitForAsync(() => {
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
-        .and.returnValue({ jwksUri: 'someUrl' });
-      spyOn(dataService, 'get').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { jwksUri: 'someUrl' };
+          }
+
+          return undefined;
+        }
+      );
+      vi.spyOn(dataService, 'get').mockReturnValue(
         createRetriableStream(
           throwError(() => new Error('Error')),
           throwError(() => new Error('Error')),
@@ -161,11 +199,13 @@ describe('Signin Key Data Service', () => {
       );
       const hasTypeObservable = isObservable(result);
 
-      expect(hasTypeObservable).toBeTrue();
+      expect(hasTypeObservable).toBe(true);
     }));
 
     it('logs error if error is response', waitForAsync(() => {
-      const logSpy = spyOn(loggerService, 'logError');
+      const logSpy = vi
+        .spyOn(loggerService, 'logError')
+        .mockReturnValue(undefined);
 
       (service as any)
         .handleErrorGetSigningKeys(
@@ -174,7 +214,8 @@ describe('Signin Key Data Service', () => {
         )
         .subscribe({
           error: () => {
-            expect(logSpy).toHaveBeenCalledOnceWith(
+            expect(logSpy).toHaveBeenCalledTimes(1);
+            expect(logSpy).toHaveBeenCalledWith(
               { configId: 'configId1' },
               '400 - nono {}'
             );
@@ -183,13 +224,16 @@ describe('Signin Key Data Service', () => {
     }));
 
     it('logs error if error is not a response', waitForAsync(() => {
-      const logSpy = spyOn(loggerService, 'logError');
+      const logSpy = vi
+        .spyOn(loggerService, 'logError')
+        .mockReturnValue(undefined);
 
       (service as any)
         .handleErrorGetSigningKeys('Just some Error', { configId: 'configId1' })
         .subscribe({
           error: () => {
-            expect(logSpy).toHaveBeenCalledOnceWith(
+            expect(logSpy).toHaveBeenCalledTimes(1);
+            expect(logSpy).toHaveBeenCalledWith(
               { configId: 'configId1' },
               'Just some Error'
             );
@@ -198,7 +242,9 @@ describe('Signin Key Data Service', () => {
     }));
 
     it('logs error if error with message property is not a response', waitForAsync(() => {
-      const logSpy = spyOn(loggerService, 'logError');
+      const logSpy = vi
+        .spyOn(loggerService, 'logError')
+        .mockReturnValue(undefined);
 
       (service as any)
         .handleErrorGetSigningKeys(
@@ -207,7 +253,8 @@ describe('Signin Key Data Service', () => {
         )
         .subscribe({
           error: () => {
-            expect(logSpy).toHaveBeenCalledOnceWith(
+            expect(logSpy).toHaveBeenCalledTimes(1);
+            expect(logSpy).toHaveBeenCalledWith(
               { configId: 'configId1' },
               'Just some Error'
             );

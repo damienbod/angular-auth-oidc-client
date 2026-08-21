@@ -52,9 +52,9 @@ describe('RefreshSessionRefreshTokenService', () => {
 
   describe('refreshSessionWithRefreshTokens', () => {
     it('calls flowsService.processRefreshToken()', waitForAsync(() => {
-      const spy = spyOn(flowsService, 'processRefreshToken').and.returnValue(
-        of({} as CallbackContext)
-      );
+      const spy = vi
+        .spyOn(flowsService, 'processRefreshToken')
+        .mockReturnValue(of({} as CallbackContext));
 
       refreshSessionRefreshTokenService
         .refreshSessionWithRefreshTokens({ configId: 'configId1' }, [
@@ -66,13 +66,12 @@ describe('RefreshSessionRefreshTokenService', () => {
     }));
 
     it('resetAuthorizationData in case of error', waitForAsync(() => {
-      spyOn(flowsService, 'processRefreshToken').and.returnValue(
+      vi.spyOn(flowsService, 'processRefreshToken').mockReturnValue(
         throwError(() => new Error('error'))
       );
-      const resetSilentRenewRunningSpy = spyOn(
-        resetAuthDataService,
-        'resetAuthorizationData'
-      );
+      const resetSilentRenewRunningSpy = vi
+        .spyOn(resetAuthDataService, 'resetAuthorizationData')
+        .mockReturnValue(undefined);
 
       refreshSessionRefreshTokenService
         .refreshSessionWithRefreshTokens({ configId: 'configId1' }, [
@@ -87,13 +86,12 @@ describe('RefreshSessionRefreshTokenService', () => {
     }));
 
     it('finalize with stopPeriodicTokenCheck in case of error', fakeAsync(() => {
-      spyOn(flowsService, 'processRefreshToken').and.returnValue(
+      vi.spyOn(flowsService, 'processRefreshToken').mockReturnValue(
         throwError(() => new Error('error'))
       );
-      const stopPeriodicallyTokenCheckSpy = spyOn(
-        intervalService,
-        'stopPeriodicTokenCheck'
-      );
+      const stopPeriodicallyTokenCheckSpy = vi
+        .spyOn(intervalService, 'stopPeriodicTokenCheck')
+        .mockReturnValue(undefined);
 
       refreshSessionRefreshTokenService
         .refreshSessionWithRefreshTokens({ configId: 'configId1' }, [
@@ -110,18 +108,20 @@ describe('RefreshSessionRefreshTokenService', () => {
 
     describe('cross-tab refresh token lock', () => {
       it('does not request a lock when useRefreshTokenLock is disabled', async () => {
-        const requestSpy = jasmine
-          .createSpy('request')
-          .and.callFake((_name: string, cb: () => Promise<unknown>) => cb());
+        const requestSpy = vi
+          .fn()
+          .mockName('request')
+          .mockImplementation((_name: string, cb: () => Promise<unknown>) =>
+            cb()
+          );
 
         Object.defineProperty(navigator, 'locks', {
           value: { request: requestSpy },
           configurable: true,
         });
-        const processSpy = spyOn(
-          flowsService,
-          'processRefreshToken'
-        ).and.returnValue(of({} as CallbackContext));
+        const processSpy = vi
+          .spyOn(flowsService, 'processRefreshToken')
+          .mockReturnValue(of({} as CallbackContext));
 
         await firstValueFrom(
           refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(
@@ -141,29 +141,30 @@ describe('RefreshSessionRefreshTokenService', () => {
           },
           configurable: true,
         });
-        spyOn(authStateService, 'getAccessToken').and.returnValues(
-          'old-access-token',
-          'new-access-token'
-        );
-        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
+        vi.spyOn(authStateService, 'getAccessToken')
+          .mockReturnValueOnce('old-access-token')
+          .mockReturnValueOnce('new-access-token');
+        vi.spyOn(authStateService, 'areAuthStorageTokensValid').mockReturnValue(
           true
         );
-        spyOn(authStateService, 'getRefreshToken').and.returnValue(
+        vi.spyOn(authStateService, 'getRefreshToken').mockReturnValue(
           'new-refresh-token'
         );
-        spyOn(authStateService, 'getIdToken').and.returnValue('new-id-token');
-        spyOn(authStateService, 'getAuthenticationResult').and.returnValue({
+        vi.spyOn(authStateService, 'getIdToken').mockReturnValue(
+          'new-id-token'
+        );
+        vi.spyOn(authStateService, 'getAuthenticationResult').mockReturnValue({
           access_token: 'new-access-token',
         });
-        const setAuthenticatedSpy = spyOn(
-          authStateService,
-          'setAuthenticatedAndFireEvent'
-        );
-        const updateAuthStateSpy = spyOn(
-          authStateService,
-          'updateAndPublishAuthState'
-        );
-        const processSpy = spyOn(flowsService, 'processRefreshToken');
+        const setAuthenticatedSpy = vi
+          .spyOn(authStateService, 'setAuthenticatedAndFireEvent')
+          .mockReturnValue(undefined);
+        const updateAuthStateSpy = vi
+          .spyOn(authStateService, 'updateAndPublishAuthState')
+          .mockReturnValue(undefined);
+        const processSpy = vi
+          .spyOn(flowsService, 'processRefreshToken')
+          .mockReturnValue(undefined as any);
         const callbackContext = await firstValueFrom(
           refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(
             { configId: 'configId1', useRefreshTokenLock: true },
@@ -177,10 +178,12 @@ describe('RefreshSessionRefreshTokenService', () => {
         expect(callbackContext.authResult).toEqual({
           access_token: 'new-access-token',
         });
-        expect(setAuthenticatedSpy).toHaveBeenCalledOnceWith([
+        expect(setAuthenticatedSpy).toHaveBeenCalledTimes(1);
+        expect(setAuthenticatedSpy).toHaveBeenCalledWith([
           { configId: 'configId1' },
         ]);
-        expect(updateAuthStateSpy).toHaveBeenCalledOnceWith({
+        expect(updateAuthStateSpy).toHaveBeenCalledTimes(1);
+        expect(updateAuthStateSpy).toHaveBeenCalledWith({
           isAuthenticated: true,
           validationResult: ValidationResult.Ok,
           isRenewProcess: true,
@@ -195,17 +198,18 @@ describe('RefreshSessionRefreshTokenService', () => {
           },
           configurable: true,
         });
-        spyOn(authStateService, 'getAccessToken').and.returnValues(
-          '',
-          'new-access-token'
-        );
-        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
+        vi.spyOn(authStateService, 'getAccessToken')
+          .mockReturnValueOnce('')
+          .mockReturnValueOnce('new-access-token');
+        vi.spyOn(authStateService, 'areAuthStorageTokensValid').mockReturnValue(
           true
         );
-        spyOn(authStateService, 'getRefreshToken').and.returnValue(
+        vi.spyOn(authStateService, 'getRefreshToken').mockReturnValue(
           'stored-refresh-token'
         );
-        const processSpy = spyOn(flowsService, 'processRefreshToken');
+        const processSpy = vi
+          .spyOn(flowsService, 'processRefreshToken')
+          .mockReturnValue(undefined as any);
         const callbackContext = await firstValueFrom(
           refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(
             { configId: 'configId1', useRefreshTokenLock: true },
@@ -224,13 +228,12 @@ describe('RefreshSessionRefreshTokenService', () => {
           },
           configurable: true,
         });
-        spyOn(authStateService, 'getAccessToken').and.returnValue(
+        vi.spyOn(authStateService, 'getAccessToken').mockReturnValue(
           'same-access-token'
         );
-        const processSpy = spyOn(
-          flowsService,
-          'processRefreshToken'
-        ).and.returnValue(of({} as CallbackContext));
+        const processSpy = vi
+          .spyOn(flowsService, 'processRefreshToken')
+          .mockReturnValue(of({} as CallbackContext));
 
         await firstValueFrom(
           refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(
@@ -249,17 +252,15 @@ describe('RefreshSessionRefreshTokenService', () => {
           },
           configurable: true,
         });
-        spyOn(authStateService, 'getAccessToken').and.returnValues(
-          'old-access-token',
-          'new-access-token'
-        );
-        spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
+        vi.spyOn(authStateService, 'getAccessToken')
+          .mockReturnValueOnce('old-access-token')
+          .mockReturnValueOnce('new-access-token');
+        vi.spyOn(authStateService, 'areAuthStorageTokensValid').mockReturnValue(
           false
         );
-        const processSpy = spyOn(
-          flowsService,
-          'processRefreshToken'
-        ).and.returnValue(of({} as CallbackContext));
+        const processSpy = vi
+          .spyOn(flowsService, 'processRefreshToken')
+          .mockReturnValue(of({} as CallbackContext));
 
         await firstValueFrom(
           refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(
@@ -272,18 +273,20 @@ describe('RefreshSessionRefreshTokenService', () => {
       });
 
       it('requests the lock with a per-config name when useRefreshTokenLock is enabled', async () => {
-        const requestSpy = jasmine
-          .createSpy('request')
-          .and.callFake((_name: string, cb: () => Promise<unknown>) => cb());
+        const requestSpy = vi
+          .fn()
+          .mockName('request')
+          .mockImplementation((_name: string, cb: () => Promise<unknown>) =>
+            cb()
+          );
 
         Object.defineProperty(navigator, 'locks', {
           value: { request: requestSpy },
           configurable: true,
         });
-        const processSpy = spyOn(
-          flowsService,
-          'processRefreshToken'
-        ).and.returnValue(of({} as CallbackContext));
+        const processSpy = vi
+          .spyOn(flowsService, 'processRefreshToken')
+          .mockReturnValue(of({} as CallbackContext));
 
         await firstValueFrom(
           refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(
@@ -292,9 +295,11 @@ describe('RefreshSessionRefreshTokenService', () => {
           )
         );
 
-        expect(requestSpy).toHaveBeenCalledOnceWith(
+        expect(requestSpy).toHaveBeenCalledTimes(1);
+
+        expect(requestSpy).toHaveBeenCalledWith(
           'angular-auth-oidc-client-refresh-token-configId1',
-          jasmine.any(Function)
+          expect.any(Function)
         );
         expect(processSpy).toHaveBeenCalled();
       });
@@ -304,10 +309,9 @@ describe('RefreshSessionRefreshTokenService', () => {
           value: undefined,
           configurable: true,
         });
-        const processSpy = spyOn(
-          flowsService,
-          'processRefreshToken'
-        ).and.returnValue(of({} as CallbackContext));
+        const processSpy = vi
+          .spyOn(flowsService, 'processRefreshToken')
+          .mockReturnValue(of({} as CallbackContext));
 
         await firstValueFrom(
           refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(
@@ -326,22 +330,21 @@ describe('RefreshSessionRefreshTokenService', () => {
           },
           configurable: true,
         });
-        spyOn(flowsService, 'processRefreshToken').and.returnValue(
+        vi.spyOn(flowsService, 'processRefreshToken').mockReturnValue(
           throwError(() => new Error('error'))
         );
-        const resetAuthorizationDataSpy = spyOn(
-          resetAuthDataService,
-          'resetAuthorizationData'
-        );
+        const resetAuthorizationDataSpy = vi
+          .spyOn(resetAuthDataService, 'resetAuthorizationData')
+          .mockReturnValue(undefined);
 
-        await expectAsync(
+        await expect(
           firstValueFrom(
             refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(
               { configId: 'configId1', useRefreshTokenLock: true },
               [{ configId: 'configId1' }]
             )
           )
-        ).toBeRejected();
+        ).rejects.toThrow();
 
         expect(resetAuthorizationDataSpy).toHaveBeenCalled();
       });
@@ -353,13 +356,12 @@ describe('RefreshSessionRefreshTokenService', () => {
           },
           configurable: true,
         });
-        spyOn(flowsService, 'processRefreshToken').and.returnValue(NEVER);
-        const resetAuthorizationDataSpy = spyOn(
-          resetAuthDataService,
-          'resetAuthorizationData'
-        );
+        vi.spyOn(flowsService, 'processRefreshToken').mockReturnValue(NEVER);
+        const resetAuthorizationDataSpy = vi
+          .spyOn(resetAuthDataService, 'resetAuthorizationData')
+          .mockReturnValue(undefined);
 
-        await expectAsync(
+        await expect(
           firstValueFrom(
             refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(
               {
@@ -370,7 +372,7 @@ describe('RefreshSessionRefreshTokenService', () => {
               [{ configId: 'configId1' }]
             )
           )
-        ).toBeRejected();
+        ).rejects.toThrow();
 
         expect(resetAuthorizationDataSpy).toHaveBeenCalled();
       });

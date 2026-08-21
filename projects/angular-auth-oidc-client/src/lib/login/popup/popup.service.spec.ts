@@ -1,3 +1,4 @@
+import type { Mock } from 'vitest';
 import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { mockProvider } from '../../../test/auto-mock';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
@@ -51,13 +52,13 @@ describe('PopUpService', () => {
   describe('isCurrentlyInPopup', () => {
     it('returns false if can not access Session Storage', () => {
       // arrange
-      spyOn(popUpService as any, 'canAccessSessionStorage').and.returnValue(
+      vi.spyOn(popUpService as any, 'canAccessSessionStorage').mockReturnValue(
         false
       );
-      spyOnProperty(popUpService as any, 'windowInternal').and.returnValue({
+      vi.spyOn(popUpService as any, 'windowInternal', 'get').mockReturnValue({
         opener: {} as Window,
       });
-      spyOn(storagePersistenceService, 'read').and.returnValue({
+      vi.spyOn(storagePersistenceService, 'read').mockReturnValue({
         popupauth: true,
       });
       const config = {} as OpenIdConfiguration;
@@ -70,10 +71,10 @@ describe('PopUpService', () => {
 
     it('returns false if window has no opener', () => {
       // arrange
-      spyOn(popUpService as any, 'canAccessSessionStorage').and.returnValue(
+      vi.spyOn(popUpService as any, 'canAccessSessionStorage').mockReturnValue(
         true
       );
-      spyOn(storagePersistenceService, 'read').and.returnValue({
+      vi.spyOn(storagePersistenceService, 'read').mockReturnValue({
         popupauth: true,
       });
       const config = {} as OpenIdConfiguration;
@@ -86,13 +87,13 @@ describe('PopUpService', () => {
 
     it('returns false if there is no window available', () => {
       // arrange
-      spyOn(popUpService as any, 'canAccessSessionStorage').and.returnValue(
+      vi.spyOn(popUpService as any, 'canAccessSessionStorage').mockReturnValue(
         true
       );
-      spyOnProperty(popUpService as any, 'windowInternal').and.returnValue(
+      vi.spyOn(popUpService as any, 'windowInternal', 'get').mockReturnValue(
         null
       );
-      spyOn(storagePersistenceService, 'read').and.returnValue({
+      vi.spyOn(storagePersistenceService, 'read').mockReturnValue({
         popupauth: true,
       });
       const config = {} as OpenIdConfiguration;
@@ -105,13 +106,13 @@ describe('PopUpService', () => {
 
     it('returns false if there is no popup flag in storage', () => {
       // arrange
-      spyOn(popUpService as any, 'canAccessSessionStorage').and.returnValue(
+      vi.spyOn(popUpService as any, 'canAccessSessionStorage').mockReturnValue(
         true
       );
-      spyOnProperty(popUpService as any, 'windowInternal').and.returnValue({
+      vi.spyOn(popUpService as any, 'windowInternal', 'get').mockReturnValue({
         opener: {} as Window,
       });
-      spyOn(storagePersistenceService, 'read').and.returnValue(null);
+      vi.spyOn(storagePersistenceService, 'read').mockReturnValue(null);
       const config = {} as OpenIdConfiguration;
       // act
       const result = popUpService.isCurrentlyInPopup(config);
@@ -125,13 +126,13 @@ describe('PopUpService', () => {
       const windowMock: any = { opener: null };
 
       windowMock.opener = windowMock;
-      spyOn(popUpService as any, 'canAccessSessionStorage').and.returnValue(
+      vi.spyOn(popUpService as any, 'canAccessSessionStorage').mockReturnValue(
         true
       );
-      spyOnProperty(popUpService as any, 'windowInternal').and.returnValue(
+      vi.spyOn(popUpService as any, 'windowInternal', 'get').mockReturnValue(
         windowMock
       );
-      spyOn(storagePersistenceService, 'read').and.returnValue({
+      vi.spyOn(storagePersistenceService, 'read').mockReturnValue({
         popupauth: true,
       });
       const config = {} as OpenIdConfiguration;
@@ -144,13 +145,13 @@ describe('PopUpService', () => {
 
     it('returns true if isCurrentlyInPopup', () => {
       // arrange
-      spyOn(popUpService as any, 'canAccessSessionStorage').and.returnValue(
+      vi.spyOn(popUpService as any, 'canAccessSessionStorage').mockReturnValue(
         true
       );
-      spyOnProperty(popUpService as any, 'windowInternal').and.returnValue({
+      vi.spyOn(popUpService as any, 'windowInternal', 'get').mockReturnValue({
         opener: {} as Window,
       });
-      spyOn(storagePersistenceService, 'read').and.returnValue({
+      vi.spyOn(storagePersistenceService, 'read').mockReturnValue({
         popupauth: true,
       });
       const config = {} as OpenIdConfiguration;
@@ -183,7 +184,7 @@ describe('PopUpService', () => {
   describe('openPopup', () => {
     it('popup opens with parameters and default options', waitForAsync(() => {
       // arrange
-      const popupSpy = spyOn(window, 'open').and.callFake(
+      const popupSpy = vi.spyOn(window, 'open').mockImplementation(
         () =>
           ({
             closed: true,
@@ -195,16 +196,19 @@ describe('PopUpService', () => {
       popUpService.openPopUp('url', {}, { configId: 'configId1' });
 
       // assert
-      expect(popupSpy).toHaveBeenCalledOnceWith(
+      expect(popupSpy).toHaveBeenCalledTimes(1);
+
+      // assert
+      expect(popupSpy).toHaveBeenCalledWith(
         'url',
         '_blank',
-        jasmine.any(String)
+        expect.any(String)
       );
     }));
 
     it('popup opens with parameters and passed options', waitForAsync(() => {
       // arrange
-      const popupSpy = spyOn(window, 'open').and.callFake(
+      const popupSpy = vi.spyOn(window, 'open').mockImplementation(
         () =>
           ({
             closed: true,
@@ -216,23 +220,31 @@ describe('PopUpService', () => {
       popUpService.openPopUp('url', { width: 100 }, { configId: 'configId1' });
 
       // assert
-      expect(popupSpy).toHaveBeenCalledOnceWith(
+      expect(popupSpy).toHaveBeenCalledTimes(1);
+
+      // assert
+      expect(popupSpy).toHaveBeenCalledWith(
         'url',
         '_blank',
-        jasmine.any(String)
+        expect.any(String)
       );
     }));
 
     it('logs error and return if popup could not be opened', () => {
       // arrange
-      spyOn(window, 'open').and.callFake(() => null);
-      const loggerSpy = spyOn(loggerService, 'logError');
+      vi.spyOn(window, 'open').mockImplementation(() => null);
+      const loggerSpy = vi
+        .spyOn(loggerService, 'logError')
+        .mockReturnValue(undefined);
 
       // act
       popUpService.openPopUp('url', { width: 100 }, { configId: 'configId1' });
 
       // assert
-      expect(loggerSpy).toHaveBeenCalledOnceWith(
+      expect(loggerSpy).toHaveBeenCalledTimes(1);
+
+      // assert
+      expect(loggerSpy).toHaveBeenCalledWith(
         { configId: 'configId1' },
         'Could not open popup'
       );
@@ -240,15 +252,24 @@ describe('PopUpService', () => {
 
     it('logs error and does not open or write storage if url is empty', () => {
       // arrange
-      const popupSpy = spyOn(window, 'open');
-      const loggerSpy = spyOn(loggerService, 'logError');
-      const writeSpy = spyOn(storagePersistenceService, 'write');
+      const popupSpy = vi
+        .spyOn(window, 'open')
+        .mockReturnValue(undefined as any);
+      const loggerSpy = vi
+        .spyOn(loggerService, 'logError')
+        .mockReturnValue(undefined);
+      const writeSpy = vi
+        .spyOn(storagePersistenceService, 'write')
+        .mockReturnValue(undefined as any);
 
       // act
       popUpService.openPopUp('', {}, { configId: 'configId1' });
 
       // assert
-      expect(loggerSpy).toHaveBeenCalledOnceWith(
+      expect(loggerSpy).toHaveBeenCalledTimes(1);
+
+      // assert
+      expect(loggerSpy).toHaveBeenCalledWith(
         { configId: 'configId1' },
         'Could not open popup, url is empty'
       );
@@ -258,10 +279,12 @@ describe('PopUpService', () => {
 
     it('does nothing if there is no window available', () => {
       // arrange
-      spyOnProperty(popUpService as any, 'windowInternal').and.returnValue(
+      vi.spyOn(popUpService as any, 'windowInternal', 'get').mockReturnValue(
         null
       );
-      const writeSpy = spyOn(storagePersistenceService, 'write');
+      const writeSpy = vi
+        .spyOn(storagePersistenceService, 'write')
+        .mockReturnValue(undefined as any);
 
       // act
       popUpService.openPopUp('url', {}, { configId: 'configId1' });
@@ -273,7 +296,7 @@ describe('PopUpService', () => {
     describe('popup closed', () => {
       let popup: Window;
       let popupResult: PopupResult;
-      let cleanUpSpy: jasmine.Spy;
+      let cleanUpSpy: Mock<any>;
 
       beforeEach(() => {
         popup = {
@@ -281,9 +304,9 @@ describe('PopUpService', () => {
           close: () => undefined,
         } as Window;
 
-        spyOn(window, 'open').and.returnValue(popup);
+        vi.spyOn(window, 'open').mockReturnValue(popup);
 
-        cleanUpSpy = spyOn(popUpService as any, 'cleanUp').and.callThrough();
+        cleanUpSpy = vi.spyOn(popUpService as any, 'cleanUp');
 
         popupResult = {} as PopupResult;
 
@@ -296,7 +319,7 @@ describe('PopUpService', () => {
           return;
         };
 
-        spyOn(window, 'addEventListener').and.callFake(
+        vi.spyOn(window, 'addEventListener').mockImplementation(
           (_: any, func: any) => (listener = func)
         );
 
@@ -315,7 +338,8 @@ describe('PopUpService', () => {
           userClosed: false,
           receivedUrl: 'some-url1111',
         });
-        expect(cleanUpSpy).toHaveBeenCalledOnceWith(listener, {
+        expect(cleanUpSpy).toHaveBeenCalledTimes(1);
+        expect(cleanUpSpy).toHaveBeenCalledWith(listener, {
           configId: 'configId1',
         });
       }));
@@ -326,10 +350,12 @@ describe('PopUpService', () => {
           return;
         };
 
-        spyOn(window, 'addEventListener').and.callFake(
+        vi.spyOn(window, 'addEventListener').mockImplementation(
           (_: any, func: any) => (listener = func)
         );
-        const nextSpy = spyOn((popUpService as any).resultInternal$, 'next');
+        const nextSpy = vi
+          .spyOn((popUpService as any).resultInternal$, 'next')
+          .mockReturnValue(undefined);
 
         // act
         popUpService.openPopUp('url', {}, { configId: 'configId1' });
@@ -353,10 +379,12 @@ describe('PopUpService', () => {
           return;
         };
 
-        spyOn(window, 'addEventListener').and.callFake(
+        vi.spyOn(window, 'addEventListener').mockImplementation(
           (_: any, func: any) => (listener = func)
         );
-        const nextSpy = spyOn((popUpService as any).resultInternal$, 'next');
+        const nextSpy = vi
+          .spyOn((popUpService as any).resultInternal$, 'next')
+          .mockReturnValue(undefined);
 
         // act
         popUpService.openPopUp(
@@ -403,10 +431,12 @@ describe('PopUpService', () => {
   describe('sendMessageToMainWindow', () => {
     it('does nothing if there is no window available', waitForAsync(() => {
       // arrange
-      spyOnProperty(popUpService as any, 'windowInternal').and.returnValue(
+      vi.spyOn(popUpService as any, 'windowInternal', 'get').mockReturnValue(
         null
       );
-      const sendMessageSpy = spyOn(popUpService as any, 'sendMessage');
+      const sendMessageSpy = vi
+        .spyOn(popUpService as any, 'sendMessage')
+        .mockReturnValue(undefined);
 
       // act
       popUpService.sendMessageToMainWindow('someUrl', {
@@ -419,9 +449,11 @@ describe('PopUpService', () => {
 
     it('does nothing if window.opener is null', waitForAsync(() => {
       // arrange
-      spyOnProperty(window, 'opener').and.returnValue(null);
+      vi.stubGlobal('opener', null);
 
-      const sendMessageSpy = spyOn(popUpService as any, 'sendMessage');
+      const sendMessageSpy = vi
+        .spyOn(popUpService as any, 'sendMessage')
+        .mockReturnValue(undefined);
 
       // act
       popUpService.sendMessageToMainWindow('', {});
@@ -432,28 +464,37 @@ describe('PopUpService', () => {
 
     it('calls postMessage when window opener is given', waitForAsync(() => {
       // arrange
-      spyOnProperty(window, 'opener').and.returnValue({
+      vi.stubGlobal('opener', {
         postMessage: () => undefined,
       });
-      const sendMessageSpy = spyOn(window.opener, 'postMessage');
+      const sendMessageSpy = vi
+        .spyOn(window.opener, 'postMessage')
+        .mockReturnValue(undefined);
 
       // act
       popUpService.sendMessageToMainWindow('someUrl', {});
 
       // assert
-      expect(sendMessageSpy).toHaveBeenCalledOnceWith(
+      expect(sendMessageSpy).toHaveBeenCalledTimes(1);
+
+      // assert
+      expect(sendMessageSpy).toHaveBeenCalledWith(
         'someUrl',
-        jasmine.any(String)
+        expect.any(String)
       );
     }));
 
     it('does not postMessage and logs debug when url is empty', waitForAsync(() => {
       // arrange
-      spyOnProperty(window, 'opener').and.returnValue({
+      vi.stubGlobal('opener', {
         postMessage: () => undefined,
       });
-      const sendMessageSpy = spyOn(window.opener, 'postMessage');
-      const loggerSpy = spyOn(loggerService, 'logDebug');
+      const sendMessageSpy = vi
+        .spyOn(window.opener, 'postMessage')
+        .mockReturnValue(undefined);
+      const loggerSpy = vi
+        .spyOn(loggerService, 'logDebug')
+        .mockReturnValue(undefined);
 
       // act
       popUpService.sendMessageToMainWindow('', { configId: 'configId1' });
@@ -467,11 +508,15 @@ describe('PopUpService', () => {
   describe('cleanUp', () => {
     it('does nothing if there is no window available', waitForAsync(() => {
       // arrange
-      spyOnProperty(popUpService as any, 'windowInternal').and.returnValue(
+      vi.spyOn(popUpService as any, 'windowInternal', 'get').mockReturnValue(
         null
       );
-      const removeSpy = spyOn(window, 'removeEventListener');
-      const removeItemSpy = spyOn(storagePersistenceService, 'remove');
+      const removeSpy = vi
+        .spyOn(window, 'removeEventListener')
+        .mockReturnValue(undefined);
+      const removeItemSpy = vi
+        .spyOn(storagePersistenceService, 'remove')
+        .mockReturnValue(undefined);
 
       // act
       (popUpService as any).cleanUp(null, { configId: 'configId1' });
@@ -483,9 +528,9 @@ describe('PopUpService', () => {
 
     it('calls removeEventListener on window with correct params', waitForAsync(() => {
       // arrange
-      const spy = spyOn(window, 'removeEventListener').and.callFake(
-        () => undefined
-      );
+      const spy = vi
+        .spyOn(window, 'removeEventListener')
+        .mockImplementation(() => undefined);
       const listener: any = null;
 
       // act
@@ -493,7 +538,8 @@ describe('PopUpService', () => {
 
       // assert
       expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledOnceWith('message', listener, false);
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith('message', listener, false);
     }));
 
     it('removes popup from sessionstorage, closes and nulls when popup is opened', waitForAsync(() => {
@@ -503,15 +549,20 @@ describe('PopUpService', () => {
         sessionStorage: mockStorage,
         close: (): void => undefined,
       };
-      const removeItemSpy = spyOn(storagePersistenceService, 'remove');
-      const closeSpy = spyOn(popupMock, 'close');
+      const removeItemSpy = vi
+        .spyOn(storagePersistenceService, 'remove')
+        .mockReturnValue(undefined);
+      const closeSpy = vi.spyOn(popupMock, 'close').mockReturnValue(undefined);
 
       // act
       (popUpService as any).popUp = popupMock;
       (popUpService as any).cleanUp(null, { configId: 'configId1' });
 
       // assert
-      expect(removeItemSpy).toHaveBeenCalledOnceWith('popupauth', {
+      expect(removeItemSpy).toHaveBeenCalledTimes(1);
+
+      // assert
+      expect(removeItemSpy).toHaveBeenCalledWith('popupauth', {
         configId: 'configId1',
       });
       expect(closeSpy).toHaveBeenCalledTimes(1);
@@ -522,10 +573,12 @@ describe('PopUpService', () => {
   describe('sendMessage', () => {
     it('does nothing if there is no window available', waitForAsync(() => {
       // arrange
-      spyOnProperty(popUpService as any, 'windowInternal').and.returnValue(
+      vi.spyOn(popUpService as any, 'windowInternal', 'get').mockReturnValue(
         null
       );
-      const loggerSpy = spyOn(loggerService, 'logDebug');
+      const loggerSpy = vi
+        .spyOn(loggerService, 'logDebug')
+        .mockReturnValue(undefined);
       // act
       const result = (popUpService as any).sendMessage('url', 'href', {
         configId: 'configId1',
@@ -540,7 +593,7 @@ describe('PopUpService', () => {
   describe('getOptions', () => {
     it('returns an empty string if there is no window available', () => {
       // arrange
-      spyOnProperty(popUpService as any, 'windowInternal').and.returnValue(
+      vi.spyOn(popUpService as any, 'windowInternal', 'get').mockReturnValue(
         null
       );
 

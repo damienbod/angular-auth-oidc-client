@@ -40,7 +40,7 @@ describe('BrowserStorageService', () => {
     it('returns null if there is no storage', () => {
       const config = { configId: 'configId1' };
 
-      spyOn(service as any, 'hasStorage').and.returnValue(false);
+      vi.spyOn(service as any, 'hasStorage').mockReturnValue(false);
 
       expect(service.read('anything', config)).toBeNull();
     });
@@ -48,7 +48,7 @@ describe('BrowserStorageService', () => {
     it('returns null if getItem returns null', () => {
       const config = { configId: 'configId1' };
 
-      spyOn(service as any, 'hasStorage').and.returnValue(true);
+      vi.spyOn(service as any, 'hasStorage').mockReturnValue(true);
 
       const result = service.read('anything', config);
 
@@ -58,10 +58,10 @@ describe('BrowserStorageService', () => {
     it('returns the item if getItem returns an item', () => {
       const config = { configId: 'configId1' };
 
-      spyOn(service as any, 'hasStorage').and.returnValue(true);
+      vi.spyOn(service as any, 'hasStorage').mockReturnValue(true);
       const returnValue = `{ "name":"John", "age":30, "city":"New York"}`;
 
-      spyOn(abstractSecurityStorage, 'read').and.returnValue(returnValue);
+      vi.spyOn(abstractSecurityStorage, 'read').mockReturnValue(returnValue);
       const result = service.read('anything', config);
 
       expect(result).toEqual(JSON.parse(returnValue));
@@ -72,29 +72,27 @@ describe('BrowserStorageService', () => {
     it('returns false if configId is missing', () => {
       const config = { configId: '' };
 
-      expect(service.write('anyvalue', config)).toBeFalse();
+      expect(service.write('anyvalue', config)).toBe(false);
     });
 
     it('returns false if there is no storage', () => {
       const config = { configId: 'configId1' };
 
-      spyOn(service as any, 'hasStorage').and.returnValue(false);
+      vi.spyOn(service as any, 'hasStorage').mockReturnValue(false);
 
-      expect(service.write('anyvalue', config)).toBeFalse();
+      expect(service.write('anyvalue', config)).toBe(false);
     });
 
     it('writes object correctly with configId', () => {
       const config = { configId: 'configId1' };
 
-      spyOn(service as any, 'hasStorage').and.returnValue(true);
-      const writeSpy = spyOn(
-        abstractSecurityStorage,
-        'write'
-      ).and.callThrough();
+      vi.spyOn(service as any, 'hasStorage').mockReturnValue(true);
+      const writeSpy = vi.spyOn(abstractSecurityStorage, 'write');
       const result = service.write({ anyKey: 'anyvalue' }, config);
 
       expect(result).toBe(true);
-      expect(writeSpy).toHaveBeenCalledOnceWith(
+      expect(writeSpy).toHaveBeenCalledTimes(1);
+      expect(writeSpy).toHaveBeenCalledWith(
         'configId1',
         JSON.stringify({ anyKey: 'anyvalue' })
       );
@@ -103,20 +101,15 @@ describe('BrowserStorageService', () => {
     it('writes null if item is falsy', () => {
       const config = { configId: 'configId1' };
 
-      spyOn(service as any, 'hasStorage').and.returnValue(true);
+      vi.spyOn(service as any, 'hasStorage').mockReturnValue(true);
 
-      const writeSpy = spyOn(
-        abstractSecurityStorage,
-        'write'
-      ).and.callThrough();
+      const writeSpy = vi.spyOn(abstractSecurityStorage, 'write');
       const somethingFalsy = '';
       const result = service.write(somethingFalsy, config);
 
       expect(result).toBe(true);
-      expect(writeSpy).toHaveBeenCalledOnceWith(
-        'configId1',
-        JSON.stringify(null)
-      );
+      expect(writeSpy).toHaveBeenCalledTimes(1);
+      expect(writeSpy).toHaveBeenCalledWith('configId1', JSON.stringify(null));
     });
   });
 
@@ -124,119 +117,133 @@ describe('BrowserStorageService', () => {
     it('returns false if there is no storage', () => {
       const config = { configId: 'configId1' };
 
-      spyOn(service as any, 'hasStorage').and.returnValue(false);
-      expect(service.remove('anything', config)).toBeFalse();
+      vi.spyOn(service as any, 'hasStorage').mockReturnValue(false);
+      expect(service.remove('anything', config)).toBe(false);
     });
 
     it('returns false if configId is missing', () => {
       const config = { configId: '' };
 
-      spyOn(service as any, 'hasStorage').and.returnValue(true);
-      expect(service.remove('anyKey', config)).toBeFalse();
+      vi.spyOn(service as any, 'hasStorage').mockReturnValue(true);
+      expect(service.remove('anyKey', config)).toBe(false);
     });
 
     it('removes the entire config blob for the configId', () => {
-      spyOn(service as any, 'hasStorage').and.returnValue(true);
+      vi.spyOn(service as any, 'hasStorage').mockReturnValue(true);
       const config = { configId: 'configId1' };
-      const removeSpy = spyOn(
-        abstractSecurityStorage,
-        'remove'
-      ).and.callThrough();
+      const removeSpy = vi.spyOn(abstractSecurityStorage, 'remove');
       const result = service.remove('anyKey', config);
 
       expect(result).toBe(true);
-      expect(removeSpy).toHaveBeenCalledOnceWith('configId1');
+      expect(removeSpy).toHaveBeenCalledTimes(1);
+      expect(removeSpy).toHaveBeenCalledWith('configId1');
     });
   });
 
   describe('clear', () => {
     it('returns false if there is no storage', () => {
-      spyOn(service as any, 'hasStorage').and.returnValue(false);
+      vi.spyOn(service as any, 'hasStorage').mockReturnValue(false);
       const config = { configId: 'configId1' };
 
-      expect(service.clear(config)).toBeFalse();
+      expect(service.clear(config)).toBe(false);
     });
 
     it('returns false if configId is missing', () => {
       const config = { configId: '' };
 
-      spyOn(service as any, 'hasStorage').and.returnValue(true);
-      expect(service.clear(config)).toBeFalse();
+      vi.spyOn(service as any, 'hasStorage').mockReturnValue(true);
+      expect(service.clear(config)).toBe(false);
     });
 
     it('removes only the config blob for the specified configId', () => {
-      spyOn(service as any, 'hasStorage').and.returnValue(true);
+      vi.spyOn(service as any, 'hasStorage').mockReturnValue(true);
 
-      const removeSpy = spyOn(
-        abstractSecurityStorage,
-        'remove'
-      ).and.callThrough();
+      const removeSpy = vi.spyOn(abstractSecurityStorage, 'remove');
       const config = { configId: 'configId1' };
       const result = service.clear(config);
 
       expect(result).toBe(true);
-      expect(removeSpy).toHaveBeenCalledOnceWith('configId1');
+      expect(removeSpy).toHaveBeenCalledTimes(1);
+      expect(removeSpy).toHaveBeenCalledWith('configId1');
     });
   });
 
   describe('multi-config isolation', () => {
     it('clear() should only remove the specified config, not other configs', () => {
-      spyOn(service as any, 'hasStorage').and.returnValue(true);
+      vi.spyOn(service as any, 'hasStorage').mockReturnValue(true);
       const config1 = { configId: 'configId1' };
-      const removeSpy = spyOn(abstractSecurityStorage, 'remove');
+      const removeSpy = vi
+        .spyOn(abstractSecurityStorage, 'remove')
+        .mockReturnValue(undefined);
 
       service.clear(config1);
 
-      expect(removeSpy).toHaveBeenCalledOnceWith('configId1');
+      expect(removeSpy).toHaveBeenCalledTimes(1);
+
+      expect(removeSpy).toHaveBeenCalledWith('configId1');
       expect(removeSpy).not.toHaveBeenCalledWith('configId2');
     });
 
     it('remove() should only remove the specified config blob, not other configs', () => {
-      spyOn(service as any, 'hasStorage').and.returnValue(true);
+      vi.spyOn(service as any, 'hasStorage').mockReturnValue(true);
       const config1 = { configId: 'configId1' };
-      const removeSpy = spyOn(abstractSecurityStorage, 'remove');
+      const removeSpy = vi
+        .spyOn(abstractSecurityStorage, 'remove')
+        .mockReturnValue(undefined);
 
       service.remove('anyKey', config1);
 
-      expect(removeSpy).toHaveBeenCalledOnceWith('configId1');
+      expect(removeSpy).toHaveBeenCalledTimes(1);
+
+      expect(removeSpy).toHaveBeenCalledWith('configId1');
       expect(removeSpy).not.toHaveBeenCalledWith('configId2');
     });
   });
 
   describe('storage scope safety', () => {
     it('clear() should not call abstractSecurityStorage.clear() which would destroy all storage', () => {
-      spyOn(service as any, 'hasStorage').and.returnValue(true);
+      vi.spyOn(service as any, 'hasStorage').mockReturnValue(true);
       const config = { configId: 'configId1' };
-      const clearSpy = spyOn(abstractSecurityStorage, 'clear');
-      const removeSpy = spyOn(abstractSecurityStorage, 'remove');
+      const clearSpy = vi
+        .spyOn(abstractSecurityStorage, 'clear')
+        .mockReturnValue(undefined);
+      const removeSpy = vi
+        .spyOn(abstractSecurityStorage, 'remove')
+        .mockReturnValue(undefined);
 
       service.clear(config);
 
       // Should use remove(configId), NOT clear()
       // This ensures other configs and consumer app data remain intact
       expect(clearSpy).not.toHaveBeenCalled();
-      expect(removeSpy).toHaveBeenCalledOnceWith('configId1');
+      expect(removeSpy).toHaveBeenCalledTimes(1);
+      expect(removeSpy).toHaveBeenCalledWith('configId1');
     });
 
     it('remove() should not call abstractSecurityStorage.clear() which would destroy all storage', () => {
-      spyOn(service as any, 'hasStorage').and.returnValue(true);
+      vi.spyOn(service as any, 'hasStorage').mockReturnValue(true);
       const config = { configId: 'configId1' };
-      const clearSpy = spyOn(abstractSecurityStorage, 'clear');
-      const removeSpy = spyOn(abstractSecurityStorage, 'remove');
+      const clearSpy = vi
+        .spyOn(abstractSecurityStorage, 'clear')
+        .mockReturnValue(undefined);
+      const removeSpy = vi
+        .spyOn(abstractSecurityStorage, 'remove')
+        .mockReturnValue(undefined);
 
       service.remove('anyKey', config);
 
       // Should use remove(configId), NOT clear()
       // This ensures other configs and consumer app data remain intact
       expect(clearSpy).not.toHaveBeenCalled();
-      expect(removeSpy).toHaveBeenCalledOnceWith('configId1');
+      expect(removeSpy).toHaveBeenCalledTimes(1);
+      expect(removeSpy).toHaveBeenCalledWith('configId1');
     });
   });
 
   describe('hasStorage', () => {
     it('returns false if there is no storage', () => {
       (Storage as any) = undefined;
-      expect((service as any).hasStorage()).toBeFalse();
+      expect((service as any).hasStorage()).toBe(false);
       Storage = Storage;
     });
   });

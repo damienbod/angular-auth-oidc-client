@@ -57,26 +57,34 @@ describe('RefreshTokenCallbackHandlerService', () => {
     }));
 
     it('calls data service if all params are good', waitForAsync(() => {
-      const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
+      const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(of({}));
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
-        .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { tokenEndpoint: 'tokenEndpoint' };
+          }
+
+          return undefined;
+        }
+      );
 
       service
         .refreshTokensRequestTokens({} as CallbackContext, {
           configId: 'configId1',
         })
         .subscribe(() => {
-          expect(postSpy).toHaveBeenCalledOnceWith(
+          expect(postSpy).toHaveBeenCalledTimes(1);
+          expect(postSpy).toHaveBeenCalledWith(
             'tokenEndpoint',
             undefined,
             { configId: 'configId1' },
-            jasmine.any(HttpHeaders)
+            expect.any(HttpHeaders)
           );
-          const httpHeaders = postSpy.calls.mostRecent().args[3] as HttpHeaders;
+          const httpHeaders = vi.mocked(postSpy).mock
+            .lastCall![3] as HttpHeaders;
 
-          expect(httpHeaders.has('Content-Type')).toBeTrue();
+          expect(httpHeaders.has('Content-Type')).toBe(true);
           expect(httpHeaders.get('Content-Type')).toBe(
             'application/x-www-form-urlencoded'
           );
@@ -84,20 +92,27 @@ describe('RefreshTokenCallbackHandlerService', () => {
     }));
 
     it('calls data service with correct headers if all params are good', waitForAsync(() => {
-      const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
+      const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(of({}));
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
-        .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { tokenEndpoint: 'tokenEndpoint' };
+          }
+
+          return undefined;
+        }
+      );
 
       service
         .refreshTokensRequestTokens({} as CallbackContext, {
           configId: 'configId1',
         })
         .subscribe(() => {
-          const httpHeaders = postSpy.calls.mostRecent().args[3] as HttpHeaders;
+          const httpHeaders = vi.mocked(postSpy).mock
+            .lastCall![3] as HttpHeaders;
 
-          expect(httpHeaders.has('Content-Type')).toBeTrue();
+          expect(httpHeaders.has('Content-Type')).toBe(true);
           expect(httpHeaders.get('Content-Type')).toBe(
             'application/x-www-form-urlencoded'
           );
@@ -105,12 +120,20 @@ describe('RefreshTokenCallbackHandlerService', () => {
     }));
 
     it('returns error in case of http error', waitForAsync(() => {
-      spyOn(dataService, 'post').and.returnValue(throwError(() => HTTP_ERROR));
+      vi.spyOn(dataService, 'post').mockReturnValue(
+        throwError(() => HTTP_ERROR)
+      );
       const config = { configId: 'configId1', authority: 'authority' };
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', config)
-        .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { tokenEndpoint: 'tokenEndpoint' };
+          }
+
+          return undefined;
+        }
+      );
 
       service
         .refreshTokensRequestTokens({} as CallbackContext, config)
@@ -122,7 +145,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
     }));
 
     it('retries request in case of no connection http error and succeeds', waitForAsync(() => {
-      const postSpy = spyOn(dataService, 'post').and.returnValue(
+      const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(
         createRetriableStream(
           throwError(() => CONNECTION_ERROR),
           of({})
@@ -130,9 +153,15 @@ describe('RefreshTokenCallbackHandlerService', () => {
       );
       const config = { configId: 'configId1', authority: 'authority' };
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', config)
-        .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { tokenEndpoint: 'tokenEndpoint' };
+          }
+
+          return undefined;
+        }
+      );
 
       service
         .refreshTokensRequestTokens({} as CallbackContext, config)
@@ -149,7 +178,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
     }));
 
     it('retries request in case of no connection http error and fails because of http error afterwards', waitForAsync(() => {
-      const postSpy = spyOn(dataService, 'post').and.returnValue(
+      const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(
         createRetriableStream(
           throwError(() => CONNECTION_ERROR),
           throwError(() => HTTP_ERROR)
@@ -157,9 +186,15 @@ describe('RefreshTokenCallbackHandlerService', () => {
       );
       const config = { configId: 'configId1', authority: 'authority' };
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', config)
-        .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { tokenEndpoint: 'tokenEndpoint' };
+          }
+
+          return undefined;
+        }
+      );
 
       service
         .refreshTokensRequestTokens({} as CallbackContext, config)

@@ -34,14 +34,14 @@ describe('RefreshSessionCallbackHandlerService', () => {
 
   describe('refreshSessionWithRefreshTokens', () => {
     it('returns callbackContext if all params are good', waitForAsync(() => {
-      spyOn(
+      vi.spyOn(
         flowsDataService,
         'getExistingOrCreateAuthStateControl'
-      ).and.returnValue('state-data');
-      spyOn(authStateService, 'getRefreshToken').and.returnValue(
+      ).mockReturnValue('state-data');
+      vi.spyOn(authStateService, 'getRefreshToken').mockReturnValue(
         'henlo-furiend'
       );
-      spyOn(authStateService, 'getIdToken').and.returnValue('henlo-legger');
+      vi.spyOn(authStateService, 'getIdToken').mockReturnValue('henlo-legger');
 
       const expectedCallbackContext = {
         code: '',
@@ -63,12 +63,12 @@ describe('RefreshSessionCallbackHandlerService', () => {
     }));
 
     it('throws error if no refresh token is given', waitForAsync(() => {
-      spyOn(
+      vi.spyOn(
         flowsDataService,
         'getExistingOrCreateAuthStateControl'
-      ).and.returnValue('state-data');
-      spyOn(authStateService, 'getRefreshToken').and.returnValue('');
-      spyOn(authStateService, 'getIdToken').and.returnValue('henlo-legger');
+      ).mockReturnValue('state-data');
+      vi.spyOn(authStateService, 'getRefreshToken').mockReturnValue('');
+      vi.spyOn(authStateService, 'getIdToken').mockReturnValue('henlo-legger');
 
       service
         .refreshSessionWithRefreshTokens({ configId: 'configId1' })

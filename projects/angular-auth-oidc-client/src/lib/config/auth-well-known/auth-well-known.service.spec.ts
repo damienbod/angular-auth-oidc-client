@@ -49,14 +49,19 @@ describe('AuthWellKnownService', () => {
     }));
 
     it('getAuthWellKnownEndPoints calls always dataservice', waitForAsync(() => {
-      const dataServiceSpy = spyOn(
-        dataService,
-        'getWellKnownEndPointsForConfig'
-      ).and.returnValue(of({ issuer: 'anything' }));
+      const dataServiceSpy = vi
+        .spyOn(dataService, 'getWellKnownEndPointsForConfig')
+        .mockReturnValue(of({ issuer: 'anything' }));
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
-        .and.returnValue({ issuer: 'anything' });
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { issuer: 'anything' };
+          }
+
+          return undefined;
+        }
+      );
 
       service
         .queryAndStoreAuthWellKnownEndPoints({ configId: 'configId1' })
@@ -68,15 +73,22 @@ describe('AuthWellKnownService', () => {
     }));
 
     it('getAuthWellKnownEndPoints stored the result if http call is made', waitForAsync(() => {
-      const dataServiceSpy = spyOn(
-        dataService,
-        'getWellKnownEndPointsForConfig'
-      ).and.returnValue(of({ issuer: 'anything' }));
+      const dataServiceSpy = vi
+        .spyOn(dataService, 'getWellKnownEndPointsForConfig')
+        .mockReturnValue(of({ issuer: 'anything' }));
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
-        .and.returnValue(null);
-      const storeSpy = spyOn(service, 'storeWellKnownEndpoints');
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return null;
+          }
+
+          return undefined;
+        }
+      );
+      const storeSpy = vi
+        .spyOn(service, 'storeWellKnownEndpoints')
+        .mockReturnValue(undefined);
 
       service
         .queryAndStoreAuthWellKnownEndPoints({ configId: 'configId1' })
@@ -88,10 +100,12 @@ describe('AuthWellKnownService', () => {
     }));
 
     it('throws `ConfigLoadingFailed` event when error happens from http', waitForAsync(() => {
-      spyOn(dataService, 'getWellKnownEndPointsForConfig').and.returnValue(
+      vi.spyOn(dataService, 'getWellKnownEndPointsForConfig').mockReturnValue(
         throwError(() => new Error('error'))
       );
-      const publicEventsServiceSpy = spyOn(publicEventsService, 'fireEvent');
+      const publicEventsServiceSpy = vi
+        .spyOn(publicEventsService, 'fireEvent')
+        .mockReturnValue(undefined);
 
       service
         .queryAndStoreAuthWellKnownEndPoints({ configId: 'configId1' })
@@ -99,7 +113,8 @@ describe('AuthWellKnownService', () => {
           error: (err) => {
             expect(err).toBeTruthy();
             expect(publicEventsServiceSpy).toHaveBeenCalledTimes(1);
-            expect(publicEventsServiceSpy).toHaveBeenCalledOnceWith(
+            expect(publicEventsServiceSpy).toHaveBeenCalledTimes(1);
+            expect(publicEventsServiceSpy).toHaveBeenCalledWith(
               EventTypes.ConfigLoadingFailed,
               null
             );

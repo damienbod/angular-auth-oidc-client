@@ -1,15 +1,17 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LazyComponent } from './lazy.component';
+import { provideAuth } from 'angular-auth-oidc-client';
 
 describe('LazyComponent', () => {
   let component: LazyComponent;
   let fixture: ComponentFixture<LazyComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       declarations: [LazyComponent],
+      providers: [provideAuth({ config: {} })],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(LazyComponent);

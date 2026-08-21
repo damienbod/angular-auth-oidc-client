@@ -20,37 +20,51 @@ describe('DefaultSessionStorageService', () => {
 
   describe('read', () => {
     it('should call sessionstorage.getItem', () => {
-      const spy = spyOn(sessionStorage, 'getItem');
+      const spy = vi
+        .spyOn(Storage.prototype, 'getItem')
+        .mockReturnValue(undefined as any);
 
       service.read('henlo');
 
-      expect(spy).toHaveBeenCalledOnceWith('henlo');
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      expect(spy).toHaveBeenCalledWith('henlo');
     });
   });
 
   describe('write', () => {
     it('should call sessionstorage.setItem', () => {
-      const spy = spyOn(sessionStorage, 'setItem');
+      const spy = vi
+        .spyOn(Storage.prototype, 'setItem')
+        .mockReturnValue(undefined);
 
       service.write('henlo', 'furiend');
 
-      expect(spy).toHaveBeenCalledOnceWith('henlo', 'furiend');
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      expect(spy).toHaveBeenCalledWith('henlo', 'furiend');
     });
   });
 
   describe('remove', () => {
     it('should call sessionstorage.removeItem', () => {
-      const spy = spyOn(sessionStorage, 'removeItem');
+      const spy = vi
+        .spyOn(Storage.prototype, 'removeItem')
+        .mockReturnValue(undefined);
 
       service.remove('henlo');
 
-      expect(spy).toHaveBeenCalledOnceWith('henlo');
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      expect(spy).toHaveBeenCalledWith('henlo');
     });
   });
 
   describe('clear', () => {
     it('should call sessionstorage.clear', () => {
-      const spy = spyOn(sessionStorage, 'clear');
+      const spy = vi
+        .spyOn(Storage.prototype, 'clear')
+        .mockReturnValue(undefined);
 
       service.clear();
 

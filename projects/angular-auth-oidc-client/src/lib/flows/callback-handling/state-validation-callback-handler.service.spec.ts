@@ -57,7 +57,10 @@ describe('StateValidationCallbackHandlerService', () => {
 
   describe('callbackStateValidation', () => {
     it('returns callbackContext with validationResult if validationResult is valid', waitForAsync(() => {
-      spyOn(stateValidationService, 'getValidatedStateResult').and.returnValue(
+      vi.spyOn(
+        stateValidationService,
+        'getValidatedStateResult'
+      ).mockReturnValue(
         of({
           idToken: 'idTokenJustForTesting',
           authResponseIsValid: true,
@@ -82,13 +85,18 @@ describe('StateValidationCallbackHandlerService', () => {
     }));
 
     it('logs error in case of an error', waitForAsync(() => {
-      spyOn(stateValidationService, 'getValidatedStateResult').and.returnValue(
+      vi.spyOn(
+        stateValidationService,
+        'getValidatedStateResult'
+      ).mockReturnValue(
         of({
           authResponseIsValid: false,
         } as StateValidationResult)
       );
 
-      const loggerSpy = spyOn(loggerService, 'logWarning');
+      const loggerSpy = vi
+        .spyOn(loggerService, 'logWarning')
+        .mockReturnValue(undefined);
       const allConfigs = [{ configId: 'configId1' }];
 
       service
@@ -99,7 +107,8 @@ describe('StateValidationCallbackHandlerService', () => {
         )
         .subscribe({
           error: () => {
-            expect(loggerSpy).toHaveBeenCalledOnceWith(
+            expect(loggerSpy).toHaveBeenCalledTimes(1);
+            expect(loggerSpy).toHaveBeenCalledWith(
               allConfigs[0],
               'authorizedCallback, token(s) validation failed, resetting. Hash: &anyFakeHash'
             );
@@ -108,21 +117,22 @@ describe('StateValidationCallbackHandlerService', () => {
     }));
 
     it('calls resetAuthDataService.resetAuthorizationData and authStateService.updateAndPublishAuthState in case of an error', waitForAsync(() => {
-      spyOn(stateValidationService, 'getValidatedStateResult').and.returnValue(
+      vi.spyOn(
+        stateValidationService,
+        'getValidatedStateResult'
+      ).mockReturnValue(
         of({
           authResponseIsValid: false,
           state: ValidationResult.LoginRequired,
         } as StateValidationResult)
       );
 
-      const resetAuthorizationDataSpy = spyOn(
-        resetAuthDataService,
-        'resetAuthorizationData'
-      );
-      const updateAndPublishAuthStateSpy = spyOn(
-        authStateService,
-        'updateAndPublishAuthState'
-      );
+      const resetAuthorizationDataSpy = vi
+        .spyOn(resetAuthDataService, 'resetAuthorizationData')
+        .mockReturnValue(undefined);
+      const updateAndPublishAuthStateSpy = vi
+        .spyOn(authStateService, 'updateAndPublishAuthState')
+        .mockReturnValue(undefined);
       const allConfigs = [{ configId: 'configId1' }];
 
       service
@@ -134,7 +144,8 @@ describe('StateValidationCallbackHandlerService', () => {
         .subscribe({
           error: () => {
             expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
-            expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
+            expect(updateAndPublishAuthStateSpy).toHaveBeenCalledTimes(1);
+            expect(updateAndPublishAuthStateSpy).toHaveBeenCalledWith({
               isAuthenticated: false,
               validationResult: ValidationResult.LoginRequired,
               isRenewProcess: true,

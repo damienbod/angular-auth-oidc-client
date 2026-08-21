@@ -10,20 +10,23 @@ describe('ConfigLoader', () => {
         const toPass = [
           { configId: 'configId1' } as OpenIdConfiguration,
           { configId: 'configId2' } as OpenIdConfiguration,
-        ];        const loader = new StsConfigStaticLoader(toPass);        const result$ = loader.loadConfigs();
+        ];
+        const loader = new StsConfigStaticLoader(toPass);
+        const result$ = loader.loadConfigs();
 
         result$.subscribe((result) => {
-          expect(Array.isArray(result)).toBeTrue();
+          expect(Array.isArray(result)).toBe(true);
         });
       }));
 
       it('returns an array if only one config is passed', waitForAsync(() => {
         const loader = new StsConfigStaticLoader({
           configId: 'configId1',
-        } as OpenIdConfiguration);        const result$ = loader.loadConfigs();
+        } as OpenIdConfiguration);
+        const result$ = loader.loadConfigs();
 
         result$.subscribe((result) => {
-          expect(Array.isArray(result)).toBeTrue();
+          expect(Array.isArray(result)).toBe(true);
         });
       }));
     });
@@ -36,10 +39,11 @@ describe('ConfigLoader', () => {
           of({ configId: 'configId1' } as OpenIdConfiguration),
           of({ configId: 'configId2' } as OpenIdConfiguration),
         ];
-        const loader = new StsConfigHttpLoader(toPass);        const result$ = loader.loadConfigs();
+        const loader = new StsConfigHttpLoader(toPass);
+        const result$ = loader.loadConfigs();
 
         result$.subscribe((result) => {
-          expect(Array.isArray(result)).toBeTrue();
+          expect(Array.isArray(result)).toBe(true);
           expect(result[0].configId).toBe('configId1');
           expect(result[1].configId).toBe('configId2');
         });
@@ -50,10 +54,11 @@ describe('ConfigLoader', () => {
           { configId: 'configId1' } as OpenIdConfiguration,
           { configId: 'configId2' } as OpenIdConfiguration,
         ]);
-        const loader = new StsConfigHttpLoader(toPass);        const result$ = loader.loadConfigs();
+        const loader = new StsConfigHttpLoader(toPass);
+        const result$ = loader.loadConfigs();
 
         result$.subscribe((result) => {
-          expect(Array.isArray(result)).toBeTrue();
+          expect(Array.isArray(result)).toBe(true);
           expect(result[0].configId).toBe('configId1');
           expect(result[1].configId).toBe('configId2');
         });
@@ -62,10 +67,11 @@ describe('ConfigLoader', () => {
       it('returns an array if only one config is passed', waitForAsync(() => {
         const loader = new StsConfigHttpLoader(
           of({ configId: 'configId1' } as OpenIdConfiguration)
-        );        const result$ = loader.loadConfigs();
+        );
+        const result$ = loader.loadConfigs();
 
         result$.subscribe((result) => {
-          expect(Array.isArray(result)).toBeTrue();
+          expect(Array.isArray(result)).toBe(true);
           expect(result[0].configId).toBe('configId1');
         });
       }));

@@ -32,39 +32,53 @@ describe('RefreshSessionIframeService ', () => {
 
   describe('refreshSessionWithIframe', () => {
     it('calls sendAuthorizeRequestUsingSilentRenew with created url', waitForAsync(() => {
-      spyOn(urlService, 'getRefreshSessionSilentRenewUrl').and.returnValue(
+      vi.spyOn(urlService, 'getRefreshSessionSilentRenewUrl').mockReturnValue(
         of('a-url')
       );
-      const sendAuthorizeRequestUsingSilentRenewSpy = spyOn(
-        refreshSessionIframeService as any,
-        'sendAuthorizeRequestUsingSilentRenew'
-      ).and.returnValue(of(null));
+      const sendAuthorizeRequestUsingSilentRenewSpy = vi
+        .spyOn(
+          refreshSessionIframeService as any,
+          'sendAuthorizeRequestUsingSilentRenew'
+        )
+        .mockReturnValue(of(null));
       const allConfigs = [{ configId: 'configId1' }];
 
       refreshSessionIframeService
         .refreshSessionWithIframe(allConfigs[0], allConfigs)
         .subscribe(() => {
-          expect(
-            sendAuthorizeRequestUsingSilentRenewSpy
-          ).toHaveBeenCalledOnceWith('a-url', allConfigs[0], allConfigs);
+          expect(sendAuthorizeRequestUsingSilentRenewSpy).toHaveBeenCalledTimes(
+            1
+          );
+          expect(sendAuthorizeRequestUsingSilentRenewSpy).toHaveBeenCalledWith(
+            'a-url',
+            allConfigs[0],
+            allConfigs
+          );
         });
     }));
   });
 
   describe('initSilentRenewRequest', () => {
     it('dispatches customevent to window object', waitForAsync(() => {
-      const dispatchEventSpy = spyOn(window, 'dispatchEvent');
+      const dispatchEventSpy = vi
+        .spyOn(window, 'dispatchEvent')
+        .mockReturnValue(undefined as any);
       const config = { configId: 'testConfigId' };
       const allConfigs = [config];
 
-      (refreshSessionIframeService as any).initSilentRenewRequest(config, allConfigs);
+      (refreshSessionIframeService as any).initSilentRenewRequest(
+        config,
+        allConfigs
+      );
 
-      expect(dispatchEventSpy).toHaveBeenCalledOnceWith(
-        jasmine.objectContaining({
+      expect(dispatchEventSpy).toHaveBeenCalledTimes(1);
+
+      expect(dispatchEventSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
           type: 'oidc-silent-renew-init',
-          detail: jasmine.objectContaining({
-            instanceId: jasmine.any(Number),
-            configId: 'testConfigId'
+          detail: expect.objectContaining({
+            instanceId: expect.any(Number),
+            configId: 'testConfigId',
           }),
         })
       );
@@ -75,9 +89,14 @@ describe('RefreshSessionIframeService ', () => {
     it('returns true when srcFrameId contains matching configId', () => {
       const config = { configId: 'testConfigId' };
       const event = new CustomEvent('oidc-silent-renew-message', {
-        detail: { url: 'http://example.com', srcFrameId: getFrameId('testConfigId') }
+        detail: {
+          url: 'http://example.com',
+          srcFrameId: getFrameId('testConfigId'),
+        },
       });
-      const result = (refreshSessionIframeService as any).shouldProcessRenewMessage(event, config);
+      const result = (
+        refreshSessionIframeService as any
+      ).shouldProcessRenewMessage(event, config);
 
       expect(result).toBe(true);
     });
@@ -85,9 +104,14 @@ describe('RefreshSessionIframeService ', () => {
     it('returns false when srcFrameId contains different configId', () => {
       const config = { configId: 'testConfigId' };
       const event = new CustomEvent('oidc-silent-renew-message', {
-        detail: { url: 'http://example.com', srcFrameId: getFrameId('differentConfigId') }
+        detail: {
+          url: 'http://example.com',
+          srcFrameId: getFrameId('differentConfigId'),
+        },
       });
-      const result = (refreshSessionIframeService as any).shouldProcessRenewMessage(event, config);
+      const result = (
+        refreshSessionIframeService as any
+      ).shouldProcessRenewMessage(event, config);
 
       expect(result).toBe(false);
     });
@@ -95,9 +119,14 @@ describe('RefreshSessionIframeService ', () => {
     it('returns false when srcFrameId does not start with expected prefix', () => {
       const config = { configId: 'testConfigId' };
       const event = new CustomEvent('oidc-silent-renew-message', {
-        detail: { url: 'http://example.com', srcFrameId: 'someOtherFrame_testConfigId' }
+        detail: {
+          url: 'http://example.com',
+          srcFrameId: 'someOtherFrame_testConfigId',
+        },
       });
-      const result = (refreshSessionIframeService as any).shouldProcessRenewMessage(event, config);
+      const result = (
+        refreshSessionIframeService as any
+      ).shouldProcessRenewMessage(event, config);
 
       expect(result).toBe(false);
     });
@@ -105,9 +134,11 @@ describe('RefreshSessionIframeService ', () => {
     it('returns true for backward compatibility when event has no srcFrameId', () => {
       const config = { configId: 'testConfigId' };
       const event = new CustomEvent('oidc-silent-renew-message', {
-        detail: 'http://example.com'
+        detail: 'http://example.com',
       });
-      const result = (refreshSessionIframeService as any).shouldProcessRenewMessage(event, config);
+      const result = (
+        refreshSessionIframeService as any
+      ).shouldProcessRenewMessage(event, config);
 
       expect(result).toBe(true);
     });
@@ -115,7 +146,9 @@ describe('RefreshSessionIframeService ', () => {
     it('returns false when event has no detail', () => {
       const config = { configId: 'testConfigId' };
       const event = new CustomEvent('oidc-silent-renew-message');
-      const result = (refreshSessionIframeService as any).shouldProcessRenewMessage(event, config);
+      const result = (
+        refreshSessionIframeService as any
+      ).shouldProcessRenewMessage(event, config);
 
       expect(result).toBe(false);
     });
@@ -124,9 +157,14 @@ describe('RefreshSessionIframeService ', () => {
   describe('convertToLegacyEvent', () => {
     it('converts new format event to legacy format', () => {
       const newFormatEvent = new CustomEvent('oidc-silent-renew-message', {
-        detail: { url: 'http://example.com?code=123', srcFrameId: getFrameId('testConfigId') }
+        detail: {
+          url: 'http://example.com?code=123',
+          srcFrameId: getFrameId('testConfigId'),
+        },
       });
-      const result = (refreshSessionIframeService as any).convertToLegacyEvent(newFormatEvent);
+      const result = (refreshSessionIframeService as any).convertToLegacyEvent(
+        newFormatEvent
+      );
 
       expect(result.type).toBe('oidc-silent-renew-message');
       expect(result.detail).toBe('http://example.com?code=123');
@@ -134,9 +172,11 @@ describe('RefreshSessionIframeService ', () => {
 
     it('returns event as-is if already in legacy format', () => {
       const legacyEvent = new CustomEvent('oidc-silent-renew-message', {
-        detail: 'http://example.com?code=123'
+        detail: 'http://example.com?code=123',
       });
-      const result = (refreshSessionIframeService as any).convertToLegacyEvent(legacyEvent);
+      const result = (refreshSessionIframeService as any).convertToLegacyEvent(
+        legacyEvent
+      );
 
       expect(result).toBe(legacyEvent);
     });

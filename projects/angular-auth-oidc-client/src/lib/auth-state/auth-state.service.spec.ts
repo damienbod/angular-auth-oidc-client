@@ -41,21 +41,22 @@ describe('Auth State Service', () => {
   });
 
   it('public authorize$ is observable$', () => {
-    expect(authStateService.authenticated$).toEqual(jasmine.any(Observable));
+    expect(authStateService.authenticated$).toEqual(expect.any(Observable));
   });
 
   describe('setAuthorizedAndFireEvent', () => {
     it('throws correct event with single config', () => {
-      const spy = spyOn(
-        (authStateService as any).authenticatedInternal$,
-        'next'
-      );
+      const spy = vi
+        .spyOn((authStateService as any).authenticatedInternal$, 'next')
+        .mockReturnValue(undefined);
 
       authStateService.setAuthenticatedAndFireEvent([
         { configId: 'configId1' },
       ]);
 
-      expect(spy).toHaveBeenCalledOnceWith({
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      expect(spy).toHaveBeenCalledWith({
         isAuthenticated: true,
         allConfigsAuthenticated: [
           { configId: 'configId1', isAuthenticated: true },
@@ -64,17 +65,18 @@ describe('Auth State Service', () => {
     });
 
     it('throws correct event with multiple configs', () => {
-      const spy = spyOn(
-        (authStateService as any).authenticatedInternal$,
-        'next'
-      );
+      const spy = vi
+        .spyOn((authStateService as any).authenticatedInternal$, 'next')
+        .mockReturnValue(undefined);
 
       authStateService.setAuthenticatedAndFireEvent([
         { configId: 'configId1' },
         { configId: 'configId2' },
       ]);
 
-      expect(spy).toHaveBeenCalledOnceWith({
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      expect(spy).toHaveBeenCalledWith({
         isAuthenticated: false,
         allConfigsAuthenticated: [
           { configId: 'configId1', isAuthenticated: false },
@@ -86,26 +88,43 @@ describe('Auth State Service', () => {
     it('throws correct event with multiple configs, one is authenticated', () => {
       const allConfigs = [{ configId: 'configId1' }, { configId: 'configId2' }];
 
-      spyOn(storagePersistenceService, 'getAccessToken')
-        .withArgs(allConfigs[0])
-        .and.returnValue('someAccessToken')
-        .withArgs(allConfigs[1])
-        .and.returnValue('');
+      vi.spyOn(storagePersistenceService, 'getAccessToken').mockImplementation(
+        (...args: any[]): any => {
+          if (args[0] === allConfigs[0]) {
+            return 'someAccessToken';
+          }
 
-      spyOn(storagePersistenceService, 'getIdToken')
-        .withArgs(allConfigs[0])
-        .and.returnValue('someIdToken')
-        .withArgs(allConfigs[1])
-        .and.returnValue('');
+          if (args[0] === allConfigs[1]) {
+            return '';
+          }
 
-      const spy = spyOn(
-        (authStateService as any).authenticatedInternal$,
-        'next'
+          return undefined;
+        }
       );
+
+      vi.spyOn(storagePersistenceService, 'getIdToken').mockImplementation(
+        (...args: any[]): any => {
+          if (args[0] === allConfigs[0]) {
+            return 'someIdToken';
+          }
+
+          if (args[0] === allConfigs[1]) {
+            return '';
+          }
+
+          return undefined;
+        }
+      );
+
+      const spy = vi
+        .spyOn((authStateService as any).authenticatedInternal$, 'next')
+        .mockReturnValue(undefined);
 
       authStateService.setAuthenticatedAndFireEvent(allConfigs);
 
-      expect(spy).toHaveBeenCalledOnceWith({
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      expect(spy).toHaveBeenCalledWith({
         isAuthenticated: false,
         allConfigsAuthenticated: [
           { configId: 'configId1', isAuthenticated: true },
@@ -117,27 +136,31 @@ describe('Auth State Service', () => {
 
   describe('setUnauthorizedAndFireEvent', () => {
     it('persist AuthState In Storage', () => {
-      const spy = spyOn(storagePersistenceService, 'resetAuthStateInStorage');
+      const spy = vi
+        .spyOn(storagePersistenceService, 'resetAuthStateInStorage')
+        .mockReturnValue(undefined);
 
       authStateService.setUnauthenticatedAndFireEvent(
         { configId: 'configId1' },
         [{ configId: 'configId1' }]
       );
-      expect(spy).toHaveBeenCalledOnceWith({ configId: 'configId1' });
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith({ configId: 'configId1' });
     });
 
     it('throws correct event with single config', () => {
-      const spy = spyOn(
-        (authStateService as any).authenticatedInternal$,
-        'next'
-      );
+      const spy = vi
+        .spyOn((authStateService as any).authenticatedInternal$, 'next')
+        .mockReturnValue(undefined);
 
       authStateService.setUnauthenticatedAndFireEvent(
         { configId: 'configId1' },
         [{ configId: 'configId1' }]
       );
 
-      expect(spy).toHaveBeenCalledOnceWith({
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      expect(spy).toHaveBeenCalledWith({
         isAuthenticated: false,
         allConfigsAuthenticated: [
           { configId: 'configId1', isAuthenticated: false },
@@ -146,17 +169,18 @@ describe('Auth State Service', () => {
     });
 
     it('throws correct event with multiple configs', () => {
-      const spy = spyOn(
-        (authStateService as any).authenticatedInternal$,
-        'next'
-      );
+      const spy = vi
+        .spyOn((authStateService as any).authenticatedInternal$, 'next')
+        .mockReturnValue(undefined);
 
       authStateService.setUnauthenticatedAndFireEvent(
         { configId: 'configId1' },
         [{ configId: 'configId1' }, { configId: 'configId2' }]
       );
 
-      expect(spy).toHaveBeenCalledOnceWith({
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      expect(spy).toHaveBeenCalledWith({
         isAuthenticated: false,
         allConfigsAuthenticated: [
           { configId: 'configId1', isAuthenticated: false },
@@ -166,29 +190,46 @@ describe('Auth State Service', () => {
     });
 
     it('throws correct event with multiple configs, one is authenticated', () => {
-      spyOn(storagePersistenceService, 'getAccessToken')
-        .withArgs({ configId: 'configId1' })
-        .and.returnValue('someAccessToken')
-        .withArgs({ configId: 'configId2' })
-        .and.returnValue('');
+      vi.spyOn(storagePersistenceService, 'getAccessToken').mockImplementation(
+        (...args: any[]): any => {
+          if (args[0]?.configId === 'configId1') {
+            return 'someAccessToken';
+          }
 
-      spyOn(storagePersistenceService, 'getIdToken')
-        .withArgs({ configId: 'configId1' })
-        .and.returnValue('someIdToken')
-        .withArgs({ configId: 'configId2' })
-        .and.returnValue('');
+          if (args[0]?.configId === 'configId2') {
+            return '';
+          }
 
-      const spy = spyOn(
-        (authStateService as any).authenticatedInternal$,
-        'next'
+          return undefined;
+        }
       );
+
+      vi.spyOn(storagePersistenceService, 'getIdToken').mockImplementation(
+        (...args: any[]): any => {
+          if (args[0]?.configId === 'configId1') {
+            return 'someIdToken';
+          }
+
+          if (args[0]?.configId === 'configId2') {
+            return '';
+          }
+
+          return undefined;
+        }
+      );
+
+      const spy = vi
+        .spyOn((authStateService as any).authenticatedInternal$, 'next')
+        .mockReturnValue(undefined);
 
       authStateService.setUnauthenticatedAndFireEvent(
         { configId: 'configId1' },
         [{ configId: 'configId1' }, { configId: 'configId2' }]
       );
 
-      expect(spy).toHaveBeenCalledOnceWith({
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      expect(spy).toHaveBeenCalledWith({
         isAuthenticated: false,
         allConfigsAuthenticated: [
           { configId: 'configId1', isAuthenticated: true },
@@ -200,7 +241,7 @@ describe('Auth State Service', () => {
 
   describe('updateAndPublishAuthState', () => {
     it('calls eventsService', () => {
-      spyOn(eventsService, 'fireEvent');
+      vi.spyOn(eventsService, 'fireEvent').mockReturnValue(undefined);
 
       authStateService.updateAndPublishAuthState({
         isAuthenticated: false,
@@ -208,16 +249,20 @@ describe('Auth State Service', () => {
         validationResult: {} as ValidationResult,
       });
 
-      expect(eventsService.fireEvent).toHaveBeenCalledOnceWith(
+      expect(eventsService.fireEvent).toHaveBeenCalledTimes(1);
+
+      expect(eventsService.fireEvent).toHaveBeenCalledWith(
         EventTypes.NewAuthenticationResult,
-        jasmine.any(Object)
+        expect.any(Object)
       );
     });
   });
 
   describe('setAuthorizationData', () => {
     it('stores accessToken', () => {
-      const spy = spyOn(storagePersistenceService, 'write');
+      const spy = vi
+        .spyOn(storagePersistenceService, 'write')
+        .mockReturnValue(undefined as any);
       const authResult = {
         id_token: 'idtoken',
         access_token: 'accesstoken',
@@ -237,18 +282,20 @@ describe('Auth State Service', () => {
         [{ configId: 'configId1' }]
       );
       expect(spy).toHaveBeenCalledTimes(2);
-      expect(spy.calls.allArgs()).toEqual([
+      expect(vi.mocked(spy).mock.calls).toEqual([
         ['authzData', 'accesstoken', { configId: 'configId1' }],
         [
           'access_token_expires_at',
-          jasmine.any(Number),
+          expect.any(Number),
           { configId: 'configId1' },
         ],
       ]);
     });
 
     it('does not crash and store accessToken when authResult is null', () => {
-      const spy = spyOn(storagePersistenceService, 'write');
+      const spy = vi
+        .spyOn(storagePersistenceService, 'write')
+        .mockReturnValue(undefined as any);
       const authResult = null;
 
       authStateService.setAuthorizationData(
@@ -262,7 +309,9 @@ describe('Auth State Service', () => {
     });
 
     it('calls setAuthenticatedAndFireEvent() method', () => {
-      const spy = spyOn(authStateService, 'setAuthenticatedAndFireEvent');
+      const spy = vi
+        .spyOn(authStateService, 'setAuthenticatedAndFireEvent')
+        .mockReturnValue(undefined);
       const authResult = {
         id_token: 'idtoken',
         access_token: 'accesstoken',
@@ -288,26 +337,26 @@ describe('Auth State Service', () => {
 
   describe('getAccessToken', () => {
     it('isAuthorized is false returns null', () => {
-      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('');
-      spyOn(storagePersistenceService, 'getIdToken').and.returnValue('');
+      vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue('');
+      vi.spyOn(storagePersistenceService, 'getIdToken').mockReturnValue('');
       const result = authStateService.getAccessToken({ configId: 'configId1' });
 
       expect(result).toBe('');
     });
 
     it('returns false if storagePersistenceService returns something falsy but authorized', () => {
-      spyOn(authStateService, 'isAuthenticated').and.returnValue(true);
-      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('');
+      vi.spyOn(authStateService, 'isAuthenticated').mockReturnValue(true);
+      vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue('');
       const result = authStateService.getAccessToken({ configId: 'configId1' });
 
       expect(result).toBe('');
     });
 
     it('isAuthorized is true returns decodeURIComponent(token)', () => {
-      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue(
         'HenloLegger'
       );
-      spyOn(storagePersistenceService, 'getIdToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getIdToken').mockReturnValue(
         'HenloFuriend'
       );
       const result = authStateService.getAccessToken({ configId: 'configId1' });
@@ -318,12 +367,19 @@ describe('Auth State Service', () => {
 
   describe('getAuthenticationResult', () => {
     it('isAuthorized is false returns null', () => {
-      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('');
-      spyOn(storagePersistenceService, 'getIdToken').and.returnValue('');
+      vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue('');
+      vi.spyOn(storagePersistenceService, 'getIdToken').mockReturnValue('');
 
-      spyOn(storagePersistenceService, 'getAuthenticationResult')
-        .withArgs({ configId: 'configId1' })
-        .and.returnValue({});
+      vi.spyOn(
+        storagePersistenceService,
+        'getAuthenticationResult'
+      ).mockImplementation((...args: any[]): any => {
+        if (args[0]?.configId === 'configId1') {
+          return {};
+        }
+
+        return undefined;
+      });
 
       const result = authStateService.getAuthenticationResult({
         configId: 'configId1',
@@ -333,10 +389,17 @@ describe('Auth State Service', () => {
     });
 
     it('returns false if storagePersistenceService returns something falsy but authorized', () => {
-      spyOn(authStateService, 'isAuthenticated').and.returnValue(true);
-      spyOn(storagePersistenceService, 'getAuthenticationResult')
-        .withArgs({ configId: 'configId1' })
-        .and.returnValue({});
+      vi.spyOn(authStateService, 'isAuthenticated').mockReturnValue(true);
+      vi.spyOn(
+        storagePersistenceService,
+        'getAuthenticationResult'
+      ).mockImplementation((...args: any[]): any => {
+        if (args[0]?.configId === 'configId1') {
+          return {};
+        }
+
+        return undefined;
+      });
 
       const result = authStateService.getAuthenticationResult({
         configId: 'configId1',
@@ -346,15 +409,22 @@ describe('Auth State Service', () => {
     });
 
     it('isAuthorized is true returns object', () => {
-      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue(
         'HenloLegger'
       );
-      spyOn(storagePersistenceService, 'getIdToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getIdToken').mockReturnValue(
         'HenloFuriend'
       );
-      spyOn(storagePersistenceService, 'getAuthenticationResult')
-        .withArgs({ configId: 'configId1' })
-        .and.returnValue({ scope: 'HenloFuriend' });
+      vi.spyOn(
+        storagePersistenceService,
+        'getAuthenticationResult'
+      ).mockImplementation((...args: any[]): any => {
+        if (args[0]?.configId === 'configId1') {
+          return { scope: 'HenloFuriend' };
+        }
+
+        return undefined;
+      });
 
       const result = authStateService.getAuthenticationResult({
         configId: 'configId1',
@@ -366,18 +436,18 @@ describe('Auth State Service', () => {
 
   describe('getIdToken', () => {
     it('isAuthorized is false returns null', () => {
-      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('');
-      spyOn(storagePersistenceService, 'getIdToken').and.returnValue('');
+      vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue('');
+      vi.spyOn(storagePersistenceService, 'getIdToken').mockReturnValue('');
       const result = authStateService.getIdToken({ configId: 'configId1' });
 
       expect(result).toBe('');
     });
 
     it('isAuthorized is true returns decodeURIComponent(token)', () => {
-      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue(
         'HenloLegger'
       );
-      spyOn(storagePersistenceService, 'getIdToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getIdToken').mockReturnValue(
         'HenloFuriend'
       );
       const result = authStateService.getIdToken({ configId: 'configId1' });
@@ -388,8 +458,8 @@ describe('Auth State Service', () => {
 
   describe('getRefreshToken', () => {
     it('isAuthorized is false returns null', () => {
-      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('');
-      spyOn(storagePersistenceService, 'getIdToken').and.returnValue('');
+      vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue('');
+      vi.spyOn(storagePersistenceService, 'getIdToken').mockReturnValue('');
       const result = authStateService.getRefreshToken({
         configId: 'configId1',
       });
@@ -398,13 +468,13 @@ describe('Auth State Service', () => {
     });
 
     it('isAuthorized is true returns decodeURIComponent(token)', () => {
-      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue(
         'HenloLegger'
       );
-      spyOn(storagePersistenceService, 'getIdToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getIdToken').mockReturnValue(
         'HenloFuriend'
       );
-      spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getRefreshToken').mockReturnValue(
         'HenloRefreshLegger'
       );
       const result = authStateService.getRefreshToken({
@@ -417,105 +487,105 @@ describe('Auth State Service', () => {
 
   describe('areAuthStorageTokensValid', () => {
     it('isAuthorized is false returns false', () => {
-      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue('');
-      spyOn(storagePersistenceService, 'getIdToken').and.returnValue('');
+      vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue('');
+      vi.spyOn(storagePersistenceService, 'getIdToken').mockReturnValue('');
       const result = authStateService.areAuthStorageTokensValid({
         configId: 'configId1',
       });
 
-      expect(result).toBeFalse();
+      expect(result).toBe(false);
     });
 
     it('isAuthorized is true and id_token is expired returns true', () => {
-      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue(
         'HenloLegger'
       );
-      spyOn(storagePersistenceService, 'getIdToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getIdToken').mockReturnValue(
         'HenloFuriend'
       );
 
-      spyOn(
+      vi.spyOn(
         authStateService as any,
         'hasIdTokenExpiredAndRenewCheckIsEnabled'
-      ).and.returnValue(true);
-      spyOn(
+      ).mockReturnValue(true);
+      vi.spyOn(
         authStateService as any,
         'hasAccessTokenExpiredIfExpiryExists'
-      ).and.returnValue(false);
+      ).mockReturnValue(false);
       const result = authStateService.areAuthStorageTokensValid({
         configId: 'configId1',
       });
 
-      expect(result).toBeFalse();
+      expect(result).toBe(false);
     });
 
     it('isAuthorized is true  and access_token is expired returns true', () => {
-      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue(
         'HenloLegger'
       );
-      spyOn(storagePersistenceService, 'getIdToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getIdToken').mockReturnValue(
         'HenloFuriend'
       );
 
-      spyOn(
+      vi.spyOn(
         authStateService as any,
         'hasIdTokenExpiredAndRenewCheckIsEnabled'
-      ).and.returnValue(false);
-      spyOn(
+      ).mockReturnValue(false);
+      vi.spyOn(
         authStateService as any,
         'hasAccessTokenExpiredIfExpiryExists'
-      ).and.returnValue(true);
+      ).mockReturnValue(true);
       const result = authStateService.areAuthStorageTokensValid({
         configId: 'configId1',
       });
 
-      expect(result).toBeFalse();
+      expect(result).toBe(false);
     });
 
     it('isAuthorized is true  and id_token is not expired returns true', () => {
-      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue(
         'HenloLegger'
       );
-      spyOn(storagePersistenceService, 'getIdToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getIdToken').mockReturnValue(
         'HenloFuriend'
       );
 
-      spyOn(
+      vi.spyOn(
         authStateService as any,
         'hasIdTokenExpiredAndRenewCheckIsEnabled'
-      ).and.returnValue(false);
-      spyOn(
+      ).mockReturnValue(false);
+      vi.spyOn(
         authStateService as any,
         'hasAccessTokenExpiredIfExpiryExists'
-      ).and.returnValue(false);
+      ).mockReturnValue(false);
       const result = authStateService.areAuthStorageTokensValid({
         configId: 'configId1',
       });
 
-      expect(result).toBeTrue();
+      expect(result).toBe(true);
     });
 
     it('authState is AuthorizedState.Authorized and id_token is not expired fires event', () => {
-      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue(
         'HenloLegger'
       );
-      spyOn(storagePersistenceService, 'getIdToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getIdToken').mockReturnValue(
         'HenloFuriend'
       );
 
-      spyOn(
+      vi.spyOn(
         authStateService as any,
         'hasIdTokenExpiredAndRenewCheckIsEnabled'
-      ).and.returnValue(false);
-      spyOn(
+      ).mockReturnValue(false);
+      vi.spyOn(
         authStateService as any,
         'hasAccessTokenExpiredIfExpiryExists'
-      ).and.returnValue(false);
+      ).mockReturnValue(false);
       const result = authStateService.areAuthStorageTokensValid({
         configId: 'configId1',
       });
 
-      expect(result).toBeTrue();
+      expect(result).toBe(true);
     });
   });
 
@@ -527,56 +597,80 @@ describe('Auth State Service', () => {
         triggerRefreshWhenIdTokenExpired: true,
       };
 
-      spyOn(storagePersistenceService, 'getIdToken')
-        .withArgs(config)
-        .and.returnValue('idToken');
-      const spy = spyOn(
-        tokenValidationService,
-        'hasIdTokenExpired'
-      ).and.callFake((_a, _b) => true);
+      vi.spyOn(storagePersistenceService, 'getIdToken').mockImplementation(
+        (...args: any[]): any => {
+          if (args[0] === config) {
+            return 'idToken';
+          }
+
+          return undefined;
+        }
+      );
+      const spy = vi
+        .spyOn(tokenValidationService, 'hasIdTokenExpired')
+        .mockImplementation((_a, _b) => true);
 
       authStateService.hasIdTokenExpiredAndRenewCheckIsEnabled(config);
 
-      expect(spy).toHaveBeenCalledOnceWith('idToken', config, 30);
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      expect(spy).toHaveBeenCalledWith('idToken', config, 30);
     });
 
     it('fires event if idToken is expired', () => {
-      spyOn(tokenValidationService, 'hasIdTokenExpired').and.callFake(
+      vi.spyOn(tokenValidationService, 'hasIdTokenExpired').mockImplementation(
         (_a, _b) => true
       );
 
-      const spy = spyOn(eventsService, 'fireEvent');
+      const spy = vi
+        .spyOn(eventsService, 'fireEvent')
+        .mockReturnValue(undefined);
       const config = {
         configId: 'configId1',
         renewTimeBeforeTokenExpiresInSeconds: 30,
         triggerRefreshWhenIdTokenExpired: true,
       };
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authnResult', config)
-        .and.returnValue('idToken');
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authnResult') {
+            return 'idToken';
+          }
+
+          return undefined;
+        }
+      );
 
       const result =
         authStateService.hasIdTokenExpiredAndRenewCheckIsEnabled(config);
 
       expect(result).toBe(true);
-      expect(spy).toHaveBeenCalledOnceWith(EventTypes.IdTokenExpired, true);
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(EventTypes.IdTokenExpired, true);
     });
 
     it('does NOT fire event if idToken is NOT expired', () => {
-      spyOn(tokenValidationService, 'hasIdTokenExpired').and.callFake(
+      vi.spyOn(tokenValidationService, 'hasIdTokenExpired').mockImplementation(
         (_a, _b) => false
       );
 
-      const spy = spyOn(eventsService, 'fireEvent');
+      const spy = vi
+        .spyOn(eventsService, 'fireEvent')
+        .mockReturnValue(undefined);
       const config = {
         configId: 'configId1',
         renewTimeBeforeTokenExpiresInSeconds: 30,
       };
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authnResult', config)
-        .and.returnValue('idToken');
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authnResult') {
+            return 'idToken';
+          }
+
+          return undefined;
+        }
+      );
       const result =
         authStateService.hasIdTokenExpiredAndRenewCheckIsEnabled(config);
 
@@ -595,17 +689,24 @@ describe('Auth State Service', () => {
         renewTimeBeforeTokenExpiresInSeconds: 5,
       };
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('access_token_expires_at', config)
-        .and.returnValue(date);
-      const spy = spyOn(
-        tokenValidationService,
-        'validateAccessTokenNotExpired'
-      ).and.returnValue(validateAccessTokenNotExpiredResult);
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'access_token_expires_at') {
+            return date;
+          }
+
+          return undefined;
+        }
+      );
+      const spy = vi
+        .spyOn(tokenValidationService, 'validateAccessTokenNotExpired')
+        .mockReturnValue(validateAccessTokenNotExpiredResult);
       const result =
         authStateService.hasAccessTokenExpiredIfExpiryExists(config);
 
-      expect(spy).toHaveBeenCalledOnceWith(date, config, 5);
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      expect(spy).toHaveBeenCalledWith(date, config, 5);
       expect(result).toEqual(expectedResult);
     });
 
@@ -619,17 +720,24 @@ describe('Auth State Service', () => {
         renewTimeBeforeTokenExpiresInSeconds: 5,
       };
 
-      spyOn(eventsService, 'fireEvent');
+      vi.spyOn(eventsService, 'fireEvent').mockReturnValue(undefined);
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('access_token_expires_at', config)
-        .and.returnValue(date);
-      spyOn(
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'access_token_expires_at') {
+            return date;
+          }
+
+          return undefined;
+        }
+      );
+      vi.spyOn(
         tokenValidationService,
         'validateAccessTokenNotExpired'
-      ).and.returnValue(validateAccessTokenNotExpiredResult);
+      ).mockReturnValue(validateAccessTokenNotExpiredResult);
       authStateService.hasAccessTokenExpiredIfExpiryExists(config);
-      expect(eventsService.fireEvent).toHaveBeenCalledOnceWith(
+      expect(eventsService.fireEvent).toHaveBeenCalledTimes(1);
+      expect(eventsService.fireEvent).toHaveBeenCalledWith(
         EventTypes.TokenExpired,
         expectedResult
       );

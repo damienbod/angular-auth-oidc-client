@@ -207,7 +207,7 @@ describe('Token Helper Service', () => {
         configId: 'configId1',
       });
 
-      expect(result).toEqual(jasmine.objectContaining(expected));
+      expect(result).toEqual(expect.objectContaining(expected));
     });
   });
 

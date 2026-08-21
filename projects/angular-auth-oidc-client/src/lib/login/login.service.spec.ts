@@ -48,8 +48,12 @@ describe('LoginService', () => {
   describe('login', () => {
     it('calls parLoginService loginPar if usePushedAuthorisationRequests is true', () => {
       const config = { usePushedAuthorisationRequests: true };
-      const loginParSpy = spyOn(parLoginService, 'loginPar');
-      const standardLoginSpy = spyOn(standardLoginService, 'loginStandard');
+      const loginParSpy = vi
+        .spyOn(parLoginService, 'loginPar')
+        .mockReturnValue(undefined);
+      const standardLoginSpy = vi
+        .spyOn(standardLoginService, 'loginStandard')
+        .mockReturnValue(undefined);
 
       service.login(config);
 
@@ -59,8 +63,12 @@ describe('LoginService', () => {
 
     it('calls standardLoginService loginStandard if usePushedAuthorisationRequests is false', () => {
       const config = { usePushedAuthorisationRequests: false };
-      const loginParSpy = spyOn(parLoginService, 'loginPar');
-      const standardLoginSpy = spyOn(standardLoginService, 'loginStandard');
+      const loginParSpy = vi
+        .spyOn(parLoginService, 'loginPar')
+        .mockReturnValue(undefined);
+      const standardLoginSpy = vi
+        .spyOn(standardLoginService, 'loginStandard')
+        .mockReturnValue(undefined);
 
       service.login(config);
 
@@ -71,15 +79,16 @@ describe('LoginService', () => {
     it('stores the customParams to the storage if customParams are given', () => {
       // arrange
       const config = { usePushedAuthorisationRequests: false };
-      const storagePersistenceServiceSpy = spyOn(
-        storagePersistenceService,
-        'write'
-      );
+      const storagePersistenceServiceSpy = vi
+        .spyOn(storagePersistenceService, 'write')
+        .mockReturnValue(undefined as any);
       const authOptions = { customParams: { custom: 'params' } };
 
       service.login(config, authOptions);
 
-      expect(storagePersistenceServiceSpy).toHaveBeenCalledOnceWith(
+      expect(storagePersistenceServiceSpy).toHaveBeenCalledTimes(1);
+
+      expect(storagePersistenceServiceSpy).toHaveBeenCalledWith(
         'storageCustomParamsAuthRequest',
         { custom: 'params' },
         config
@@ -89,8 +98,12 @@ describe('LoginService', () => {
     it("should throw error if configuration is null and doesn't call loginPar or loginStandard", () => {
       // arrange
       const config = null;
-      const loginParSpy = spyOn(parLoginService, 'loginPar');
-      const standardLoginSpy = spyOn(standardLoginService, 'loginStandard');
+      const loginParSpy = vi
+        .spyOn(parLoginService, 'loginPar')
+        .mockReturnValue(undefined);
+      const standardLoginSpy = vi
+        .spyOn(standardLoginService, 'loginStandard')
+        .mockReturnValue(undefined);
       const authOptions = { customParams: { custom: 'params' } };
       // act
       const fn = (): void => service.login(config, authOptions);
@@ -108,14 +121,12 @@ describe('LoginService', () => {
     it('calls parLoginService loginWithPopUpPar if usePushedAuthorisationRequests is true', waitForAsync(() => {
       // arrange
       const config = { usePushedAuthorisationRequests: true };
-      const loginWithPopUpPar = spyOn(
-        parLoginService,
-        'loginWithPopUpPar'
-      ).and.returnValue(of({} as LoginResponse));
-      const loginWithPopUpStandardSpy = spyOn(
-        popUpLoginService,
-        'loginWithPopUpStandard'
-      ).and.returnValue(of({} as LoginResponse));
+      const loginWithPopUpPar = vi
+        .spyOn(parLoginService, 'loginWithPopUpPar')
+        .mockReturnValue(of({} as LoginResponse));
+      const loginWithPopUpStandardSpy = vi
+        .spyOn(popUpLoginService, 'loginWithPopUpStandard')
+        .mockReturnValue(of({} as LoginResponse));
 
       // act
       service.loginWithPopUp(config, [config]).subscribe(() => {
@@ -128,14 +139,12 @@ describe('LoginService', () => {
     it('calls standardLoginService loginstandard if usePushedAuthorisationRequests is false', waitForAsync(() => {
       // arrange
       const config = { usePushedAuthorisationRequests: false };
-      const loginWithPopUpPar = spyOn(
-        parLoginService,
-        'loginWithPopUpPar'
-      ).and.returnValue(of({} as LoginResponse));
-      const loginWithPopUpStandardSpy = spyOn(
-        popUpLoginService,
-        'loginWithPopUpStandard'
-      ).and.returnValue(of({} as LoginResponse));
+      const loginWithPopUpPar = vi
+        .spyOn(parLoginService, 'loginWithPopUpPar')
+        .mockReturnValue(of({} as LoginResponse));
+      const loginWithPopUpStandardSpy = vi
+        .spyOn(popUpLoginService, 'loginWithPopUpStandard')
+        .mockReturnValue(of({} as LoginResponse));
 
       // act
       service.loginWithPopUp(config, [config]).subscribe(() => {
@@ -148,20 +157,21 @@ describe('LoginService', () => {
     it('stores the customParams to the storage if customParams are given', waitForAsync(() => {
       // arrange
       const config = { usePushedAuthorisationRequests: false };
-      const storagePersistenceServiceSpy = spyOn(
-        storagePersistenceService,
-        'write'
-      );
+      const storagePersistenceServiceSpy = vi
+        .spyOn(storagePersistenceService, 'write')
+        .mockReturnValue(undefined as any);
       const authOptions = { customParams: { custom: 'params' } };
 
-      spyOn(popUpLoginService, 'loginWithPopUpStandard').and.returnValue(
+      vi.spyOn(popUpLoginService, 'loginWithPopUpStandard').mockReturnValue(
         of({} as LoginResponse)
       );
 
       // act
       service.loginWithPopUp(config, [config], authOptions).subscribe(() => {
         // assert
-        expect(storagePersistenceServiceSpy).toHaveBeenCalledOnceWith(
+        expect(storagePersistenceServiceSpy).toHaveBeenCalledTimes(1);
+        // assert
+        expect(storagePersistenceServiceSpy).toHaveBeenCalledWith(
           'storageCustomParamsAuthRequest',
           { custom: 'params' },
           config
@@ -172,11 +182,12 @@ describe('LoginService', () => {
     it('throws error if configuration is null', () => {
       // arrange
       const config = null;
-      const loginWithPopUpParSpy = spyOn(parLoginService, 'loginWithPopUpPar');
-      const loginWithPopUpStandardSpy = spyOn(
-        popUpLoginService,
-        'loginWithPopUpStandard'
-      );
+      const loginWithPopUpParSpy = vi
+        .spyOn(parLoginService, 'loginWithPopUpPar')
+        .mockReturnValue(undefined as any);
+      const loginWithPopUpStandardSpy = vi
+        .spyOn(popUpLoginService, 'loginWithPopUpStandard')
+        .mockReturnValue(undefined as any);
       // act
       const fn = (): void => {
         service.loginWithPopUp(config, []);
@@ -194,16 +205,14 @@ describe('LoginService', () => {
       // arrange
       const config = { usePushedAuthorisationRequests: false };
       const authOptions = { customParams: { custom: 'params' } };
-      const loginWithPopUpPar = spyOn(
-        parLoginService,
-        'loginWithPopUpPar'
-      ).and.returnValue(of({} as LoginResponse));
-      const loginWithPopUpStandardSpy = spyOn(
-        popUpLoginService,
-        'loginWithPopUpStandard'
-      ).and.returnValue(of({} as LoginResponse));
+      const loginWithPopUpPar = vi
+        .spyOn(parLoginService, 'loginWithPopUpPar')
+        .mockReturnValue(of({} as LoginResponse));
+      const loginWithPopUpStandardSpy = vi
+        .spyOn(popUpLoginService, 'loginWithPopUpStandard')
+        .mockReturnValue(of({} as LoginResponse));
 
-      spyOn(popUpService, 'isCurrentlyInPopup').and.returnValue(true);
+      vi.spyOn(popUpService, 'isCurrentlyInPopup').mockReturnValue(true);
 
       // act
       service

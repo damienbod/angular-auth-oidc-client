@@ -1,9 +1,15 @@
-import {TestBed} from '@angular/core/testing';
-import {provideHttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
-import {firstValueFrom, of} from 'rxjs';
-import {take, filter, toArray} from 'rxjs/operators';
-import {AuthModule, OidcSecurityService, StsConfigLoader, EventTypes, PublicEventsService} from 'angular-auth-oidc-client';
+import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { firstValueFrom, of } from 'rxjs';
+import { take, filter, toArray } from 'rxjs/operators';
+import {
+  AuthModule,
+  OidcSecurityService,
+  StsConfigLoader,
+  EventTypes,
+  PublicEventsService,
+} from 'angular-auth-oidc-client';
 // Note: Test IDP server should be running on port 8081 before running this test
 
 /**
@@ -25,11 +31,11 @@ import {AuthModule, OidcSecurityService, StsConfigLoader, EventTypes, PublicEven
  * renewal 290 seconds before expiration (10 seconds after issue).
  * This means tokens are only kept for 10 seconds before being refreshed.
  */
-const idp_host = "http://localhost:8081"
-const renewSecBeforeExp = 290
-const configIdIdp1 = "idp1"
-const configIdIdp2 = "idp2"
-const configIdIdp3 = "idp3"
+const idp_host = 'http://localhost:8081';
+const renewSecBeforeExp = 290;
+const configIdIdp1 = 'idp1';
+const configIdIdp2 = 'idp2';
+const configIdIdp3 = 'idp3';
 
 @Injectable()
 class TestStsConfigLoaderWithAutoRefresh extends StsConfigLoader {
@@ -39,7 +45,6 @@ class TestStsConfigLoaderWithAutoRefresh extends StsConfigLoader {
     console.log('Constructed silent renew URL:', this.silentRenewUrl);
   }
   override loadConfigs() {
-
     const baseConfig = {
       redirectUrl: `${idp_host}/callback`,
       silentRenewUrl: this.silentRenewUrl,
@@ -55,7 +60,7 @@ class TestStsConfigLoaderWithAutoRefresh extends StsConfigLoader {
       tokenRefreshInSeconds: 2,
       // Enable automatic refresh when ID token is about to expire
       triggerRefreshWhenIdTokenExpired: true,
-      useRefreshToken: false
+      useRefreshToken: false,
     };
 
     return of([
@@ -64,26 +69,25 @@ class TestStsConfigLoaderWithAutoRefresh extends StsConfigLoader {
         configId: configIdIdp1,
         authority: `${idp_host}/idp1`,
         clientId: 'client-idp1',
-        scope: 'openid profile email'
+        scope: 'openid profile email',
       },
       {
         ...baseConfig,
         configId: configIdIdp2,
         authority: `${idp_host}/idp2`,
         clientId: 'client-idp2',
-        scope: 'openid profile'
+        scope: 'openid profile',
       },
       {
         ...baseConfig,
         configId: configIdIdp3,
         authority: `${idp_host}/idp3`,
         clientId: 'client-idp3',
-        scope: 'openid email'
-      }
+        scope: 'openid email',
+      },
     ]);
   }
 }
-
 
 describe('Force Refresh Session with Automatic Token Renewal', () => {
   let oidcSecurityService: OidcSecurityService;
@@ -92,29 +96,31 @@ describe('Force Refresh Session with Automatic Token Renewal', () => {
   beforeAll(async () => {
     // Check that IDP server is running
     console.log(`Checking IDP server health at ${idp_host}/health...`);
-    
+
     try {
       const healthResponse = await fetch(`${idp_host}/health`);
-      
-      expect(healthResponse.ok).withContext(
+
+      expect(
+        healthResponse.ok,
         `IDP server health check failed. Status: ${healthResponse.status}. ` +
-        `Make sure the test IDP server is running at ${idp_host}. ` +
-        `Start it with: cd projects/integration-tests/test-idp-server && ./start.sh`
+          `Make sure the test IDP server is running at ${idp_host}. ` +
+          `Start it with: cd projects/integration-tests/test-idp-server && ./start.sh`
       ).toBe(true);
-      
+
       const healthData = await healthResponse.json();
-      expect(healthData.status).withContext(
+      expect(
+        healthData.status,
         `IDP server returned unhealthy status: ${JSON.stringify(healthData)}`
       ).toBe('ok');
-      
+
       console.log('✅ IDP server is healthy:', healthData);
     } catch (error) {
-      fail(
+      throw new Error(
         `Failed to connect to IDP server at ${idp_host}. ` +
-        `Error: ${error instanceof Error ? error.message : error}. ` +
-        `\n\nMake sure the test IDP server is running:\n` +
-        `  cd projects/integration-tests/test-idp-server && ./start.sh\n\n` +
-        `The server should be accessible at ${idp_host}`
+          `Error: ${error instanceof Error ? error.message : error}. ` +
+          `\n\nMake sure the test IDP server is running:\n` +
+          `  cd projects/integration-tests/test-idp-server && ./start.sh\n\n` +
+          `The server should be accessible at ${idp_host}`
       );
     }
   });
@@ -126,13 +132,11 @@ describe('Force Refresh Session with Automatic Token Renewal', () => {
         AuthModule.forRoot({
           loader: {
             provide: StsConfigLoader,
-            useClass: TestStsConfigLoaderWithAutoRefresh
-          }
-        })
+            useClass: TestStsConfigLoaderWithAutoRefresh,
+          },
+        }),
       ],
-      providers: [
-        provideHttpClient()
-      ]
+      providers: [provideHttpClient()],
     });
 
     oidcSecurityService = TestBed.inject(OidcSecurityService);
@@ -144,25 +148,34 @@ describe('Force Refresh Session with Automatic Token Renewal', () => {
   });
 
   it('should force refresh session and automatically renew tokens before expiration', async () => {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
+    vi.setConfig({ testTimeout: 60000 });
 
     console.log('=== TEST FLOW: Automatic Token Refresh ===');
 
     console.log('STEP 1: Initial authentication check');
 
-    const beforeInitRefreshAuthState = await firstValueFrom(oidcSecurityService.checkAuthMultiple());
+    const beforeInitRefreshAuthState = await firstValueFrom(
+      oidcSecurityService.checkAuthMultiple()
+    );
 
-    console.log('Initial auth check results:', beforeInitRefreshAuthState.map(r => ({
-      configId: r.configId,
-      isAuthenticated: r.isAuthenticated
-    })));
+    console.log(
+      'Initial auth check results:',
+      beforeInitRefreshAuthState.map((r) => ({
+        configId: r.configId,
+        isAuthenticated: r.isAuthenticated,
+      }))
+    );
 
-    expect(beforeInitRefreshAuthState.every(r => !r.isAuthenticated)).toBe(true);
+    expect(beforeInitRefreshAuthState.every((r) => !r.isAuthenticated)).toBe(
+      true
+    );
 
     console.log('Force refresh session for all configs');
-    const forceRefreshPromises = beforeInitRefreshAuthState.map(config => {
+    const forceRefreshPromises = beforeInitRefreshAuthState.map((config) => {
       console.log(`Preparing force refresh for config: ${config.configId}`);
-      return firstValueFrom(oidcSecurityService.forceRefreshSession(undefined, config.configId));
+      return firstValueFrom(
+        oidcSecurityService.forceRefreshSession(undefined, config.configId)
+      );
     });
 
     try {
@@ -182,31 +195,61 @@ describe('Force Refresh Session with Automatic Token Renewal', () => {
       throw error;
     }
 
-    const afterInitRefreshAuthState = await firstValueFrom(oidcSecurityService.checkAuthMultiple());
+    const afterInitRefreshAuthState = await firstValueFrom(
+      oidcSecurityService.checkAuthMultiple()
+    );
 
-    expect(afterInitRefreshAuthState.every(r => r.isAuthenticated)).toBe(true);
+    expect(afterInitRefreshAuthState.every((r) => r.isAuthenticated)).toBe(
+      true
+    );
 
-    const initRefreshIdp1Claims = await getTokenClaims(oidcSecurityService, configIdIdp1);
-    const initRefreshIdp2Claims = await getTokenClaims(oidcSecurityService, configIdIdp2);
-    const initRefreshIdp3Claims = await getTokenClaims(oidcSecurityService, configIdIdp3);
+    const initRefreshIdp1Claims = await getTokenClaims(
+      oidcSecurityService,
+      configIdIdp1
+    );
+    const initRefreshIdp2Claims = await getTokenClaims(
+      oidcSecurityService,
+      configIdIdp2
+    );
+    const initRefreshIdp3Claims = await getTokenClaims(
+      oidcSecurityService,
+      configIdIdp3
+    );
 
     console.log('Initial token IATs:');
-    console.log(`IDP1: ${new Date(initRefreshIdp1Claims.iat * 1000).toISOString()} (${initRefreshIdp1Claims.iat})`);
-    console.log(`IDP2: ${new Date(initRefreshIdp2Claims.iat * 1000).toISOString()} (${initRefreshIdp2Claims.iat})`);
-    console.log(`IDP3: ${new Date(initRefreshIdp3Claims.iat * 1000).toISOString()} (${initRefreshIdp3Claims.iat})`);
+    console.log(
+      `IDP1: ${new Date(initRefreshIdp1Claims.iat * 1000).toISOString()} (${
+        initRefreshIdp1Claims.iat
+      })`
+    );
+    console.log(
+      `IDP2: ${new Date(initRefreshIdp2Claims.iat * 1000).toISOString()} (${
+        initRefreshIdp2Claims.iat
+      })`
+    );
+    console.log(
+      `IDP3: ${new Date(initRefreshIdp3Claims.iat * 1000).toISOString()} (${
+        initRefreshIdp3Claims.iat
+      })`
+    );
 
     const uniqueInitialIats = new Set([
       initRefreshIdp1Claims.iat,
       initRefreshIdp2Claims.iat,
-      initRefreshIdp3Claims.iat
+      initRefreshIdp3Claims.iat,
     ]);
-    console.log(`Unique initial IAT timestamps: ${uniqueInitialIats.size} (should be 3 for independent refreshes)`);
+    console.log(
+      `Unique initial IAT timestamps: ${uniqueInitialIats.size} (should be 3 for independent refreshes)`
+    );
     expect(uniqueInitialIats.size).toBe(3);
 
     const now = Date.now();
-    const timeUntilRefreshIdp1 = ((initRefreshIdp1Claims.exp * 1000) - (renewSecBeforeExp * 1000)) - now;
-    const timeUntilRefreshIdp2 = ((initRefreshIdp2Claims.exp * 1000) - (renewSecBeforeExp * 1000)) - now;
-    const timeUntilRefreshIdp3 = ((initRefreshIdp3Claims.exp * 1000) - (renewSecBeforeExp * 1000)) - now;
+    const timeUntilRefreshIdp1 =
+      initRefreshIdp1Claims.exp * 1000 - renewSecBeforeExp * 1000 - now;
+    const timeUntilRefreshIdp2 =
+      initRefreshIdp2Claims.exp * 1000 - renewSecBeforeExp * 1000 - now;
+    const timeUntilRefreshIdp3 =
+      initRefreshIdp3Claims.exp * 1000 - renewSecBeforeExp * 1000 - now;
 
     console.log('Time until next refresh for each IDP:');
     console.log(`IDP1: ${timeUntilRefreshIdp1 / 1000} seconds`);
@@ -222,26 +265,42 @@ describe('Force Refresh Session with Automatic Token Renewal', () => {
     // Wait for all 3 token renewals
     await waitForTokenRenewals(publicEventsService, 3);
 
-    const autoRefreshIdp1Claims = await getTokenClaims(oidcSecurityService, configIdIdp1);
-    const autoRefreshIdp2Claims = await getTokenClaims(oidcSecurityService, configIdIdp2);
-    const autoRefreshIdp3Claims = await getTokenClaims(oidcSecurityService, configIdIdp3);
+    const autoRefreshIdp1Claims = await getTokenClaims(
+      oidcSecurityService,
+      configIdIdp1
+    );
+    const autoRefreshIdp2Claims = await getTokenClaims(
+      oidcSecurityService,
+      configIdIdp2
+    );
+    const autoRefreshIdp3Claims = await getTokenClaims(
+      oidcSecurityService,
+      configIdIdp3
+    );
 
     const uniqueIats = new Set([
       autoRefreshIdp1Claims.iat,
       autoRefreshIdp2Claims.iat,
-      autoRefreshIdp3Claims.iat
+      autoRefreshIdp3Claims.iat,
     ]);
-    console.log(`Unique IAT timestamps: ${uniqueIats.size} (should be 3 for independent renewals)`);
+    console.log(
+      `Unique IAT timestamps: ${uniqueIats.size} (should be 3 for independent renewals)`
+    );
 
     expect(uniqueIats.size).toBe(3);
-    expect(autoRefreshIdp1Claims.iat).toBeGreaterThan(initRefreshIdp1Claims.iat);
-    expect(autoRefreshIdp2Claims.iat).toBeGreaterThan(initRefreshIdp2Claims.iat);
-    expect(autoRefreshIdp3Claims.iat).toBeGreaterThan(initRefreshIdp3Claims.iat);
+    expect(autoRefreshIdp1Claims.iat).toBeGreaterThan(
+      initRefreshIdp1Claims.iat
+    );
+    expect(autoRefreshIdp2Claims.iat).toBeGreaterThan(
+      initRefreshIdp2Claims.iat
+    );
+    expect(autoRefreshIdp3Claims.iat).toBeGreaterThan(
+      initRefreshIdp3Claims.iat
+    );
 
     console.log('\n✅ TEST COMPLETE: Automatic token refresh works correctly');
   }, 60000);
 });
-
 
 function parseJwt(token: string): any {
   try {
@@ -252,7 +311,10 @@ function parseJwt(token: string): any {
 
     const payload = parts[1];
     const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
-    const padded = base64.padEnd(base64.length + (4 - base64.length % 4) % 4, '=');
+    const padded = base64.padEnd(
+      base64.length + ((4 - (base64.length % 4)) % 4),
+      '='
+    );
     const decoded = atob(padded);
     return JSON.parse(decoded);
   } catch (error) {
@@ -261,21 +323,29 @@ function parseJwt(token: string): any {
   }
 }
 
-function waitForTokenRenewals(publicEventsService: PublicEventsService, count: number) {
+function waitForTokenRenewals(
+  publicEventsService: PublicEventsService,
+  count: number
+) {
   return firstValueFrom(
-    publicEventsService.registerForEvents()
-      .pipe(
-        filter(event =>
+    publicEventsService.registerForEvents().pipe(
+      filter(
+        (event) =>
           event.type === EventTypes.NewAuthenticationResult &&
           event.value?.isRenewProcess === true
-        ),
-        take(count),
-        toArray()
-      )
+      ),
+      take(count),
+      toArray()
+    )
   );
 }
 
-async function getTokenClaims(oidcSecurityService: OidcSecurityService, configId: string): Promise<any> {
-  const authResult = await firstValueFrom(oidcSecurityService.getAuthenticationResult(configId));
+async function getTokenClaims(
+  oidcSecurityService: OidcSecurityService,
+  configId: string
+): Promise<any> {
+  const authResult = await firstValueFrom(
+    oidcSecurityService.getAuthenticationResult(configId)
+  );
   return parseJwt(authResult!.id_token!);
 }
