@@ -1,6 +1,6 @@
 import { HttpResponse } from '@angular/common/http';
-import { TestBed, waitForAsync } from '@angular/core/testing';
-import { isObservable, of, throwError } from 'rxjs';
+import { TestBed } from '@angular/core/testing';
+import { firstValueFrom, isObservable, of, throwError } from 'rxjs';
 import { mockProvider } from '../../test/auto-mock';
 import { createRetriableStream } from '../../test/create-retriable-stream.helper';
 import { DataService } from '../api/data.service';
@@ -53,7 +53,7 @@ describe('Signin Key Data Service', () => {
   });
 
   describe('getSigningKeys', () => {
-    it('throws error when no wellKnownEndpoints given', waitForAsync(() => {
+    it('throws error when no wellKnownEndpoints given', async () => {
       vi.spyOn(storagePersistenceService, 'read').mockImplementation(
         (...args: any[]) => {
           if (args[0] === 'authWellKnownEndPoints') {
@@ -65,14 +65,10 @@ describe('Signin Key Data Service', () => {
       );
       const result = service.getSigningKeys({ configId: 'configId1' });
 
-      result.subscribe({
-        error: (err) => {
-          expect(err).toBeTruthy();
-        },
-      });
-    }));
+      await expect(firstValueFrom(result)).rejects.toBeTruthy();
+    });
 
-    it('throws error when no jwksUri given', waitForAsync(() => {
+    it('throws error when no jwksUri given', async () => {
       vi.spyOn(storagePersistenceService, 'read').mockImplementation(
         (...args: any[]) => {
           if (args[0] === 'authWellKnownEndPoints') {
@@ -84,14 +80,10 @@ describe('Signin Key Data Service', () => {
       );
       const result = service.getSigningKeys({ configId: 'configId1' });
 
-      result.subscribe({
-        error: (err) => {
-          expect(err).toBeTruthy();
-        },
-      });
-    }));
+      await expect(firstValueFrom(result)).rejects.toBeTruthy();
+    });
 
-    it('calls dataservice if jwksurl is given', waitForAsync(() => {
+    it('calls dataservice if jwksurl is given', () => {
       vi.spyOn(storagePersistenceService, 'read').mockImplementation(
         (...args: any[]) => {
           if (args[0] === 'authWellKnownEndPoints') {
@@ -103,18 +95,22 @@ describe('Signin Key Data Service', () => {
       );
       const spy = vi.spyOn(dataService, 'get').mockImplementation(() => of());
       const result = service.getSigningKeys({ configId: 'configId1' });
+      let completed = false;
 
       result.subscribe({
         complete: () => {
-          expect(spy).toHaveBeenCalledTimes(1);
-          expect(spy).toHaveBeenCalledWith('someUrl', {
-            configId: 'configId1',
-          });
+          completed = true;
         },
       });
-    }));
 
-    it('should retry once', waitForAsync(() => {
+      expect(completed).toBe(true);
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith('someUrl', {
+        configId: 'configId1',
+      });
+    });
+
+    it('should retry once', async () => {
       vi.spyOn(storagePersistenceService, 'read').mockImplementation(
         (...args: any[]) => {
           if (args[0] === 'authWellKnownEndPoints') {
@@ -131,15 +127,15 @@ describe('Signin Key Data Service', () => {
         )
       );
 
-      service.getSigningKeys({ configId: 'configId1' }).subscribe({
-        next: (res) => {
-          expect(res).toBeTruthy();
-          expect(res).toEqual(DUMMY_JWKS);
-        },
-      });
-    }));
+      const res = await firstValueFrom(
+        service.getSigningKeys({ configId: 'configId1' })
+      );
 
-    it('should retry twice', waitForAsync(() => {
+      expect(res).toBeTruthy();
+      expect(res).toEqual(DUMMY_JWKS);
+    });
+
+    it('should retry twice', async () => {
       vi.spyOn(storagePersistenceService, 'read').mockImplementation(
         (...args: any[]) => {
           if (args[0] === 'authWellKnownEndPoints') {
@@ -157,15 +153,15 @@ describe('Signin Key Data Service', () => {
         )
       );
 
-      service.getSigningKeys({ configId: 'configId1' }).subscribe({
-        next: (res) => {
-          expect(res).toBeTruthy();
-          expect(res).toEqual(DUMMY_JWKS);
-        },
-      });
-    }));
+      const res = await firstValueFrom(
+        service.getSigningKeys({ configId: 'configId1' })
+      );
 
-    it('should fail after three tries', waitForAsync(() => {
+      expect(res).toBeTruthy();
+      expect(res).toEqual(DUMMY_JWKS);
+    });
+
+    it('should fail after three tries', async () => {
       vi.spyOn(storagePersistenceService, 'read').mockImplementation(
         (...args: any[]) => {
           if (args[0] === 'authWellKnownEndPoints') {
@@ -184,82 +180,79 @@ describe('Signin Key Data Service', () => {
         )
       );
 
-      service.getSigningKeys({ configId: 'configId1' }).subscribe({
-        error: (err) => {
-          expect(err).toBeTruthy();
-        },
-      });
-    }));
+      await expect(
+        firstValueFrom(service.getSigningKeys({ configId: 'configId1' }))
+      ).rejects.toBeTruthy();
+    });
   });
 
   describe('handleErrorGetSigningKeys', () => {
-    it('keeps observable if error is catched', waitForAsync(() => {
+    it('keeps observable if error is catched', () => {
       const result = (service as any).handleErrorGetSigningKeys(
         new HttpResponse()
       );
       const hasTypeObservable = isObservable(result);
 
       expect(hasTypeObservable).toBe(true);
-    }));
+    });
 
-    it('logs error if error is response', waitForAsync(() => {
+    it('logs error if error is response', async () => {
       const logSpy = vi
         .spyOn(loggerService, 'logError')
         .mockReturnValue(undefined);
 
-      (service as any)
-        .handleErrorGetSigningKeys(
-          new HttpResponse({ status: 400, statusText: 'nono' }),
-          { configId: 'configId1' }
+      await expect(
+        firstValueFrom(
+          (service as any).handleErrorGetSigningKeys(
+            new HttpResponse({ status: 400, statusText: 'nono' }),
+            { configId: 'configId1' }
+          )
         )
-        .subscribe({
-          error: () => {
-            expect(logSpy).toHaveBeenCalledTimes(1);
-            expect(logSpy).toHaveBeenCalledWith(
-              { configId: 'configId1' },
-              '400 - nono {}'
-            );
-          },
-        });
-    }));
+      ).rejects.toBeTruthy();
+      expect(logSpy).toHaveBeenCalledTimes(1);
+      expect(logSpy).toHaveBeenCalledWith(
+        { configId: 'configId1' },
+        '400 - nono {}'
+      );
+    });
 
-    it('logs error if error is not a response', waitForAsync(() => {
+    it('logs error if error is not a response', async () => {
       const logSpy = vi
         .spyOn(loggerService, 'logError')
         .mockReturnValue(undefined);
 
-      (service as any)
-        .handleErrorGetSigningKeys('Just some Error', { configId: 'configId1' })
-        .subscribe({
-          error: () => {
-            expect(logSpy).toHaveBeenCalledTimes(1);
-            expect(logSpy).toHaveBeenCalledWith(
-              { configId: 'configId1' },
-              'Just some Error'
-            );
-          },
-        });
-    }));
-
-    it('logs error if error with message property is not a response', waitForAsync(() => {
-      const logSpy = vi
-        .spyOn(loggerService, 'logError')
-        .mockReturnValue(undefined);
-
-      (service as any)
-        .handleErrorGetSigningKeys(
-          { message: 'Just some Error' },
-          { configId: 'configId1' }
+      await expect(
+        firstValueFrom(
+          (service as any).handleErrorGetSigningKeys('Just some Error', {
+            configId: 'configId1',
+          })
         )
-        .subscribe({
-          error: () => {
-            expect(logSpy).toHaveBeenCalledTimes(1);
-            expect(logSpy).toHaveBeenCalledWith(
-              { configId: 'configId1' },
-              'Just some Error'
-            );
-          },
-        });
-    }));
+      ).rejects.toBeTruthy();
+      expect(logSpy).toHaveBeenCalledTimes(1);
+      expect(logSpy).toHaveBeenCalledWith(
+        { configId: 'configId1' },
+        'Just some Error'
+      );
+    });
+
+    it('logs error if error with message property is not a response', async () => {
+      const logSpy = vi
+        .spyOn(loggerService, 'logError')
+        .mockReturnValue(undefined);
+
+      await expect(
+        firstValueFrom(
+          (service as any).handleErrorGetSigningKeys(
+            { message: 'Just some Error' },
+            { configId: 'configId1' }
+          )
+        )
+      ).rejects.toBeTruthy();
+      expect(logSpy).toHaveBeenCalledTimes(1);
+      expect(logSpy).toHaveBeenCalledWith(
+        { configId: 'configId1' },
+        'Just some Error'
+      );
+    });
   });
 });

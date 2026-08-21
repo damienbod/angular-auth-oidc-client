@@ -1,6 +1,6 @@
 import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { TestBed, waitForAsync } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
+import { TestBed } from '@angular/core/testing';
+import { firstValueFrom, of, throwError } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
 import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
 import { DataService } from '../../api/data.service';
@@ -46,17 +46,18 @@ describe('RefreshTokenCallbackHandlerService', () => {
       url: 'https://identity-server.test/openid-connect/token',
     });
 
-    it('throws error if no tokenEndpoint is given', waitForAsync(() => {
-      (service as any)
-        .refreshTokensRequestTokens({} as CallbackContext)
-        .subscribe({
-          error: (err: unknown) => {
-            expect(err).toBeTruthy();
-          },
-        });
-    }));
+    it('throws error if no tokenEndpoint is given', async () => {
+      try {
+        await firstValueFrom(
+          (service as any).refreshTokensRequestTokens({} as CallbackContext)
+        );
+        expect.fail('expected an error');
+      } catch (err: unknown) {
+        expect(err).toBeTruthy();
+      }
+    });
 
-    it('calls data service if all params are good', waitForAsync(() => {
+    it('calls data service if all params are good', async () => {
       const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(of({}));
 
       vi.spyOn(storagePersistenceService, 'read').mockImplementation(
@@ -69,29 +70,28 @@ describe('RefreshTokenCallbackHandlerService', () => {
         }
       );
 
-      service
-        .refreshTokensRequestTokens({} as CallbackContext, {
+      await firstValueFrom(
+        service.refreshTokensRequestTokens({} as CallbackContext, {
           configId: 'configId1',
         })
-        .subscribe(() => {
-          expect(postSpy).toHaveBeenCalledTimes(1);
-          expect(postSpy).toHaveBeenCalledWith(
-            'tokenEndpoint',
-            undefined,
-            { configId: 'configId1' },
-            expect.any(HttpHeaders)
-          );
-          const httpHeaders = vi.mocked(postSpy).mock
-            .lastCall![3] as HttpHeaders;
+      );
 
-          expect(httpHeaders.has('Content-Type')).toBe(true);
-          expect(httpHeaders.get('Content-Type')).toBe(
-            'application/x-www-form-urlencoded'
-          );
-        });
-    }));
+      expect(postSpy).toHaveBeenCalledTimes(1);
+      expect(postSpy).toHaveBeenCalledWith(
+        'tokenEndpoint',
+        undefined,
+        { configId: 'configId1' },
+        expect.any(HttpHeaders)
+      );
+      const httpHeaders = vi.mocked(postSpy).mock.lastCall![3] as HttpHeaders;
 
-    it('calls data service with correct headers if all params are good', waitForAsync(() => {
+      expect(httpHeaders.has('Content-Type')).toBe(true);
+      expect(httpHeaders.get('Content-Type')).toBe(
+        'application/x-www-form-urlencoded'
+      );
+    });
+
+    it('calls data service with correct headers if all params are good', async () => {
       const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(of({}));
 
       vi.spyOn(storagePersistenceService, 'read').mockImplementation(
@@ -104,22 +104,21 @@ describe('RefreshTokenCallbackHandlerService', () => {
         }
       );
 
-      service
-        .refreshTokensRequestTokens({} as CallbackContext, {
+      await firstValueFrom(
+        service.refreshTokensRequestTokens({} as CallbackContext, {
           configId: 'configId1',
         })
-        .subscribe(() => {
-          const httpHeaders = vi.mocked(postSpy).mock
-            .lastCall![3] as HttpHeaders;
+      );
 
-          expect(httpHeaders.has('Content-Type')).toBe(true);
-          expect(httpHeaders.get('Content-Type')).toBe(
-            'application/x-www-form-urlencoded'
-          );
-        });
-    }));
+      const httpHeaders = vi.mocked(postSpy).mock.lastCall![3] as HttpHeaders;
 
-    it('returns error in case of http error', waitForAsync(() => {
+      expect(httpHeaders.has('Content-Type')).toBe(true);
+      expect(httpHeaders.get('Content-Type')).toBe(
+        'application/x-www-form-urlencoded'
+      );
+    });
+
+    it('returns error in case of http error', async () => {
       vi.spyOn(dataService, 'post').mockReturnValue(
         throwError(() => HTTP_ERROR)
       );
@@ -135,16 +134,17 @@ describe('RefreshTokenCallbackHandlerService', () => {
         }
       );
 
-      service
-        .refreshTokensRequestTokens({} as CallbackContext, config)
-        .subscribe({
-          error: (err) => {
-            expect(err).toBeTruthy();
-          },
-        });
-    }));
+      try {
+        await firstValueFrom(
+          service.refreshTokensRequestTokens({} as CallbackContext, config)
+        );
+        expect.fail('expected an error');
+      } catch (err: unknown) {
+        expect(err).toBeTruthy();
+      }
+    });
 
-    it('retries request in case of no connection http error and succeeds', waitForAsync(() => {
+    it('retries request in case of no connection http error and succeeds', async () => {
       const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(
         createRetriableStream(
           throwError(() => CONNECTION_ERROR),
@@ -163,21 +163,15 @@ describe('RefreshTokenCallbackHandlerService', () => {
         }
       );
 
-      service
-        .refreshTokensRequestTokens({} as CallbackContext, config)
-        .subscribe({
-          next: (res) => {
-            expect(res).toBeTruthy();
-            expect(postSpy).toHaveBeenCalledTimes(1);
-          },
-          error: (err) => {
-            // fails if there should be a result
-            expect(err).toBeFalsy();
-          },
-        });
-    }));
+      const res = await firstValueFrom(
+        service.refreshTokensRequestTokens({} as CallbackContext, config)
+      );
 
-    it('retries request in case of no connection http error and fails because of http error afterwards', waitForAsync(() => {
+      expect(res).toBeTruthy();
+      expect(postSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('retries request in case of no connection http error and fails because of http error afterwards', async () => {
       const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(
         createRetriableStream(
           throwError(() => CONNECTION_ERROR),
@@ -196,18 +190,15 @@ describe('RefreshTokenCallbackHandlerService', () => {
         }
       );
 
-      service
-        .refreshTokensRequestTokens({} as CallbackContext, config)
-        .subscribe({
-          next: (res) => {
-            // fails if there should be a result
-            expect(res).toBeFalsy();
-          },
-          error: (err) => {
-            expect(err).toBeTruthy();
-            expect(postSpy).toHaveBeenCalledTimes(1);
-          },
-        });
-    }));
+      try {
+        await firstValueFrom(
+          service.refreshTokensRequestTokens({} as CallbackContext, config)
+        );
+        expect.fail('expected an error');
+      } catch (err: unknown) {
+        expect(err).toBeTruthy();
+        expect(postSpy).toHaveBeenCalledTimes(1);
+      }
+    });
   });
 });

@@ -1,5 +1,5 @@
-import { TestBed, waitForAsync } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { TestBed } from '@angular/core/testing';
+import { firstValueFrom, of } from 'rxjs';
 import { skip } from 'rxjs/operators';
 import { mockAbstractProvider, mockProvider } from '../../test/auto-mock';
 import { LoggerService } from '../logging/logger.service';
@@ -354,7 +354,7 @@ describe('CheckSessionService', () => {
   });
 
   describe('init', () => {
-    it('returns falsy observable when lastIframerefresh and iframeRefreshInterval are bigger than now', waitForAsync(() => {
+    it('returns falsy observable when lastIframerefresh and iframeRefreshInterval are bigger than now', () => {
       const serviceAsAny = checkSessionService as any;
       const dateNow = new Date();
       const lastRefresh = dateNow.setMinutes(dateNow.getMinutes() + 30);
@@ -362,10 +362,17 @@ describe('CheckSessionService', () => {
       serviceAsAny.lastIFrameRefresh = lastRefresh;
       serviceAsAny.iframeRefreshInterval = lastRefresh;
 
-      serviceAsAny.init().subscribe((result: any) => {
-        expect(result).toBeUndefined();
+      const emissions: any[] = [];
+      let completed = false;
+
+      serviceAsAny.init().subscribe({
+        next: (result: any) => emissions.push(result),
+        complete: () => (completed = true),
       });
-    }));
+
+      expect(emissions).toEqual([]);
+      expect(completed).toBe(true);
+    });
   });
 
   describe('bindMessageEventToIframe', () => {
@@ -562,34 +569,40 @@ describe('CheckSessionService', () => {
   });
 
   describe('checkSessionChanged$', () => {
-    it('emits when internal event is thrown', waitForAsync(() => {
+    it('emits when internal event is thrown', () => {
+      let receivedResult: boolean | undefined;
+
       checkSessionService.checkSessionChanged$
         .pipe(skip(1))
         .subscribe((result) => {
-          expect(result).toBe(true);
+          receivedResult = result;
         });
 
       const serviceAsAny = checkSessionService as any;
 
       serviceAsAny.checkSessionChangedInternal$.next(true);
-    }));
 
-    it('emits false initially', waitForAsync(() => {
+      expect(receivedResult).toBe(true);
+    });
+
+    it('emits false initially', async () => {
+      const result = await firstValueFrom(
+        checkSessionService.checkSessionChanged$
+      );
+
+      expect(result).toBe(false);
+    });
+
+    it('emits false then true when emitted', () => {
+      const results: boolean[] = [];
+
       checkSessionService.checkSessionChanged$.subscribe((result) => {
-        expect(result).toBe(false);
-      });
-    }));
-
-    it('emits false then true when emitted', waitForAsync(() => {
-      const expectedResultsInOrder = [false, true];
-      let counter = 0;
-
-      checkSessionService.checkSessionChanged$.subscribe((result) => {
-        expect(result).toBe(expectedResultsInOrder[counter]);
-        counter++;
+        results.push(result);
       });
 
       (checkSessionService as any).checkSessionChangedInternal$.next(true);
-    }));
+
+      expect(results).toEqual([false, true]);
+    });
   });
 });

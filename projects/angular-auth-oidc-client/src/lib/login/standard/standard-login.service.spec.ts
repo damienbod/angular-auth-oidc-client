@@ -1,4 +1,4 @@
-import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
@@ -10,6 +10,12 @@ import { ResponseTypeValidationService } from '../response-type-validation/respo
 import { StandardLoginService } from './standard-login.service';
 
 describe('StandardLoginService', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ advanceTimeDelta: 1, shouldAdvanceTime: true });
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
   let standardLoginService: StandardLoginService;
   let loggerService: LoggerService;
   let responseTypeValidationService: ResponseTypeValidationService;
@@ -51,7 +57,7 @@ describe('StandardLoginService', () => {
   });
 
   describe('loginStandard', () => {
-    it('does nothing if it has an invalid response type', waitForAsync(() => {
+    it('does nothing if it has an invalid response type', () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -65,9 +71,9 @@ describe('StandardLoginService', () => {
       });
 
       expect(loggerSpy).toHaveBeenCalled();
-    }));
+    });
 
-    it('calls flowsDataService.setCodeFlowInProgress() if everything fits', waitForAsync(() => {
+    it('calls flowsDataService.setCodeFlowInProgress() if everything fits', () => {
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
@@ -89,9 +95,9 @@ describe('StandardLoginService', () => {
       standardLoginService.loginStandard(config);
 
       expect(flowsDataSpy).toHaveBeenCalled();
-    }));
+    });
 
-    it('redirects to URL with no URL handler', fakeAsync(() => {
+    it('redirects to URL with no URL handler', async () => {
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
@@ -109,12 +115,12 @@ describe('StandardLoginService', () => {
       const redirectSpy = vi.spyOn(redirectService, 'redirectTo');
 
       standardLoginService.loginStandard(config);
-      tick();
+      await vi.advanceTimersByTimeAsync(0);
       expect(redirectSpy).toHaveBeenCalledTimes(1);
       expect(redirectSpy).toHaveBeenCalledWith('someUrl');
-    }));
+    });
 
-    it('redirects to URL with URL handler when urlHandler is given', fakeAsync(() => {
+    it('redirects to URL with URL handler when urlHandler is given', async () => {
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
@@ -138,13 +144,13 @@ describe('StandardLoginService', () => {
       };
 
       standardLoginService.loginStandard(config, { urlHandler });
-      tick();
+      await vi.advanceTimersByTimeAsync(0);
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith('someUrl');
       expect(redirectSpy).not.toHaveBeenCalled();
-    }));
+    });
 
-    it('calls resetSilentRenewRunning', fakeAsync(() => {
+    it('calls resetSilentRenewRunning', async () => {
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
@@ -164,12 +170,12 @@ describe('StandardLoginService', () => {
         .mockReturnValue(undefined);
 
       standardLoginService.loginStandard(config, {});
-      tick();
+      await vi.advanceTimersByTimeAsync(0);
 
       expect(flowsDataSpy).toHaveBeenCalled();
-    }));
+    });
 
-    it('calls getAuthorizeUrl with custom params if they are given as parameter', fakeAsync(() => {
+    it('calls getAuthorizeUrl with custom params if they are given as parameter', async () => {
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
@@ -193,16 +199,16 @@ describe('StandardLoginService', () => {
       standardLoginService.loginStandard(config, {
         customParams: { to: 'add', as: 'well' },
       });
-      tick();
+      await vi.advanceTimersByTimeAsync(0);
       expect(redirectSpy).toHaveBeenCalledTimes(1);
       expect(redirectSpy).toHaveBeenCalledWith('someUrl');
       expect(getAuthorizeUrlSpy).toHaveBeenCalledTimes(1);
       expect(getAuthorizeUrlSpy).toHaveBeenCalledWith(config, {
         customParams: { to: 'add', as: 'well' },
       });
-    }));
+    });
 
-    it('does nothing, logs only if getAuthorizeUrl returns falsy', fakeAsync(() => {
+    it('does nothing, logs only if getAuthorizeUrl returns falsy', async () => {
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
@@ -226,7 +232,7 @@ describe('StandardLoginService', () => {
         .mockImplementation(() => undefined);
 
       standardLoginService.loginStandard(config);
-      tick();
+      await vi.advanceTimersByTimeAsync(0);
       expect(loggerSpy).toHaveBeenCalledTimes(1);
       expect(loggerSpy).toHaveBeenCalledWith(
         config,
@@ -234,6 +240,6 @@ describe('StandardLoginService', () => {
         ''
       );
       expect(redirectSpy).not.toHaveBeenCalled();
-    }));
+    });
   });
 });

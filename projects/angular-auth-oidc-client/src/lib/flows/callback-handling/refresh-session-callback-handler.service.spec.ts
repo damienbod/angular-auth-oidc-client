@@ -1,4 +1,5 @@
-import { TestBed, waitForAsync } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import { firstValueFrom } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
 import { AuthStateService } from '../../auth-state/auth-state.service';
 import { LoggerService } from '../../logging/logger.service';
@@ -33,7 +34,7 @@ describe('RefreshSessionCallbackHandlerService', () => {
   });
 
   describe('refreshSessionWithRefreshTokens', () => {
-    it('returns callbackContext if all params are good', waitForAsync(() => {
+    it('returns callbackContext if all params are good', async () => {
       vi.spyOn(
         flowsDataService,
         'getExistingOrCreateAuthStateControl'
@@ -54,15 +55,14 @@ describe('RefreshSessionCallbackHandlerService', () => {
         validationResult: null,
         existingIdToken: 'henlo-legger',
       } as CallbackContext;
+      const callbackContext = await firstValueFrom(
+        service.refreshSessionWithRefreshTokens({ configId: 'configId1' })
+      );
 
-      service
-        .refreshSessionWithRefreshTokens({ configId: 'configId1' })
-        .subscribe((callbackContext) => {
-          expect(callbackContext).toEqual(expectedCallbackContext);
-        });
-    }));
+      expect(callbackContext).toEqual(expectedCallbackContext);
+    });
 
-    it('throws error if no refresh token is given', waitForAsync(() => {
+    it('throws error if no refresh token is given', async () => {
       vi.spyOn(
         flowsDataService,
         'getExistingOrCreateAuthStateControl'
@@ -70,13 +70,14 @@ describe('RefreshSessionCallbackHandlerService', () => {
       vi.spyOn(authStateService, 'getRefreshToken').mockReturnValue('');
       vi.spyOn(authStateService, 'getIdToken').mockReturnValue('henlo-legger');
 
-      service
-        .refreshSessionWithRefreshTokens({ configId: 'configId1' })
-        .subscribe({
-          error: (err) => {
-            expect(err).toBeTruthy();
-          },
-        });
-    }));
+      try {
+        await firstValueFrom(
+          service.refreshSessionWithRefreshTokens({ configId: 'configId1' })
+        );
+        expect.fail('expected an error');
+      } catch (err: any) {
+        expect(err).toBeTruthy();
+      }
+    });
   });
 });

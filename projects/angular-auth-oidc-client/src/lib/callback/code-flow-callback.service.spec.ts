@@ -1,7 +1,7 @@
-import { TestBed, waitForAsync } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of, throwError } from 'rxjs';
+import { firstValueFrom, of, throwError } from 'rxjs';
 import { mockProvider } from '../../test/auto-mock';
 import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
@@ -60,7 +60,7 @@ describe('CodeFlowCallbackService ', () => {
       expect(spy).toHaveBeenCalledWith('some-url1', config, [config]);
     });
 
-    it('does only call resetCodeFlowInProgress if triggerAuthorizationResultEvent is true and isRenewProcess is true', waitForAsync(() => {
+    it('does only call resetCodeFlowInProgress if triggerAuthorizationResultEvent is true and isRenewProcess is true', async () => {
       const callbackContext = {
         code: '',
         refreshToken: '',
@@ -86,17 +86,21 @@ describe('CodeFlowCallbackService ', () => {
         triggerAuthorizationResultEvent: true,
       };
 
-      codeFlowCallbackService
-        .authenticatedCallbackWithCode('some-url2', config, [config])
-        .subscribe(() => {
-          expect(spy).toHaveBeenCalledTimes(1);
-          expect(spy).toHaveBeenCalledWith('some-url2', config, [config]);
-          expect(routerSpy).not.toHaveBeenCalled();
-          expect(flowsDataSpy).toHaveBeenCalled();
-        });
-    }));
+      await firstValueFrom(
+        codeFlowCallbackService.authenticatedCallbackWithCode(
+          'some-url2',
+          config,
+          [config]
+        )
+      );
 
-    it('calls router and resetCodeFlowInProgress if triggerAuthorizationResultEvent is false and isRenewProcess is false', waitForAsync(() => {
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith('some-url2', config, [config]);
+      expect(routerSpy).not.toHaveBeenCalled();
+      expect(flowsDataSpy).toHaveBeenCalled();
+    });
+
+    it('calls router and resetCodeFlowInProgress if triggerAuthorizationResultEvent is false and isRenewProcess is false', async () => {
       const callbackContext = {
         code: '',
         refreshToken: '',
@@ -123,18 +127,22 @@ describe('CodeFlowCallbackService ', () => {
         postLoginRoute: 'postLoginRoute',
       };
 
-      codeFlowCallbackService
-        .authenticatedCallbackWithCode('some-url3', config, [config])
-        .subscribe(() => {
-          expect(spy).toHaveBeenCalledTimes(1);
-          expect(spy).toHaveBeenCalledWith('some-url3', config, [config]);
-          expect(routerSpy).toHaveBeenCalledTimes(1);
-          expect(routerSpy).toHaveBeenCalledWith('postLoginRoute');
-          expect(flowsDataSpy).toHaveBeenCalled();
-        });
-    }));
+      await firstValueFrom(
+        codeFlowCallbackService.authenticatedCallbackWithCode(
+          'some-url3',
+          config,
+          [config]
+        )
+      );
 
-    it('resetSilentRenewRunning, resetCodeFlowInProgress and stopPeriodicallTokenCheck in case of error', waitForAsync(() => {
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith('some-url3', config, [config]);
+      expect(routerSpy).toHaveBeenCalledTimes(1);
+      expect(routerSpy).toHaveBeenCalledWith('postLoginRoute');
+      expect(flowsDataSpy).toHaveBeenCalled();
+    });
+
+    it('resetSilentRenewRunning, resetCodeFlowInProgress and stopPeriodicallTokenCheck in case of error', async () => {
       vi.spyOn(flowsService, 'processCodeFlowCallback').mockReturnValue(
         throwError(() => new Error('error'))
       );
@@ -153,20 +161,25 @@ describe('CodeFlowCallbackService ', () => {
         postLoginRoute: 'postLoginRoute',
       };
 
-      codeFlowCallbackService
-        .authenticatedCallbackWithCode('some-url4', config, [config])
-        .subscribe({
-          error: (err) => {
-            expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
-            expect(resetCodeFlowInProgressSpy).toHaveBeenCalled();
-            expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
-            expect(err).toBeTruthy();
-          },
-        });
-    }));
+      try {
+        await firstValueFrom(
+          codeFlowCallbackService.authenticatedCallbackWithCode(
+            'some-url4',
+            config,
+            [config]
+          )
+        );
+        expect.fail('expected an error');
+      } catch (err: any) {
+        expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
+        expect(resetCodeFlowInProgressSpy).toHaveBeenCalled();
+        expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
+        expect(err).toBeTruthy();
+      }
+    });
 
     it(`navigates to unauthorizedRoute in case of error and  in case of error and
-            triggerAuthorizationResultEvent is false`, waitForAsync(() => {
+            triggerAuthorizationResultEvent is false`, async () => {
       vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(false);
       vi.spyOn(flowsService, 'processCodeFlowCallback').mockReturnValue(
         throwError(() => new Error('error'))
@@ -186,17 +199,22 @@ describe('CodeFlowCallbackService ', () => {
         unauthorizedRoute: 'unauthorizedRoute',
       };
 
-      codeFlowCallbackService
-        .authenticatedCallbackWithCode('some-url5', config, [config])
-        .subscribe({
-          error: (err) => {
-            expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
-            expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
-            expect(err).toBeTruthy();
-            expect(routerSpy).toHaveBeenCalledTimes(1);
-            expect(routerSpy).toHaveBeenCalledWith('unauthorizedRoute');
-          },
-        });
-    }));
+      try {
+        await firstValueFrom(
+          codeFlowCallbackService.authenticatedCallbackWithCode(
+            'some-url5',
+            config,
+            [config]
+          )
+        );
+        expect.fail('expected an error');
+      } catch (err: any) {
+        expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
+        expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
+        expect(err).toBeTruthy();
+        expect(routerSpy).toHaveBeenCalledTimes(1);
+        expect(routerSpy).toHaveBeenCalledWith('unauthorizedRoute');
+      }
+    });
   });
 });

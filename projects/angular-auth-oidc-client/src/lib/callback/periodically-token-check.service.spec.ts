@@ -1,4 +1,4 @@
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { mockProvider } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
@@ -19,6 +19,12 @@ import { PeriodicallyTokenCheckService } from './periodically-token-check.servic
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
 
 describe('PeriodicallyTokenCheckService', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ advanceTimeDelta: 1, shouldAdvanceTime: true });
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
   let periodicallyTokenCheckService: PeriodicallyTokenCheckService;
   let intervalService: IntervalService;
   let flowsDataService: FlowsDataService;
@@ -85,7 +91,7 @@ describe('PeriodicallyTokenCheckService', () => {
   });
 
   describe('startTokenValidationPeriodically', () => {
-    it('interval calls resetSilentRenewRunning when current flow is CodeFlowWithRefreshTokens', fakeAsync(() => {
+    it('interval calls resetSilentRenewRunning when current flow is CodeFlowWithRefreshTokens', async () => {
       const configs = [
         { silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 },
       ];
@@ -114,15 +120,15 @@ describe('PeriodicallyTokenCheckService', () => {
         configs[0]
       );
 
-      tick(1000);
+      await vi.advanceTimersByTimeAsync(1000);
 
       intervalService.runTokenValidationRunning?.unsubscribe();
       intervalService.runTokenValidationRunning = null;
       expect(isCurrentFlowCodeFlowWithRefreshTokensSpy).toHaveBeenCalled();
       expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
-    }));
+    });
 
-    it('interval calls resetSilentRenewRunning in case of error when current flow is CodeFlowWithRefreshTokens', fakeAsync(() => {
+    it('interval calls resetSilentRenewRunning in case of error when current flow is CodeFlowWithRefreshTokens', async () => {
       const configs = [
         { silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 },
       ];
@@ -152,16 +158,16 @@ describe('PeriodicallyTokenCheckService', () => {
         configs[0]
       );
 
-      tick(1000);
+      await vi.advanceTimersByTimeAsync(1000);
 
       expect(
         periodicallyTokenCheckService.startTokenValidationPeriodically
       ).toThrowError();
       expect(resetSilentRenewRunning).toHaveBeenCalledTimes(1);
       expect(resetSilentRenewRunning).toHaveBeenCalledWith(configs[0]);
-    }));
+    });
 
-    it('interval throws silent renew failed event with data in case of an error', fakeAsync(() => {
+    it('interval throws silent renew failed event with data in case of an error', async () => {
       const configs = [
         { silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 },
       ];
@@ -194,7 +200,7 @@ describe('PeriodicallyTokenCheckService', () => {
         configs[0]
       );
 
-      tick(1000);
+      await vi.advanceTimersByTimeAsync(1000);
 
       expect(
         periodicallyTokenCheckService.startTokenValidationPeriodically
@@ -203,9 +209,9 @@ describe('PeriodicallyTokenCheckService', () => {
         [EventTypes.SilentRenewStarted],
         [EventTypes.SilentRenewFailed, new Error('error')],
       ]);
-    }));
+    });
 
-    it('calls resetAuthorizationData and returns if no silent renew is configured', fakeAsync(() => {
+    it('calls resetAuthorizationData and returns if no silent renew is configured', async () => {
       const configs = [
         { silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 },
       ];
@@ -235,7 +241,7 @@ describe('PeriodicallyTokenCheckService', () => {
         configs,
         configs[0]
       );
-      tick(1000);
+      await vi.advanceTimersByTimeAsync(1000);
       intervalService.runTokenValidationRunning?.unsubscribe();
       intervalService.runTokenValidationRunning = null;
 
@@ -245,9 +251,9 @@ describe('PeriodicallyTokenCheckService', () => {
         configWithoutSilentRenew,
         configs
       );
-    }));
+    });
 
-    it('calls refreshSessionWithRefreshTokens if current flow is Code flow with refresh tokens', fakeAsync(() => {
+    it('calls refreshSessionWithRefreshTokens if current flow is Code flow with refresh tokens', async () => {
       vi.spyOn(
         flowHelper,
         'isCurrentFlowCodeFlowWithRefreshTokens'
@@ -276,12 +282,12 @@ describe('PeriodicallyTokenCheckService', () => {
         configs[0]
       );
 
-      tick(1000);
+      await vi.advanceTimersByTimeAsync(1000);
 
       intervalService.runTokenValidationRunning?.unsubscribe();
       intervalService.runTokenValidationRunning = null;
       expect(refreshSessionWithRefreshTokensSpy).toHaveBeenCalled();
-    }));
+    });
   });
 
   describe('shouldStartPeriodicallyCheckForConfig', () => {

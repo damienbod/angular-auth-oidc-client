@@ -1,5 +1,5 @@
-import { TestBed, waitForAsync } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { TestBed } from '@angular/core/testing';
+import { firstValueFrom, of } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
 import { CheckAuthService } from '../../auth-state/check-auth.service';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
@@ -60,7 +60,7 @@ describe('ParLoginService', () => {
   });
 
   describe('loginPar', () => {
-    it('does nothing if it has an invalid response type', waitForAsync(() => {
+    it('does nothing if it has an invalid response type', () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -72,9 +72,9 @@ describe('ParLoginService', () => {
       service.loginPar({});
 
       expect(loggerSpy).toHaveBeenCalled();
-    }));
+    });
 
-    it('calls parService.postParRequest without custom params when no custom params are passed', waitForAsync(() => {
+    it('calls parService.postParRequest without custom params when no custom params are passed', () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -95,9 +95,9 @@ describe('ParLoginService', () => {
       });
 
       expect(spy).toHaveBeenCalled();
-    }));
+    });
 
-    it('calls parService.postParRequest with custom params when custom params are passed', waitForAsync(() => {
+    it('calls parService.postParRequest with custom params when custom params are passed', () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -125,9 +125,9 @@ describe('ParLoginService', () => {
       expect(spy).toHaveBeenCalledWith(config, {
         customParams: { some: 'thing' },
       });
-    }));
+    });
 
-    it('returns undefined and logs error when no url could be created', waitForAsync(() => {
+    it('returns undefined and logs error when no url could be created', () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -153,9 +153,9 @@ describe('ParLoginService', () => {
       service.loginPar(config);
 
       expect(spy).toHaveBeenCalledTimes(1);
-    }));
+    });
 
-    it('calls redirect service redirectTo when url could be created', waitForAsync(() => {
+    it('calls redirect service redirectTo when url could be created', () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -186,9 +186,9 @@ describe('ParLoginService', () => {
       expect(spy).toHaveBeenCalledTimes(1);
 
       expect(spy).toHaveBeenCalledWith('some-par-url');
-    }));
+    });
 
-    it('calls urlHandler when URL is passed', waitForAsync(() => {
+    it('calls urlHandler when URL is passed', () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -223,11 +223,11 @@ describe('ParLoginService', () => {
 
       expect(spy).toHaveBeenCalledWith('some-par-url');
       expect(redirectToSpy).not.toHaveBeenCalled();
-    }));
+    });
   });
 
   describe('loginWithPopUpPar', () => {
-    it('does nothing if it has an invalid response type', waitForAsync(() => {
+    it('does nothing if it has an invalid response type', async () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -238,15 +238,16 @@ describe('ParLoginService', () => {
       const config = {};
       const allConfigs = [config];
 
-      service.loginWithPopUpPar(config, allConfigs).subscribe({
-        error: (err) => {
-          expect(loggerSpy).toHaveBeenCalled();
-          expect(err.message).toBe('Invalid response type!');
-        },
-      });
-    }));
+      try {
+        await firstValueFrom(service.loginWithPopUpPar(config, allConfigs));
+        expect.fail('expected an error');
+      } catch (err: any) {
+        expect(loggerSpy).toHaveBeenCalled();
+        expect(err.message).toBe('Invalid response type!');
+      }
+    });
 
-    it('calls parService.postParRequest without custom params when no custom params are passed', waitForAsync(() => {
+    it('calls parService.postParRequest without custom params when no custom params are passed', async () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -266,17 +267,18 @@ describe('ParLoginService', () => {
         .spyOn(parService, 'postParRequest')
         .mockReturnValue(of({ requestUri: 'requestUri' } as ParResponse));
 
-      service.loginWithPopUpPar(config, allConfigs).subscribe({
-        error: (err) => {
-          expect(spy).toHaveBeenCalled();
-          expect(err.message).toBe(
-            "Could not create URL with param requestUri: 'url'"
-          );
-        },
-      });
-    }));
+      try {
+        await firstValueFrom(service.loginWithPopUpPar(config, allConfigs));
+        expect.fail('expected an error');
+      } catch (err: any) {
+        expect(spy).toHaveBeenCalled();
+        expect(err.message).toBe(
+          "Could not create URL with param requestUri: 'url'"
+        );
+      }
+    });
 
-    it('calls parService.postParRequest with custom params when custom params are passed', waitForAsync(() => {
+    it('calls parService.postParRequest with custom params when custom params are passed', async () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -296,24 +298,25 @@ describe('ParLoginService', () => {
         .spyOn(parService, 'postParRequest')
         .mockReturnValue(of({ requestUri: 'requestUri' } as ParResponse));
 
-      service
-        .loginWithPopUpPar(config, allConfigs, {
+      try {
+        await firstValueFrom(
+          service.loginWithPopUpPar(config, allConfigs, {
+            customParams: { some: 'thing' },
+          })
+        );
+        expect.fail('expected an error');
+      } catch (err: any) {
+        expect(spy).toHaveBeenCalledTimes(1);
+        expect(spy).toHaveBeenCalledWith(config, {
           customParams: { some: 'thing' },
-        })
-        .subscribe({
-          error: (err) => {
-            expect(spy).toHaveBeenCalledTimes(1);
-            expect(spy).toHaveBeenCalledWith(config, {
-              customParams: { some: 'thing' },
-            });
-            expect(err.message).toBe(
-              "Could not create URL with param requestUri: 'url'"
-            );
-          },
         });
-    }));
+        expect(err.message).toBe(
+          "Could not create URL with param requestUri: 'url'"
+        );
+      }
+    });
 
-    it('returns undefined and logs error when no URL could be created', waitForAsync(() => {
+    it('returns undefined and logs error when no URL could be created', async () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -337,21 +340,22 @@ describe('ParLoginService', () => {
         .spyOn(loggerService, 'logError')
         .mockReturnValue(undefined);
 
-      service
-        .loginWithPopUpPar(config, allConfigs, {
-          customParams: { some: 'thing' },
-        })
-        .subscribe({
-          error: (err) => {
-            expect(err.message).toBe(
-              "Could not create URL with param requestUri: 'url'"
-            );
-            expect(spy).toHaveBeenCalledTimes(1);
-          },
-        });
-    }));
+      try {
+        await firstValueFrom(
+          service.loginWithPopUpPar(config, allConfigs, {
+            customParams: { some: 'thing' },
+          })
+        );
+        expect.fail('expected an error');
+      } catch (err: any) {
+        expect(err.message).toBe(
+          "Could not create URL with param requestUri: 'url'"
+        );
+        expect(spy).toHaveBeenCalledTimes(1);
+      }
+    });
 
-    it('calls popupService openPopUp when URL could be created', waitForAsync(() => {
+    it('calls popupService openPopUp when URL could be created', async () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -383,13 +387,13 @@ describe('ParLoginService', () => {
         .spyOn(popupService, 'openPopUp')
         .mockReturnValue(undefined);
 
-      service.loginWithPopUpPar(config, allConfigs).subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith('some-par-url', undefined, config);
-      });
-    }));
+      await firstValueFrom(service.loginWithPopUpPar(config, allConfigs));
 
-    it('returns correct properties if URL is received', waitForAsync(() => {
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith('some-par-url', undefined, config);
+    });
+
+    it('returns correct properties if URL is received', async () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -431,25 +435,23 @@ describe('ParLoginService', () => {
 
       vi.spyOn(popupService, 'result$', 'get').mockReturnValue(of(popupResult));
 
-      service.loginWithPopUpPar(config, allConfigs).subscribe((result) => {
-        expect(checkAuthSpy).toHaveBeenCalledTimes(1);
-        expect(checkAuthSpy).toHaveBeenCalledWith(
-          config,
-          allConfigs,
-          'someUrl'
-        );
+      const result = await firstValueFrom(
+        service.loginWithPopUpPar(config, allConfigs)
+      );
 
-        expect(result).toEqual({
-          isAuthenticated: true,
-          configId: 'configId1',
-          idToken: '',
-          userData: { any: 'userData' },
-          accessToken: 'anyAccessToken',
-        });
+      expect(checkAuthSpy).toHaveBeenCalledTimes(1);
+      expect(checkAuthSpy).toHaveBeenCalledWith(config, allConfigs, 'someUrl');
+
+      expect(result).toEqual({
+        isAuthenticated: true,
+        configId: 'configId1',
+        idToken: '',
+        userData: { any: 'userData' },
+        accessToken: 'anyAccessToken',
       });
-    }));
+    });
 
-    it('returns correct properties if popup was closed by user', waitForAsync(() => {
+    it('returns correct properties if popup was closed by user', async () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -480,17 +482,19 @@ describe('ParLoginService', () => {
 
       vi.spyOn(popupService, 'result$', 'get').mockReturnValue(of(popupResult));
 
-      service.loginWithPopUpPar(config, allConfigs).subscribe((result) => {
-        expect(checkAuthSpy).not.toHaveBeenCalled();
-        expect(result).toEqual({
-          isAuthenticated: false,
-          errorMessage: 'User closed popup',
-          configId: 'configId1',
-          idToken: '',
-          userData: null,
-          accessToken: '',
-        });
+      const result = await firstValueFrom(
+        service.loginWithPopUpPar(config, allConfigs)
+      );
+
+      expect(checkAuthSpy).not.toHaveBeenCalled();
+      expect(result).toEqual({
+        isAuthenticated: false,
+        errorMessage: 'User closed popup',
+        configId: 'configId1',
+        idToken: '',
+        userData: null,
+        accessToken: '',
       });
-    }));
+    });
   });
 });

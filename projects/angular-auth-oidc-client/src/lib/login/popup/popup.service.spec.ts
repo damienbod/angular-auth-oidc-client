@@ -1,5 +1,5 @@
 import type { Mock } from 'vitest';
-import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { mockProvider } from '../../../test/auto-mock';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/logger.service';
@@ -8,6 +8,12 @@ import { PopupResult } from './popup-result';
 import { PopUpService } from './popup.service';
 
 describe('PopUpService', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ advanceTimeDelta: 1, shouldAdvanceTime: true });
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
   let popUpService: PopUpService;
   let storagePersistenceService: StoragePersistenceService;
   let loggerService: LoggerService;
@@ -164,25 +170,28 @@ describe('PopUpService', () => {
   });
 
   describe('result$', () => {
-    it('emits when internal subject is called', waitForAsync(() => {
+    it('emits when internal subject is called', () => {
       // arrange
       const popupResult: PopupResult = {
         userClosed: false,
         receivedUrl: 'some-url1111',
       };
+      let receivedResult: PopupResult | undefined;
 
-      // assert
       popUpService.result$.subscribe((result) => {
-        expect(result).toBe(popupResult);
+        receivedResult = result;
       });
 
       // act
       (popUpService as any).resultInternal$.next(popupResult);
-    }));
+
+      // assert
+      expect(receivedResult).toBe(popupResult);
+    });
   });
 
   describe('openPopup', () => {
-    it('popup opens with parameters and default options', waitForAsync(() => {
+    it('popup opens with parameters and default options', () => {
       // arrange
       const popupSpy = vi.spyOn(window, 'open').mockImplementation(
         () =>
@@ -204,9 +213,9 @@ describe('PopUpService', () => {
         '_blank',
         expect.any(String)
       );
-    }));
+    });
 
-    it('popup opens with parameters and passed options', waitForAsync(() => {
+    it('popup opens with parameters and passed options', () => {
       // arrange
       const popupSpy = vi.spyOn(window, 'open').mockImplementation(
         () =>
@@ -228,7 +237,7 @@ describe('PopUpService', () => {
         '_blank',
         expect.any(String)
       );
-    }));
+    });
 
     it('logs error and return if popup could not be opened', () => {
       // arrange
@@ -313,7 +322,7 @@ describe('PopUpService', () => {
         popUpService.result$.subscribe((result) => (popupResult = result));
       });
 
-      it('message received with data', fakeAsync(() => {
+      it('message received with data', async () => {
         // arrange
         let listener: (event: MessageEvent) => void = () => {
           return;
@@ -331,7 +340,7 @@ describe('PopUpService', () => {
 
         listener(new MessageEvent('message', { data: 'some-url1111' }));
 
-        tick(200);
+        await vi.advanceTimersByTimeAsync(200);
 
         // assert
         expect(popupResult).toEqual({
@@ -342,9 +351,9 @@ describe('PopUpService', () => {
         expect(cleanUpSpy).toHaveBeenCalledWith(listener, {
           configId: 'configId1',
         });
-      }));
+      });
 
-      it('message received without data does return but cleanup does not throw event', fakeAsync(() => {
+      it('message received without data does return but cleanup does not throw event', async () => {
         // arrange
         let listener: (event: MessageEvent) => void = () => {
           return;
@@ -365,15 +374,15 @@ describe('PopUpService', () => {
 
         listener(new MessageEvent('message', { data: null }));
 
-        tick(200);
+        await vi.advanceTimersByTimeAsync(200);
 
         // assert
         expect(popupResult).toEqual({} as PopupResult);
         expect(cleanUpSpy).toHaveBeenCalled();
         expect(nextSpy).not.toHaveBeenCalled();
-      }));
+      });
 
-      it('message received without data does not clean up when disableCleaningPopupOnInvalidMessage is true', fakeAsync(() => {
+      it('message received without data does not clean up when disableCleaningPopupOnInvalidMessage is true', async () => {
         // arrange
         let listener: (event: MessageEvent) => void = () => {
           return;
@@ -404,10 +413,10 @@ describe('PopUpService', () => {
 
         // cleanup the interval started by openPopUp
         (popup as any).closed = true;
-        tick(200);
-      }));
+        await vi.advanceTimersByTimeAsync(200);
+      });
 
-      it('user closed', fakeAsync(() => {
+      it('user closed', async () => {
         // arrange & act
         popUpService.openPopUp('url', undefined, { configId: 'configId1' });
 
@@ -416,7 +425,7 @@ describe('PopUpService', () => {
 
         (popup as any).closed = true;
 
-        tick(200);
+        await vi.advanceTimersByTimeAsync(200);
 
         // assert
         expect(popupResult).toEqual({
@@ -424,12 +433,12 @@ describe('PopUpService', () => {
           receivedUrl: '',
         } as PopupResult);
         expect(cleanUpSpy).toHaveBeenCalled();
-      }));
+      });
     });
   });
 
   describe('sendMessageToMainWindow', () => {
-    it('does nothing if there is no window available', waitForAsync(() => {
+    it('does nothing if there is no window available', () => {
       // arrange
       vi.spyOn(popUpService as any, 'windowInternal', 'get').mockReturnValue(
         null
@@ -445,9 +454,9 @@ describe('PopUpService', () => {
 
       // assert
       expect(sendMessageSpy).not.toHaveBeenCalled();
-    }));
+    });
 
-    it('does nothing if window.opener is null', waitForAsync(() => {
+    it('does nothing if window.opener is null', () => {
       // arrange
       vi.stubGlobal('opener', null);
 
@@ -460,9 +469,9 @@ describe('PopUpService', () => {
 
       // assert
       expect(sendMessageSpy).not.toHaveBeenCalled();
-    }));
+    });
 
-    it('calls postMessage when window opener is given', waitForAsync(() => {
+    it('calls postMessage when window opener is given', () => {
       // arrange
       vi.stubGlobal('opener', {
         postMessage: () => undefined,
@@ -482,9 +491,9 @@ describe('PopUpService', () => {
         'someUrl',
         expect.any(String)
       );
-    }));
+    });
 
-    it('does not postMessage and logs debug when url is empty', waitForAsync(() => {
+    it('does not postMessage and logs debug when url is empty', () => {
       // arrange
       vi.stubGlobal('opener', {
         postMessage: () => undefined,
@@ -502,11 +511,11 @@ describe('PopUpService', () => {
       // assert
       expect(sendMessageSpy).not.toHaveBeenCalled();
       expect(loggerSpy).toHaveBeenCalled();
-    }));
+    });
   });
 
   describe('cleanUp', () => {
-    it('does nothing if there is no window available', waitForAsync(() => {
+    it('does nothing if there is no window available', () => {
       // arrange
       vi.spyOn(popUpService as any, 'windowInternal', 'get').mockReturnValue(
         null
@@ -524,9 +533,9 @@ describe('PopUpService', () => {
       // assert
       expect(removeSpy).not.toHaveBeenCalled();
       expect(removeItemSpy).not.toHaveBeenCalled();
-    }));
+    });
 
-    it('calls removeEventListener on window with correct params', waitForAsync(() => {
+    it('calls removeEventListener on window with correct params', () => {
       // arrange
       const spy = vi
         .spyOn(window, 'removeEventListener')
@@ -540,9 +549,9 @@ describe('PopUpService', () => {
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith('message', listener, false);
-    }));
+    });
 
-    it('removes popup from sessionstorage, closes and nulls when popup is opened', waitForAsync(() => {
+    it('removes popup from sessionstorage, closes and nulls when popup is opened', () => {
       // arrange
       const popupMock = {
         anyThing: 'truthy',
@@ -567,11 +576,11 @@ describe('PopUpService', () => {
       });
       expect(closeSpy).toHaveBeenCalledTimes(1);
       expect((popUpService as any).popUp).toBeNull();
-    }));
+    });
   });
 
   describe('sendMessage', () => {
-    it('does nothing if there is no window available', waitForAsync(() => {
+    it('does nothing if there is no window available', () => {
       // arrange
       vi.spyOn(popUpService as any, 'windowInternal', 'get').mockReturnValue(
         null
@@ -587,7 +596,7 @@ describe('PopUpService', () => {
       // assert
       expect(result).toBeUndefined();
       expect(loggerSpy).not.toHaveBeenCalled();
-    }));
+    });
   });
 
   describe('getOptions', () => {

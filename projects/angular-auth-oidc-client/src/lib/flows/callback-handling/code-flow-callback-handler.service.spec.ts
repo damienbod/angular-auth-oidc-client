@@ -1,6 +1,6 @@
 import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { TestBed, waitForAsync } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
+import { TestBed } from '@angular/core/testing';
+import { firstValueFrom, of, throwError } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
 import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
 import { DataService } from '../../api/data.service';
@@ -46,7 +46,7 @@ describe('CodeFlowCallbackHandlerService', () => {
   });
 
   describe('codeFlowCallback', () => {
-    it('throws error if no state is given', waitForAsync(() => {
+    it('throws error if no state is given', async () => {
       vi.spyOn(urlService, 'getUrlParameter').mockImplementation(
         (...args: any[]) => {
           if (args[0] === 'test-url' && args[1] === 'state') {
@@ -57,16 +57,14 @@ describe('CodeFlowCallbackHandlerService', () => {
         }
       );
 
-      service
-        .codeFlowCallback('test-url', { configId: 'configId1' })
-        .subscribe({
-          error: (err) => {
-            expect(err).toBeTruthy();
-          },
-        });
-    }));
+      await expect(
+        firstValueFrom(
+          service.codeFlowCallback('test-url', { configId: 'configId1' })
+        )
+      ).rejects.toBeTruthy();
+    });
 
-    it('throws error if no code is given', waitForAsync(() => {
+    it('throws error if no code is given', async () => {
       vi.spyOn(urlService, 'getUrlParameter').mockImplementation(
         (...args: any[]) => {
           if (args[0] === 'test-url' && args[1] === 'code') {
@@ -77,16 +75,14 @@ describe('CodeFlowCallbackHandlerService', () => {
         }
       );
 
-      service
-        .codeFlowCallback('test-url', { configId: 'configId1' })
-        .subscribe({
-          error: (err) => {
-            expect(err).toBeTruthy();
-          },
-        });
-    }));
+      await expect(
+        firstValueFrom(
+          service.codeFlowCallback('test-url', { configId: 'configId1' })
+        )
+      ).rejects.toBeTruthy();
+    });
 
-    it('returns callbackContext if all params are good', waitForAsync(() => {
+    it('returns callbackContext if all params are good', async () => {
       vi.spyOn(urlService, 'getUrlParameter').mockReturnValue('params');
 
       const expectedCallbackContext = {
@@ -100,13 +96,12 @@ describe('CodeFlowCallbackHandlerService', () => {
         validationResult: null,
         existingIdToken: null,
       } as CallbackContext;
+      const callbackContext = await firstValueFrom(
+        service.codeFlowCallback('test-url', { configId: 'configId1' })
+      );
 
-      service
-        .codeFlowCallback('test-url', { configId: 'configId1' })
-        .subscribe((callbackContext) => {
-          expect(callbackContext).toEqual(expectedCallbackContext);
-        });
-    }));
+      expect(callbackContext).toEqual(expectedCallbackContext);
+    });
   });
 
   describe('codeFlowCodeRequest ', () => {
@@ -118,22 +113,22 @@ describe('CodeFlowCallbackHandlerService', () => {
       url: 'https://identity-server.test/openid-connect/token',
     });
 
-    it('throws error if state is not correct', waitForAsync(() => {
+    it('throws error if state is not correct', async () => {
       vi.spyOn(
         tokenValidationService,
         'validateStateFromHashCallback'
       ).mockReturnValue(false);
 
-      service
-        .codeFlowCodeRequest({} as CallbackContext, { configId: 'configId1' })
-        .subscribe({
-          error: (err) => {
-            expect(err).toBeTruthy();
-          },
-        });
-    }));
+      await expect(
+        firstValueFrom(
+          service.codeFlowCodeRequest({} as CallbackContext, {
+            configId: 'configId1',
+          })
+        )
+      ).rejects.toBeTruthy();
+    });
 
-    it('throws error if authWellknownEndpoints is null is given', waitForAsync(() => {
+    it('throws error if authWellknownEndpoints is null is given', async () => {
       vi.spyOn(
         tokenValidationService,
         'validateStateFromHashCallback'
@@ -148,16 +143,16 @@ describe('CodeFlowCallbackHandlerService', () => {
         }
       );
 
-      service
-        .codeFlowCodeRequest({} as CallbackContext, { configId: 'configId1' })
-        .subscribe({
-          error: (err) => {
-            expect(err).toBeTruthy();
-          },
-        });
-    }));
+      await expect(
+        firstValueFrom(
+          service.codeFlowCodeRequest({} as CallbackContext, {
+            configId: 'configId1',
+          })
+        )
+      ).rejects.toBeTruthy();
+    });
 
-    it('throws error if tokenendpoint is null is given', waitForAsync(() => {
+    it('throws error if tokenendpoint is null is given', async () => {
       vi.spyOn(
         tokenValidationService,
         'validateStateFromHashCallback'
@@ -172,16 +167,16 @@ describe('CodeFlowCallbackHandlerService', () => {
         }
       );
 
-      service
-        .codeFlowCodeRequest({} as CallbackContext, { configId: 'configId1' })
-        .subscribe({
-          error: (err) => {
-            expect(err).toBeTruthy();
-          },
-        });
-    }));
+      await expect(
+        firstValueFrom(
+          service.codeFlowCodeRequest({} as CallbackContext, {
+            configId: 'configId1',
+          })
+        )
+      ).rejects.toBeTruthy();
+    });
 
-    it('calls dataService if all params are good', waitForAsync(() => {
+    it('calls dataService if all params are good', async () => {
       const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(of({}));
 
       vi.spyOn(storagePersistenceService, 'read').mockImplementation(
@@ -199,20 +194,22 @@ describe('CodeFlowCallbackHandlerService', () => {
         'validateStateFromHashCallback'
       ).mockReturnValue(true);
 
-      service
-        .codeFlowCodeRequest({} as CallbackContext, { configId: 'configId1' })
-        .subscribe(() => {
-          expect(postSpy).toHaveBeenCalledTimes(1);
-          expect(postSpy).toHaveBeenCalledWith(
-            'tokenEndpoint',
-            undefined,
-            { configId: 'configId1' },
-            expect.any(HttpHeaders)
-          );
-        });
-    }));
+      await firstValueFrom(
+        service.codeFlowCodeRequest({} as CallbackContext, {
+          configId: 'configId1',
+        })
+      );
 
-    it('calls url service with custom token params', waitForAsync(() => {
+      expect(postSpy).toHaveBeenCalledTimes(1);
+      expect(postSpy).toHaveBeenCalledWith(
+        'tokenEndpoint',
+        undefined,
+        { configId: 'configId1' },
+        expect.any(HttpHeaders)
+      );
+    });
+
+    it('calls url service with custom token params', async () => {
       const urlServiceSpy = vi
         .spyOn(urlService, 'createBodyForCodeFlowCodeRequest')
         .mockReturnValue(undefined as any);
@@ -238,18 +235,18 @@ describe('CodeFlowCallbackHandlerService', () => {
 
       const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(of({}));
 
-      service
-        .codeFlowCodeRequest({ code: 'foo' } as CallbackContext, config)
-        .subscribe(() => {
-          expect(urlServiceSpy).toHaveBeenCalledTimes(1);
-          expect(urlServiceSpy).toHaveBeenCalledWith('foo', config, {
-            foo: 'bar',
-          });
-          expect(postSpy).toHaveBeenCalledTimes(1);
-        });
-    }));
+      await firstValueFrom(
+        service.codeFlowCodeRequest({ code: 'foo' } as CallbackContext, config)
+      );
 
-    it('calls dataService with correct headers if all params are good', waitForAsync(() => {
+      expect(urlServiceSpy).toHaveBeenCalledTimes(1);
+      expect(urlServiceSpy).toHaveBeenCalledWith('foo', config, {
+        foo: 'bar',
+      });
+      expect(postSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('calls dataService with correct headers if all params are good', async () => {
       const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(of({}));
       const config = {
         configId: 'configId1',
@@ -271,20 +268,19 @@ describe('CodeFlowCallbackHandlerService', () => {
         'validateStateFromHashCallback'
       ).mockReturnValue(true);
 
-      service
-        .codeFlowCodeRequest({} as CallbackContext, config)
-        .subscribe(() => {
-          const httpHeaders = vi.mocked(postSpy).mock
-            .lastCall![3] as HttpHeaders;
+      await firstValueFrom(
+        service.codeFlowCodeRequest({} as CallbackContext, config)
+      );
 
-          expect(httpHeaders.has('Content-Type')).toBe(true);
-          expect(httpHeaders.get('Content-Type')).toBe(
-            'application/x-www-form-urlencoded'
-          );
-        });
-    }));
+      const httpHeaders = vi.mocked(postSpy).mock.lastCall![3] as HttpHeaders;
 
-    it('returns error in case of http error', waitForAsync(() => {
+      expect(httpHeaders.has('Content-Type')).toBe(true);
+      expect(httpHeaders.get('Content-Type')).toBe(
+        'application/x-www-form-urlencoded'
+      );
+    });
+
+    it('returns error in case of http error', async () => {
       vi.spyOn(dataService, 'post').mockReturnValue(
         throwError(() => HTTP_ERROR)
       );
@@ -304,14 +300,14 @@ describe('CodeFlowCallbackHandlerService', () => {
         }
       );
 
-      service.codeFlowCodeRequest({} as CallbackContext, config).subscribe({
-        error: (err) => {
-          expect(err).toBeTruthy();
-        },
-      });
-    }));
+      await expect(
+        firstValueFrom(
+          service.codeFlowCodeRequest({} as CallbackContext, config)
+        )
+      ).rejects.toBeTruthy();
+    });
 
-    it('retries request in case of no connection http error and succeeds', waitForAsync(() => {
+    it('retries request in case of no connection http error and succeeds', async () => {
       const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(
         createRetriableStream(
           throwError(() => CONNECTION_ERROR),
@@ -339,19 +335,15 @@ describe('CodeFlowCallbackHandlerService', () => {
         'validateStateFromHashCallback'
       ).mockReturnValue(true);
 
-      service.codeFlowCodeRequest({} as CallbackContext, config).subscribe({
-        next: (res) => {
-          expect(res).toBeTruthy();
-          expect(postSpy).toHaveBeenCalledTimes(1);
-        },
-        error: (err) => {
-          // fails if there should be a result
-          expect(err).toBeFalsy();
-        },
-      });
-    }));
+      const res = await firstValueFrom(
+        service.codeFlowCodeRequest({} as CallbackContext, config)
+      );
 
-    it('retries request in case of no connection http error and fails because of http error afterwards', waitForAsync(() => {
+      expect(res).toBeTruthy();
+      expect(postSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('retries request in case of no connection http error and fails because of http error afterwards', async () => {
       const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(
         createRetriableStream(
           throwError(() => CONNECTION_ERROR),
@@ -379,16 +371,12 @@ describe('CodeFlowCallbackHandlerService', () => {
         'validateStateFromHashCallback'
       ).mockReturnValue(true);
 
-      service.codeFlowCodeRequest({} as CallbackContext, config).subscribe({
-        next: (res) => {
-          // fails if there should be a result
-          expect(res).toBeFalsy();
-        },
-        error: (err) => {
-          expect(err).toBeTruthy();
-          expect(postSpy).toHaveBeenCalledTimes(1);
-        },
-      });
-    }));
+      await expect(
+        firstValueFrom(
+          service.codeFlowCodeRequest({} as CallbackContext, config)
+        )
+      ).rejects.toBeTruthy();
+      expect(postSpy).toHaveBeenCalledTimes(1);
+    });
   });
 });

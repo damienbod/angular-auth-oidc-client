@@ -1,5 +1,5 @@
-import { TestBed, waitForAsync } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { TestBed } from '@angular/core/testing';
+import { firstValueFrom, of } from 'rxjs';
 import { mockProvider } from '../../test/auto-mock';
 import { LoggerService } from '../logging/logger.service';
 import { UrlService } from '../utils/url/url.service';
@@ -31,7 +31,7 @@ describe('RefreshSessionIframeService ', () => {
   });
 
   describe('refreshSessionWithIframe', () => {
-    it('calls sendAuthorizeRequestUsingSilentRenew with created url', waitForAsync(() => {
+    it('calls sendAuthorizeRequestUsingSilentRenew with created url', async () => {
       vi.spyOn(urlService, 'getRefreshSessionSilentRenewUrl').mockReturnValue(
         of('a-url')
       );
@@ -43,23 +43,24 @@ describe('RefreshSessionIframeService ', () => {
         .mockReturnValue(of(null));
       const allConfigs = [{ configId: 'configId1' }];
 
-      refreshSessionIframeService
-        .refreshSessionWithIframe(allConfigs[0], allConfigs)
-        .subscribe(() => {
-          expect(sendAuthorizeRequestUsingSilentRenewSpy).toHaveBeenCalledTimes(
-            1
-          );
-          expect(sendAuthorizeRequestUsingSilentRenewSpy).toHaveBeenCalledWith(
-            'a-url',
-            allConfigs[0],
-            allConfigs
-          );
-        });
-    }));
+      await firstValueFrom(
+        refreshSessionIframeService.refreshSessionWithIframe(
+          allConfigs[0],
+          allConfigs
+        )
+      );
+
+      expect(sendAuthorizeRequestUsingSilentRenewSpy).toHaveBeenCalledTimes(1);
+      expect(sendAuthorizeRequestUsingSilentRenewSpy).toHaveBeenCalledWith(
+        'a-url',
+        allConfigs[0],
+        allConfigs
+      );
+    });
   });
 
   describe('initSilentRenewRequest', () => {
-    it('dispatches customevent to window object', waitForAsync(() => {
+    it('dispatches customevent to window object', () => {
       const dispatchEventSpy = vi
         .spyOn(window, 'dispatchEvent')
         .mockReturnValue(undefined as any);
@@ -82,7 +83,7 @@ describe('RefreshSessionIframeService ', () => {
           }),
         })
       );
-    }));
+    });
   });
 
   describe('shouldProcessRenewMessage', () => {

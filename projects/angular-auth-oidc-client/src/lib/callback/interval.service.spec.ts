@@ -1,8 +1,14 @@
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { Subscription } from 'rxjs';
 import { IntervalService } from './interval.service';
 
 describe('IntervalService', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ advanceTimeDelta: 1, shouldAdvanceTime: true });
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
   let intervalService: IntervalService;
 
   beforeEach(() => {
@@ -69,20 +75,20 @@ describe('IntervalService', () => {
   });
 
   describe('startPeriodicTokenCheck', () => {
-    it('starts check after correct milliseconds', fakeAsync(() => {
+    it('starts check after correct milliseconds', async () => {
       const periodicCheck = intervalService.startPeriodicTokenCheck(0.5);
       const spy = vi.fn();
       const sub = periodicCheck.subscribe(() => {
         spy();
       });
 
-      tick(500);
+      await vi.advanceTimersByTimeAsync(500);
       expect(spy).toHaveBeenCalledTimes(1);
 
-      tick(500);
+      await vi.advanceTimersByTimeAsync(500);
       expect(spy).toHaveBeenCalledTimes(2);
 
       sub.unsubscribe();
-    }));
+    });
   });
 });

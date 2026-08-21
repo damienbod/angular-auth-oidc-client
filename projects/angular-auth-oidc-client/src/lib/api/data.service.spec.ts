@@ -7,7 +7,7 @@ import {
   HttpTestingController,
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
-import { TestBed, waitForAsync } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { DataService } from './data.service';
 import { HttpBaseService } from './http-base.service';
 
@@ -37,13 +37,14 @@ describe('Data Service', () => {
   });
 
   describe('get', () => {
-    it('get call sets the accept header', waitForAsync(() => {
+    it('get call sets the accept header', () => {
       const url = 'testurl';
+      let response: unknown;
 
       dataService
         .get(url, { configId: 'configId1' })
         .subscribe((data: unknown) => {
-          expect(data).toBe('bodyData');
+          response = data;
         });
       const req = httpMock.expectOne(url);
 
@@ -52,17 +53,19 @@ describe('Data Service', () => {
 
       req.flush('bodyData');
 
+      expect(response).toBe('bodyData');
       httpMock.verify();
-    }));
+    });
 
-    it('get call with token the accept header and the token', waitForAsync(() => {
+    it('get call with token the accept header and the token', () => {
       const url = 'testurl';
       const token = 'token';
+      let response: unknown;
 
       dataService
         .get(url, { configId: 'configId1' }, token)
         .subscribe((data: unknown) => {
-          expect(data).toBe('bodyData');
+          response = data;
         });
       const req = httpMock.expectOne(url);
 
@@ -72,16 +75,18 @@ describe('Data Service', () => {
 
       req.flush('bodyData');
 
+      expect(response).toBe('bodyData');
       httpMock.verify();
-    }));
+    });
 
-    it('call without ngsw-bypass param by default', waitForAsync(() => {
+    it('call without ngsw-bypass param by default', () => {
       const url = 'testurl';
+      let response: unknown;
 
       dataService
         .get(url, { configId: 'configId1' })
         .subscribe((data: unknown) => {
-          expect(data).toBe('bodyData');
+          response = data;
         });
       const req = httpMock.expectOne(url);
 
@@ -91,16 +96,18 @@ describe('Data Service', () => {
 
       req.flush('bodyData');
 
+      expect(response).toBe('bodyData');
       httpMock.verify();
-    }));
+    });
 
-    it('call with ngsw-bypass param', waitForAsync(() => {
+    it('call with ngsw-bypass param', () => {
       const url = 'testurl';
+      let response: unknown;
 
       dataService
         .get(url, { configId: 'configId1', ngswBypass: true })
         .subscribe((data: unknown) => {
-          expect(data).toBe('bodyData');
+          response = data;
         });
       const req = httpMock.expectOne(url + '?ngsw-bypass=');
 
@@ -110,12 +117,13 @@ describe('Data Service', () => {
 
       req.flush('bodyData');
 
+      expect(response).toBe('bodyData');
       httpMock.verify();
-    }));
+    });
   });
 
   describe('post', () => {
-    it('call sets the accept header when no other params given', waitForAsync(() => {
+    it('call sets the accept header when no other params given', () => {
       const url = 'testurl';
 
       dataService
@@ -129,9 +137,9 @@ describe('Data Service', () => {
       req.flush('bodyData');
 
       httpMock.verify();
-    }));
+    });
 
-    it('call sets custom headers ONLY (No ACCEPT header) when custom headers are given', waitForAsync(() => {
+    it('call sets custom headers ONLY (No ACCEPT header) when custom headers are given', () => {
       const url = 'testurl';
       let headers = new HttpHeaders();
 
@@ -149,9 +157,9 @@ describe('Data Service', () => {
       req.flush('bodyData');
 
       httpMock.verify();
-    }));
+    });
 
-    it('call without ngsw-bypass param by default', waitForAsync(() => {
+    it('call without ngsw-bypass param by default', () => {
       const url = 'testurl';
 
       dataService
@@ -166,9 +174,9 @@ describe('Data Service', () => {
       req.flush('bodyData');
 
       httpMock.verify();
-    }));
+    });
 
-    it('call with ngsw-bypass param', waitForAsync(() => {
+    it('call with ngsw-bypass param', () => {
       const url = 'testurl';
 
       dataService
@@ -187,9 +195,9 @@ describe('Data Service', () => {
       req.flush('bodyData');
 
       httpMock.verify();
-    }));
+    });
 
-    it('falls back to an empty string url when url is null', waitForAsync(() => {
+    it('falls back to an empty string url when url is null', () => {
       dataService
         .post(null, { some: 'thing' }, { configId: 'configId1' })
         .subscribe();
@@ -201,6 +209,6 @@ describe('Data Service', () => {
       req.flush('bodyData');
 
       httpMock.verify();
-    }));
+    });
   });
 });

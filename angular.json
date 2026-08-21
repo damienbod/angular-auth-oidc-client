@@ -30,7 +30,6 @@
             "tsConfig": "projects/angular-auth-oidc-client/tsconfig.spec.json",
             "coverageExclude": ["/**/*mock*.ts", "**/*.md"],
             "coverageReporters": ["text-summary", "html", "lcov"],
-            "buildTarget": "angular-auth-oidc-client:test-build:development",
             "runnerConfig": "vitest-base.config.ts"
           }
         },
@@ -43,21 +42,6 @@
             ],
             "eslintConfig": "projects/angular-auth-oidc-client/eslint.config.js"
           }
-        },
-        "test-build": {
-          "builder": "@angular/build:application",
-          "options": {
-            "tsConfig": "projects/angular-auth-oidc-client/tsconfig.spec.json",
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing",
-              "zone.js/plugins/vitest-patch"
-            ]
-          },
-          "configurations": {
-            "development": {}
-          },
-          "defaultConfiguration": "development"
         }
       }
     },

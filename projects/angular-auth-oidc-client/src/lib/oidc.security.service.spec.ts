@@ -1,6 +1,6 @@
 import type { Mock } from 'vitest';
-import { TestBed, waitForAsync } from '@angular/core/testing';
-import { Observable, of } from 'rxjs';
+import { TestBed } from '@angular/core/testing';
+import { firstValueFrom, Observable, of } from 'rxjs';
 import { mockProvider } from '../test/auto-mock';
 import { AuthStateService } from './auth-state/auth-state.service';
 import { CheckAuthService } from './auth-state/check-auth.service';
@@ -90,67 +90,73 @@ describe('OidcSecurityService', () => {
   });
 
   describe('userData$', () => {
-    it('calls userService.userData$', waitForAsync(() => {
-      oidcSecurityService.userData$.subscribe(() => {
-        // 1x from this subscribe
-        // 1x by the signal property
-        expect(userDataSpy).toHaveBeenCalledTimes(2);
-      });
-    }));
+    it('calls userService.userData$', async () => {
+      await firstValueFrom(oidcSecurityService.userData$);
+
+      // 1x from this subscribe
+      // 1x by the signal property
+      expect(userDataSpy).toHaveBeenCalledTimes(2);
+    });
   });
 
   describe('userData', () => {
-    it('calls userService.userData$', waitForAsync(() => {
+    it('calls userService.userData$', () => {
       const _userdata = oidcSecurityService.userData();
 
       expect(userDataSpy).toHaveBeenCalledTimes(1);
-    }));
+    });
   });
 
   describe('isAuthenticated$', () => {
-    it('calls authStateService.isAuthenticated$', waitForAsync(() => {
-      oidcSecurityService.isAuthenticated$.subscribe(() => {
-        // 1x from this subscribe
-        // 1x by the signal property
-        expect(authenticatedSpy).toHaveBeenCalledTimes(2);
-      });
-    }));
+    it('calls authStateService.isAuthenticated$', async () => {
+      await firstValueFrom(oidcSecurityService.isAuthenticated$);
+
+      // 1x from this subscribe
+      // 1x by the signal property
+      expect(authenticatedSpy).toHaveBeenCalledTimes(2);
+    });
   });
 
   describe('authenticated', () => {
-    it('calls authStateService.isAuthenticated$', waitForAsync(() => {
+    it('calls authStateService.isAuthenticated$', () => {
       const _authenticated = oidcSecurityService.authenticated();
 
       expect(authenticatedSpy).toHaveBeenCalledTimes(1);
-    }));
+    });
   });
 
   describe('checkSessionChanged$', () => {
-    it('calls checkSessionService.checkSessionChanged$', waitForAsync(() => {
+    it('calls checkSessionService.checkSessionChanged$', async () => {
       const spy = vi
         .spyOn(checkSessionService, 'checkSessionChanged$', 'get')
         .mockReturnValue(of(true));
 
-      oidcSecurityService.checkSessionChanged$.subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-      });
-    }));
+      await firstValueFrom(oidcSecurityService.checkSessionChanged$);
+
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('stsCallback$', () => {
-    it('calls callbackService.stsCallback$', waitForAsync(() => {
+    it('calls callbackService.stsCallback$', () => {
       const spy = vi
         .spyOn(callbackService, 'stsCallback$', 'get')
         .mockReturnValue(of());
+      let completed = false;
 
-      oidcSecurityService.stsCallback$.subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
+      oidcSecurityService.stsCallback$.subscribe({
+        complete: () => {
+          completed = true;
+        },
       });
-    }));
+
+      expect(completed).toBe(true);
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('preloadAuthWellKnownDocument', () => {
-    it('calls authWellKnownService.queryAndStoreAuthWellKnownEndPoints with config', waitForAsync(() => {
+    it('calls authWellKnownService.queryAndStoreAuthWellKnownEndPoints with config', async () => {
       const config = { configId: 'configid1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -160,11 +166,11 @@ describe('OidcSecurityService', () => {
         .spyOn(authWellKnownService, 'queryAndStoreAuthWellKnownEndPoints')
         .mockReturnValue(of({}));
 
-      oidcSecurityService.preloadAuthWellKnownDocument().subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith(config);
-      });
-    }));
+      await firstValueFrom(oidcSecurityService.preloadAuthWellKnownDocument());
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(config);
+    });
   });
 
   describe('getConfigurations', () => {
@@ -206,7 +212,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('getUserData', () => {
-    it('calls configurationProvider.getOpenIDConfiguration with config', waitForAsync(() => {
+    it('calls configurationProvider.getOpenIDConfiguration with config', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -219,13 +225,13 @@ describe('OidcSecurityService', () => {
           some: 'thing',
         });
 
-      oidcSecurityService.getUserData('configId').subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith(config);
-      });
-    }));
+      await firstValueFrom(oidcSecurityService.getUserData('configId'));
 
-    it('returns userdata', waitForAsync(() => {
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(config);
+    });
+
+    it('returns userdata', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -236,14 +242,16 @@ describe('OidcSecurityService', () => {
         some: 'thing',
       });
 
-      oidcSecurityService.getUserData('configId').subscribe((result) => {
-        expect(result).toEqual({ some: 'thing' });
-      });
-    }));
+      const result = await firstValueFrom(
+        oidcSecurityService.getUserData('configId')
+      );
+
+      expect(result).toEqual({ some: 'thing' });
+    });
   });
 
   describe('checkAuth', () => {
-    it('calls checkAuthService.checkAuth() without url if none is passed', waitForAsync(() => {
+    it('calls checkAuthService.checkAuth() without url if none is passed', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfigurations').mockReturnValue(
@@ -254,13 +262,13 @@ describe('OidcSecurityService', () => {
         .spyOn(checkAuthService, 'checkAuth')
         .mockReturnValue(of({} as LoginResponse));
 
-      oidcSecurityService.checkAuth().subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith(config, [config], undefined);
-      });
-    }));
+      await firstValueFrom(oidcSecurityService.checkAuth());
 
-    it('calls checkAuthService.checkAuth() with url if one is passed', waitForAsync(() => {
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(config, [config], undefined);
+    });
+
+    it('calls checkAuthService.checkAuth() with url if one is passed', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfigurations').mockReturnValue(
@@ -271,15 +279,15 @@ describe('OidcSecurityService', () => {
         .spyOn(checkAuthService, 'checkAuth')
         .mockReturnValue(of({} as LoginResponse));
 
-      oidcSecurityService.checkAuth('some-url').subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith(config, [config], 'some-url');
-      });
-    }));
+      await firstValueFrom(oidcSecurityService.checkAuth('some-url'));
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(config, [config], 'some-url');
+    });
   });
 
   describe('checkAuthMultiple', () => {
-    it('calls checkAuthService.checkAuth() without url if none is passed', waitForAsync(() => {
+    it('calls checkAuthService.checkAuth() without url if none is passed', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfigurations').mockReturnValue(
@@ -290,13 +298,13 @@ describe('OidcSecurityService', () => {
         .spyOn(checkAuthService, 'checkAuthMultiple')
         .mockReturnValue(of([{}] as LoginResponse[]));
 
-      oidcSecurityService.checkAuthMultiple().subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith([config], undefined);
-      });
-    }));
+      await firstValueFrom(oidcSecurityService.checkAuthMultiple());
 
-    it('calls checkAuthService.checkAuthMultiple() with url if one is passed', waitForAsync(() => {
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith([config], undefined);
+    });
+
+    it('calls checkAuthService.checkAuthMultiple() with url if one is passed', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfigurations').mockReturnValue(
@@ -307,15 +315,15 @@ describe('OidcSecurityService', () => {
         .spyOn(checkAuthService, 'checkAuthMultiple')
         .mockReturnValue(of([{}] as LoginResponse[]));
 
-      oidcSecurityService.checkAuthMultiple('some-url').subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith([config], 'some-url');
-      });
-    }));
+      await firstValueFrom(oidcSecurityService.checkAuthMultiple('some-url'));
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith([config], 'some-url');
+    });
   });
 
   describe('isAuthenticated()', () => {
-    it('calls authStateService.isAuthenticated with passed configId when configId is passed', waitForAsync(() => {
+    it('calls authStateService.isAuthenticated with passed configId when configId is passed', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -326,15 +334,15 @@ describe('OidcSecurityService', () => {
         .spyOn(authStateService, 'isAuthenticated')
         .mockReturnValue(true);
 
-      oidcSecurityService.isAuthenticated().subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith(config);
-      });
-    }));
+      await firstValueFrom(oidcSecurityService.isAuthenticated());
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(config);
+    });
   });
 
   describe('checkAuthIncludingServer', () => {
-    it('calls checkAuthService.checkAuthIncludingServer()', waitForAsync(() => {
+    it('calls checkAuthService.checkAuthIncludingServer()', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfigurations').mockReturnValue(
@@ -345,15 +353,15 @@ describe('OidcSecurityService', () => {
         .spyOn(checkAuthService, 'checkAuthIncludingServer')
         .mockReturnValue(of({} as LoginResponse));
 
-      oidcSecurityService.checkAuthIncludingServer().subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith(config, [config]);
-      });
-    }));
+      await firstValueFrom(oidcSecurityService.checkAuthIncludingServer());
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(config, [config]);
+    });
   });
 
   describe('getAccessToken', () => {
-    it('calls authStateService.getAccessToken()', waitForAsync(() => {
+    it('calls authStateService.getAccessToken()', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -364,15 +372,15 @@ describe('OidcSecurityService', () => {
         .spyOn(authStateService, 'getAccessToken')
         .mockReturnValue('');
 
-      oidcSecurityService.getAccessToken().subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith(config);
-      });
-    }));
+      await firstValueFrom(oidcSecurityService.getAccessToken());
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(config);
+    });
   });
 
   describe('getIdToken', () => {
-    it('calls authStateService.getIdToken()', waitForAsync(() => {
+    it('calls authStateService.getIdToken()', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -381,15 +389,15 @@ describe('OidcSecurityService', () => {
 
       const spy = vi.spyOn(authStateService, 'getIdToken').mockReturnValue('');
 
-      oidcSecurityService.getIdToken().subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith(config);
-      });
-    }));
+      await firstValueFrom(oidcSecurityService.getIdToken());
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(config);
+    });
   });
 
   describe('getRefreshToken', () => {
-    it('calls authStateService.getRefreshToken()', waitForAsync(() => {
+    it('calls authStateService.getRefreshToken()', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -399,15 +407,15 @@ describe('OidcSecurityService', () => {
         .spyOn(authStateService, 'getRefreshToken')
         .mockReturnValue('');
 
-      oidcSecurityService.getRefreshToken().subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith(config);
-      });
-    }));
+      await firstValueFrom(oidcSecurityService.getRefreshToken());
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(config);
+    });
   });
 
   describe('getAuthenticationResult', () => {
-    it('calls authStateService.getAuthenticationResult()', waitForAsync(() => {
+    it('calls authStateService.getAuthenticationResult()', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -418,15 +426,15 @@ describe('OidcSecurityService', () => {
         .spyOn(authStateService, 'getAuthenticationResult')
         .mockReturnValue(null);
 
-      oidcSecurityService.getAuthenticationResult().subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith(config);
-      });
-    }));
+      await firstValueFrom(oidcSecurityService.getAuthenticationResult());
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(config);
+    });
   });
 
   describe('getPayloadFromIdToken', () => {
-    it('calls `authStateService.getIdToken` method, encode = false', waitForAsync(() => {
+    it('calls `authStateService.getIdToken` method, encode = false', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -437,13 +445,13 @@ describe('OidcSecurityService', () => {
         .spyOn(tokenHelperService, 'getPayloadFromToken')
         .mockReturnValue(null);
 
-      oidcSecurityService.getPayloadFromIdToken().subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith('some-token', false, config);
-      });
-    }));
+      await firstValueFrom(oidcSecurityService.getPayloadFromIdToken());
 
-    it('calls `authStateService.getIdToken` method, encode = true', waitForAsync(() => {
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith('some-token', false, config);
+    });
+
+    it('calls `authStateService.getIdToken` method, encode = true', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -454,15 +462,15 @@ describe('OidcSecurityService', () => {
         .spyOn(tokenHelperService, 'getPayloadFromToken')
         .mockReturnValue(null);
 
-      oidcSecurityService.getPayloadFromIdToken(true).subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith('some-token', true, config);
-      });
-    }));
+      await firstValueFrom(oidcSecurityService.getPayloadFromIdToken(true));
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith('some-token', true, config);
+    });
   });
 
   describe('getPayloadFromAccessToken', () => {
-    it('calls `authStateService.getAccessToken` method, encode = false', waitForAsync(() => {
+    it('calls `authStateService.getAccessToken` method, encode = false', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -475,13 +483,13 @@ describe('OidcSecurityService', () => {
         .spyOn(tokenHelperService, 'getPayloadFromToken')
         .mockReturnValue(null);
 
-      oidcSecurityService.getPayloadFromAccessToken().subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith('some-access-token', false, config);
-      });
-    }));
+      await firstValueFrom(oidcSecurityService.getPayloadFromAccessToken());
 
-    it('calls `authStateService.getIdToken` method, encode = true', waitForAsync(() => {
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith('some-access-token', false, config);
+    });
+
+    it('calls `authStateService.getIdToken` method, encode = true', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -494,15 +502,15 @@ describe('OidcSecurityService', () => {
         .spyOn(tokenHelperService, 'getPayloadFromToken')
         .mockReturnValue(null);
 
-      oidcSecurityService.getPayloadFromAccessToken(true).subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith('some-access-token', true, config);
-      });
-    }));
+      await firstValueFrom(oidcSecurityService.getPayloadFromAccessToken(true));
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith('some-access-token', true, config);
+    });
   });
 
   describe('setState', () => {
-    it('calls flowsDataService.setAuthStateControl with param', waitForAsync(() => {
+    it('calls flowsDataService.setAuthStateControl with param', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -512,15 +520,15 @@ describe('OidcSecurityService', () => {
         .spyOn(flowsDataService, 'setAuthStateControl')
         .mockReturnValue(undefined as any);
 
-      oidcSecurityService.setState('anyString').subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith('anyString', config);
-      });
-    }));
+      await firstValueFrom(oidcSecurityService.setState('anyString'));
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith('anyString', config);
+    });
   });
 
   describe('getState', () => {
-    it('calls flowsDataService.getAuthStateControl', waitForAsync(() => {
+    it('calls flowsDataService.getAuthStateControl', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -530,15 +538,15 @@ describe('OidcSecurityService', () => {
         .spyOn(flowsDataService, 'getAuthStateControl')
         .mockReturnValue(undefined as any);
 
-      oidcSecurityService.getState().subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith(config);
-      });
-    }));
+      await firstValueFrom(oidcSecurityService.getState());
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(config);
+    });
   });
 
   describe('authorize', () => {
-    it('calls login service login', waitForAsync(() => {
+    it('calls login service login', () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -551,9 +559,9 @@ describe('OidcSecurityService', () => {
       expect(spy).toHaveBeenCalledTimes(1);
 
       expect(spy).toHaveBeenCalledWith(config, undefined);
-    }));
+    });
 
-    it('calls login service login with authoptions', waitForAsync(() => {
+    it('calls login service login with authoptions', () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -570,11 +578,11 @@ describe('OidcSecurityService', () => {
       expect(spy).toHaveBeenCalledWith(config, {
         customParams: { some: 'param' },
       });
-    }));
+    });
   });
 
   describe('authorizeWithPopUp', () => {
-    it('calls login service loginWithPopUp', waitForAsync(() => {
+    it('calls login service loginWithPopUp', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfigurations').mockReturnValue(
@@ -584,20 +592,15 @@ describe('OidcSecurityService', () => {
         .spyOn(loginService, 'loginWithPopUp')
         .mockImplementation(() => of({} as LoginResponse));
 
-      oidcSecurityService.authorizeWithPopUp().subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith(
-          config,
-          [config],
-          undefined,
-          undefined
-        );
-      });
-    }));
+      await firstValueFrom(oidcSecurityService.authorizeWithPopUp());
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(config, [config], undefined, undefined);
+    });
   });
 
   describe('forceRefreshSession', () => {
-    it('calls refreshSessionService userForceRefreshSession with configId from config when none is passed', waitForAsync(() => {
+    it('calls refreshSessionService userForceRefreshSession with configId from config when none is passed', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfigurations').mockReturnValue(
@@ -608,15 +611,15 @@ describe('OidcSecurityService', () => {
         .spyOn(refreshSessionService, 'userForceRefreshSession')
         .mockReturnValue(of({} as LoginResponse));
 
-      oidcSecurityService.forceRefreshSession().subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith(config, [config], undefined);
-      });
-    }));
+      await firstValueFrom(oidcSecurityService.forceRefreshSession());
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(config, [config], undefined);
+    });
   });
 
   describe('logoffAndRevokeTokens', () => {
-    it('calls logoffRevocationService.logoffAndRevokeTokens', waitForAsync(() => {
+    it('calls logoffRevocationService.logoffAndRevokeTokens', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfigurations').mockReturnValue(
@@ -626,15 +629,15 @@ describe('OidcSecurityService', () => {
         .spyOn(logoffRevocationService, 'logoffAndRevokeTokens')
         .mockReturnValue(of(null));
 
-      oidcSecurityService.logoffAndRevokeTokens().subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith(config, [config], undefined);
-      });
-    }));
+      await firstValueFrom(oidcSecurityService.logoffAndRevokeTokens());
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(config, [config], undefined);
+    });
   });
 
   describe('logoff', () => {
-    it('calls logoffRevocationService.logoff', waitForAsync(() => {
+    it('calls logoffRevocationService.logoff', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfigurations').mockReturnValue(
@@ -644,15 +647,15 @@ describe('OidcSecurityService', () => {
         .spyOn(logoffRevocationService, 'logoff')
         .mockReturnValue(of(null));
 
-      oidcSecurityService.logoff().subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith(config, [config], undefined);
-      });
-    }));
+      await firstValueFrom(oidcSecurityService.logoff());
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(config, [config], undefined);
+    });
   });
 
   describe('logoffLocal', () => {
-    it('calls logoffRevocationService.logoffLocal', waitForAsync(() => {
+    it('calls logoffRevocationService.logoffLocal', () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfigurations').mockReturnValue(
@@ -665,11 +668,11 @@ describe('OidcSecurityService', () => {
       oidcSecurityService.logoffLocal();
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith(config, [config]);
-    }));
+    });
   });
 
   describe('logoffLocalMultiple', () => {
-    it('calls logoffRevocationService.logoffLocalMultiple', waitForAsync(() => {
+    it('calls logoffRevocationService.logoffLocalMultiple', () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfigurations').mockReturnValue(
@@ -682,11 +685,11 @@ describe('OidcSecurityService', () => {
       oidcSecurityService.logoffLocalMultiple();
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith([config]);
-    }));
+    });
   });
 
   describe('revokeAccessToken', () => {
-    it('calls logoffRevocationService.revokeAccessToken', waitForAsync(() => {
+    it('calls logoffRevocationService.revokeAccessToken', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -696,13 +699,13 @@ describe('OidcSecurityService', () => {
         .spyOn(logoffRevocationService, 'revokeAccessToken')
         .mockReturnValue(of(null));
 
-      oidcSecurityService.revokeAccessToken().subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith(config, undefined);
-      });
-    }));
+      await firstValueFrom(oidcSecurityService.revokeAccessToken());
 
-    it('calls logoffRevocationService.revokeAccessToken with accesstoken', waitForAsync(() => {
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(config, undefined);
+    });
+
+    it('calls logoffRevocationService.revokeAccessToken with accesstoken', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -712,15 +715,17 @@ describe('OidcSecurityService', () => {
         .spyOn(logoffRevocationService, 'revokeAccessToken')
         .mockReturnValue(of(null));
 
-      oidcSecurityService.revokeAccessToken('access_token').subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith(config, 'access_token');
-      });
-    }));
+      await firstValueFrom(
+        oidcSecurityService.revokeAccessToken('access_token')
+      );
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(config, 'access_token');
+    });
   });
 
   describe('revokeRefreshToken', () => {
-    it('calls logoffRevocationService.revokeRefreshToken', waitForAsync(() => {
+    it('calls logoffRevocationService.revokeRefreshToken', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -730,13 +735,13 @@ describe('OidcSecurityService', () => {
         .spyOn(logoffRevocationService, 'revokeRefreshToken')
         .mockReturnValue(of(null));
 
-      oidcSecurityService.revokeRefreshToken().subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith(config, undefined);
-      });
-    }));
+      await firstValueFrom(oidcSecurityService.revokeRefreshToken());
 
-    it('calls logoffRevocationService.revokeRefreshToken with refresh token', waitForAsync(() => {
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(config, undefined);
+    });
+
+    it('calls logoffRevocationService.revokeRefreshToken with refresh token', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -746,15 +751,17 @@ describe('OidcSecurityService', () => {
         .spyOn(logoffRevocationService, 'revokeRefreshToken')
         .mockReturnValue(of(null));
 
-      oidcSecurityService.revokeRefreshToken('refresh_token').subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith(config, 'refresh_token');
-      });
-    }));
+      await firstValueFrom(
+        oidcSecurityService.revokeRefreshToken('refresh_token')
+      );
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(config, 'refresh_token');
+    });
   });
 
   describe('getEndSessionUrl', () => {
-    it('calls logoffRevocationService.getEndSessionUrl ', waitForAsync(() => {
+    it('calls logoffRevocationService.getEndSessionUrl ', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -765,13 +772,13 @@ describe('OidcSecurityService', () => {
         .spyOn(urlService, 'getEndSessionUrl')
         .mockReturnValue(null);
 
-      oidcSecurityService.getEndSessionUrl().subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith(config, undefined);
-      });
-    }));
+      await firstValueFrom(oidcSecurityService.getEndSessionUrl());
 
-    it('calls logoffRevocationService.getEndSessionUrl with customparams', waitForAsync(() => {
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(config, undefined);
+    });
+
+    it('calls logoffRevocationService.getEndSessionUrl with customparams', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -782,17 +789,17 @@ describe('OidcSecurityService', () => {
         .spyOn(urlService, 'getEndSessionUrl')
         .mockReturnValue(null);
 
-      oidcSecurityService
-        .getEndSessionUrl({ custom: 'params' })
-        .subscribe(() => {
-          expect(spy).toHaveBeenCalledTimes(1);
-          expect(spy).toHaveBeenCalledWith(config, { custom: 'params' });
-        });
-    }));
+      await firstValueFrom(
+        oidcSecurityService.getEndSessionUrl({ custom: 'params' })
+      );
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(config, { custom: 'params' });
+    });
   });
 
   describe('getAuthorizeUrl', () => {
-    it('calls urlService.getAuthorizeUrl ', waitForAsync(() => {
+    it('calls urlService.getAuthorizeUrl ', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -803,31 +810,31 @@ describe('OidcSecurityService', () => {
         .spyOn(urlService, 'getAuthorizeUrl')
         .mockReturnValue(of(null));
 
-      oidcSecurityService.getAuthorizeUrl().subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith(config, undefined);
+      await firstValueFrom(oidcSecurityService.getAuthorizeUrl());
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(config, undefined);
+    });
+
+    it('calls urlService.getAuthorizeUrl with customparams', async () => {
+      const config = { configId: 'configId1' };
+
+      vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
+        of(config)
+      );
+
+      const spy = vi
+        .spyOn(urlService, 'getAuthorizeUrl')
+        .mockReturnValue(of(null));
+
+      await firstValueFrom(
+        oidcSecurityService.getAuthorizeUrl({ custom: 'params' })
+      );
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(config, {
+        customParams: { custom: 'params' },
       });
-    }));
-
-    it('calls urlService.getAuthorizeUrl with customparams', waitForAsync(() => {
-      const config = { configId: 'configId1' };
-
-      vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
-        of(config)
-      );
-
-      const spy = vi
-        .spyOn(urlService, 'getAuthorizeUrl')
-        .mockReturnValue(of(null));
-
-      oidcSecurityService
-        .getAuthorizeUrl({ custom: 'params' })
-        .subscribe(() => {
-          expect(spy).toHaveBeenCalledTimes(1);
-          expect(spy).toHaveBeenCalledWith(config, {
-            customParams: { custom: 'params' },
-          });
-        });
-    }));
+    });
   });
 });

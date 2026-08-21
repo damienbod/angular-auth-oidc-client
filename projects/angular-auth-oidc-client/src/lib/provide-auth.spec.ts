@@ -1,6 +1,6 @@
 import type { MockedObject } from 'vitest';
 import { APP_INITIALIZER } from '@angular/core';
-import { TestBed, waitForAsync } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { mockProvider } from '../test/auto-mock';
 import { PASSED_CONFIG } from './auth-config';
@@ -15,14 +15,14 @@ import { provideAuth, withAppInitializerAuthCheck } from './provide-auth';
 
 describe('provideAuth', () => {
   describe('APP_CONFIG', () => {
-    beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
+    beforeEach(async () => {
+      await TestBed.configureTestingModule({
         providers: [
           provideAuth({ config: { authority: 'something' } }),
           mockProvider(ConfigurationService),
         ],
       }).compileComponents();
-    }));
+    });
 
     it('should provide config', () => {
       const config = TestBed.inject(PASSED_CONFIG);
@@ -38,8 +38,8 @@ describe('provideAuth', () => {
   });
 
   describe('StsConfigHttpLoader', () => {
-    beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
+    beforeEach(async () => {
+      await TestBed.configureTestingModule({
         providers: [
           provideAuth({
             loader: {
@@ -50,7 +50,7 @@ describe('provideAuth', () => {
           mockProvider(ConfigurationService),
         ],
       }).compileComponents();
-    }));
+    });
 
     it('should create StsConfigStaticLoader if config is passed', () => {
       const configLoader = TestBed.inject(StsConfigLoader);
@@ -62,13 +62,13 @@ describe('provideAuth', () => {
   describe('features', () => {
     let oidcSecurityServiceMock: MockedObject<OidcSecurityService>;
 
-    beforeEach(waitForAsync(() => {
+    beforeEach(async () => {
       oidcSecurityServiceMock = {
         checkAuthMultiple: vi
           .fn()
           .mockName('OidcSecurityService.checkAuthMultiple'),
       } as unknown as MockedObject<OidcSecurityService>;
-      TestBed.configureTestingModule({
+      await TestBed.configureTestingModule({
         providers: [
           provideAuth(
             { config: { authority: 'something' } },
@@ -81,7 +81,7 @@ describe('provideAuth', () => {
           },
         ],
       }).compileComponents();
-    }));
+    });
 
     it('should provide APP_INITIALIZER config', () => {
       const config = TestBed.inject(APP_INITIALIZER);

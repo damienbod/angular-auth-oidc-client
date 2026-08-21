@@ -1,6 +1,7 @@
-import { TestBed, waitForAsync } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { filter } from 'rxjs/operators';
 import { EventTypes } from './event-types';
+import type { OidcClientNotification } from './notification';
 import { PublicEventsService } from './public-events.service';
 
 describe('Events Service', () => {
@@ -20,18 +21,22 @@ describe('Events Service', () => {
     expect(eventsService).toBeTruthy();
   });
 
-  it('registering to single event with one event emit works', waitForAsync(() => {
-    eventsService.registerForEvents().subscribe((firedEvent) => {
-      expect(firedEvent).toBeTruthy();
-      expect(firedEvent).toEqual({
-        type: EventTypes.ConfigLoaded,
-        value: { myKey: 'myValue' },
-      });
+  it('registering to single event with one event emit works', () => {
+    let firedEvent: OidcClientNotification<any> | undefined;
+
+    eventsService.registerForEvents().subscribe((event) => {
+      firedEvent = event;
     });
     eventsService.fireEvent(EventTypes.ConfigLoaded, { myKey: 'myValue' });
-  }));
 
-  it('registering to single event with multiple same event emit works', waitForAsync(() => {
+    expect(firedEvent).toBeTruthy();
+    expect(firedEvent).toEqual({
+      type: EventTypes.ConfigLoaded,
+      value: { myKey: 'myValue' },
+    });
+  });
+
+  it('registering to single event with multiple same event emit works', () => {
     const spy = vi.fn().mockName('spy');
 
     eventsService.registerForEvents().subscribe((firedEvent) => {
@@ -50,20 +55,25 @@ describe('Events Service', () => {
       type: EventTypes.ConfigLoaded,
       value: { myKey: 'myValue2' },
     });
-  }));
+  });
 
-  it('registering to single event with multiple emit works', waitForAsync(() => {
+  it('registering to single event with multiple emit works', () => {
+    const firedEvents: OidcClientNotification<any>[] = [];
+
     eventsService
       .registerForEvents()
       .pipe(filter((x) => x.type === EventTypes.ConfigLoaded))
       .subscribe((firedEvent) => {
-        expect(firedEvent).toBeTruthy();
-        expect(firedEvent).toEqual({
-          type: EventTypes.ConfigLoaded,
-          value: { myKey: 'myValue' },
-        });
+        firedEvents.push(firedEvent);
       });
     eventsService.fireEvent(EventTypes.ConfigLoaded, { myKey: 'myValue' });
     eventsService.fireEvent(EventTypes.NewAuthenticationResult, true);
-  }));
+
+    expect(firedEvents).toEqual([
+      {
+        type: EventTypes.ConfigLoaded,
+        value: { myKey: 'myValue' },
+      },
+    ]);
+  });
 });

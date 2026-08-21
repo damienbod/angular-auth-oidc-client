@@ -1,11 +1,11 @@
-import { TestBed, waitForAsync } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import {
   ActivatedRouteSnapshot,
   Router,
   RouterStateSnapshot,
 } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Observable, of } from 'rxjs';
+import { Observable, firstValueFrom, of } from 'rxjs';
 import { mockProvider } from '../../test/auto-mock';
 import { CheckAuthService } from '../auth-state/check-auth.service';
 import { ConfigurationService } from '../config/config.service';
@@ -62,7 +62,7 @@ describe(`AutoLoginAllRoutesGuard`, () => {
     });
 
     describe('canActivate', () => {
-      it('should save current route and call `login` if not authenticated already', waitForAsync(() => {
+      it('should save current route and call `login` if not authenticated already', async () => {
         vi.spyOn(checkAuthService, 'checkAuth').mockReturnValue(
           of({ isAuthenticated: false } as LoginResponse)
         );
@@ -82,19 +82,19 @@ describe(`AutoLoginAllRoutesGuard`, () => {
           } as RouterStateSnapshot
         ) as Observable<boolean>;
 
-        canActivate$.subscribe(() => {
-          expect(saveRedirectRouteSpy).toHaveBeenCalledTimes(1);
-          expect(saveRedirectRouteSpy).toHaveBeenCalledWith(
-            { configId: 'configId1' },
-            'some-url1'
-          );
-          expect(loginSpy).toHaveBeenCalledTimes(1);
-          expect(loginSpy).toHaveBeenCalledWith({ configId: 'configId1' });
-          expect(checkSavedRedirectRouteAndNavigateSpy).not.toHaveBeenCalled();
-        });
-      }));
+        await firstValueFrom(canActivate$);
 
-      it('should call `checkSavedRedirectRouteAndNavigate` if authenticated already', waitForAsync(() => {
+        expect(saveRedirectRouteSpy).toHaveBeenCalledTimes(1);
+        expect(saveRedirectRouteSpy).toHaveBeenCalledWith(
+          { configId: 'configId1' },
+          'some-url1'
+        );
+        expect(loginSpy).toHaveBeenCalledTimes(1);
+        expect(loginSpy).toHaveBeenCalledWith({ configId: 'configId1' });
+        expect(checkSavedRedirectRouteAndNavigateSpy).not.toHaveBeenCalled();
+      });
+
+      it('should call `checkSavedRedirectRouteAndNavigate` if authenticated already', async () => {
         vi.spyOn(checkAuthService, 'checkAuth').mockReturnValue(
           of({ isAuthenticated: true } as LoginResponse)
         );
@@ -114,19 +114,17 @@ describe(`AutoLoginAllRoutesGuard`, () => {
           } as RouterStateSnapshot
         ) as Observable<boolean>;
 
-        canActivate$.subscribe(() => {
-          expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
-          expect(loginSpy).not.toHaveBeenCalled();
-          expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledTimes(
-            1
-          );
-          expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledWith({
-            configId: 'configId1',
-          });
-        });
-      }));
+        await firstValueFrom(canActivate$);
 
-      it('should call `checkSavedRedirectRouteAndNavigate` if authenticated already', waitForAsync(() => {
+        expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
+        expect(loginSpy).not.toHaveBeenCalled();
+        expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledTimes(1);
+        expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledWith({
+          configId: 'configId1',
+        });
+      });
+
+      it('should call `checkSavedRedirectRouteAndNavigate` if authenticated already', async () => {
         vi.spyOn(checkAuthService, 'checkAuth').mockReturnValue(
           of({ isAuthenticated: true } as LoginResponse)
         );
@@ -146,21 +144,19 @@ describe(`AutoLoginAllRoutesGuard`, () => {
           } as RouterStateSnapshot
         ) as Observable<boolean>;
 
-        canActivate$.subscribe(() => {
-          expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
-          expect(loginSpy).not.toHaveBeenCalled();
-          expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledTimes(
-            1
-          );
-          expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledWith({
-            configId: 'configId1',
-          });
+        await firstValueFrom(canActivate$);
+
+        expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
+        expect(loginSpy).not.toHaveBeenCalled();
+        expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledTimes(1);
+        expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledWith({
+          configId: 'configId1',
         });
-      }));
+      });
     });
 
     describe('canActivateChild', () => {
-      it('should save current route and call `login` if not authenticated already', waitForAsync(() => {
+      it('should save current route and call `login` if not authenticated already', async () => {
         vi.spyOn(checkAuthService, 'checkAuth').mockReturnValue(
           of({ isAuthenticated: false } as LoginResponse)
         );
@@ -180,19 +176,19 @@ describe(`AutoLoginAllRoutesGuard`, () => {
           } as RouterStateSnapshot
         ) as Observable<boolean>;
 
-        canActivateChild$.subscribe(() => {
-          expect(saveRedirectRouteSpy).toHaveBeenCalledTimes(1);
-          expect(saveRedirectRouteSpy).toHaveBeenCalledWith(
-            { configId: 'configId1' },
-            'some-url1'
-          );
-          expect(loginSpy).toHaveBeenCalledTimes(1);
-          expect(loginSpy).toHaveBeenCalledWith({ configId: 'configId1' });
-          expect(checkSavedRedirectRouteAndNavigateSpy).not.toHaveBeenCalled();
-        });
-      }));
+        await firstValueFrom(canActivateChild$);
 
-      it('should call `checkSavedRedirectRouteAndNavigate` if authenticated already', waitForAsync(() => {
+        expect(saveRedirectRouteSpy).toHaveBeenCalledTimes(1);
+        expect(saveRedirectRouteSpy).toHaveBeenCalledWith(
+          { configId: 'configId1' },
+          'some-url1'
+        );
+        expect(loginSpy).toHaveBeenCalledTimes(1);
+        expect(loginSpy).toHaveBeenCalledWith({ configId: 'configId1' });
+        expect(checkSavedRedirectRouteAndNavigateSpy).not.toHaveBeenCalled();
+      });
+
+      it('should call `checkSavedRedirectRouteAndNavigate` if authenticated already', async () => {
         vi.spyOn(checkAuthService, 'checkAuth').mockReturnValue(
           of({ isAuthenticated: true } as LoginResponse)
         );
@@ -212,19 +208,17 @@ describe(`AutoLoginAllRoutesGuard`, () => {
           } as RouterStateSnapshot
         ) as Observable<boolean>;
 
-        canActivateChild$.subscribe(() => {
-          expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
-          expect(loginSpy).not.toHaveBeenCalled();
-          expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledTimes(
-            1
-          );
-          expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledWith({
-            configId: 'configId1',
-          });
-        });
-      }));
+        await firstValueFrom(canActivateChild$);
 
-      it('should call `checkSavedRedirectRouteAndNavigate` if authenticated already', waitForAsync(() => {
+        expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
+        expect(loginSpy).not.toHaveBeenCalled();
+        expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledTimes(1);
+        expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledWith({
+          configId: 'configId1',
+        });
+      });
+
+      it('should call `checkSavedRedirectRouteAndNavigate` if authenticated already', async () => {
         vi.spyOn(checkAuthService, 'checkAuth').mockReturnValue(
           of({ isAuthenticated: true } as LoginResponse)
         );
@@ -244,21 +238,19 @@ describe(`AutoLoginAllRoutesGuard`, () => {
           } as RouterStateSnapshot
         ) as Observable<boolean>;
 
-        canActivateChild$.subscribe(() => {
-          expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
-          expect(loginSpy).not.toHaveBeenCalled();
-          expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledTimes(
-            1
-          );
-          expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledWith({
-            configId: 'configId1',
-          });
+        await firstValueFrom(canActivateChild$);
+
+        expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
+        expect(loginSpy).not.toHaveBeenCalled();
+        expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledTimes(1);
+        expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledWith({
+          configId: 'configId1',
         });
-      }));
+      });
     });
 
     describe('canLoad', () => {
-      it('should save current route (empty) and call `login` if not authenticated already', waitForAsync(() => {
+      it('should save current route (empty) and call `login` if not authenticated already', async () => {
         vi.spyOn(checkAuthService, 'checkAuth').mockReturnValue(
           of({ isAuthenticated: false } as LoginResponse)
         );
@@ -273,19 +265,19 @@ describe(`AutoLoginAllRoutesGuard`, () => {
           .mockReturnValue(undefined);
         const canLoad$ = guard.canLoad();
 
-        canLoad$.subscribe(() => {
-          expect(saveRedirectRouteSpy).toHaveBeenCalledTimes(1);
-          expect(saveRedirectRouteSpy).toHaveBeenCalledWith(
-            { configId: 'configId1' },
-            ''
-          );
-          expect(loginSpy).toHaveBeenCalledTimes(1);
-          expect(loginSpy).toHaveBeenCalledWith({ configId: 'configId1' });
-          expect(checkSavedRedirectRouteAndNavigateSpy).not.toHaveBeenCalled();
-        });
-      }));
+        await firstValueFrom(canLoad$);
 
-      it('should save current route (with router extractedUrl) and call `login` if not authenticated already', waitForAsync(() => {
+        expect(saveRedirectRouteSpy).toHaveBeenCalledTimes(1);
+        expect(saveRedirectRouteSpy).toHaveBeenCalledWith(
+          { configId: 'configId1' },
+          ''
+        );
+        expect(loginSpy).toHaveBeenCalledTimes(1);
+        expect(loginSpy).toHaveBeenCalledWith({ configId: 'configId1' });
+        expect(checkSavedRedirectRouteAndNavigateSpy).not.toHaveBeenCalled();
+      });
+
+      it('should save current route (with router extractedUrl) and call `login` if not authenticated already', async () => {
         vi.spyOn(checkAuthService, 'checkAuth').mockReturnValue(
           of({ isAuthenticated: false } as LoginResponse)
         );
@@ -313,19 +305,19 @@ describe(`AutoLoginAllRoutesGuard`, () => {
 
         const canLoad$ = guard.canLoad();
 
-        canLoad$.subscribe(() => {
-          expect(saveRedirectRouteSpy).toHaveBeenCalledTimes(1);
-          expect(saveRedirectRouteSpy).toHaveBeenCalledWith(
-            { configId: 'configId1' },
-            'some-url12/with/some-param?queryParam=true'
-          );
-          expect(loginSpy).toHaveBeenCalledTimes(1);
-          expect(loginSpy).toHaveBeenCalledWith({ configId: 'configId1' });
-          expect(checkSavedRedirectRouteAndNavigateSpy).not.toHaveBeenCalled();
-        });
-      }));
+        await firstValueFrom(canLoad$);
 
-      it('should call `checkSavedRedirectRouteAndNavigate` if authenticated already', waitForAsync(() => {
+        expect(saveRedirectRouteSpy).toHaveBeenCalledTimes(1);
+        expect(saveRedirectRouteSpy).toHaveBeenCalledWith(
+          { configId: 'configId1' },
+          'some-url12/with/some-param?queryParam=true'
+        );
+        expect(loginSpy).toHaveBeenCalledTimes(1);
+        expect(loginSpy).toHaveBeenCalledWith({ configId: 'configId1' });
+        expect(checkSavedRedirectRouteAndNavigateSpy).not.toHaveBeenCalled();
+      });
+
+      it('should call `checkSavedRedirectRouteAndNavigate` if authenticated already', async () => {
         vi.spyOn(checkAuthService, 'checkAuth').mockReturnValue(
           of({ isAuthenticated: true } as LoginResponse)
         );
@@ -340,19 +332,17 @@ describe(`AutoLoginAllRoutesGuard`, () => {
           .mockReturnValue(undefined);
         const canLoad$ = guard.canLoad() as Observable<boolean>;
 
-        canLoad$.subscribe(() => {
-          expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
-          expect(loginSpy).not.toHaveBeenCalled();
-          expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledTimes(
-            1
-          );
-          expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledWith({
-            configId: 'configId1',
-          });
-        });
-      }));
+        await firstValueFrom(canLoad$);
 
-      it('should call `checkSavedRedirectRouteAndNavigate` if authenticated already', waitForAsync(() => {
+        expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
+        expect(loginSpy).not.toHaveBeenCalled();
+        expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledTimes(1);
+        expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledWith({
+          configId: 'configId1',
+        });
+      });
+
+      it('should call `checkSavedRedirectRouteAndNavigate` if authenticated already', async () => {
         vi.spyOn(checkAuthService, 'checkAuth').mockReturnValue(
           of({ isAuthenticated: true } as LoginResponse)
         );
@@ -367,17 +357,15 @@ describe(`AutoLoginAllRoutesGuard`, () => {
           .mockReturnValue(undefined);
         const canLoad$ = guard.canLoad() as Observable<boolean>;
 
-        canLoad$.subscribe(() => {
-          expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
-          expect(loginSpy).not.toHaveBeenCalled();
-          expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledTimes(
-            1
-          );
-          expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledWith({
-            configId: 'configId1',
-          });
+        await firstValueFrom(canLoad$);
+
+        expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
+        expect(loginSpy).not.toHaveBeenCalled();
+        expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledTimes(1);
+        expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledWith({
+          configId: 'configId1',
         });
-      }));
+      });
     });
   });
 });

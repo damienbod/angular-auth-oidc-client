@@ -1,5 +1,5 @@
-import { TestBed, waitForAsync } from '@angular/core/testing';
-import { Observable, of, throwError } from 'rxjs';
+import { TestBed } from '@angular/core/testing';
+import { firstValueFrom, Observable, of, throwError } from 'rxjs';
 import { mockProvider } from '../../test/auto-mock';
 import { createRetriableStream } from '../../test/create-retriable-stream.helper';
 import { DataService } from '../api/data.service';
@@ -57,7 +57,7 @@ describe('User Service', () => {
   });
 
   describe('getAndPersistUserDataInStore', () => {
-    it('if not currentFlow is NOT id Token or Code flow, return decoded ID Token - passed as argument', waitForAsync(() => {
+    it('if not currentFlow is NOT id Token or Code flow, return decoded ID Token - passed as argument', async () => {
       const isRenewProcess = false;
       const idToken = '';
       const decodedIdToken = 'decodedIdToken';
@@ -71,20 +71,20 @@ describe('User Service', () => {
         userDataInstore
       );
 
-      userService
-        .getAndPersistUserDataInStore(
+      const token = await firstValueFrom(
+        userService.getAndPersistUserDataInStore(
           config,
           [config],
           isRenewProcess,
           idToken,
           decodedIdToken
         )
-        .subscribe((token) => {
-          expect(decodedIdToken).toBe(token);
-        });
-    }));
+      );
 
-    it('if not currentFlow is NOT id Token or Code flow, "setUserDataToStore" is called with the decodedIdToken', waitForAsync(() => {
+      expect(decodedIdToken).toBe(token);
+    });
+
+    it('if not currentFlow is NOT id Token or Code flow, "setUserDataToStore" is called with the decodedIdToken', async () => {
       const isRenewProcess = false;
       const idToken = '';
       const decodedIdToken = 'decodedIdToken';
@@ -99,22 +99,21 @@ describe('User Service', () => {
       );
       vi.spyOn(userService, 'setUserDataToStore').mockReturnValue(undefined);
 
-      userService
-        .getAndPersistUserDataInStore(
+      const token = await firstValueFrom(
+        userService.getAndPersistUserDataInStore(
           config,
           [config],
           isRenewProcess,
           idToken,
           decodedIdToken
         )
-        .subscribe((token) => {
-          expect(decodedIdToken).toBe(token);
-        });
+      );
 
+      expect(decodedIdToken).toBe(token);
       expect(userService.setUserDataToStore).toHaveBeenCalled();
-    }));
+    });
 
-    it('if not currentFlow is id token or code flow with renewProcess going -> return existing data from storage', waitForAsync(() => {
+    it('if not currentFlow is id token or code flow with renewProcess going -> return existing data from storage', async () => {
       const isRenewProcess = true;
       const idToken = '';
       const decodedIdToken = 'decodedIdToken';
@@ -128,20 +127,20 @@ describe('User Service', () => {
         userDataInstore
       );
 
-      userService
-        .getAndPersistUserDataInStore(
+      const token = await firstValueFrom(
+        userService.getAndPersistUserDataInStore(
           config,
           [config],
           isRenewProcess,
           idToken,
           decodedIdToken
         )
-        .subscribe((token) => {
-          expect(userDataInstore).toBe(token);
-        });
-    }));
+      );
 
-    it('if not currentFlow is id token or code flow and not renewProcess --> ask server for data', waitForAsync(() => {
+      expect(userDataInstore).toBe(token);
+    });
+
+    it('if not currentFlow is id token or code flow and not renewProcess --> ask server for data', async () => {
       const isRenewProcess = false;
       const idToken = '';
       const decodedIdToken = 'decodedIdToken';
@@ -158,25 +157,23 @@ describe('User Service', () => {
       const spy = vi
         .spyOn(userService as any, 'getIdentityUserData')
         .mockReturnValue(of(userDataFromSts));
-
-      userService
-        .getAndPersistUserDataInStore(
+      const token = await firstValueFrom(
+        userService.getAndPersistUserDataInStore(
           config,
           [config],
           isRenewProcess,
           idToken,
           decodedIdToken
         )
-        .subscribe((token) => {
-          expect(userDataFromSts).toEqual(token);
-        });
+      );
 
+      expect(userDataFromSts).toEqual(token);
       expect(spy).toHaveBeenCalled();
-    }));
+    });
 
     it(`if not currentFlow is id token or code flow and not renewprocess
           --> ask server for data
-          --> logging if it has userdata`, waitForAsync(() => {
+          --> logging if it has userdata`, async () => {
       const isRenewProcess = false;
       const idToken = '';
       const decodedIdToken = 'decodedIdToken';
@@ -199,25 +196,24 @@ describe('User Service', () => {
         'accessToken'
       );
 
-      userService
-        .getAndPersistUserDataInStore(
+      const token = await firstValueFrom(
+        userService.getAndPersistUserDataInStore(
           config,
           [config],
           isRenewProcess,
           idToken,
           decodedIdToken
         )
-        .subscribe((token) => {
-          expect(userDataFromSts).toEqual(token);
-        });
+      );
 
+      expect(userDataFromSts).toEqual(token);
       expect(spy).toHaveBeenCalled();
       expect(loggerService.logDebug).toHaveBeenCalled();
-    }));
+    });
 
     it(`if not currentFlow is id token or code flow and not renewprocess
           --> ask server for data
-          --> throwing Error if it has no userdata `, waitForAsync(() => {
+          --> throwing Error if it has no userdata `, async () => {
       const isRenewProcess = false;
       const idToken = '';
       const decodedIdToken = { sub: 'decodedIdToken' };
@@ -240,27 +236,23 @@ describe('User Service', () => {
         'accessToken'
       );
 
-      userService
-        .getAndPersistUserDataInStore(
-          config,
-          [config],
-          isRenewProcess,
-          idToken,
-          decodedIdToken
+      await expect(
+        firstValueFrom(
+          userService.getAndPersistUserDataInStore(
+            config,
+            [config],
+            isRenewProcess,
+            idToken,
+            decodedIdToken
+          )
         )
-        .subscribe({
-          error: (err) => {
-            expect(err.message).toEqual(
-              'Received no user data, request failed'
-            );
-          },
-        });
+      ).rejects.toThrow('Received no user data, request failed');
 
       expect(spyGetIdentityUserData).toHaveBeenCalled();
-    }));
+    });
 
     it(`if not currentFlow is id token or code flow and renewprocess and renewUserInfoAfterTokenRenew
-          --> ask server for data`, waitForAsync(() => {
+          --> ask server for data`, async () => {
       const isRenewProcess = true;
       const idToken = '';
       const decodedIdToken = 'decodedIdToken';
@@ -278,21 +270,19 @@ describe('User Service', () => {
       const spy = vi
         .spyOn(userService as any, 'getIdentityUserData')
         .mockReturnValue(of(userDataFromSts));
-
-      userService
-        .getAndPersistUserDataInStore(
+      const token = await firstValueFrom(
+        userService.getAndPersistUserDataInStore(
           config,
           [config],
           isRenewProcess,
           idToken,
           decodedIdToken
         )
-        .subscribe((token) => {
-          expect(userDataFromSts).toEqual(token);
-        });
+      );
 
+      expect(userDataFromSts).toEqual(token);
       expect(spy).toHaveBeenCalled();
-    }));
+    });
   });
 
   describe('getUserDataFromStore', () => {
@@ -552,7 +542,7 @@ describe('User Service', () => {
   });
 
   describe('getIdentityUserData', () => {
-    it('does nothing if no authWellKnownEndPoints are set', waitForAsync(() => {
+    it('does nothing if no authWellKnownEndPoints are set', async () => {
       const config = { configId: 'configId1' };
       const serviceAsAny = userService as any;
 
@@ -568,14 +558,12 @@ describe('User Service', () => {
           return undefined;
         }
       );
-      serviceAsAny.getIdentityUserData(config).subscribe({
-        error: (err: any) => {
-          expect(err).toBeTruthy();
-        },
-      });
-    }));
+      await expect(
+        firstValueFrom(serviceAsAny.getIdentityUserData(config))
+      ).rejects.toBeTruthy();
+    });
 
-    it('does nothing if no userInfoEndpoint is set', waitForAsync(() => {
+    it('does nothing if no userInfoEndpoint is set', async () => {
       const config = { configId: 'configId1' };
       const serviceAsAny = userService as any;
 
@@ -591,14 +579,12 @@ describe('User Service', () => {
           return undefined;
         }
       );
-      serviceAsAny.getIdentityUserData(config).subscribe({
-        error: (err: any) => {
-          expect(err).toBeTruthy();
-        },
-      });
-    }));
+      await expect(
+        firstValueFrom(serviceAsAny.getIdentityUserData(config))
+      ).rejects.toBeTruthy();
+    });
 
-    it('gets userData if authwell and userInfoEndpoint is set', waitForAsync(() => {
+    it('gets userData if authwell and userInfoEndpoint is set', async () => {
       const config = { configId: 'configId1' };
       const serviceAsAny = userService as any;
       const spy = vi.spyOn(dataService, 'get').mockReturnValue(of({}));
@@ -615,18 +601,18 @@ describe('User Service', () => {
           return undefined;
         }
       );
-      serviceAsAny.getIdentityUserData(config).subscribe(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith(
-          'userInfoEndpoint',
-          config,
-          'accessToken'
-        );
-      });
-    }));
+      await firstValueFrom(serviceAsAny.getIdentityUserData(config));
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(
+        'userInfoEndpoint',
+        config,
+        'accessToken'
+      );
+    });
   });
 
-  it('should retry once', waitForAsync(() => {
+  it('should retry once', async () => {
     const config = { configId: 'configId1' };
 
     vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue(
@@ -648,15 +634,15 @@ describe('User Service', () => {
       )
     );
 
-    (userService as any).getIdentityUserData(config).subscribe({
-      next: (res: any) => {
-        expect(res).toBeTruthy();
-        expect(res).toEqual(DUMMY_USER_DATA);
-      },
-    });
-  }));
+    const res = await firstValueFrom(
+      (userService as any).getIdentityUserData(config)
+    );
 
-  it('should retry twice', waitForAsync(() => {
+    expect(res).toBeTruthy();
+    expect(res).toEqual(DUMMY_USER_DATA);
+  });
+
+  it('should retry twice', async () => {
     const config = { configId: 'configId1' };
 
     vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue(
@@ -679,15 +665,15 @@ describe('User Service', () => {
       )
     );
 
-    (userService as any).getIdentityUserData(config).subscribe({
-      next: (res: any) => {
-        expect(res).toBeTruthy();
-        expect(res).toEqual(DUMMY_USER_DATA);
-      },
-    });
-  }));
+    const res = await firstValueFrom(
+      (userService as any).getIdentityUserData(config)
+    );
 
-  it('should fail after three tries', waitForAsync(() => {
+    expect(res).toBeTruthy();
+    expect(res).toEqual(DUMMY_USER_DATA);
+  });
+
+  it('should fail after three tries', async () => {
     const config = { configId: 'configId1' };
 
     vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue(
@@ -711,10 +697,8 @@ describe('User Service', () => {
       )
     );
 
-    (userService as any).getIdentityUserData(config).subscribe({
-      error: (err: any) => {
-        expect(err).toBeTruthy();
-      },
-    });
-  }));
+    await expect(
+      firstValueFrom((userService as any).getIdentityUserData(config))
+    ).rejects.toBeTruthy();
+  });
 });

@@ -1,5 +1,6 @@
 import { DOCUMENT } from '@angular/core';
-import { TestBed, waitForAsync } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import { firstValueFrom } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
 import { LoggerService } from '../../logging/logger.service';
 import { CallbackContext } from '../callback-context';
@@ -47,7 +48,7 @@ describe('ImplicitFlowCallbackHandlerService', () => {
   });
 
   describe('implicitFlowCallback', () => {
-    it('calls "resetAuthorizationData" if silent renew is not running', waitForAsync(() => {
+    it('calls "resetAuthorizationData" if silent renew is not running', async () => {
       vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(false);
       const resetAuthorizationDataSpy = vi
         .spyOn(resetAuthDataService, 'resetAuthorizationData')
@@ -58,14 +59,14 @@ describe('ImplicitFlowCallbackHandlerService', () => {
         },
       ];
 
-      service
-        .implicitFlowCallback(allconfigs[0], allconfigs, 'any-hash')
-        .subscribe(() => {
-          expect(resetAuthorizationDataSpy).toHaveBeenCalled();
-        });
-    }));
+      await firstValueFrom(
+        service.implicitFlowCallback(allconfigs[0], allconfigs, 'any-hash')
+      );
 
-    it('does NOT calls "resetAuthorizationData" if silent renew is running', waitForAsync(() => {
+      expect(resetAuthorizationDataSpy).toHaveBeenCalled();
+    });
+
+    it('does NOT calls "resetAuthorizationData" if silent renew is running', async () => {
       vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(true);
       const resetAuthorizationDataSpy = vi
         .spyOn(resetAuthDataService, 'resetAuthorizationData')
@@ -76,14 +77,14 @@ describe('ImplicitFlowCallbackHandlerService', () => {
         },
       ];
 
-      service
-        .implicitFlowCallback(allconfigs[0], allconfigs, 'any-hash')
-        .subscribe(() => {
-          expect(resetAuthorizationDataSpy).not.toHaveBeenCalled();
-        });
-    }));
+      await firstValueFrom(
+        service.implicitFlowCallback(allconfigs[0], allconfigs, 'any-hash')
+      );
 
-    it('returns callbackContext if all params are good', waitForAsync(() => {
+      expect(resetAuthorizationDataSpy).not.toHaveBeenCalled();
+    });
+
+    it('returns callbackContext if all params are good', async () => {
       vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(true);
       const expectedCallbackContext = {
         code: '',
@@ -101,15 +102,14 @@ describe('ImplicitFlowCallbackHandlerService', () => {
           configId: 'configId1',
         },
       ];
+      const callbackContext = await firstValueFrom(
+        service.implicitFlowCallback(allconfigs[0], allconfigs, 'anyHash')
+      );
 
-      service
-        .implicitFlowCallback(allconfigs[0], allconfigs, 'anyHash')
-        .subscribe((callbackContext) => {
-          expect(callbackContext).toEqual(expectedCallbackContext);
-        });
-    }));
+      expect(callbackContext).toEqual(expectedCallbackContext);
+    });
 
-    it('uses window location hash if no hash is passed', waitForAsync(() => {
+    it('uses window location hash if no hash is passed', async () => {
       vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(true);
       const expectedCallbackContext = {
         code: '',
@@ -127,12 +127,11 @@ describe('ImplicitFlowCallbackHandlerService', () => {
           configId: 'configId1',
         },
       ];
+      const callbackContext = await firstValueFrom(
+        service.implicitFlowCallback(allconfigs[0], allconfigs)
+      );
 
-      service
-        .implicitFlowCallback(allconfigs[0], allconfigs)
-        .subscribe((callbackContext) => {
-          expect(callbackContext).toEqual(expectedCallbackContext);
-        });
-    }));
+      expect(callbackContext).toEqual(expectedCallbackContext);
+    });
   });
 });

@@ -1,4 +1,4 @@
-import { TestBed, waitForAsync } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { base64url } from 'rfc4648';
 import { CryptoService } from '../utils/crypto/crypto.service';
 import { JwkWindowCryptoService } from './jwk-window-crypto.service';
@@ -43,9 +43,9 @@ describe('JwkWindowCryptoService', () => {
     });
   });
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(() => {
     service = TestBed.inject(JwkWindowCryptoService);
-  }));
+  });
 
   it('should create', () => {
     expect(service).toBeTruthy();

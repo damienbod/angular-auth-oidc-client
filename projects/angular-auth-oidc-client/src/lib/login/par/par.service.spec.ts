@@ -1,6 +1,6 @@
 import { HttpHeaders } from '@angular/common/http';
-import { TestBed, waitForAsync } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
+import { TestBed } from '@angular/core/testing';
+import { firstValueFrom, of, throwError } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
 import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
 import { DataService } from '../../api/data.service';
@@ -40,7 +40,7 @@ describe('ParService', () => {
   });
 
   describe('postParRequest', () => {
-    it('throws error if authWellKnownEndPoints does not exist in storage', waitForAsync(() => {
+    it('throws error if authWellKnownEndPoints does not exist in storage', async () => {
       vi.spyOn(urlService, 'createBodyForParCodeFlowRequest').mockReturnValue(
         of(null)
       );
@@ -53,16 +53,18 @@ describe('ParService', () => {
           return undefined;
         }
       );
-      service.postParRequest({ configId: 'configId1' }).subscribe({
-        error: (err) => {
-          expect(err.message).toBe(
-            'Could not read PAR endpoint because authWellKnownEndPoints are not given'
-          );
-        },
-      });
-    }));
 
-    it('throws error if par endpoint does not exist in storage', waitForAsync(() => {
+      try {
+        await firstValueFrom(service.postParRequest({ configId: 'configId1' }));
+        expect.fail('expected an error');
+      } catch (err: any) {
+        expect(err.message).toBe(
+          'Could not read PAR endpoint because authWellKnownEndPoints are not given'
+        );
+      }
+    });
+
+    it('throws error if par endpoint does not exist in storage', async () => {
       vi.spyOn(urlService, 'createBodyForParCodeFlowRequest').mockReturnValue(
         of(null)
       );
@@ -75,16 +77,18 @@ describe('ParService', () => {
           return undefined;
         }
       );
-      service.postParRequest({ configId: 'configId1' }).subscribe({
-        error: (err) => {
-          expect(err.message).toBe(
-            'Could not read PAR endpoint from authWellKnownEndpoints'
-          );
-        },
-      });
-    }));
 
-    it('calls data service with correct params', waitForAsync(() => {
+      try {
+        await firstValueFrom(service.postParRequest({ configId: 'configId1' }));
+        expect.fail('expected an error');
+      } catch (err: any) {
+        expect(err.message).toBe(
+          'Could not read PAR endpoint from authWellKnownEndpoints'
+        );
+      }
+    });
+
+    it('calls data service with correct params', async () => {
       vi.spyOn(urlService, 'createBodyForParCodeFlowRequest').mockReturnValue(
         of('some-url123')
       );
@@ -102,18 +106,18 @@ describe('ParService', () => {
         .spyOn(dataService, 'post')
         .mockReturnValue(of({}));
 
-      service.postParRequest({ configId: 'configId1' }).subscribe(() => {
-        expect(dataServiceSpy).toHaveBeenCalledTimes(1);
-        expect(dataServiceSpy).toHaveBeenCalledWith(
-          'parEndpoint',
-          'some-url123',
-          { configId: 'configId1' },
-          expect.any(HttpHeaders)
-        );
-      });
-    }));
+      await firstValueFrom(service.postParRequest({ configId: 'configId1' }));
 
-    it('Gives back correct object properties', waitForAsync(() => {
+      expect(dataServiceSpy).toHaveBeenCalledTimes(1);
+      expect(dataServiceSpy).toHaveBeenCalledWith(
+        'parEndpoint',
+        'some-url123',
+        { configId: 'configId1' },
+        expect.any(HttpHeaders)
+      );
+    });
+
+    it('Gives back correct object properties', async () => {
       vi.spyOn(urlService, 'createBodyForParCodeFlowRequest').mockReturnValue(
         of('some-url456')
       );
@@ -129,12 +133,15 @@ describe('ParService', () => {
       vi.spyOn(dataService, 'post').mockReturnValue(
         of({ expires_in: 123, request_uri: 'request_uri' })
       );
-      service.postParRequest({ configId: 'configId1' }).subscribe((result) => {
-        expect(result).toEqual({ expiresIn: 123, requestUri: 'request_uri' });
-      });
-    }));
 
-    it('throws error if data service has got an error', waitForAsync(() => {
+      const result = await firstValueFrom(
+        service.postParRequest({ configId: 'configId1' })
+      );
+
+      expect(result).toEqual({ expiresIn: 123, requestUri: 'request_uri' });
+    });
+
+    it('throws error if data service has got an error', async () => {
       vi.spyOn(urlService, 'createBodyForParCodeFlowRequest').mockReturnValue(
         of('some-url789')
       );
@@ -154,22 +161,23 @@ describe('ParService', () => {
         .spyOn(loggerService, 'logError')
         .mockReturnValue(undefined);
 
-      service.postParRequest({ configId: 'configId1' }).subscribe({
-        error: (err) => {
-          expect(err.message).toBe(
-            'There was an error on ParService postParRequest'
-          );
-          expect(loggerSpy).toHaveBeenCalledTimes(1);
-          expect(loggerSpy).toHaveBeenCalledWith(
-            { configId: 'configId1' },
-            'There was an error on ParService postParRequest',
-            expect.any(Error)
-          );
-        },
-      });
-    }));
+      try {
+        await firstValueFrom(service.postParRequest({ configId: 'configId1' }));
+        expect.fail('expected an error');
+      } catch (err: any) {
+        expect(err.message).toBe(
+          'There was an error on ParService postParRequest'
+        );
+        expect(loggerSpy).toHaveBeenCalledTimes(1);
+        expect(loggerSpy).toHaveBeenCalledWith(
+          { configId: 'configId1' },
+          'There was an error on ParService postParRequest',
+          expect.any(Error)
+        );
+      }
+    });
 
-    it('should retry once', waitForAsync(() => {
+    it('should retry once', async () => {
       vi.spyOn(urlService, 'createBodyForParCodeFlowRequest').mockReturnValue(
         of('some-url456')
       );
@@ -189,15 +197,15 @@ describe('ParService', () => {
         )
       );
 
-      service.postParRequest({ configId: 'configId1' }).subscribe({
-        next: (res) => {
-          expect(res).toBeTruthy();
-          expect(res).toEqual({ expiresIn: 123, requestUri: 'request_uri' });
-        },
-      });
-    }));
+      const res = await firstValueFrom(
+        service.postParRequest({ configId: 'configId1' })
+      );
 
-    it('should retry twice', waitForAsync(() => {
+      expect(res).toBeTruthy();
+      expect(res).toEqual({ expiresIn: 123, requestUri: 'request_uri' });
+    });
+
+    it('should retry twice', async () => {
       vi.spyOn(urlService, 'createBodyForParCodeFlowRequest').mockReturnValue(
         of('some-url456')
       );
@@ -218,15 +226,15 @@ describe('ParService', () => {
         )
       );
 
-      service.postParRequest({ configId: 'configId1' }).subscribe({
-        next: (res) => {
-          expect(res).toBeTruthy();
-          expect(res).toEqual({ expiresIn: 123, requestUri: 'request_uri' });
-        },
-      });
-    }));
+      const res = await firstValueFrom(
+        service.postParRequest({ configId: 'configId1' })
+      );
 
-    it('should fail after three tries', waitForAsync(() => {
+      expect(res).toBeTruthy();
+      expect(res).toEqual({ expiresIn: 123, requestUri: 'request_uri' });
+    });
+
+    it('should fail after three tries', async () => {
       vi.spyOn(urlService, 'createBodyForParCodeFlowRequest').mockReturnValue(
         of('some-url456')
       );
@@ -248,11 +256,12 @@ describe('ParService', () => {
         )
       );
 
-      service.postParRequest({ configId: 'configId1' }).subscribe({
-        error: (err) => {
-          expect(err).toBeTruthy();
-        },
-      });
-    }));
+      try {
+        await firstValueFrom(service.postParRequest({ configId: 'configId1' }));
+        expect.fail('expected an error');
+      } catch (err: any) {
+        expect(err).toBeTruthy();
+      }
+    });
   });
 });

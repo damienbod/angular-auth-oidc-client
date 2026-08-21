@@ -1,6 +1,6 @@
 import { HttpHeaders } from '@angular/common/http';
-import { TestBed, waitForAsync } from '@angular/core/testing';
-import { Observable, of, throwError } from 'rxjs';
+import { TestBed } from '@angular/core/testing';
+import { firstValueFrom, Observable, of, throwError } from 'rxjs';
 import { mockProvider } from '../../test/auto-mock';
 import { createRetriableStream } from '../../test/create-retriable-stream.helper';
 import { DataService } from '../api/data.service';
@@ -112,7 +112,7 @@ describe('Logout and Revoke Service', () => {
       expect(result).toEqual(expect.any(Observable));
     });
 
-    it('loggs and returns unmodified response if request is positive', waitForAsync(() => {
+    it('loggs and returns unmodified response if request is positive', async () => {
       // Arrange
       const paramToken = 'damien';
 
@@ -129,16 +129,15 @@ describe('Logout and Revoke Service', () => {
 
       vi.spyOn(dataService, 'post').mockReturnValue(of({ data: 'anything' }));
       const config = { configId: 'configId1' };
-
       // Act
-      service.revokeAccessToken(config).subscribe((result) => {
-        // Assert
-        expect(result).toEqual({ data: 'anything' });
-        expect(loggerSpy).toHaveBeenCalled();
-      });
-    }));
+      const result = await firstValueFrom(service.revokeAccessToken(config));
 
-    it('loggs error when request is negative', waitForAsync(() => {
+      // Assert
+      expect(result).toEqual({ data: 'anything' });
+      expect(loggerSpy).toHaveBeenCalled();
+    });
+
+    it('loggs error when request is negative', async () => {
       // Arrange
       const paramToken = 'damien';
 
@@ -159,15 +158,16 @@ describe('Logout and Revoke Service', () => {
       );
 
       // Act
-      service.revokeAccessToken(config).subscribe({
-        error: (err) => {
-          expect(loggerSpy).toHaveBeenCalled();
-          expect(err).toBeTruthy();
-        },
-      });
-    }));
+      try {
+        await firstValueFrom(service.revokeAccessToken(config));
+        expect.fail('expected an error');
+      } catch (err) {
+        expect(loggerSpy).toHaveBeenCalled();
+        expect(err).toBeTruthy();
+      }
+    });
 
-    it('should retry once', waitForAsync(() => {
+    it('should retry once', async () => {
       // Arrange
       const paramToken = 'damien';
 
@@ -190,17 +190,15 @@ describe('Logout and Revoke Service', () => {
         )
       );
 
-      service.revokeAccessToken(config).subscribe({
-        next: (res) => {
-          // Assert
-          expect(res).toBeTruthy();
-          expect(res).toEqual({ data: 'anything' });
-          expect(loggerSpy).toHaveBeenCalled();
-        },
-      });
-    }));
+      const res = await firstValueFrom(service.revokeAccessToken(config));
 
-    it('should retry twice', waitForAsync(() => {
+      // Assert
+      expect(res).toBeTruthy();
+      expect(res).toEqual({ data: 'anything' });
+      expect(loggerSpy).toHaveBeenCalled();
+    });
+
+    it('should retry twice', async () => {
       // Arrange
       const paramToken = 'damien';
 
@@ -224,17 +222,15 @@ describe('Logout and Revoke Service', () => {
         )
       );
 
-      service.revokeAccessToken(config).subscribe({
-        next: (res) => {
-          // Assert
-          expect(res).toBeTruthy();
-          expect(res).toEqual({ data: 'anything' });
-          expect(loggerSpy).toHaveBeenCalled();
-        },
-      });
-    }));
+      const res = await firstValueFrom(service.revokeAccessToken(config));
 
-    it('should fail after three tries', waitForAsync(() => {
+      // Assert
+      expect(res).toBeTruthy();
+      expect(res).toEqual({ data: 'anything' });
+      expect(loggerSpy).toHaveBeenCalled();
+    });
+
+    it('should fail after three tries', async () => {
       // Arrange
       const paramToken = 'damien';
 
@@ -259,13 +255,14 @@ describe('Logout and Revoke Service', () => {
         )
       );
 
-      service.revokeAccessToken(config).subscribe({
-        error: (err) => {
-          expect(err).toBeTruthy();
-          expect(loggerSpy).toHaveBeenCalled();
-        },
-      });
-    }));
+      try {
+        await firstValueFrom(service.revokeAccessToken(config));
+        expect.fail('expected an error');
+      } catch (err) {
+        expect(err).toBeTruthy();
+        expect(loggerSpy).toHaveBeenCalled();
+      }
+    });
   });
 
   describe('revokeRefreshToken', () => {
@@ -328,7 +325,7 @@ describe('Logout and Revoke Service', () => {
       expect(result).toEqual(expect.any(Observable));
     });
 
-    it('loggs and returns unmodified response if request is positive', waitForAsync(() => {
+    it('loggs and returns unmodified response if request is positive', async () => {
       // Arrange
       const paramToken = 'damien';
 
@@ -345,16 +342,15 @@ describe('Logout and Revoke Service', () => {
 
       vi.spyOn(dataService, 'post').mockReturnValue(of({ data: 'anything' }));
       const config = { configId: 'configId1' };
-
       // Act
-      service.revokeRefreshToken(config).subscribe((result) => {
-        // Assert
-        expect(result).toEqual({ data: 'anything' });
-        expect(loggerSpy).toHaveBeenCalled();
-      });
-    }));
+      const result = await firstValueFrom(service.revokeRefreshToken(config));
 
-    it('loggs error when request is negative', waitForAsync(() => {
+      // Assert
+      expect(result).toEqual({ data: 'anything' });
+      expect(loggerSpy).toHaveBeenCalled();
+    });
+
+    it('loggs error when request is negative', async () => {
       // Arrange
       const paramToken = 'damien';
 
@@ -375,15 +371,16 @@ describe('Logout and Revoke Service', () => {
       );
 
       // Act
-      service.revokeRefreshToken(config).subscribe({
-        error: (err) => {
-          expect(loggerSpy).toHaveBeenCalled();
-          expect(err).toBeTruthy();
-        },
-      });
-    }));
+      try {
+        await firstValueFrom(service.revokeRefreshToken(config));
+        expect.fail('expected an error');
+      } catch (err) {
+        expect(loggerSpy).toHaveBeenCalled();
+        expect(err).toBeTruthy();
+      }
+    });
 
-    it('should retry once', waitForAsync(() => {
+    it('should retry once', async () => {
       // Arrange
       const paramToken = 'damien';
 
@@ -406,17 +403,15 @@ describe('Logout and Revoke Service', () => {
         )
       );
 
-      service.revokeRefreshToken(config).subscribe({
-        next: (res) => {
-          // Assert
-          expect(res).toBeTruthy();
-          expect(res).toEqual({ data: 'anything' });
-          expect(loggerSpy).toHaveBeenCalled();
-        },
-      });
-    }));
+      const res = await firstValueFrom(service.revokeRefreshToken(config));
 
-    it('should retry twice', waitForAsync(() => {
+      // Assert
+      expect(res).toBeTruthy();
+      expect(res).toEqual({ data: 'anything' });
+      expect(loggerSpy).toHaveBeenCalled();
+    });
+
+    it('should retry twice', async () => {
       // Arrange
       const paramToken = 'damien';
 
@@ -440,17 +435,15 @@ describe('Logout and Revoke Service', () => {
         )
       );
 
-      service.revokeRefreshToken(config).subscribe({
-        next: (res) => {
-          // Assert
-          expect(res).toBeTruthy();
-          expect(res).toEqual({ data: 'anything' });
-          expect(loggerSpy).toHaveBeenCalled();
-        },
-      });
-    }));
+      const res = await firstValueFrom(service.revokeRefreshToken(config));
 
-    it('should fail after three tries', waitForAsync(() => {
+      // Assert
+      expect(res).toBeTruthy();
+      expect(res).toEqual({ data: 'anything' });
+      expect(loggerSpy).toHaveBeenCalled();
+    });
+
+    it('should fail after three tries', async () => {
       // Arrange
       const paramToken = 'damien';
 
@@ -475,17 +468,18 @@ describe('Logout and Revoke Service', () => {
         )
       );
 
-      service.revokeRefreshToken(config).subscribe({
-        error: (err) => {
-          expect(err).toBeTruthy();
-          expect(loggerSpy).toHaveBeenCalled();
-        },
-      });
-    }));
+      try {
+        await firstValueFrom(service.revokeRefreshToken(config));
+        expect.fail('expected an error');
+      } catch (err) {
+        expect(err).toBeTruthy();
+        expect(loggerSpy).toHaveBeenCalled();
+      }
+    });
   });
 
   describe('logoff', () => {
-    it('logs and returns if `endSessionUrl` is false', waitForAsync(() => {
+    it('logs and returns if `endSessionUrl` is false', async () => {
       // Arrange
       vi.spyOn(urlService, 'getEndSessionUrl').mockReturnValue('');
 
@@ -497,12 +491,12 @@ describe('Logout and Revoke Service', () => {
       const result$ = service.logoff(config, [config]);
 
       // Assert
-      result$.subscribe(() => {
-        expect(serverStateChangedSpy).not.toHaveBeenCalled();
-      });
-    }));
+      await firstValueFrom(result$);
 
-    it('logs and returns if `serverStateChanged` is true', waitForAsync(() => {
+      expect(serverStateChangedSpy).not.toHaveBeenCalled();
+    });
+
+    it('logs and returns if `serverStateChanged` is true', async () => {
       // Arrange
       vi.spyOn(urlService, 'getEndSessionUrl').mockReturnValue('someValue');
       const redirectSpy = vi
@@ -515,12 +509,12 @@ describe('Logout and Revoke Service', () => {
       const result$ = service.logoff(config, [config]);
 
       // Assert
-      result$.subscribe(() => {
-        expect(redirectSpy).not.toHaveBeenCalled();
-      });
-    }));
+      await firstValueFrom(result$);
 
-    it('calls urlHandler if urlhandler is passed', waitForAsync(() => {
+      expect(redirectSpy).not.toHaveBeenCalled();
+    });
+
+    it('calls urlHandler if urlhandler is passed', async () => {
       // Arrange
       vi.spyOn(urlService, 'getEndSessionUrl').mockReturnValue('someValue');
       const spy = vi.fn();
@@ -542,15 +536,15 @@ describe('Logout and Revoke Service', () => {
       const result$ = service.logoff(config, [config], { urlHandler });
 
       // Assert
-      result$.subscribe(() => {
-        expect(redirectSpy).not.toHaveBeenCalled();
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith('someValue');
-        expect(resetAuthorizationDataSpy).toHaveBeenCalled();
-      });
-    }));
+      await firstValueFrom(result$);
 
-    it('calls redirect service if no logoutOptions are passed', waitForAsync(() => {
+      expect(redirectSpy).not.toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith('someValue');
+      expect(resetAuthorizationDataSpy).toHaveBeenCalled();
+    });
+
+    it('calls redirect service if no logoutOptions are passed', async () => {
       // Arrange
       vi.spyOn(urlService, 'getEndSessionUrl').mockReturnValue('someValue');
 
@@ -566,13 +560,13 @@ describe('Logout and Revoke Service', () => {
       const result$ = service.logoff(config, [config]);
 
       // Assert
-      result$.subscribe(() => {
-        expect(redirectSpy).toHaveBeenCalledTimes(1);
-        expect(redirectSpy).toHaveBeenCalledWith('someValue');
-      });
-    }));
+      await firstValueFrom(result$);
 
-    it('calls redirect service if logoutOptions are passed and method is GET', waitForAsync(() => {
+      expect(redirectSpy).toHaveBeenCalledTimes(1);
+      expect(redirectSpy).toHaveBeenCalledWith('someValue');
+    });
+
+    it('calls redirect service if logoutOptions are passed and method is GET', async () => {
       // Arrange
       vi.spyOn(urlService, 'getEndSessionUrl').mockReturnValue('someValue');
 
@@ -588,13 +582,13 @@ describe('Logout and Revoke Service', () => {
       const result$ = service.logoff(config, [config], { logoffMethod: 'GET' });
 
       // Assert
-      result$.subscribe(() => {
-        expect(redirectSpy).toHaveBeenCalledTimes(1);
-        expect(redirectSpy).toHaveBeenCalledWith('someValue');
-      });
-    }));
+      await firstValueFrom(result$);
 
-    it('calls dataservice post if logoutOptions are passed and method is POST', waitForAsync(() => {
+      expect(redirectSpy).toHaveBeenCalledTimes(1);
+      expect(redirectSpy).toHaveBeenCalledWith('someValue');
+    });
+
+    it('calls dataservice post if logoutOptions are passed and method is POST', async () => {
       // Arrange
       vi.spyOn(urlService, 'getEndSessionUrl').mockReturnValue('someValue');
 
@@ -623,30 +617,30 @@ describe('Logout and Revoke Service', () => {
       });
 
       // Assert
-      result$.subscribe(() => {
-        expect(redirectSpy).not.toHaveBeenCalled();
-        expect(postSpy).toHaveBeenCalledTimes(1);
-        expect(postSpy).toHaveBeenCalledWith(
-          'some-url',
-          {
-            id_token_hint: 'id-token',
-            client_id: 'clientId',
-            post_logout_redirect_uri: 'post-logout-redirect-url',
-          },
-          config,
-          expect.anything()
-        );
+      await firstValueFrom(result$);
 
-        const httpHeaders = vi.mocked(postSpy).mock.lastCall![3] as HttpHeaders;
+      expect(redirectSpy).not.toHaveBeenCalled();
+      expect(postSpy).toHaveBeenCalledTimes(1);
+      expect(postSpy).toHaveBeenCalledWith(
+        'some-url',
+        {
+          id_token_hint: 'id-token',
+          client_id: 'clientId',
+          post_logout_redirect_uri: 'post-logout-redirect-url',
+        },
+        config,
+        expect.anything()
+      );
 
-        expect(httpHeaders.has('Content-Type')).toBe(true);
-        expect(httpHeaders.get('Content-Type')).toBe(
-          'application/x-www-form-urlencoded'
-        );
-      });
-    }));
+      const httpHeaders = vi.mocked(postSpy).mock.lastCall![3] as HttpHeaders;
 
-    it('calls dataservice post if logoutOptions with customParams are passed and method is POST', waitForAsync(() => {
+      expect(httpHeaders.has('Content-Type')).toBe(true);
+      expect(httpHeaders.get('Content-Type')).toBe(
+        'application/x-www-form-urlencoded'
+      );
+    });
+
+    it('calls dataservice post if logoutOptions with customParams are passed and method is POST', async () => {
       // Arrange
       vi.spyOn(urlService, 'getEndSessionUrl').mockReturnValue('someValue');
 
@@ -680,31 +674,31 @@ describe('Logout and Revoke Service', () => {
       });
 
       // Assert
-      result$.subscribe(() => {
-        expect(redirectSpy).not.toHaveBeenCalled();
-        expect(postSpy).toHaveBeenCalledTimes(1);
-        expect(postSpy).toHaveBeenCalledWith(
-          'some-url',
-          {
-            id_token_hint: 'id-token',
-            client_id: 'clientId',
-            post_logout_redirect_uri: 'post-logout-redirect-url',
-            state: 'state',
-            logout_hint: 'logoutHint',
-            ui_locales: 'de fr en',
-          },
-          config,
-          expect.anything()
-        );
+      await firstValueFrom(result$);
 
-        const httpHeaders = vi.mocked(postSpy).mock.lastCall![3] as HttpHeaders;
+      expect(redirectSpy).not.toHaveBeenCalled();
+      expect(postSpy).toHaveBeenCalledTimes(1);
+      expect(postSpy).toHaveBeenCalledWith(
+        'some-url',
+        {
+          id_token_hint: 'id-token',
+          client_id: 'clientId',
+          post_logout_redirect_uri: 'post-logout-redirect-url',
+          state: 'state',
+          logout_hint: 'logoutHint',
+          ui_locales: 'de fr en',
+        },
+        config,
+        expect.anything()
+      );
 
-        expect(httpHeaders.has('Content-Type')).toBe(true);
-        expect(httpHeaders.get('Content-Type')).toBe(
-          'application/x-www-form-urlencoded'
-        );
-      });
-    }));
+      const httpHeaders = vi.mocked(postSpy).mock.lastCall![3] as HttpHeaders;
+
+      expect(httpHeaders.has('Content-Type')).toBe(true);
+      expect(httpHeaders.get('Content-Type')).toBe(
+        'application/x-www-form-urlencoded'
+      );
+    });
   });
 
   describe('logoffLocal', () => {
@@ -724,7 +718,7 @@ describe('Logout and Revoke Service', () => {
   });
 
   describe('logoffAndRevokeTokens', () => {
-    it('calls revokeRefreshToken and revokeAccessToken when storage holds a refreshtoken', waitForAsync(() => {
+    it('calls revokeRefreshToken and revokeAccessToken when storage holds a refreshtoken', async () => {
       // Arrange
       const paramToken = 'damien';
       const config = { configId: 'configId1' };
@@ -749,14 +743,14 @@ describe('Logout and Revoke Service', () => {
         .mockReturnValue(of({ any: 'thing' }));
 
       // Act
-      service.logoffAndRevokeTokens(config, [config]).subscribe(() => {
-        // Assert
-        expect(revokeRefreshTokenSpy).toHaveBeenCalled();
-        expect(revokeAccessTokenSpy).toHaveBeenCalled();
-      });
-    }));
+      await firstValueFrom(service.logoffAndRevokeTokens(config, [config]));
 
-    it('logs error when revokeaccesstoken throws an error', waitForAsync(() => {
+      // Assert
+      expect(revokeRefreshTokenSpy).toHaveBeenCalled();
+      expect(revokeAccessTokenSpy).toHaveBeenCalled();
+    });
+
+    it('logs error when revokeaccesstoken throws an error', async () => {
       // Arrange
       const paramToken = 'damien';
       const config = { configId: 'configId1' };
@@ -785,15 +779,16 @@ describe('Logout and Revoke Service', () => {
       );
 
       // Act
-      service.logoffAndRevokeTokens(config, [config]).subscribe({
-        error: (err) => {
-          expect(loggerSpy).toHaveBeenCalled();
-          expect(err).toBeTruthy();
-        },
-      });
-    }));
+      try {
+        await firstValueFrom(service.logoffAndRevokeTokens(config, [config]));
+        expect.fail('expected an error');
+      } catch (err) {
+        expect(loggerSpy).toHaveBeenCalled();
+        expect(err).toBeTruthy();
+      }
+    });
 
-    it('calls logoff in case of success', waitForAsync(() => {
+    it('calls logoff in case of success', async () => {
       // Arrange
       const paramToken = 'damien';
 
@@ -810,13 +805,13 @@ describe('Logout and Revoke Service', () => {
       const config = { configId: 'configId1' };
 
       // Act
-      service.logoffAndRevokeTokens(config, [config]).subscribe(() => {
-        // Assert
-        expect(logoffSpy).toHaveBeenCalled();
-      });
-    }));
+      await firstValueFrom(service.logoffAndRevokeTokens(config, [config]));
 
-    it('calls logoff with urlhandler in case of success', waitForAsync(() => {
+      // Assert
+      expect(logoffSpy).toHaveBeenCalled();
+    });
+
+    it('calls logoff with urlhandler in case of success', async () => {
       // Arrange
       const paramToken = 'damien';
 
@@ -834,19 +829,17 @@ describe('Logout and Revoke Service', () => {
       const config = { configId: 'configId1' };
 
       // Act
-      service
-        .logoffAndRevokeTokens(config, [config], { urlHandler })
-        .subscribe(() => {
-          // Assert
-          expect(logoffSpy).toHaveBeenCalledTimes(1);
-          // Assert
-          expect(logoffSpy).toHaveBeenCalledWith(config, [config], {
-            urlHandler,
-          });
-        });
-    }));
+      await firstValueFrom(
+        service.logoffAndRevokeTokens(config, [config], { urlHandler })
+      );
 
-    it('calls revokeAccessToken when storage does not hold a refreshtoken', waitForAsync(() => {
+      // Assert
+      expect(logoffSpy).toHaveBeenCalledTimes(1);
+      // Assert
+      expect(logoffSpy).toHaveBeenCalledWith(config, [config], { urlHandler });
+    });
+
+    it('calls revokeAccessToken when storage does not hold a refreshtoken', async () => {
       // Arrange
       const config = { configId: 'configId1' };
 
@@ -871,14 +864,14 @@ describe('Logout and Revoke Service', () => {
         .mockReturnValue(of({ any: 'thing' }));
 
       // Act
-      service.logoffAndRevokeTokens(config, [config]).subscribe(() => {
-        // Assert
-        expect(revokeRefreshTokenSpy).not.toHaveBeenCalled();
-        expect(revokeAccessTokenSpy).toHaveBeenCalled();
-      });
-    }));
+      await firstValueFrom(service.logoffAndRevokeTokens(config, [config]));
 
-    it('logs error when revokeaccesstoken throws an error', waitForAsync(() => {
+      // Assert
+      expect(revokeRefreshTokenSpy).not.toHaveBeenCalled();
+      expect(revokeAccessTokenSpy).toHaveBeenCalled();
+    });
+
+    it('logs error when revokeaccesstoken throws an error', async () => {
       // Arrange
       const config = { configId: 'configId1' };
 
@@ -903,13 +896,14 @@ describe('Logout and Revoke Service', () => {
       );
 
       // Act
-      service.logoffAndRevokeTokens(config, [config]).subscribe({
-        error: (err) => {
-          expect(loggerSpy).toHaveBeenCalled();
-          expect(err).toBeTruthy();
-        },
-      });
-    }));
+      try {
+        await firstValueFrom(service.logoffAndRevokeTokens(config, [config]));
+        expect.fail('expected an error');
+      } catch (err) {
+        expect(loggerSpy).toHaveBeenCalled();
+        expect(err).toBeTruthy();
+      }
+    });
   });
 
   describe('logoffLocalMultiple', () => {
