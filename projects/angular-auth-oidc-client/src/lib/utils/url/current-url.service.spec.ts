@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { DOCUMENT } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { CurrentUrlService } from './current-url.service';

@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { MockedObject } from 'vitest';
 import { APP_INITIALIZER } from '@angular/core';
 import { TestBed } from '@angular/core/testing';

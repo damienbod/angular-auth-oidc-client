@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { mockClass, mockProvider } from '../../test/auto-mock';
 import { LoggerService } from '../logging/logger.service';

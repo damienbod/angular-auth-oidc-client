@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { firstValueFrom, of } from 'rxjs';
 import { OpenIdConfiguration } from '../openid-configuration';
 import { StsConfigHttpLoader, StsConfigStaticLoader } from './config-loader';

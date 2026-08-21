@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { OpenIdConfiguration } from '../../openid-configuration';
 import { useOfflineScopeWithSilentRenew } from './use-offline-scope-with-silent-renew.rule';
 

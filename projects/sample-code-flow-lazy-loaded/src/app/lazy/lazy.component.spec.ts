@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LazyComponent } from './lazy.component';
 import { provideAuth } from 'angular-auth-oidc-client';
