@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { wildcardToRegExp } from './regex.helper';
 
 describe('RegexHelper', () => {

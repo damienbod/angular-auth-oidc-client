@@ -1,6 +1,8 @@
-import { TestBed, waitForAsync } from '@angular/core/testing';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { TestBed } from '@angular/core/testing';
 import { filter } from 'rxjs/operators';
 import { EventTypes } from './event-types';
+import type { OidcClientNotification } from './notification';
 import { PublicEventsService } from './public-events.service';
 
 describe('Events Service', () => {
@@ -20,19 +22,23 @@ describe('Events Service', () => {
     expect(eventsService).toBeTruthy();
   });
 
-  it('registering to single event with one event emit works', waitForAsync(() => {
-    eventsService.registerForEvents().subscribe((firedEvent) => {
-      expect(firedEvent).toBeTruthy();
-      expect(firedEvent).toEqual({
-        type: EventTypes.ConfigLoaded,
-        value: { myKey: 'myValue' },
-      });
+  it('registering to single event with one event emit works', () => {
+    let firedEvent: OidcClientNotification<any> | undefined;
+
+    eventsService.registerForEvents().subscribe((event) => {
+      firedEvent = event;
     });
     eventsService.fireEvent(EventTypes.ConfigLoaded, { myKey: 'myValue' });
-  }));
 
-  it('registering to single event with multiple same event emit works', waitForAsync(() => {
-    const spy = jasmine.createSpy('spy');
+    expect(firedEvent).toBeTruthy();
+    expect(firedEvent).toEqual({
+      type: EventTypes.ConfigLoaded,
+      value: { myKey: 'myValue' },
+    });
+  });
+
+  it('registering to single event with multiple same event emit works', () => {
+    const spy = vi.fn().mockName('spy');
 
     eventsService.registerForEvents().subscribe((firedEvent) => {
       spy(firedEvent);
@@ -41,29 +47,34 @@ describe('Events Service', () => {
     eventsService.fireEvent(EventTypes.ConfigLoaded, { myKey: 'myValue' });
     eventsService.fireEvent(EventTypes.ConfigLoaded, { myKey: 'myValue2' });
 
-    expect(spy.calls.count()).toBe(2);
-    expect(spy.calls.first().args[0]).toEqual({
+    expect(vi.mocked(spy).mock.calls.length).toBe(2);
+    expect(vi.mocked(spy).mock.calls[0][0]).toEqual({
       type: EventTypes.ConfigLoaded,
       value: { myKey: 'myValue' },
     });
-    expect(spy.calls.mostRecent().args[0]).toEqual({
+    expect(vi.mocked(spy).mock.lastCall![0]).toEqual({
       type: EventTypes.ConfigLoaded,
       value: { myKey: 'myValue2' },
     });
-  }));
+  });
 
-  it('registering to single event with multiple emit works', waitForAsync(() => {
+  it('registering to single event with multiple emit works', () => {
+    const firedEvents: OidcClientNotification<any>[] = [];
+
     eventsService
       .registerForEvents()
       .pipe(filter((x) => x.type === EventTypes.ConfigLoaded))
       .subscribe((firedEvent) => {
-        expect(firedEvent).toBeTruthy();
-        expect(firedEvent).toEqual({
-          type: EventTypes.ConfigLoaded,
-          value: { myKey: 'myValue' },
-        });
+        firedEvents.push(firedEvent);
       });
     eventsService.fireEvent(EventTypes.ConfigLoaded, { myKey: 'myValue' });
     eventsService.fireEvent(EventTypes.NewAuthenticationResult, true);
-  }));
+
+    expect(firedEvents).toEqual([
+      {
+        type: EventTypes.ConfigLoaded,
+        value: { myKey: 'myValue' },
+      },
+    ]);
+  });
 });

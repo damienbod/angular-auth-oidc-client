@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   HTTP_INTERCEPTORS,
   HttpClient,
@@ -9,7 +10,7 @@ import {
   HttpTestingController,
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
-import { TestBed, waitForAsync } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { mockProvider } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { ConfigurationService } from '../config/config.service';
@@ -85,21 +86,26 @@ describe(`AuthHttpInterceptor`, () => {
   });
 
   function runTests(): void {
-    it('should add an Authorization header when route matches and token is present', waitForAsync(() => {
+    it('should add an Authorization header when route matches and token is present', () => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
+      let response: unknown;
 
-      spyOn(configurationService, 'getAllConfigurations').and.returnValue([
+      vi.spyOn(configurationService, 'getAllConfigurations').mockReturnValue([
         {
           secureRoutes: [actionUrl],
           configId: 'configId1',
         },
       ]);
 
-      spyOn(authStateService, 'getAccessToken').and.returnValue('thisIsAToken');
-      spyOn(configurationService, 'hasAtLeastOneConfig').and.returnValue(true);
+      vi.spyOn(authStateService, 'getAccessToken').mockReturnValue(
+        'thisIsAToken'
+      );
+      vi.spyOn(configurationService, 'hasAtLeastOneConfig').mockReturnValue(
+        true
+      );
 
-      httpClient.get(actionUrl).subscribe((response) => {
-        expect(response).toBeTruthy();
+      httpClient.get(actionUrl).subscribe((data) => {
+        response = data;
       });
 
       const httpRequest = httpTestingController.expectOne(actionUrl);
@@ -107,22 +113,29 @@ describe(`AuthHttpInterceptor`, () => {
       expect(httpRequest.request.headers.has('Authorization')).toEqual(true);
 
       httpRequest.flush('something');
+
+      expect(response).toBeTruthy();
       httpTestingController.verify();
-    }));
+    });
 
-    it('should not add an Authorization header when `secureRoutes` is not given', waitForAsync(() => {
+    it('should not add an Authorization header when `secureRoutes` is not given', () => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
+      let response: unknown;
 
-      spyOn(configurationService, 'getAllConfigurations').and.returnValue([
+      vi.spyOn(configurationService, 'getAllConfigurations').mockReturnValue([
         {
           configId: 'configId1',
         },
       ]);
-      spyOn(authStateService, 'getAccessToken').and.returnValue('thisIsAToken');
-      spyOn(configurationService, 'hasAtLeastOneConfig').and.returnValue(true);
+      vi.spyOn(authStateService, 'getAccessToken').mockReturnValue(
+        'thisIsAToken'
+      );
+      vi.spyOn(configurationService, 'hasAtLeastOneConfig').mockReturnValue(
+        true
+      );
 
-      httpClient.get(actionUrl).subscribe((response) => {
-        expect(response).toBeTruthy();
+      httpClient.get(actionUrl).subscribe((data) => {
+        response = data;
       });
 
       const httpRequest = httpTestingController.expectOne(actionUrl);
@@ -130,48 +143,31 @@ describe(`AuthHttpInterceptor`, () => {
       expect(httpRequest.request.headers.has('Authorization')).toEqual(false);
 
       httpRequest.flush('something');
+
+      expect(response).toBeTruthy();
       httpTestingController.verify();
-    }));
+    });
 
-    it('should not add an Authorization header when no routes configured', waitForAsync(() => {
+    it('should not add an Authorization header when no routes configured', () => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
+      let response: unknown;
 
-      spyOn(configurationService, 'getAllConfigurations').and.returnValue([
-        {
-          secureRoutes: [],
-          configId: 'configId1',
-        },
-      ]);
-
-      spyOn(configurationService, 'hasAtLeastOneConfig').and.returnValue(true);
-      spyOn(authStateService, 'getAccessToken').and.returnValue('thisIsAToken');
-
-      httpClient.get(actionUrl).subscribe((response) => {
-        expect(response).toBeTruthy();
-      });
-
-      const httpRequest = httpTestingController.expectOne(actionUrl);
-
-      expect(httpRequest.request.headers.has('Authorization')).toEqual(false);
-
-      httpRequest.flush('something');
-      httpTestingController.verify();
-    }));
-
-    it('should not add an Authorization header when no routes configured', waitForAsync(() => {
-      const actionUrl = `https://jsonplaceholder.typicode.com/`;
-
-      spyOn(configurationService, 'getAllConfigurations').and.returnValue([
+      vi.spyOn(configurationService, 'getAllConfigurations').mockReturnValue([
         {
           secureRoutes: [],
           configId: 'configId1',
         },
       ]);
 
-      spyOn(configurationService, 'hasAtLeastOneConfig').and.returnValue(true);
+      vi.spyOn(configurationService, 'hasAtLeastOneConfig').mockReturnValue(
+        true
+      );
+      vi.spyOn(authStateService, 'getAccessToken').mockReturnValue(
+        'thisIsAToken'
+      );
 
-      httpClient.get(actionUrl).subscribe((response) => {
-        expect(response).toBeTruthy();
+      httpClient.get(actionUrl).subscribe((data) => {
+        response = data;
       });
 
       const httpRequest = httpTestingController.expectOne(actionUrl);
@@ -179,24 +175,58 @@ describe(`AuthHttpInterceptor`, () => {
       expect(httpRequest.request.headers.has('Authorization')).toEqual(false);
 
       httpRequest.flush('something');
+
+      expect(response).toBeTruthy();
       httpTestingController.verify();
-    }));
+    });
 
-    it('should not add an Authorization header when route is configured but no token is present', waitForAsync(() => {
+    it('should not add an Authorization header when no routes configured', () => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
+      let response: unknown;
 
-      spyOn(configurationService, 'getAllConfigurations').and.returnValue([
+      vi.spyOn(configurationService, 'getAllConfigurations').mockReturnValue([
+        {
+          secureRoutes: [],
+          configId: 'configId1',
+        },
+      ]);
+
+      vi.spyOn(configurationService, 'hasAtLeastOneConfig').mockReturnValue(
+        true
+      );
+
+      httpClient.get(actionUrl).subscribe((data) => {
+        response = data;
+      });
+
+      const httpRequest = httpTestingController.expectOne(actionUrl);
+
+      expect(httpRequest.request.headers.has('Authorization')).toEqual(false);
+
+      httpRequest.flush('something');
+
+      expect(response).toBeTruthy();
+      httpTestingController.verify();
+    });
+
+    it('should not add an Authorization header when route is configured but no token is present', () => {
+      const actionUrl = `https://jsonplaceholder.typicode.com/`;
+      let response: unknown;
+
+      vi.spyOn(configurationService, 'getAllConfigurations').mockReturnValue([
         {
           secureRoutes: [actionUrl],
           configId: 'configId1',
         },
       ]);
 
-      spyOn(configurationService, 'hasAtLeastOneConfig').and.returnValue(true);
-      spyOn(authStateService, 'getAccessToken').and.returnValue('');
+      vi.spyOn(configurationService, 'hasAtLeastOneConfig').mockReturnValue(
+        true
+      );
+      vi.spyOn(authStateService, 'getAccessToken').mockReturnValue('');
 
-      httpClient.get(actionUrl).subscribe((response) => {
-        expect(response).toBeTruthy();
+      httpClient.get(actionUrl).subscribe((data) => {
+        response = data;
       });
 
       const httpRequest = httpTestingController.expectOne(actionUrl);
@@ -204,16 +234,21 @@ describe(`AuthHttpInterceptor`, () => {
       expect(httpRequest.request.headers.has('Authorization')).toEqual(false);
 
       httpRequest.flush('something');
+
+      expect(response).toBeTruthy();
       httpTestingController.verify();
-    }));
+    });
 
-    it('should not add an Authorization header when no config is present', waitForAsync(() => {
+    it('should not add an Authorization header when no config is present', () => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
+      let response: unknown;
 
-      spyOn(configurationService, 'hasAtLeastOneConfig').and.returnValue(false);
+      vi.spyOn(configurationService, 'hasAtLeastOneConfig').mockReturnValue(
+        false
+      );
 
-      httpClient.get(actionUrl).subscribe((response) => {
-        expect(response).toBeTruthy();
+      httpClient.get(actionUrl).subscribe((data) => {
+        response = data;
       });
 
       const httpRequest = httpTestingController.expectOne(actionUrl);
@@ -221,29 +256,34 @@ describe(`AuthHttpInterceptor`, () => {
       expect(httpRequest.request.headers.has('Authorization')).toEqual(false);
 
       httpRequest.flush('something');
+
+      expect(response).toBeTruthy();
       httpTestingController.verify();
-    }));
+    });
 
-    it('should not add an Authorization header when no configured route is matching the request', waitForAsync(() => {
-      spyOn(configurationService, 'hasAtLeastOneConfig').and.returnValue(true);
+    it('should not add an Authorization header when no configured route is matching the request', () => {
+      vi.spyOn(configurationService, 'hasAtLeastOneConfig').mockReturnValue(
+        true
+      );
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
+      let response: unknown;
 
-      spyOn(configurationService, 'getAllConfigurations').and.returnValue([
+      vi.spyOn(configurationService, 'getAllConfigurations').mockReturnValue([
         {
           secureRoutes: [actionUrl],
           configId: 'configId1',
         },
       ]);
-      spyOn(
+      vi.spyOn(
         closestMatchingRouteService,
         'getConfigIdForClosestMatchingRoute'
-      ).and.returnValue({
+      ).mockReturnValue({
         matchingRoute: null,
         matchingConfig: null,
       });
 
-      httpClient.get(actionUrl).subscribe((response) => {
-        expect(response).toBeTruthy();
+      httpClient.get(actionUrl).subscribe((data) => {
+        response = data;
       });
 
       const httpRequest = httpTestingController.expectOne(actionUrl);
@@ -251,26 +291,34 @@ describe(`AuthHttpInterceptor`, () => {
       expect(httpRequest.request.headers.has('Authorization')).toEqual(false);
 
       httpRequest.flush('something');
-      httpTestingController.verify();
-    }));
 
-    it('should add an Authorization header when multiple routes are configured and token is present', waitForAsync(() => {
+      expect(response).toBeTruthy();
+      httpTestingController.verify();
+    });
+
+    it('should add an Authorization header when multiple routes are configured and token is present', () => {
       const actionUrl = `https://jsonplaceholder.typicode.com/`;
       const actionUrl2 = `https://some-other-url.com/`;
+      let response: unknown;
+      let response2: unknown;
 
-      spyOn(configurationService, 'getAllConfigurations').and.returnValue([
+      vi.spyOn(configurationService, 'getAllConfigurations').mockReturnValue([
         { secureRoutes: [actionUrl, actionUrl2], configId: 'configId1' },
       ]);
 
-      spyOn(authStateService, 'getAccessToken').and.returnValue('thisIsAToken');
-      spyOn(configurationService, 'hasAtLeastOneConfig').and.returnValue(true);
+      vi.spyOn(authStateService, 'getAccessToken').mockReturnValue(
+        'thisIsAToken'
+      );
+      vi.spyOn(configurationService, 'hasAtLeastOneConfig').mockReturnValue(
+        true
+      );
 
-      httpClient.get(actionUrl).subscribe((response) => {
-        expect(response).toBeTruthy();
+      httpClient.get(actionUrl).subscribe((data) => {
+        response = data;
       });
 
-      httpClient.get(actionUrl2).subscribe((response) => {
-        expect(response).toBeTruthy();
+      httpClient.get(actionUrl2).subscribe((data) => {
+        response2 = data;
       });
 
       const httpRequest = httpTestingController.expectOne(actionUrl);
@@ -283,7 +331,10 @@ describe(`AuthHttpInterceptor`, () => {
 
       httpRequest.flush('something');
       httpRequest2.flush('something');
+
+      expect(response).toBeTruthy();
+      expect(response2).toBeTruthy();
       httpTestingController.verify();
-    }));
+    });
   }
 });

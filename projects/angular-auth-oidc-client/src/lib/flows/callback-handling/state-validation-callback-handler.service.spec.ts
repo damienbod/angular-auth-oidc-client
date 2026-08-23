@@ -1,6 +1,7 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { DOCUMENT } from '@angular/core';
-import { TestBed, waitForAsync } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { TestBed } from '@angular/core/testing';
+import { firstValueFrom, of } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
 import { AuthStateService } from '../../auth-state/auth-state.service';
 import { LoggerService } from '../../logging/logger.service';
@@ -56,92 +57,104 @@ describe('StateValidationCallbackHandlerService', () => {
   });
 
   describe('callbackStateValidation', () => {
-    it('returns callbackContext with validationResult if validationResult is valid', waitForAsync(() => {
-      spyOn(stateValidationService, 'getValidatedStateResult').and.returnValue(
+    it('returns callbackContext with validationResult if validationResult is valid', async () => {
+      vi.spyOn(
+        stateValidationService,
+        'getValidatedStateResult'
+      ).mockReturnValue(
         of({
           idToken: 'idTokenJustForTesting',
           authResponseIsValid: true,
         } as StateValidationResult)
       );
       const allConfigs = [{ configId: 'configId1' }];
-
-      service
-        .callbackStateValidation(
+      const newCallbackContext = await firstValueFrom(
+        service.callbackStateValidation(
           {} as CallbackContext,
           allConfigs[0],
           allConfigs
         )
-        .subscribe((newCallbackContext) => {
-          expect(newCallbackContext).toEqual({
-            validationResult: {
-              idToken: 'idTokenJustForTesting',
-              authResponseIsValid: true,
-            },
-          } as CallbackContext);
-        });
-    }));
+      );
 
-    it('logs error in case of an error', waitForAsync(() => {
-      spyOn(stateValidationService, 'getValidatedStateResult').and.returnValue(
+      expect(newCallbackContext).toEqual({
+        validationResult: {
+          idToken: 'idTokenJustForTesting',
+          authResponseIsValid: true,
+        },
+      } as CallbackContext);
+    });
+
+    it('logs error in case of an error', async () => {
+      vi.spyOn(
+        stateValidationService,
+        'getValidatedStateResult'
+      ).mockReturnValue(
         of({
           authResponseIsValid: false,
         } as StateValidationResult)
       );
 
-      const loggerSpy = spyOn(loggerService, 'logWarning');
+      const loggerSpy = vi
+        .spyOn(loggerService, 'logWarning')
+        .mockReturnValue(undefined);
       const allConfigs = [{ configId: 'configId1' }];
 
-      service
-        .callbackStateValidation(
-          {} as CallbackContext,
+      try {
+        await firstValueFrom(
+          service.callbackStateValidation(
+            {} as CallbackContext,
+            allConfigs[0],
+            allConfigs
+          )
+        );
+        expect.fail('expected an error');
+      } catch {
+        expect(loggerSpy).toHaveBeenCalledTimes(1);
+        expect(loggerSpy).toHaveBeenCalledWith(
           allConfigs[0],
-          allConfigs
-        )
-        .subscribe({
-          error: () => {
-            expect(loggerSpy).toHaveBeenCalledOnceWith(
-              allConfigs[0],
-              'authorizedCallback, token(s) validation failed, resetting. Hash: &anyFakeHash'
-            );
-          },
-        });
-    }));
+          'authorizedCallback, token(s) validation failed, resetting. Hash: &anyFakeHash'
+        );
+      }
+    });
 
-    it('calls resetAuthDataService.resetAuthorizationData and authStateService.updateAndPublishAuthState in case of an error', waitForAsync(() => {
-      spyOn(stateValidationService, 'getValidatedStateResult').and.returnValue(
+    it('calls resetAuthDataService.resetAuthorizationData and authStateService.updateAndPublishAuthState in case of an error', async () => {
+      vi.spyOn(
+        stateValidationService,
+        'getValidatedStateResult'
+      ).mockReturnValue(
         of({
           authResponseIsValid: false,
           state: ValidationResult.LoginRequired,
         } as StateValidationResult)
       );
 
-      const resetAuthorizationDataSpy = spyOn(
-        resetAuthDataService,
-        'resetAuthorizationData'
-      );
-      const updateAndPublishAuthStateSpy = spyOn(
-        authStateService,
-        'updateAndPublishAuthState'
-      );
+      const resetAuthorizationDataSpy = vi
+        .spyOn(resetAuthDataService, 'resetAuthorizationData')
+        .mockReturnValue(undefined);
+      const updateAndPublishAuthStateSpy = vi
+        .spyOn(authStateService, 'updateAndPublishAuthState')
+        .mockReturnValue(undefined);
       const allConfigs = [{ configId: 'configId1' }];
 
-      service
-        .callbackStateValidation(
-          { isRenewProcess: true } as CallbackContext,
-          allConfigs[0],
-          allConfigs
-        )
-        .subscribe({
-          error: () => {
-            expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
-            expect(updateAndPublishAuthStateSpy).toHaveBeenCalledOnceWith({
-              isAuthenticated: false,
-              validationResult: ValidationResult.LoginRequired,
-              isRenewProcess: true,
-              configId: 'configId1',
-            });
-          },
+      try {
+        await firstValueFrom(
+          service.callbackStateValidation(
+            { isRenewProcess: true } as CallbackContext,
+            allConfigs[0],
+            allConfigs
+          )
+        );
+        expect.fail('expected an error');
+      } catch {
+        expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
+        expect(updateAndPublishAuthStateSpy).toHaveBeenCalledTimes(1);
+        expect(updateAndPublishAuthStateSpy).toHaveBeenCalledWith({
+          isAuthenticated: false,
+          validationResult: ValidationResult.LoginRequired,
+          isRenewProcess: true,
+          configId: 'configId1',
         });
-    }));
+      }
+    });
   });
 });

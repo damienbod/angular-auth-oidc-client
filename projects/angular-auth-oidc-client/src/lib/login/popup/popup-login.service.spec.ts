@@ -1,6 +1,7 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CommonModule } from '@angular/common';
-import { TestBed, waitForAsync } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { TestBed } from '@angular/core/testing';
+import { firstValueFrom, of } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
 import { CheckAuthService } from '../../auth-state/check-auth.service';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
@@ -53,146 +54,153 @@ describe('PopUpLoginService', () => {
   });
 
   describe('loginWithPopUpStandard', () => {
-    it('does nothing if it has an invalid response type', waitForAsync(() => {
+    it('does nothing if it has an invalid response type', async () => {
       // arrange
       const config = { responseType: 'stubValue' };
 
-      spyOn(
+      vi.spyOn(
         responseTypValidationService,
         'hasConfigValidResponseType'
-      ).and.returnValue(false);
-      const loggerSpy = spyOn(loggerService, 'logError');
+      ).mockReturnValue(false);
+      const loggerSpy = vi
+        .spyOn(loggerService, 'logError')
+        .mockReturnValue(undefined);
 
       // act
-      popUpLoginService.loginWithPopUpStandard(config, [config]).subscribe({
+      try {
+        await firstValueFrom(
+          popUpLoginService.loginWithPopUpStandard(config, [config])
+        );
+        expect.fail('expected an error');
+      } catch (err: any) {
         // assert
-        error: (err) => {
-          expect(loggerSpy).toHaveBeenCalled();
-          expect(err.message).toBe('Invalid response type!');
-        },
-      });
-    }));
+        expect(loggerSpy).toHaveBeenCalled();
+        expect(err.message).toBe('Invalid response type!');
+      }
+    });
 
-    it('calls urlService.getAuthorizeUrl() if everything fits', waitForAsync(() => {
+    it('calls urlService.getAuthorizeUrl() if everything fits', async () => {
       // arrange
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
       };
 
-      spyOn(
+      vi.spyOn(
         responseTypValidationService,
         'hasConfigValidResponseType'
-      ).and.returnValue(true);
-      spyOn(
+      ).mockReturnValue(true);
+      vi.spyOn(
         authWellKnownService,
         'queryAndStoreAuthWellKnownEndPoints'
-      ).and.returnValue(of({}));
-      spyOnProperty(popupService, 'result$').and.returnValue(
+      ).mockReturnValue(of({}));
+      vi.spyOn(popupService, 'result$', 'get').mockReturnValue(
         of({} as PopupResult)
       );
-      spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
-      spyOn(checkAuthService, 'checkAuth').and.returnValue(
+      vi.spyOn(urlService, 'getAuthorizeUrl').mockReturnValue(of('someUrl'));
+      vi.spyOn(checkAuthService, 'checkAuth').mockReturnValue(
         of({} as LoginResponse)
       );
 
       // act
-      popUpLoginService
-        .loginWithPopUpStandard(config, [config])
-        .subscribe(() => {
-          // assert
-          expect(urlService.getAuthorizeUrl).toHaveBeenCalled();
-        });
-    }));
+      await firstValueFrom(
+        popUpLoginService.loginWithPopUpStandard(config, [config])
+      );
 
-    it('opens popup if everything fits', waitForAsync(() => {
+      // assert
+      expect(urlService.getAuthorizeUrl).toHaveBeenCalled();
+    });
+
+    it('opens popup if everything fits', async () => {
       // arrange
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
       };
 
-      spyOn(
+      vi.spyOn(
         responseTypValidationService,
         'hasConfigValidResponseType'
-      ).and.returnValue(true);
-      spyOn(
+      ).mockReturnValue(true);
+      vi.spyOn(
         authWellKnownService,
         'queryAndStoreAuthWellKnownEndPoints'
-      ).and.returnValue(of({}));
-      spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
-      spyOnProperty(popupService, 'result$').and.returnValue(
+      ).mockReturnValue(of({}));
+      vi.spyOn(urlService, 'getAuthorizeUrl').mockReturnValue(of('someUrl'));
+      vi.spyOn(popupService, 'result$', 'get').mockReturnValue(
         of({} as PopupResult)
       );
-      spyOn(checkAuthService, 'checkAuth').and.returnValue(
+      vi.spyOn(checkAuthService, 'checkAuth').mockReturnValue(
         of({} as LoginResponse)
       );
-      const popupSpy = spyOn(popupService, 'openPopUp');
+      const popupSpy = vi
+        .spyOn(popupService, 'openPopUp')
+        .mockReturnValue(undefined);
 
       // act
-      popUpLoginService
-        .loginWithPopUpStandard(config, [config])
-        .subscribe(() => {
-          // assert
-          expect(popupSpy).toHaveBeenCalled();
-        });
-    }));
+      await firstValueFrom(
+        popUpLoginService.loginWithPopUpStandard(config, [config])
+      );
 
-    it('returns three properties when popupservice received an url', waitForAsync(() => {
+      // assert
+      expect(popupSpy).toHaveBeenCalled();
+    });
+
+    it('returns three properties when popupservice received an url', async () => {
       // arrange
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
       };
 
-      spyOn(
+      vi.spyOn(
         responseTypValidationService,
         'hasConfigValidResponseType'
-      ).and.returnValue(true);
-      spyOn(
+      ).mockReturnValue(true);
+      vi.spyOn(
         authWellKnownService,
         'queryAndStoreAuthWellKnownEndPoints'
-      ).and.returnValue(of({}));
-      spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
-      spyOn(popupService, 'openPopUp');
-      const checkAuthSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(
-        of({
-          isAuthenticated: true,
-          configId: 'configId1',
-          idToken: '',
-          userData: { any: 'userData' },
-          accessToken: 'anyAccessToken',
-        })
-      );
-      const popupResult: PopupResult = {
-        userClosed: false,
-        receivedUrl: 'someUrl',
-      };
-
-      spyOnProperty(popupService, 'result$').and.returnValue(of(popupResult));
-
-      // act
-      popUpLoginService
-        .loginWithPopUpStandard(config, [config])
-        .subscribe((result) => {
-          // assert
-          expect(checkAuthSpy).toHaveBeenCalledOnceWith(
-            config,
-            [config],
-            'someUrl'
-          );
-
-          expect(result).toEqual({
+      ).mockReturnValue(of({}));
+      vi.spyOn(urlService, 'getAuthorizeUrl').mockReturnValue(of('someUrl'));
+      vi.spyOn(popupService, 'openPopUp').mockReturnValue(undefined);
+      const checkAuthSpy = vi
+        .spyOn(checkAuthService, 'checkAuth')
+        .mockReturnValue(
+          of({
             isAuthenticated: true,
             configId: 'configId1',
             idToken: '',
             userData: { any: 'userData' },
             accessToken: 'anyAccessToken',
-          });
-        });
-    }));
+          })
+        );
+      const popupResult: PopupResult = {
+        userClosed: false,
+        receivedUrl: 'someUrl',
+      };
 
-    it('returns two properties if popup was closed by user', waitForAsync(() => {
+      vi.spyOn(popupService, 'result$', 'get').mockReturnValue(of(popupResult));
+
+      // act
+      const result = await firstValueFrom(
+        popUpLoginService.loginWithPopUpStandard(config, [config])
+      );
+
+      // assert
+      expect(checkAuthSpy).toHaveBeenCalledTimes(1);
+      // assert
+      expect(checkAuthSpy).toHaveBeenCalledWith(config, [config], 'someUrl');
+
+      expect(result).toEqual({
+        isAuthenticated: true,
+        configId: 'configId1',
+        idToken: '',
+        userData: { any: 'userData' },
+        accessToken: 'anyAccessToken',
+      });
+    });
+
+    it('returns two properties if popup was closed by user', async () => {
       // arrange
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
@@ -200,38 +208,38 @@ describe('PopUpLoginService', () => {
         configId: 'configId1',
       };
 
-      spyOn(
+      vi.spyOn(
         responseTypValidationService,
         'hasConfigValidResponseType'
-      ).and.returnValue(true);
-      spyOn(
+      ).mockReturnValue(true);
+      vi.spyOn(
         authWellKnownService,
         'queryAndStoreAuthWellKnownEndPoints'
-      ).and.returnValue(of({}));
-      spyOn(urlService, 'getAuthorizeUrl').and.returnValue(of('someUrl'));
-      spyOn(popupService, 'openPopUp');
-      const checkAuthSpy = spyOn(checkAuthService, 'checkAuth').and.returnValue(
-        of({} as LoginResponse)
-      );
+      ).mockReturnValue(of({}));
+      vi.spyOn(urlService, 'getAuthorizeUrl').mockReturnValue(of('someUrl'));
+      vi.spyOn(popupService, 'openPopUp').mockReturnValue(undefined);
+      const checkAuthSpy = vi
+        .spyOn(checkAuthService, 'checkAuth')
+        .mockReturnValue(of({} as LoginResponse));
       const popupResult = { userClosed: true } as PopupResult;
 
-      spyOnProperty(popupService, 'result$').and.returnValue(of(popupResult));
+      vi.spyOn(popupService, 'result$', 'get').mockReturnValue(of(popupResult));
 
       // act
-      popUpLoginService
-        .loginWithPopUpStandard(config, [config])
-        .subscribe((result) => {
-          // assert
-          expect(checkAuthSpy).not.toHaveBeenCalled();
-          expect(result).toEqual({
-            isAuthenticated: false,
-            errorMessage: 'User closed popup',
-            configId: 'configId1',
-            idToken: '',
-            userData: null,
-            accessToken: '',
-          });
-        });
-    }));
+      const result = await firstValueFrom(
+        popUpLoginService.loginWithPopUpStandard(config, [config])
+      );
+
+      // assert
+      expect(checkAuthSpy).not.toHaveBeenCalled();
+      expect(result).toEqual({
+        isAuthenticated: false,
+        errorMessage: 'User closed popup',
+        configId: 'configId1',
+        idToken: '',
+        userData: null,
+        accessToken: '',
+      });
+    });
   });
 });

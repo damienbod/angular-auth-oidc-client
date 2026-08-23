@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { PassedInitialConfig, createStaticLoader } from './auth-config';
 
 describe('AuthConfig', () => {

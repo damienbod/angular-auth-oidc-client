@@ -1,4 +1,6 @@
-import { TestBed, waitForAsync } from '@angular/core/testing';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { firstValueFrom } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
 import { AuthStateService } from '../../auth-state/auth-state.service';
 import { LoggerService } from '../../logging/logger.service';
@@ -33,15 +35,15 @@ describe('RefreshSessionCallbackHandlerService', () => {
   });
 
   describe('refreshSessionWithRefreshTokens', () => {
-    it('returns callbackContext if all params are good', waitForAsync(() => {
-      spyOn(
+    it('returns callbackContext if all params are good', async () => {
+      vi.spyOn(
         flowsDataService,
         'getExistingOrCreateAuthStateControl'
-      ).and.returnValue('state-data');
-      spyOn(authStateService, 'getRefreshToken').and.returnValue(
+      ).mockReturnValue('state-data');
+      vi.spyOn(authStateService, 'getRefreshToken').mockReturnValue(
         'henlo-furiend'
       );
-      spyOn(authStateService, 'getIdToken').and.returnValue('henlo-legger');
+      vi.spyOn(authStateService, 'getIdToken').mockReturnValue('henlo-legger');
 
       const expectedCallbackContext = {
         code: '',
@@ -54,29 +56,29 @@ describe('RefreshSessionCallbackHandlerService', () => {
         validationResult: null,
         existingIdToken: 'henlo-legger',
       } as CallbackContext;
+      const callbackContext = await firstValueFrom(
+        service.refreshSessionWithRefreshTokens({ configId: 'configId1' })
+      );
 
-      service
-        .refreshSessionWithRefreshTokens({ configId: 'configId1' })
-        .subscribe((callbackContext) => {
-          expect(callbackContext).toEqual(expectedCallbackContext);
-        });
-    }));
+      expect(callbackContext).toEqual(expectedCallbackContext);
+    });
 
-    it('throws error if no refresh token is given', waitForAsync(() => {
-      spyOn(
+    it('throws error if no refresh token is given', async () => {
+      vi.spyOn(
         flowsDataService,
         'getExistingOrCreateAuthStateControl'
-      ).and.returnValue('state-data');
-      spyOn(authStateService, 'getRefreshToken').and.returnValue('');
-      spyOn(authStateService, 'getIdToken').and.returnValue('henlo-legger');
+      ).mockReturnValue('state-data');
+      vi.spyOn(authStateService, 'getRefreshToken').mockReturnValue('');
+      vi.spyOn(authStateService, 'getIdToken').mockReturnValue('henlo-legger');
 
-      service
-        .refreshSessionWithRefreshTokens({ configId: 'configId1' })
-        .subscribe({
-          error: (err) => {
-            expect(err).toBeTruthy();
-          },
-        });
-    }));
+      try {
+        await firstValueFrom(
+          service.refreshSessionWithRefreshTokens({ configId: 'configId1' })
+        );
+        expect.fail('expected an error');
+      } catch (err: any) {
+        expect(err).toBeTruthy();
+      }
+    });
   });
 });

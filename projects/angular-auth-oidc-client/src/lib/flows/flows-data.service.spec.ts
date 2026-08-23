@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { mockProvider } from '../../test/auto-mock';
 import { LoggerService } from '../logging/logger.service';
@@ -28,7 +29,7 @@ describe('Flows Data Service', () => {
   });
 
   afterEach(() => {
-    jasmine.clock().uninstall();
+    vi.useRealTimers();
   });
 
   it('should create', () => {
@@ -37,10 +38,14 @@ describe('Flows Data Service', () => {
 
   describe('createNonce', () => {
     it('createNonce returns nonce and stores it', () => {
-      const spy = spyOn(storagePersistenceService, 'write');      const result = service.createNonce({ configId: 'configId1' });
+      const spy = vi
+        .spyOn(storagePersistenceService, 'write')
+        .mockReturnValue(undefined as any);
+      const result = service.createNonce({ configId: 'configId1' });
 
       expect(result).toBeTruthy();
-      expect(spy).toHaveBeenCalledOnceWith('authNonce', result, {
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith('authNonce', result, {
         configId: 'configId1',
       });
     });
@@ -48,21 +53,29 @@ describe('Flows Data Service', () => {
 
   describe('AuthStateControl', () => {
     it('getAuthStateControl returns property from store', () => {
-      const spy = spyOn(storagePersistenceService, 'read');
+      const spy = vi
+        .spyOn(storagePersistenceService, 'read')
+        .mockReturnValue(undefined);
 
       service.getAuthStateControl({ configId: 'configId1' });
 
-      expect(spy).toHaveBeenCalledOnceWith('authStateControl', {
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      expect(spy).toHaveBeenCalledWith('authStateControl', {
         configId: 'configId1',
       });
     });
 
     it('setAuthStateControl saves property in store', () => {
-      const spy = spyOn(storagePersistenceService, 'write');
+      const spy = vi
+        .spyOn(storagePersistenceService, 'write')
+        .mockReturnValue(undefined as any);
 
       service.setAuthStateControl('ToSave', { configId: 'configId1' });
 
-      expect(spy).toHaveBeenCalledOnceWith('authStateControl', 'ToSave', {
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      expect(spy).toHaveBeenCalledWith('authStateControl', 'ToSave', {
         configId: 'configId1',
       });
     });
@@ -70,25 +83,44 @@ describe('Flows Data Service', () => {
 
   describe('getExistingOrCreateAuthStateControl', () => {
     it('if nothing stored it creates a 40 char one and saves the authStateControl', () => {
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authStateControl', { configId: 'configId1' })
-        .and.returnValue(null);
-      const setSpy = spyOn(storagePersistenceService, 'write');      const result = service.getExistingOrCreateAuthStateControl({
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authStateControl') {
+            return null;
+          }
+
+          return undefined;
+        }
+      );
+      const setSpy = vi
+        .spyOn(storagePersistenceService, 'write')
+        .mockReturnValue(undefined as any);
+      const result = service.getExistingOrCreateAuthStateControl({
         configId: 'configId1',
       });
 
       expect(result).toBeTruthy();
       expect(result.length).toBe(41);
-      expect(setSpy).toHaveBeenCalledOnceWith('authStateControl', result, {
+      expect(setSpy).toHaveBeenCalledTimes(1);
+      expect(setSpy).toHaveBeenCalledWith('authStateControl', result, {
         configId: 'configId1',
       });
     });
 
     it('if stored it returns the value and does NOT Store the value again', () => {
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authStateControl', { configId: 'configId1' })
-        .and.returnValue('someAuthStateControl');
-      const setSpy = spyOn(storagePersistenceService, 'write');      const result = service.getExistingOrCreateAuthStateControl({
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authStateControl') {
+            return 'someAuthStateControl';
+          }
+
+          return undefined;
+        }
+      );
+      const setSpy = vi
+        .spyOn(storagePersistenceService, 'write')
+        .mockReturnValue(undefined as any);
+      const result = service.getExistingOrCreateAuthStateControl({
         configId: 'configId1',
       });
 
@@ -100,11 +132,15 @@ describe('Flows Data Service', () => {
 
   describe('setSessionState', () => {
     it('setSessionState saves the value in the storage', () => {
-      const spy = spyOn(storagePersistenceService, 'write');
+      const spy = vi
+        .spyOn(storagePersistenceService, 'write')
+        .mockReturnValue(undefined as any);
 
       service.setSessionState('Genesis', { configId: 'configId1' });
 
-      expect(spy).toHaveBeenCalledOnceWith('session_state', 'Genesis', {
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      expect(spy).toHaveBeenCalledWith('session_state', 'Genesis', {
         configId: 'configId1',
       });
     });
@@ -112,7 +148,9 @@ describe('Flows Data Service', () => {
 
   describe('resetStorageFlowData', () => {
     it('resetStorageFlowData calls correct method on storagePersistenceService', () => {
-      const spy = spyOn(storagePersistenceService, 'resetStorageFlowData');
+      const spy = vi
+        .spyOn(storagePersistenceService, 'resetStorageFlowData')
+        .mockReturnValue(undefined);
 
       service.resetStorageFlowData({ configId: 'configId1' });
 
@@ -122,22 +160,34 @@ describe('Flows Data Service', () => {
 
   describe('codeVerifier', () => {
     it('getCodeVerifier returns value from the store', () => {
-      const spy = spyOn(storagePersistenceService, 'read')
-        .withArgs('codeVerifier', { configId: 'configId1' })
-        .and.returnValue('Genesis');      const result = service.getCodeVerifier({ configId: 'configId1' });
+      const spy = vi
+        .spyOn(storagePersistenceService, 'read')
+        .mockImplementation((...args: any[]) => {
+          if (args[0] === 'codeVerifier') {
+            return 'Genesis';
+          }
+
+          return undefined;
+        });
+      const result = service.getCodeVerifier({ configId: 'configId1' });
 
       expect(result).toBe('Genesis');
-      expect(spy).toHaveBeenCalledOnceWith('codeVerifier', {
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith('codeVerifier', {
         configId: 'configId1',
       });
     });
 
     it('createCodeVerifier returns random createCodeVerifier and stores it', () => {
-      const setSpy = spyOn(storagePersistenceService, 'write');      const result = service.createCodeVerifier({ configId: 'configId1' });
+      const setSpy = vi
+        .spyOn(storagePersistenceService, 'write')
+        .mockReturnValue(undefined as any);
+      const result = service.createCodeVerifier({ configId: 'configId1' });
 
       expect(result).toBeTruthy();
       expect(result.length).toBe(67);
-      expect(setSpy).toHaveBeenCalledOnceWith('codeVerifier', result, {
+      expect(setSpy).toHaveBeenCalledTimes(1);
+      expect(setSpy).toHaveBeenCalledWith('codeVerifier', result, {
         configId: 'configId1',
       });
     });
@@ -149,26 +199,41 @@ describe('Flows Data Service', () => {
         configId: 'configId1',
       };
 
-      jasmine.clock().uninstall();
-      jasmine.clock().install();
+      vi.useRealTimers();
+      vi.useFakeTimers();
       const baseTime = new Date();
 
-      jasmine.clock().mockDate(baseTime);
+      vi.setSystemTime(baseTime);
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('storageCodeFlowInProgress', config)
-        .and.returnValue(true);
-      const spyWrite = spyOn(storagePersistenceService, 'write');      const isCodeFlowInProgressResult = service.isCodeFlowInProgress(config);
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'storageCodeFlowInProgress') {
+            return true;
+          }
+
+          return undefined;
+        }
+      );
+      const spyWrite = vi
+        .spyOn(storagePersistenceService, 'write')
+        .mockReturnValue(undefined as any);
+      const isCodeFlowInProgressResult = service.isCodeFlowInProgress(config);
 
       expect(spyWrite).not.toHaveBeenCalled();
-      expect(isCodeFlowInProgressResult).toBeTrue();
+      expect(isCodeFlowInProgressResult).toBe(true);
     });
 
     it('state object does not exist returns false result', () => {
       // arrange
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('storageCodeFlowInProgress', { configId: 'configId1' })
-        .and.returnValue(null);
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'storageCodeFlowInProgress') {
+            return null;
+          }
+
+          return undefined;
+        }
+      );
 
       // act
       const isCodeFlowInProgressResult = service.isCodeFlowInProgress({
@@ -176,22 +241,25 @@ describe('Flows Data Service', () => {
       });
 
       // assert
-      expect(isCodeFlowInProgressResult).toBeFalse();
+      expect(isCodeFlowInProgressResult).toBe(false);
     });
   });
 
   describe('setCodeFlowInProgress', () => {
     it('set setCodeFlowInProgress to `in progress` when called', () => {
-      jasmine.clock().uninstall();
-      jasmine.clock().install();
+      vi.useRealTimers();
+      vi.useFakeTimers();
       const baseTime = new Date();
 
-      jasmine.clock().mockDate(baseTime);
+      vi.setSystemTime(baseTime);
 
-      const spy = spyOn(storagePersistenceService, 'write');
+      const spy = vi
+        .spyOn(storagePersistenceService, 'write')
+        .mockReturnValue(undefined as any);
 
       service.setCodeFlowInProgress({ configId: 'configId1' });
-      expect(spy).toHaveBeenCalledOnceWith('storageCodeFlowInProgress', true, {
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith('storageCodeFlowInProgress', true, {
         configId: 'configId1',
       });
     });
@@ -199,10 +267,13 @@ describe('Flows Data Service', () => {
 
   describe('resetCodeFlowInProgress', () => {
     it('set resetCodeFlowInProgress to false when called', () => {
-      const spy = spyOn(storagePersistenceService, 'write');
+      const spy = vi
+        .spyOn(storagePersistenceService, 'write')
+        .mockReturnValue(undefined as any);
 
       service.resetCodeFlowInProgress({ configId: 'configId1' });
-      expect(spy).toHaveBeenCalledOnceWith('storageCodeFlowInProgress', false, {
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith('storageCodeFlowInProgress', false, {
         configId: 'configId1',
       });
     });
@@ -215,32 +286,42 @@ describe('Flows Data Service', () => {
         configId: 'configId1',
       };
 
-      jasmine.clock().uninstall();
-      jasmine.clock().install();
+      vi.useRealTimers();
+      vi.useFakeTimers();
       const baseTime = new Date();
 
-      jasmine.clock().mockDate(baseTime);
+      vi.setSystemTime(baseTime);
 
       const storageObject = {
         state: 'running',
         dateOfLaunchedProcessUtc: baseTime.toISOString(),
       };
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('storageSilentRenewRunning', config)
-        .and.returnValue(JSON.stringify(storageObject));
-      const spyWrite = spyOn(storagePersistenceService, 'write');
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'storageSilentRenewRunning') {
+            return JSON.stringify(storageObject);
+          }
 
-      jasmine.clock().tick((config.silentRenewTimeoutInSeconds + 1) * 1000);
+          return undefined;
+        }
+      );
+      const spyWrite = vi
+        .spyOn(storagePersistenceService, 'write')
+        .mockReturnValue(undefined as any);
+
+      vi.advanceTimersByTime((config.silentRenewTimeoutInSeconds + 1) * 1000);
 
       const isSilentRenewRunningResult = service.isSilentRenewRunning(config);
 
-      expect(spyWrite).toHaveBeenCalledOnceWith(
+      expect(spyWrite).toHaveBeenCalledTimes(1);
+
+      expect(spyWrite).toHaveBeenCalledWith(
         'storageSilentRenewRunning',
         '',
         config
       );
-      expect(isSilentRenewRunningResult).toBeFalse();
+      expect(isSilentRenewRunningResult).toBe(false);
     });
 
     it('checks silent renew process and returns result', () => {
@@ -249,54 +330,73 @@ describe('Flows Data Service', () => {
         configId: 'configId1',
       };
 
-      jasmine.clock().uninstall();
-      jasmine.clock().install();
+      vi.useRealTimers();
+      vi.useFakeTimers();
       const baseTime = new Date();
 
-      jasmine.clock().mockDate(baseTime);
+      vi.setSystemTime(baseTime);
 
       const storageObject = {
         state: 'running',
         dateOfLaunchedProcessUtc: baseTime.toISOString(),
       };
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('storageSilentRenewRunning', config)
-        .and.returnValue(JSON.stringify(storageObject));
-      const spyWrite = spyOn(storagePersistenceService, 'write');      const isSilentRenewRunningResult = service.isSilentRenewRunning(config);
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'storageSilentRenewRunning') {
+            return JSON.stringify(storageObject);
+          }
+
+          return undefined;
+        }
+      );
+      const spyWrite = vi
+        .spyOn(storagePersistenceService, 'write')
+        .mockReturnValue(undefined as any);
+      const isSilentRenewRunningResult = service.isSilentRenewRunning(config);
 
       expect(spyWrite).not.toHaveBeenCalled();
-      expect(isSilentRenewRunningResult).toBeTrue();
+      expect(isSilentRenewRunningResult).toBe(true);
     });
 
     it('state object does not exist returns false result', () => {
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('storageSilentRenewRunning', { configId: 'configId1' })
-        .and.returnValue(null);
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'storageSilentRenewRunning') {
+            return null;
+          }
+
+          return undefined;
+        }
+      );
 
       const isSilentRenewRunningResult = service.isSilentRenewRunning({
         configId: 'configId1',
       });
 
-      expect(isSilentRenewRunningResult).toBeFalse();
+      expect(isSilentRenewRunningResult).toBe(false);
     });
   });
 
   describe('setSilentRenewRunning', () => {
     it('set setSilentRenewRunning to `running` with lauched time when called', () => {
-      jasmine.clock().uninstall();
-      jasmine.clock().install();
+      vi.useRealTimers();
+      vi.useFakeTimers();
       const baseTime = new Date();
 
-      jasmine.clock().mockDate(baseTime);
+      vi.setSystemTime(baseTime);
 
       const storageObject = {
         state: 'running',
         dateOfLaunchedProcessUtc: baseTime.toISOString(),
-      };      const spy = spyOn(storagePersistenceService, 'write');
+      };
+      const spy = vi
+        .spyOn(storagePersistenceService, 'write')
+        .mockReturnValue(undefined as any);
 
       service.setSilentRenewRunning({ configId: 'configId1' });
-      expect(spy).toHaveBeenCalledOnceWith(
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(
         'storageSilentRenewRunning',
         JSON.stringify(storageObject),
         { configId: 'configId1' }
@@ -306,10 +406,13 @@ describe('Flows Data Service', () => {
 
   describe('resetSilentRenewRunning', () => {
     it('set resetSilentRenewRunning to empty string when called', () => {
-      const spy = spyOn(storagePersistenceService, 'write');
+      const spy = vi
+        .spyOn(storagePersistenceService, 'write')
+        .mockReturnValue(undefined as any);
 
       service.resetSilentRenewRunning({ configId: 'configId1' });
-      expect(spy).toHaveBeenCalledOnceWith('storageSilentRenewRunning', '', {
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith('storageSilentRenewRunning', '', {
         configId: 'configId1',
       });
     });

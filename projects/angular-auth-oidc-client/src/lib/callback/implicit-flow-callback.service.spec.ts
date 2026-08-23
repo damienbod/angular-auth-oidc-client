@@ -1,7 +1,8 @@
-import { TestBed, waitForAsync } from '@angular/core/testing';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of, throwError } from 'rxjs';
+import { firstValueFrom, of, throwError } from 'rxjs';
 import { mockProvider } from '../../test/auto-mock';
 import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
@@ -41,10 +42,9 @@ describe('ImplicitFlowCallbackService ', () => {
 
   describe('authorizedImplicitFlowCallback', () => {
     it('calls flowsService.processImplicitFlowCallback with hash if given', () => {
-      const spy = spyOn(
-        flowsService,
-        'processImplicitFlowCallback'
-      ).and.returnValue(of({} as CallbackContext));
+      const spy = vi
+        .spyOn(flowsService, 'processImplicitFlowCallback')
+        .mockReturnValue(of({} as CallbackContext));
       const config = {
         configId: 'configId1',
         triggerAuthorizationResultEvent: true,
@@ -56,10 +56,12 @@ describe('ImplicitFlowCallbackService ', () => {
         'some-hash'
       );
 
-      expect(spy).toHaveBeenCalledOnceWith(config, [config], 'some-hash');
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      expect(spy).toHaveBeenCalledWith(config, [config], 'some-hash');
     });
 
-    it('does nothing if triggerAuthorizationResultEvent is true and isRenewProcess is true', waitForAsync(() => {
+    it('does nothing if triggerAuthorizationResultEvent is true and isRenewProcess is true', async () => {
       const callbackContext = {
         code: '',
         refreshToken: '',
@@ -71,25 +73,31 @@ describe('ImplicitFlowCallbackService ', () => {
         validationResult: null,
         existingIdToken: '',
       };
-      const spy = spyOn(
-        flowsService,
-        'processImplicitFlowCallback'
-      ).and.returnValue(of(callbackContext));
-      const routerSpy = spyOn(router, 'navigateByUrl');
+      const spy = vi
+        .spyOn(flowsService, 'processImplicitFlowCallback')
+        .mockReturnValue(of(callbackContext));
+      const routerSpy = vi
+        .spyOn(router, 'navigateByUrl')
+        .mockReturnValue(undefined as any);
       const config = {
         configId: 'configId1',
         triggerAuthorizationResultEvent: true,
       };
 
-      implicitFlowCallbackService
-        .authenticatedImplicitFlowCallback(config, [config], 'some-hash')
-        .subscribe(() => {
-          expect(spy).toHaveBeenCalledOnceWith(config, [config], 'some-hash');
-          expect(routerSpy).not.toHaveBeenCalled();
-        });
-    }));
+      await firstValueFrom(
+        implicitFlowCallbackService.authenticatedImplicitFlowCallback(
+          config,
+          [config],
+          'some-hash'
+        )
+      );
 
-    it('calls router if triggerAuthorizationResultEvent is false and isRenewProcess is false', waitForAsync(() => {
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(config, [config], 'some-hash');
+      expect(routerSpy).not.toHaveBeenCalled();
+    });
+
+    it('calls router if triggerAuthorizationResultEvent is false and isRenewProcess is false', async () => {
       const callbackContext = {
         code: '',
         refreshToken: '',
@@ -101,85 +109,101 @@ describe('ImplicitFlowCallbackService ', () => {
         validationResult: null,
         existingIdToken: '',
       };
-      const spy = spyOn(
-        flowsService,
-        'processImplicitFlowCallback'
-      ).and.returnValue(of(callbackContext));
-      const routerSpy = spyOn(router, 'navigateByUrl');
+      const spy = vi
+        .spyOn(flowsService, 'processImplicitFlowCallback')
+        .mockReturnValue(of(callbackContext));
+      const routerSpy = vi
+        .spyOn(router, 'navigateByUrl')
+        .mockReturnValue(undefined as any);
       const config = {
         configId: 'configId1',
         triggerAuthorizationResultEvent: false,
         postLoginRoute: 'postLoginRoute',
       };
 
-      implicitFlowCallbackService
-        .authenticatedImplicitFlowCallback(config, [config], 'some-hash')
-        .subscribe(() => {
-          expect(spy).toHaveBeenCalledOnceWith(config, [config], 'some-hash');
-          expect(routerSpy).toHaveBeenCalledOnceWith('postLoginRoute');
-        });
-    }));
+      await firstValueFrom(
+        implicitFlowCallbackService.authenticatedImplicitFlowCallback(
+          config,
+          [config],
+          'some-hash'
+        )
+      );
 
-    it('resetSilentRenewRunning and stopPeriodicallyTokenCheck in case of error', waitForAsync(() => {
-      spyOn(flowsService, 'processImplicitFlowCallback').and.returnValue(
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(config, [config], 'some-hash');
+      expect(routerSpy).toHaveBeenCalledTimes(1);
+      expect(routerSpy).toHaveBeenCalledWith('postLoginRoute');
+    });
+
+    it('resetSilentRenewRunning and stopPeriodicallyTokenCheck in case of error', async () => {
+      vi.spyOn(flowsService, 'processImplicitFlowCallback').mockReturnValue(
         throwError(() => new Error('error'))
       );
-      const resetSilentRenewRunningSpy = spyOn(
-        flowsDataService,
-        'resetSilentRenewRunning'
-      );
-      const stopPeriodicallyTokenCheckSpy = spyOn(
-        intervalService,
-        'stopPeriodicTokenCheck'
-      );
+      const resetSilentRenewRunningSpy = vi
+        .spyOn(flowsDataService, 'resetSilentRenewRunning')
+        .mockReturnValue(undefined);
+      const stopPeriodicallyTokenCheckSpy = vi
+        .spyOn(intervalService, 'stopPeriodicTokenCheck')
+        .mockReturnValue(undefined);
       const config = {
         configId: 'configId1',
         triggerAuthorizationResultEvent: false,
         postLoginRoute: 'postLoginRoute',
       };
 
-      implicitFlowCallbackService
-        .authenticatedImplicitFlowCallback(config, [config], 'some-hash')
-        .subscribe({
-          error: (err) => {
-            expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
-            expect(stopPeriodicallyTokenCheckSpy).toHaveBeenCalled();
-            expect(err).toBeTruthy();
-          },
-        });
-    }));
+      try {
+        await firstValueFrom(
+          implicitFlowCallbackService.authenticatedImplicitFlowCallback(
+            config,
+            [config],
+            'some-hash'
+          )
+        );
+        expect.fail('expected an error');
+      } catch (err: any) {
+        expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
+        expect(stopPeriodicallyTokenCheckSpy).toHaveBeenCalled();
+        expect(err).toBeTruthy();
+      }
+    });
 
     it(`navigates to unauthorizedRoute in case of error and  in case of error and
-        triggerAuthorizationResultEvent is false`, waitForAsync(() => {
-      spyOn(flowsDataService, 'isSilentRenewRunning').and.returnValue(false);
-      spyOn(flowsService, 'processImplicitFlowCallback').and.returnValue(
+        triggerAuthorizationResultEvent is false`, async () => {
+      vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(false);
+      vi.spyOn(flowsService, 'processImplicitFlowCallback').mockReturnValue(
         throwError(() => new Error('error'))
       );
-      const resetSilentRenewRunningSpy = spyOn(
-        flowsDataService,
-        'resetSilentRenewRunning'
-      );
-      const stopPeriodicallTokenCheckSpy = spyOn(
-        intervalService,
-        'stopPeriodicTokenCheck'
-      );
-      const routerSpy = spyOn(router, 'navigateByUrl');
+      const resetSilentRenewRunningSpy = vi
+        .spyOn(flowsDataService, 'resetSilentRenewRunning')
+        .mockReturnValue(undefined);
+      const stopPeriodicallTokenCheckSpy = vi
+        .spyOn(intervalService, 'stopPeriodicTokenCheck')
+        .mockReturnValue(undefined);
+      const routerSpy = vi
+        .spyOn(router, 'navigateByUrl')
+        .mockReturnValue(undefined as any);
       const config = {
         configId: 'configId1',
         triggerAuthorizationResultEvent: false,
         unauthorizedRoute: 'unauthorizedRoute',
       };
 
-      implicitFlowCallbackService
-        .authenticatedImplicitFlowCallback(config, [config], 'some-hash')
-        .subscribe({
-          error: (err) => {
-            expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
-            expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
-            expect(err).toBeTruthy();
-            expect(routerSpy).toHaveBeenCalledOnceWith('unauthorizedRoute');
-          },
-        });
-    }));
+      try {
+        await firstValueFrom(
+          implicitFlowCallbackService.authenticatedImplicitFlowCallback(
+            config,
+            [config],
+            'some-hash'
+          )
+        );
+        expect.fail('expected an error');
+      } catch (err: any) {
+        expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
+        expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
+        expect(err).toBeTruthy();
+        expect(routerSpy).toHaveBeenCalledTimes(1);
+        expect(routerSpy).toHaveBeenCalledWith('unauthorizedRoute');
+      }
+    });
   });
 });

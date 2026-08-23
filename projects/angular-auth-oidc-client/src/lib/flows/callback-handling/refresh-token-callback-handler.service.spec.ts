@@ -1,6 +1,7 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { TestBed, waitForAsync } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
+import { TestBed } from '@angular/core/testing';
+import { firstValueFrom, of, throwError } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
 import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
 import { DataService } from '../../api/data.service';
@@ -46,83 +47,106 @@ describe('RefreshTokenCallbackHandlerService', () => {
       url: 'https://identity-server.test/openid-connect/token',
     });
 
-    it('throws error if no tokenEndpoint is given', waitForAsync(() => {
-      (service as any)
-        .refreshTokensRequestTokens({} as CallbackContext)
-        .subscribe({
-          error: (err: unknown) => {
-            expect(err).toBeTruthy();
-          },
-        });
-    }));
+    it('throws error if no tokenEndpoint is given', async () => {
+      try {
+        await firstValueFrom(
+          (service as any).refreshTokensRequestTokens({} as CallbackContext)
+        );
+        expect.fail('expected an error');
+      } catch (err: unknown) {
+        expect(err).toBeTruthy();
+      }
+    });
 
-    it('calls data service if all params are good', waitForAsync(() => {
-      const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
+    it('calls data service if all params are good', async () => {
+      const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(of({}));
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
-        .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { tokenEndpoint: 'tokenEndpoint' };
+          }
 
-      service
-        .refreshTokensRequestTokens({} as CallbackContext, {
+          return undefined;
+        }
+      );
+
+      await firstValueFrom(
+        service.refreshTokensRequestTokens({} as CallbackContext, {
           configId: 'configId1',
         })
-        .subscribe(() => {
-          expect(postSpy).toHaveBeenCalledOnceWith(
-            'tokenEndpoint',
-            undefined,
-            { configId: 'configId1' },
-            jasmine.any(HttpHeaders)
-          );
-          const httpHeaders = postSpy.calls.mostRecent().args[3] as HttpHeaders;
+      );
 
-          expect(httpHeaders.has('Content-Type')).toBeTrue();
-          expect(httpHeaders.get('Content-Type')).toBe(
-            'application/x-www-form-urlencoded'
-          );
-        });
-    }));
+      expect(postSpy).toHaveBeenCalledTimes(1);
+      expect(postSpy).toHaveBeenCalledWith(
+        'tokenEndpoint',
+        undefined,
+        { configId: 'configId1' },
+        expect.any(HttpHeaders)
+      );
+      const httpHeaders = vi.mocked(postSpy).mock.lastCall![3] as HttpHeaders;
 
-    it('calls data service with correct headers if all params are good', waitForAsync(() => {
-      const postSpy = spyOn(dataService, 'post').and.returnValue(of({}));
+      expect(httpHeaders.has('Content-Type')).toBe(true);
+      expect(httpHeaders.get('Content-Type')).toBe(
+        'application/x-www-form-urlencoded'
+      );
+    });
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
-        .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+    it('calls data service with correct headers if all params are good', async () => {
+      const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(of({}));
 
-      service
-        .refreshTokensRequestTokens({} as CallbackContext, {
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { tokenEndpoint: 'tokenEndpoint' };
+          }
+
+          return undefined;
+        }
+      );
+
+      await firstValueFrom(
+        service.refreshTokensRequestTokens({} as CallbackContext, {
           configId: 'configId1',
         })
-        .subscribe(() => {
-          const httpHeaders = postSpy.calls.mostRecent().args[3] as HttpHeaders;
+      );
 
-          expect(httpHeaders.has('Content-Type')).toBeTrue();
-          expect(httpHeaders.get('Content-Type')).toBe(
-            'application/x-www-form-urlencoded'
-          );
-        });
-    }));
+      const httpHeaders = vi.mocked(postSpy).mock.lastCall![3] as HttpHeaders;
 
-    it('returns error in case of http error', waitForAsync(() => {
-      spyOn(dataService, 'post').and.returnValue(throwError(() => HTTP_ERROR));
+      expect(httpHeaders.has('Content-Type')).toBe(true);
+      expect(httpHeaders.get('Content-Type')).toBe(
+        'application/x-www-form-urlencoded'
+      );
+    });
+
+    it('returns error in case of http error', async () => {
+      vi.spyOn(dataService, 'post').mockReturnValue(
+        throwError(() => HTTP_ERROR)
+      );
       const config = { configId: 'configId1', authority: 'authority' };
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', config)
-        .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { tokenEndpoint: 'tokenEndpoint' };
+          }
 
-      service
-        .refreshTokensRequestTokens({} as CallbackContext, config)
-        .subscribe({
-          error: (err) => {
-            expect(err).toBeTruthy();
-          },
-        });
-    }));
+          return undefined;
+        }
+      );
 
-    it('retries request in case of no connection http error and succeeds', waitForAsync(() => {
-      const postSpy = spyOn(dataService, 'post').and.returnValue(
+      try {
+        await firstValueFrom(
+          service.refreshTokensRequestTokens({} as CallbackContext, config)
+        );
+        expect.fail('expected an error');
+      } catch (err: unknown) {
+        expect(err).toBeTruthy();
+      }
+    });
+
+    it('retries request in case of no connection http error and succeeds', async () => {
+      const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(
         createRetriableStream(
           throwError(() => CONNECTION_ERROR),
           of({})
@@ -130,26 +154,26 @@ describe('RefreshTokenCallbackHandlerService', () => {
       );
       const config = { configId: 'configId1', authority: 'authority' };
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', config)
-        .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { tokenEndpoint: 'tokenEndpoint' };
+          }
 
-      service
-        .refreshTokensRequestTokens({} as CallbackContext, config)
-        .subscribe({
-          next: (res) => {
-            expect(res).toBeTruthy();
-            expect(postSpy).toHaveBeenCalledTimes(1);
-          },
-          error: (err) => {
-            // fails if there should be a result
-            expect(err).toBeFalsy();
-          },
-        });
-    }));
+          return undefined;
+        }
+      );
 
-    it('retries request in case of no connection http error and fails because of http error afterwards', waitForAsync(() => {
-      const postSpy = spyOn(dataService, 'post').and.returnValue(
+      const res = await firstValueFrom(
+        service.refreshTokensRequestTokens({} as CallbackContext, config)
+      );
+
+      expect(res).toBeTruthy();
+      expect(postSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('retries request in case of no connection http error and fails because of http error afterwards', async () => {
+      const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(
         createRetriableStream(
           throwError(() => CONNECTION_ERROR),
           throwError(() => HTTP_ERROR)
@@ -157,22 +181,25 @@ describe('RefreshTokenCallbackHandlerService', () => {
       );
       const config = { configId: 'configId1', authority: 'authority' };
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', config)
-        .and.returnValue({ tokenEndpoint: 'tokenEndpoint' });
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { tokenEndpoint: 'tokenEndpoint' };
+          }
 
-      service
-        .refreshTokensRequestTokens({} as CallbackContext, config)
-        .subscribe({
-          next: (res) => {
-            // fails if there should be a result
-            expect(res).toBeFalsy();
-          },
-          error: (err) => {
-            expect(err).toBeTruthy();
-            expect(postSpy).toHaveBeenCalledTimes(1);
-          },
-        });
-    }));
+          return undefined;
+        }
+      );
+
+      try {
+        await firstValueFrom(
+          service.refreshTokensRequestTokens({} as CallbackContext, config)
+        );
+        expect.fail('expected an error');
+      } catch (err: unknown) {
+        expect(err).toBeTruthy();
+        expect(postSpy).toHaveBeenCalledTimes(1);
+      }
+    });
   });
 });

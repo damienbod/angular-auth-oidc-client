@@ -1,6 +1,7 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpHeaders } from '@angular/common/http';
-import { TestBed, waitForAsync } from '@angular/core/testing';
-import { Observable, of, throwError } from 'rxjs';
+import { TestBed } from '@angular/core/testing';
+import { firstValueFrom, Observable, of, throwError } from 'rxjs';
 import { mockProvider } from '../../test/auto-mock';
 import { createRetriableStream } from '../../test/create-retriable-stream.helper';
 import { DataService } from '../api/data.service';
@@ -55,142 +56,166 @@ describe('Logout and Revoke Service', () => {
     it('uses token parameter if token as parameter is passed in the method', () => {
       // Arrange
       const paramToken = 'passedTokenAsParam';
-      const revocationSpy = spyOn(
-        urlService,
-        'createRevocationEndpointBodyAccessToken'
-      );
+      const revocationSpy = vi
+        .spyOn(urlService, 'createRevocationEndpointBodyAccessToken')
+        .mockReturnValue(undefined as any);
       const config = { configId: 'configId1' };
 
-      spyOn(dataService, 'post').and.returnValue(of(null));
+      vi.spyOn(dataService, 'post').mockReturnValue(of(null));
 
       // Act
       service.revokeAccessToken(config, paramToken);
       // Assert
-      expect(revocationSpy).toHaveBeenCalledOnceWith(paramToken, config);
+      expect(revocationSpy).toHaveBeenCalledTimes(1);
+      // Assert
+      expect(revocationSpy).toHaveBeenCalledWith(paramToken, config);
     });
 
     it('uses token parameter from persistence if no param is provided', () => {
       // Arrange
       const paramToken = 'damien';
 
-      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue(
         paramToken
       );
-      const revocationSpy = spyOn(
-        urlService,
-        'createRevocationEndpointBodyAccessToken'
-      );
+      const revocationSpy = vi
+        .spyOn(urlService, 'createRevocationEndpointBodyAccessToken')
+        .mockReturnValue(undefined as any);
 
-      spyOn(dataService, 'post').and.returnValue(of(null));
+      vi.spyOn(dataService, 'post').mockReturnValue(of(null));
       const config = { configId: 'configId1' };
 
       // Act
       service.revokeAccessToken(config);
       // Assert
-      expect(revocationSpy).toHaveBeenCalledOnceWith(paramToken, config);
+      expect(revocationSpy).toHaveBeenCalledTimes(1);
+      // Assert
+      expect(revocationSpy).toHaveBeenCalledWith(paramToken, config);
     });
 
     it('returns type observable', () => {
       // Arrange
       const paramToken = 'damien';
 
-      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue(
         paramToken
       );
-      spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
-      spyOn(dataService, 'post').and.returnValue(of(null));
-      const config = { configId: 'configId1' };      // Act
+      vi.spyOn(
+        urlService,
+        'createRevocationEndpointBodyAccessToken'
+      ).mockReturnValue(undefined as any);
+      vi.spyOn(dataService, 'post').mockReturnValue(of(null));
+      const config = { configId: 'configId1' };
+      // Act
       const result = service.revokeAccessToken(config);
 
       // Assert
-      expect(result).toEqual(jasmine.any(Observable));
+      expect(result).toEqual(expect.any(Observable));
     });
 
-    it('loggs and returns unmodified response if request is positive', waitForAsync(() => {
+    it('loggs and returns unmodified response if request is positive', async () => {
       // Arrange
       const paramToken = 'damien';
 
-      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue(
         paramToken
       );
-      spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
-      const loggerSpy = spyOn(loggerService, 'logDebug');
+      vi.spyOn(
+        urlService,
+        'createRevocationEndpointBodyAccessToken'
+      ).mockReturnValue(undefined as any);
+      const loggerSpy = vi
+        .spyOn(loggerService, 'logDebug')
+        .mockReturnValue(undefined);
 
-      spyOn(dataService, 'post').and.returnValue(of({ data: 'anything' }));
+      vi.spyOn(dataService, 'post').mockReturnValue(of({ data: 'anything' }));
       const config = { configId: 'configId1' };
-
       // Act
-      service.revokeAccessToken(config).subscribe((result) => {
-        // Assert
-        expect(result).toEqual({ data: 'anything' });
-        expect(loggerSpy).toHaveBeenCalled();
-      });
-    }));
+      const result = await firstValueFrom(service.revokeAccessToken(config));
 
-    it('loggs error when request is negative', waitForAsync(() => {
+      // Assert
+      expect(result).toEqual({ data: 'anything' });
+      expect(loggerSpy).toHaveBeenCalled();
+    });
+
+    it('loggs error when request is negative', async () => {
       // Arrange
       const paramToken = 'damien';
 
-      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue(
         paramToken
       );
-      spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
-      const loggerSpy = spyOn(loggerService, 'logError');
+      vi.spyOn(
+        urlService,
+        'createRevocationEndpointBodyAccessToken'
+      ).mockReturnValue(undefined as any);
+      const loggerSpy = vi
+        .spyOn(loggerService, 'logError')
+        .mockReturnValue(undefined);
       const config = { configId: 'configId1' };
 
-      spyOn(dataService, 'post').and.returnValue(
+      vi.spyOn(dataService, 'post').mockReturnValue(
         throwError(() => new Error('Error'))
       );
 
       // Act
-      service.revokeAccessToken(config).subscribe({
-        error: (err) => {
-          expect(loggerSpy).toHaveBeenCalled();
-          expect(err).toBeTruthy();
-        },
-      });
-    }));
+      try {
+        await firstValueFrom(service.revokeAccessToken(config));
+        expect.fail('expected an error');
+      } catch (err) {
+        expect(loggerSpy).toHaveBeenCalled();
+        expect(err).toBeTruthy();
+      }
+    });
 
-    it('should retry once', waitForAsync(() => {
+    it('should retry once', async () => {
       // Arrange
       const paramToken = 'damien';
 
-      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue(
         paramToken
       );
-      spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
-      const loggerSpy = spyOn(loggerService, 'logDebug');
+      vi.spyOn(
+        urlService,
+        'createRevocationEndpointBodyAccessToken'
+      ).mockReturnValue(undefined as any);
+      const loggerSpy = vi
+        .spyOn(loggerService, 'logDebug')
+        .mockReturnValue(undefined);
       const config = { configId: 'configId1' };
 
-      spyOn(dataService, 'post').and.returnValue(
+      vi.spyOn(dataService, 'post').mockReturnValue(
         createRetriableStream(
           throwError(() => new Error('Error')),
           of({ data: 'anything' })
         )
       );
 
-      service.revokeAccessToken(config).subscribe({
-        next: (res) => {
-          // Assert
-          expect(res).toBeTruthy();
-          expect(res).toEqual({ data: 'anything' });
-          expect(loggerSpy).toHaveBeenCalled();
-        },
-      });
-    }));
+      const res = await firstValueFrom(service.revokeAccessToken(config));
 
-    it('should retry twice', waitForAsync(() => {
+      // Assert
+      expect(res).toBeTruthy();
+      expect(res).toEqual({ data: 'anything' });
+      expect(loggerSpy).toHaveBeenCalled();
+    });
+
+    it('should retry twice', async () => {
       // Arrange
       const paramToken = 'damien';
 
-      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue(
         paramToken
       );
-      spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
-      const loggerSpy = spyOn(loggerService, 'logDebug');
+      vi.spyOn(
+        urlService,
+        'createRevocationEndpointBodyAccessToken'
+      ).mockReturnValue(undefined as any);
+      const loggerSpy = vi
+        .spyOn(loggerService, 'logDebug')
+        .mockReturnValue(undefined);
       const config = { configId: 'configId1' };
 
-      spyOn(dataService, 'post').and.returnValue(
+      vi.spyOn(dataService, 'post').mockReturnValue(
         createRetriableStream(
           throwError(() => new Error('Error')),
           throwError(() => new Error('Error')),
@@ -198,28 +223,31 @@ describe('Logout and Revoke Service', () => {
         )
       );
 
-      service.revokeAccessToken(config).subscribe({
-        next: (res) => {
-          // Assert
-          expect(res).toBeTruthy();
-          expect(res).toEqual({ data: 'anything' });
-          expect(loggerSpy).toHaveBeenCalled();
-        },
-      });
-    }));
+      const res = await firstValueFrom(service.revokeAccessToken(config));
 
-    it('should fail after three tries', waitForAsync(() => {
+      // Assert
+      expect(res).toBeTruthy();
+      expect(res).toEqual({ data: 'anything' });
+      expect(loggerSpy).toHaveBeenCalled();
+    });
+
+    it('should fail after three tries', async () => {
       // Arrange
       const paramToken = 'damien';
 
-      spyOn(storagePersistenceService, 'getAccessToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue(
         paramToken
       );
-      spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
-      const loggerSpy = spyOn(loggerService, 'logError');
+      vi.spyOn(
+        urlService,
+        'createRevocationEndpointBodyAccessToken'
+      ).mockReturnValue(undefined as any);
+      const loggerSpy = vi
+        .spyOn(loggerService, 'logError')
+        .mockReturnValue(undefined);
       const config = { configId: 'configId1' };
 
-      spyOn(dataService, 'post').and.returnValue(
+      vi.spyOn(dataService, 'post').mockReturnValue(
         createRetriableStream(
           throwError(() => new Error('Error')),
           throwError(() => new Error('Error')),
@@ -228,154 +256,179 @@ describe('Logout and Revoke Service', () => {
         )
       );
 
-      service.revokeAccessToken(config).subscribe({
-        error: (err) => {
-          expect(err).toBeTruthy();
-          expect(loggerSpy).toHaveBeenCalled();
-        },
-      });
-    }));
+      try {
+        await firstValueFrom(service.revokeAccessToken(config));
+        expect.fail('expected an error');
+      } catch (err) {
+        expect(err).toBeTruthy();
+        expect(loggerSpy).toHaveBeenCalled();
+      }
+    });
   });
 
   describe('revokeRefreshToken', () => {
     it('uses refresh token parameter if token as parameter is passed in the method', () => {
       // Arrange
       const paramToken = 'passedTokenAsParam';
-      const revocationSpy = spyOn(
-        urlService,
-        'createRevocationEndpointBodyRefreshToken'
-      );
+      const revocationSpy = vi
+        .spyOn(urlService, 'createRevocationEndpointBodyRefreshToken')
+        .mockReturnValue(undefined as any);
 
-      spyOn(dataService, 'post').and.returnValue(of(null));
+      vi.spyOn(dataService, 'post').mockReturnValue(of(null));
       const config = { configId: 'configId1' };
 
       // Act
       service.revokeRefreshToken(config, paramToken);
       // Assert
-      expect(revocationSpy).toHaveBeenCalledOnceWith(paramToken, config);
+      expect(revocationSpy).toHaveBeenCalledTimes(1);
+      // Assert
+      expect(revocationSpy).toHaveBeenCalledWith(paramToken, config);
     });
 
     it('uses refresh token parameter from persistence if no param is provided', () => {
       // Arrange
       const paramToken = 'damien';
 
-      spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getRefreshToken').mockReturnValue(
         paramToken
       );
       const config = { configId: 'configId1' };
-      const revocationSpy = spyOn(
-        urlService,
-        'createRevocationEndpointBodyRefreshToken'
-      );
+      const revocationSpy = vi
+        .spyOn(urlService, 'createRevocationEndpointBodyRefreshToken')
+        .mockReturnValue(undefined as any);
 
-      spyOn(dataService, 'post').and.returnValue(of(null));
+      vi.spyOn(dataService, 'post').mockReturnValue(of(null));
       // Act
       service.revokeRefreshToken(config);
       // Assert
-      expect(revocationSpy).toHaveBeenCalledOnceWith(paramToken, config);
+      expect(revocationSpy).toHaveBeenCalledTimes(1);
+      // Assert
+      expect(revocationSpy).toHaveBeenCalledWith(paramToken, config);
     });
 
     it('returns type observable', () => {
       // Arrange
       const paramToken = 'damien';
 
-      spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getRefreshToken').mockReturnValue(
         paramToken
       );
-      spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
-      spyOn(dataService, 'post').and.returnValue(of(null));
-      const config = { configId: 'configId1' };      // Act
+      vi.spyOn(
+        urlService,
+        'createRevocationEndpointBodyAccessToken'
+      ).mockReturnValue(undefined as any);
+      vi.spyOn(dataService, 'post').mockReturnValue(of(null));
+      const config = { configId: 'configId1' };
+      // Act
       const result = service.revokeRefreshToken(config);
 
       // Assert
-      expect(result).toEqual(jasmine.any(Observable));
+      expect(result).toEqual(expect.any(Observable));
     });
 
-    it('loggs and returns unmodified response if request is positive', waitForAsync(() => {
+    it('loggs and returns unmodified response if request is positive', async () => {
       // Arrange
       const paramToken = 'damien';
 
-      spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getRefreshToken').mockReturnValue(
         paramToken
       );
-      spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
-      const loggerSpy = spyOn(loggerService, 'logDebug');
+      vi.spyOn(
+        urlService,
+        'createRevocationEndpointBodyAccessToken'
+      ).mockReturnValue(undefined as any);
+      const loggerSpy = vi
+        .spyOn(loggerService, 'logDebug')
+        .mockReturnValue(undefined);
 
-      spyOn(dataService, 'post').and.returnValue(of({ data: 'anything' }));
+      vi.spyOn(dataService, 'post').mockReturnValue(of({ data: 'anything' }));
       const config = { configId: 'configId1' };
-
       // Act
-      service.revokeRefreshToken(config).subscribe((result) => {
-        // Assert
-        expect(result).toEqual({ data: 'anything' });
-        expect(loggerSpy).toHaveBeenCalled();
-      });
-    }));
+      const result = await firstValueFrom(service.revokeRefreshToken(config));
 
-    it('loggs error when request is negative', waitForAsync(() => {
+      // Assert
+      expect(result).toEqual({ data: 'anything' });
+      expect(loggerSpy).toHaveBeenCalled();
+    });
+
+    it('loggs error when request is negative', async () => {
       // Arrange
       const paramToken = 'damien';
 
-      spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getRefreshToken').mockReturnValue(
         paramToken
       );
-      spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
-      const loggerSpy = spyOn(loggerService, 'logError');
+      vi.spyOn(
+        urlService,
+        'createRevocationEndpointBodyAccessToken'
+      ).mockReturnValue(undefined as any);
+      const loggerSpy = vi
+        .spyOn(loggerService, 'logError')
+        .mockReturnValue(undefined);
       const config = { configId: 'configId1' };
 
-      spyOn(dataService, 'post').and.returnValue(
+      vi.spyOn(dataService, 'post').mockReturnValue(
         throwError(() => new Error('Error'))
       );
 
       // Act
-      service.revokeRefreshToken(config).subscribe({
-        error: (err) => {
-          expect(loggerSpy).toHaveBeenCalled();
-          expect(err).toBeTruthy();
-        },
-      });
-    }));
+      try {
+        await firstValueFrom(service.revokeRefreshToken(config));
+        expect.fail('expected an error');
+      } catch (err) {
+        expect(loggerSpy).toHaveBeenCalled();
+        expect(err).toBeTruthy();
+      }
+    });
 
-    it('should retry once', waitForAsync(() => {
+    it('should retry once', async () => {
       // Arrange
       const paramToken = 'damien';
 
-      spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getRefreshToken').mockReturnValue(
         paramToken
       );
-      spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
-      const loggerSpy = spyOn(loggerService, 'logDebug');
+      vi.spyOn(
+        urlService,
+        'createRevocationEndpointBodyAccessToken'
+      ).mockReturnValue(undefined as any);
+      const loggerSpy = vi
+        .spyOn(loggerService, 'logDebug')
+        .mockReturnValue(undefined);
       const config = { configId: 'configId1' };
 
-      spyOn(dataService, 'post').and.returnValue(
+      vi.spyOn(dataService, 'post').mockReturnValue(
         createRetriableStream(
           throwError(() => new Error('Error')),
           of({ data: 'anything' })
         )
       );
 
-      service.revokeRefreshToken(config).subscribe({
-        next: (res) => {
-          // Assert
-          expect(res).toBeTruthy();
-          expect(res).toEqual({ data: 'anything' });
-          expect(loggerSpy).toHaveBeenCalled();
-        },
-      });
-    }));
+      const res = await firstValueFrom(service.revokeRefreshToken(config));
 
-    it('should retry twice', waitForAsync(() => {
+      // Assert
+      expect(res).toBeTruthy();
+      expect(res).toEqual({ data: 'anything' });
+      expect(loggerSpy).toHaveBeenCalled();
+    });
+
+    it('should retry twice', async () => {
       // Arrange
       const paramToken = 'damien';
 
-      spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getRefreshToken').mockReturnValue(
         paramToken
       );
-      spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
-      const loggerSpy = spyOn(loggerService, 'logDebug');
+      vi.spyOn(
+        urlService,
+        'createRevocationEndpointBodyAccessToken'
+      ).mockReturnValue(undefined as any);
+      const loggerSpy = vi
+        .spyOn(loggerService, 'logDebug')
+        .mockReturnValue(undefined);
       const config = { configId: 'configId1' };
 
-      spyOn(dataService, 'post').and.returnValue(
+      vi.spyOn(dataService, 'post').mockReturnValue(
         createRetriableStream(
           throwError(() => new Error('Error')),
           throwError(() => new Error('Error')),
@@ -383,28 +436,31 @@ describe('Logout and Revoke Service', () => {
         )
       );
 
-      service.revokeRefreshToken(config).subscribe({
-        next: (res) => {
-          // Assert
-          expect(res).toBeTruthy();
-          expect(res).toEqual({ data: 'anything' });
-          expect(loggerSpy).toHaveBeenCalled();
-        },
-      });
-    }));
+      const res = await firstValueFrom(service.revokeRefreshToken(config));
 
-    it('should fail after three tries', waitForAsync(() => {
+      // Assert
+      expect(res).toBeTruthy();
+      expect(res).toEqual({ data: 'anything' });
+      expect(loggerSpy).toHaveBeenCalled();
+    });
+
+    it('should fail after three tries', async () => {
       // Arrange
       const paramToken = 'damien';
 
-      spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getRefreshToken').mockReturnValue(
         paramToken
       );
-      spyOn(urlService, 'createRevocationEndpointBodyAccessToken');
-      const loggerSpy = spyOn(loggerService, 'logError');
+      vi.spyOn(
+        urlService,
+        'createRevocationEndpointBodyAccessToken'
+      ).mockReturnValue(undefined as any);
+      const loggerSpy = vi
+        .spyOn(loggerService, 'logError')
+        .mockReturnValue(undefined);
       const config = { configId: 'configId1' };
 
-      spyOn(dataService, 'post').and.returnValue(
+      vi.spyOn(dataService, 'post').mockReturnValue(
         createRetriableStream(
           throwError(() => new Error('Error')),
           throwError(() => new Error('Error')),
@@ -413,170 +469,202 @@ describe('Logout and Revoke Service', () => {
         )
       );
 
-      service.revokeRefreshToken(config).subscribe({
-        error: (err) => {
-          expect(err).toBeTruthy();
-          expect(loggerSpy).toHaveBeenCalled();
-        },
-      });
-    }));
+      try {
+        await firstValueFrom(service.revokeRefreshToken(config));
+        expect.fail('expected an error');
+      } catch (err) {
+        expect(err).toBeTruthy();
+        expect(loggerSpy).toHaveBeenCalled();
+      }
+    });
   });
 
   describe('logoff', () => {
-    it('logs and returns if `endSessionUrl` is false', waitForAsync(() => {
+    it('logs and returns if `endSessionUrl` is false', async () => {
       // Arrange
-      spyOn(urlService, 'getEndSessionUrl').and.returnValue('');
+      vi.spyOn(urlService, 'getEndSessionUrl').mockReturnValue('');
 
-      const serverStateChangedSpy = spyOn(
-        checkSessionService,
-        'serverStateChanged'
-      );
-      const config = { configId: 'configId1' };      // Act
+      const serverStateChangedSpy = vi
+        .spyOn(checkSessionService, 'serverStateChanged')
+        .mockReturnValue(undefined as any);
+      const config = { configId: 'configId1' };
+      // Act
       const result$ = service.logoff(config, [config]);
 
       // Assert
-      result$.subscribe(() => {
-        expect(serverStateChangedSpy).not.toHaveBeenCalled();
-      });
-    }));
+      await firstValueFrom(result$);
 
-    it('logs and returns if `serverStateChanged` is true', waitForAsync(() => {
+      expect(serverStateChangedSpy).not.toHaveBeenCalled();
+    });
+
+    it('logs and returns if `serverStateChanged` is true', async () => {
       // Arrange
-      spyOn(urlService, 'getEndSessionUrl').and.returnValue('someValue');
-      const redirectSpy = spyOn(redirectService, 'redirectTo');
+      vi.spyOn(urlService, 'getEndSessionUrl').mockReturnValue('someValue');
+      const redirectSpy = vi
+        .spyOn(redirectService, 'redirectTo')
+        .mockReturnValue(undefined);
 
-      spyOn(checkSessionService, 'serverStateChanged').and.returnValue(true);
-      const config = { configId: 'configId1' };      // Act
+      vi.spyOn(checkSessionService, 'serverStateChanged').mockReturnValue(true);
+      const config = { configId: 'configId1' };
+      // Act
       const result$ = service.logoff(config, [config]);
 
       // Assert
-      result$.subscribe(() => {
-        expect(redirectSpy).not.toHaveBeenCalled();
-      });
-    }));
+      await firstValueFrom(result$);
 
-    it('calls urlHandler if urlhandler is passed', waitForAsync(() => {
+      expect(redirectSpy).not.toHaveBeenCalled();
+    });
+
+    it('calls urlHandler if urlhandler is passed', async () => {
       // Arrange
-      spyOn(urlService, 'getEndSessionUrl').and.returnValue('someValue');
-      const spy = jasmine.createSpy();
+      vi.spyOn(urlService, 'getEndSessionUrl').mockReturnValue('someValue');
+      const spy = vi.fn();
       const urlHandler = (url: string): void => {
         spy(url);
       };
-      const redirectSpy = spyOn(redirectService, 'redirectTo');
-      const resetAuthorizationDataSpy = spyOn(
-        resetAuthDataService,
-        'resetAuthorizationData'
-      );
+      const redirectSpy = vi
+        .spyOn(redirectService, 'redirectTo')
+        .mockReturnValue(undefined);
+      const resetAuthorizationDataSpy = vi
+        .spyOn(resetAuthDataService, 'resetAuthorizationData')
+        .mockReturnValue(undefined);
 
-      spyOn(checkSessionService, 'serverStateChanged').and.returnValue(false);
-      const config = { configId: 'configId1' };      // Act
+      vi.spyOn(checkSessionService, 'serverStateChanged').mockReturnValue(
+        false
+      );
+      const config = { configId: 'configId1' };
+      // Act
       const result$ = service.logoff(config, [config], { urlHandler });
 
       // Assert
-      result$.subscribe(() => {
-        expect(redirectSpy).not.toHaveBeenCalled();
-        expect(spy).toHaveBeenCalledOnceWith('someValue');
-        expect(resetAuthorizationDataSpy).toHaveBeenCalled();
-      });
-    }));
+      await firstValueFrom(result$);
 
-    it('calls redirect service if no logoutOptions are passed', waitForAsync(() => {
+      expect(redirectSpy).not.toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith('someValue');
+      expect(resetAuthorizationDataSpy).toHaveBeenCalled();
+    });
+
+    it('calls redirect service if no logoutOptions are passed', async () => {
       // Arrange
-      spyOn(urlService, 'getEndSessionUrl').and.returnValue('someValue');
+      vi.spyOn(urlService, 'getEndSessionUrl').mockReturnValue('someValue');
 
-      const redirectSpy = spyOn(redirectService, 'redirectTo');
+      const redirectSpy = vi
+        .spyOn(redirectService, 'redirectTo')
+        .mockReturnValue(undefined);
 
-      spyOn(checkSessionService, 'serverStateChanged').and.returnValue(false);
-      const config = { configId: 'configId1' };      // Act
+      vi.spyOn(checkSessionService, 'serverStateChanged').mockReturnValue(
+        false
+      );
+      const config = { configId: 'configId1' };
+      // Act
       const result$ = service.logoff(config, [config]);
 
       // Assert
-      result$.subscribe(() => {
-        expect(redirectSpy).toHaveBeenCalledOnceWith('someValue');
-      });
-    }));
+      await firstValueFrom(result$);
 
-    it('calls redirect service if logoutOptions are passed and method is GET', waitForAsync(() => {
+      expect(redirectSpy).toHaveBeenCalledTimes(1);
+      expect(redirectSpy).toHaveBeenCalledWith('someValue');
+    });
+
+    it('calls redirect service if logoutOptions are passed and method is GET', async () => {
       // Arrange
-      spyOn(urlService, 'getEndSessionUrl').and.returnValue('someValue');
+      vi.spyOn(urlService, 'getEndSessionUrl').mockReturnValue('someValue');
 
-      const redirectSpy = spyOn(redirectService, 'redirectTo');
+      const redirectSpy = vi
+        .spyOn(redirectService, 'redirectTo')
+        .mockReturnValue(undefined);
 
-      spyOn(checkSessionService, 'serverStateChanged').and.returnValue(false);
-      const config = { configId: 'configId1' };      // Act
+      vi.spyOn(checkSessionService, 'serverStateChanged').mockReturnValue(
+        false
+      );
+      const config = { configId: 'configId1' };
+      // Act
       const result$ = service.logoff(config, [config], { logoffMethod: 'GET' });
 
       // Assert
-      result$.subscribe(() => {
-        expect(redirectSpy).toHaveBeenCalledOnceWith('someValue');
-      });
-    }));
+      await firstValueFrom(result$);
 
-    it('calls dataservice post if logoutOptions are passed and method is POST', waitForAsync(() => {
+      expect(redirectSpy).toHaveBeenCalledTimes(1);
+      expect(redirectSpy).toHaveBeenCalledWith('someValue');
+    });
+
+    it('calls dataservice post if logoutOptions are passed and method is POST', async () => {
       // Arrange
-      spyOn(urlService, 'getEndSessionUrl').and.returnValue('someValue');
+      vi.spyOn(urlService, 'getEndSessionUrl').mockReturnValue('someValue');
 
-      const redirectSpy = spyOn(redirectService, 'redirectTo');
+      const redirectSpy = vi
+        .spyOn(redirectService, 'redirectTo')
+        .mockReturnValue(undefined);
 
-      spyOn(checkSessionService, 'serverStateChanged').and.returnValue(false);
-      spyOn(storagePersistenceService, 'getIdToken').and.returnValue(
+      vi.spyOn(checkSessionService, 'serverStateChanged').mockReturnValue(
+        false
+      );
+      vi.spyOn(storagePersistenceService, 'getIdToken').mockReturnValue(
         'id-token'
       );
-      spyOn(urlService, 'getPostLogoutRedirectUrl').and.returnValue(
+      vi.spyOn(urlService, 'getPostLogoutRedirectUrl').mockReturnValue(
         'post-logout-redirect-url'
       );
-      spyOn(urlService, 'getEndSessionEndpoint').and.returnValue({
+      vi.spyOn(urlService, 'getEndSessionEndpoint').mockReturnValue({
         url: 'some-url',
         existingParams: '',
       });
-      const postSpy = spyOn(dataService, 'post').and.returnValue(of(null));
-      const config = { configId: 'configId1', clientId: 'clientId' };      // Act
+      const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(of(null));
+      const config = { configId: 'configId1', clientId: 'clientId' };
+      // Act
       const result$ = service.logoff(config, [config], {
         logoffMethod: 'POST',
       });
 
       // Assert
-      result$.subscribe(() => {
-        expect(redirectSpy).not.toHaveBeenCalled();
-        expect(postSpy).toHaveBeenCalledOnceWith(
-          'some-url',
-          {
-            id_token_hint: 'id-token',
-            client_id: 'clientId',
-            post_logout_redirect_uri: 'post-logout-redirect-url',
-          },
-          config,
-          jasmine.anything()
-        );
+      await firstValueFrom(result$);
 
-        const httpHeaders = postSpy.calls.mostRecent().args[3] as HttpHeaders;
+      expect(redirectSpy).not.toHaveBeenCalled();
+      expect(postSpy).toHaveBeenCalledTimes(1);
+      expect(postSpy).toHaveBeenCalledWith(
+        'some-url',
+        {
+          id_token_hint: 'id-token',
+          client_id: 'clientId',
+          post_logout_redirect_uri: 'post-logout-redirect-url',
+        },
+        config,
+        expect.anything()
+      );
 
-        expect(httpHeaders.has('Content-Type')).toBeTrue();
-        expect(httpHeaders.get('Content-Type')).toBe(
-          'application/x-www-form-urlencoded'
-        );
-      });
-    }));
+      const httpHeaders = vi.mocked(postSpy).mock.lastCall![3] as HttpHeaders;
 
-    it('calls dataservice post if logoutOptions with customParams are passed and method is POST', waitForAsync(() => {
+      expect(httpHeaders.has('Content-Type')).toBe(true);
+      expect(httpHeaders.get('Content-Type')).toBe(
+        'application/x-www-form-urlencoded'
+      );
+    });
+
+    it('calls dataservice post if logoutOptions with customParams are passed and method is POST', async () => {
       // Arrange
-      spyOn(urlService, 'getEndSessionUrl').and.returnValue('someValue');
+      vi.spyOn(urlService, 'getEndSessionUrl').mockReturnValue('someValue');
 
-      const redirectSpy = spyOn(redirectService, 'redirectTo');
+      const redirectSpy = vi
+        .spyOn(redirectService, 'redirectTo')
+        .mockReturnValue(undefined);
 
-      spyOn(checkSessionService, 'serverStateChanged').and.returnValue(false);
-      spyOn(storagePersistenceService, 'getIdToken').and.returnValue(
+      vi.spyOn(checkSessionService, 'serverStateChanged').mockReturnValue(
+        false
+      );
+      vi.spyOn(storagePersistenceService, 'getIdToken').mockReturnValue(
         'id-token'
       );
-      spyOn(urlService, 'getPostLogoutRedirectUrl').and.returnValue(
+      vi.spyOn(urlService, 'getPostLogoutRedirectUrl').mockReturnValue(
         'post-logout-redirect-url'
       );
-      spyOn(urlService, 'getEndSessionEndpoint').and.returnValue({
+      vi.spyOn(urlService, 'getEndSessionEndpoint').mockReturnValue({
         url: 'some-url',
         existingParams: '',
       });
-      const postSpy = spyOn(dataService, 'post').and.returnValue(of(null));
-      const config = { configId: 'configId1', clientId: 'clientId' };      // Act
+      const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(of(null));
+      const config = { configId: 'configId1', clientId: 'clientId' };
+      // Act
       const result$ = service.logoff(config, [config], {
         logoffMethod: 'POST',
         customParams: {
@@ -587,39 +675,39 @@ describe('Logout and Revoke Service', () => {
       });
 
       // Assert
-      result$.subscribe(() => {
-        expect(redirectSpy).not.toHaveBeenCalled();
-        expect(postSpy).toHaveBeenCalledOnceWith(
-          'some-url',
-          {
-            id_token_hint: 'id-token',
-            client_id: 'clientId',
-            post_logout_redirect_uri: 'post-logout-redirect-url',
-            state: 'state',
-            logout_hint: 'logoutHint',
-            ui_locales: 'de fr en',
-          },
-          config,
-          jasmine.anything()
-        );
+      await firstValueFrom(result$);
 
-        const httpHeaders = postSpy.calls.mostRecent().args[3] as HttpHeaders;
+      expect(redirectSpy).not.toHaveBeenCalled();
+      expect(postSpy).toHaveBeenCalledTimes(1);
+      expect(postSpy).toHaveBeenCalledWith(
+        'some-url',
+        {
+          id_token_hint: 'id-token',
+          client_id: 'clientId',
+          post_logout_redirect_uri: 'post-logout-redirect-url',
+          state: 'state',
+          logout_hint: 'logoutHint',
+          ui_locales: 'de fr en',
+        },
+        config,
+        expect.anything()
+      );
 
-        expect(httpHeaders.has('Content-Type')).toBeTrue();
-        expect(httpHeaders.get('Content-Type')).toBe(
-          'application/x-www-form-urlencoded'
-        );
-      });
-    }));
+      const httpHeaders = vi.mocked(postSpy).mock.lastCall![3] as HttpHeaders;
+
+      expect(httpHeaders.has('Content-Type')).toBe(true);
+      expect(httpHeaders.get('Content-Type')).toBe(
+        'application/x-www-form-urlencoded'
+      );
+    });
   });
 
   describe('logoffLocal', () => {
     it('calls flowsService.resetAuthorizationData', () => {
       // Arrange
-      const resetAuthorizationDataSpy = spyOn(
-        resetAuthDataService,
-        'resetAuthorizationData'
-      );
+      const resetAuthorizationDataSpy = vi
+        .spyOn(resetAuthDataService, 'resetAuthorizationData')
+        .mockReturnValue(undefined);
       const config = { configId: 'configId1' };
 
       // Act
@@ -631,166 +719,204 @@ describe('Logout and Revoke Service', () => {
   });
 
   describe('logoffAndRevokeTokens', () => {
-    it('calls revokeRefreshToken and revokeAccessToken when storage holds a refreshtoken', waitForAsync(() => {
+    it('calls revokeRefreshToken and revokeAccessToken when storage holds a refreshtoken', async () => {
       // Arrange
       const paramToken = 'damien';
       const config = { configId: 'configId1' };
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', config)
-        .and.returnValue({ revocationEndpoint: 'revocationEndpoint' });
-      spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { revocationEndpoint: 'revocationEndpoint' };
+          }
+
+          return undefined;
+        }
+      );
+      vi.spyOn(storagePersistenceService, 'getRefreshToken').mockReturnValue(
         paramToken
       );
-      const revokeRefreshTokenSpy = spyOn(
-        service,
-        'revokeRefreshToken'
-      ).and.returnValue(of({ any: 'thing' }));
-      const revokeAccessTokenSpy = spyOn(
-        service,
-        'revokeAccessToken'
-      ).and.returnValue(of({ any: 'thing' }));
+      const revokeRefreshTokenSpy = vi
+        .spyOn(service, 'revokeRefreshToken')
+        .mockReturnValue(of({ any: 'thing' }));
+      const revokeAccessTokenSpy = vi
+        .spyOn(service, 'revokeAccessToken')
+        .mockReturnValue(of({ any: 'thing' }));
 
       // Act
-      service.logoffAndRevokeTokens(config, [config]).subscribe(() => {
-        // Assert
-        expect(revokeRefreshTokenSpy).toHaveBeenCalled();
-        expect(revokeAccessTokenSpy).toHaveBeenCalled();
-      });
-    }));
+      await firstValueFrom(service.logoffAndRevokeTokens(config, [config]));
 
-    it('logs error when revokeaccesstoken throws an error', waitForAsync(() => {
+      // Assert
+      expect(revokeRefreshTokenSpy).toHaveBeenCalled();
+      expect(revokeAccessTokenSpy).toHaveBeenCalled();
+    });
+
+    it('logs error when revokeaccesstoken throws an error', async () => {
       // Arrange
       const paramToken = 'damien';
       const config = { configId: 'configId1' };
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', config)
-        .and.returnValue({ revocationEndpoint: 'revocationEndpoint' });
-      spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { revocationEndpoint: 'revocationEndpoint' };
+          }
+
+          return undefined;
+        }
+      );
+      vi.spyOn(storagePersistenceService, 'getRefreshToken').mockReturnValue(
         paramToken
       );
-      spyOn(service, 'revokeRefreshToken').and.returnValue(
+      vi.spyOn(service, 'revokeRefreshToken').mockReturnValue(
         of({ any: 'thing' })
       );
-      const loggerSpy = spyOn(loggerService, 'logError');
+      const loggerSpy = vi
+        .spyOn(loggerService, 'logError')
+        .mockReturnValue(undefined);
 
-      spyOn(service, 'revokeAccessToken').and.returnValue(
+      vi.spyOn(service, 'revokeAccessToken').mockReturnValue(
         throwError(() => new Error('Error'))
       );
 
       // Act
-      service.logoffAndRevokeTokens(config, [config]).subscribe({
-        error: (err) => {
-          expect(loggerSpy).toHaveBeenCalled();
-          expect(err).toBeTruthy();
-        },
-      });
-    }));
+      try {
+        await firstValueFrom(service.logoffAndRevokeTokens(config, [config]));
+        expect.fail('expected an error');
+      } catch (err) {
+        expect(loggerSpy).toHaveBeenCalled();
+        expect(err).toBeTruthy();
+      }
+    });
 
-    it('calls logoff in case of success', waitForAsync(() => {
+    it('calls logoff in case of success', async () => {
       // Arrange
       const paramToken = 'damien';
 
-      spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getRefreshToken').mockReturnValue(
         paramToken
       );
-      spyOn(service, 'revokeRefreshToken').and.returnValue(
+      vi.spyOn(service, 'revokeRefreshToken').mockReturnValue(
         of({ any: 'thing' })
       );
-      spyOn(service, 'revokeAccessToken').and.returnValue(of({ any: 'thing' }));
-      const logoffSpy = spyOn(service, 'logoff').and.returnValue(of(null));
+      vi.spyOn(service, 'revokeAccessToken').mockReturnValue(
+        of({ any: 'thing' })
+      );
+      const logoffSpy = vi.spyOn(service, 'logoff').mockReturnValue(of(null));
       const config = { configId: 'configId1' };
 
       // Act
-      service.logoffAndRevokeTokens(config, [config]).subscribe(() => {
-        // Assert
-        expect(logoffSpy).toHaveBeenCalled();
-      });
-    }));
+      await firstValueFrom(service.logoffAndRevokeTokens(config, [config]));
 
-    it('calls logoff with urlhandler in case of success', waitForAsync(() => {
+      // Assert
+      expect(logoffSpy).toHaveBeenCalled();
+    });
+
+    it('calls logoff with urlhandler in case of success', async () => {
       // Arrange
       const paramToken = 'damien';
 
-      spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'getRefreshToken').mockReturnValue(
         paramToken
       );
-      spyOn(service, 'revokeRefreshToken').and.returnValue(
+      vi.spyOn(service, 'revokeRefreshToken').mockReturnValue(
         of({ any: 'thing' })
       );
-      spyOn(service, 'revokeAccessToken').and.returnValue(of({ any: 'thing' }));
-      const logoffSpy = spyOn(service, 'logoff').and.returnValue(of(null));
+      vi.spyOn(service, 'revokeAccessToken').mockReturnValue(
+        of({ any: 'thing' })
+      );
+      const logoffSpy = vi.spyOn(service, 'logoff').mockReturnValue(of(null));
       const urlHandler = (_url: string): void => undefined;
       const config = { configId: 'configId1' };
 
       // Act
-      service
-        .logoffAndRevokeTokens(config, [config], { urlHandler })
-        .subscribe(() => {
-          // Assert
-          expect(logoffSpy).toHaveBeenCalledOnceWith(config, [config], {
-            urlHandler,
-          });
-        });
-    }));
+      await firstValueFrom(
+        service.logoffAndRevokeTokens(config, [config], { urlHandler })
+      );
 
-    it('calls revokeAccessToken when storage does not hold a refreshtoken', waitForAsync(() => {
+      // Assert
+      expect(logoffSpy).toHaveBeenCalledTimes(1);
+      // Assert
+      expect(logoffSpy).toHaveBeenCalledWith(config, [config], { urlHandler });
+    });
+
+    it('calls revokeAccessToken when storage does not hold a refreshtoken', async () => {
       // Arrange
       const config = { configId: 'configId1' };
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', config)
-        .and.returnValue({ revocationEndpoint: 'revocationEndpoint' });
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { revocationEndpoint: 'revocationEndpoint' };
+          }
 
-      spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue('');
-      const revokeRefreshTokenSpy = spyOn(service, 'revokeRefreshToken');
-      const revokeAccessTokenSpy = spyOn(
-        service,
-        'revokeAccessToken'
-      ).and.returnValue(of({ any: 'thing' }));
+          return undefined;
+        }
+      );
+
+      vi.spyOn(storagePersistenceService, 'getRefreshToken').mockReturnValue(
+        ''
+      );
+      const revokeRefreshTokenSpy = vi
+        .spyOn(service, 'revokeRefreshToken')
+        .mockReturnValue(undefined as any);
+      const revokeAccessTokenSpy = vi
+        .spyOn(service, 'revokeAccessToken')
+        .mockReturnValue(of({ any: 'thing' }));
 
       // Act
-      service.logoffAndRevokeTokens(config, [config]).subscribe(() => {
-        // Assert
-        expect(revokeRefreshTokenSpy).not.toHaveBeenCalled();
-        expect(revokeAccessTokenSpy).toHaveBeenCalled();
-      });
-    }));
+      await firstValueFrom(service.logoffAndRevokeTokens(config, [config]));
 
-    it('logs error when revokeaccesstoken throws an error', waitForAsync(() => {
+      // Assert
+      expect(revokeRefreshTokenSpy).not.toHaveBeenCalled();
+      expect(revokeAccessTokenSpy).toHaveBeenCalled();
+    });
+
+    it('logs error when revokeaccesstoken throws an error', async () => {
       // Arrange
       const config = { configId: 'configId1' };
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', config)
-        .and.returnValue({ revocationEndpoint: 'revocationEndpoint' });
-      spyOn(storagePersistenceService, 'getRefreshToken').and.returnValue('');
-      const loggerSpy = spyOn(loggerService, 'logError');
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { revocationEndpoint: 'revocationEndpoint' };
+          }
 
-      spyOn(service, 'revokeAccessToken').and.returnValue(
+          return undefined;
+        }
+      );
+      vi.spyOn(storagePersistenceService, 'getRefreshToken').mockReturnValue(
+        ''
+      );
+      const loggerSpy = vi
+        .spyOn(loggerService, 'logError')
+        .mockReturnValue(undefined);
+
+      vi.spyOn(service, 'revokeAccessToken').mockReturnValue(
         throwError(() => new Error('Error'))
       );
 
       // Act
-      service.logoffAndRevokeTokens(config, [config]).subscribe({
-        error: (err) => {
-          expect(loggerSpy).toHaveBeenCalled();
-          expect(err).toBeTruthy();
-        },
-      });
-    }));
+      try {
+        await firstValueFrom(service.logoffAndRevokeTokens(config, [config]));
+        expect.fail('expected an error');
+      } catch (err) {
+        expect(loggerSpy).toHaveBeenCalled();
+        expect(err).toBeTruthy();
+      }
+    });
   });
 
   describe('logoffLocalMultiple', () => {
     it('calls logoffLocal for every config which is present', () => {
       // Arrange
       const allConfigs = [{ configId: 'configId1' }, { configId: 'configId2' }];
-      const resetAuthorizationDataSpy = spyOn(
-        resetAuthDataService,
-        'resetAuthorizationData'
-      );
-      const checkSessionServiceSpy = spyOn(checkSessionService, 'stop');
+      const resetAuthorizationDataSpy = vi
+        .spyOn(resetAuthDataService, 'resetAuthorizationData')
+        .mockReturnValue(undefined);
+      const checkSessionServiceSpy = vi
+        .spyOn(checkSessionService, 'stop')
+        .mockReturnValue(undefined);
 
       // Act
       service.logoffLocalMultiple(allConfigs);
@@ -798,7 +924,7 @@ describe('Logout and Revoke Service', () => {
       // Assert
       expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(2);
       expect(checkSessionServiceSpy).toHaveBeenCalledTimes(2);
-      expect(resetAuthorizationDataSpy.calls.allArgs()).toEqual([
+      expect(vi.mocked(resetAuthorizationDataSpy).mock.calls).toEqual([
         [allConfigs[0], allConfigs],
         [allConfigs[1], allConfigs],
       ]);

@@ -1,5 +1,6 @@
-import { TestBed, waitForAsync } from '@angular/core/testing';
-import { Observable, of } from 'rxjs';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { firstValueFrom, Observable, of } from 'rxjs';
 import { mockProvider } from '../../test/auto-mock';
 import { CallbackContext } from '../flows/callback-context';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
@@ -38,17 +39,22 @@ describe('CallbackService ', () => {
 
   describe('isCallback', () => {
     it('calls urlService.isCallbackFromSts with passed url', () => {
-      const urlServiceSpy = spyOn(urlService, 'isCallbackFromSts');
+      const urlServiceSpy = vi
+        .spyOn(urlService, 'isCallbackFromSts')
+        .mockReturnValue(undefined as any);
 
       callbackService.isCallback('anyUrl');
-      expect(urlServiceSpy).toHaveBeenCalledOnceWith('anyUrl', undefined);
+      expect(urlServiceSpy).toHaveBeenCalledTimes(1);
+      expect(urlServiceSpy).toHaveBeenCalledWith('anyUrl', undefined);
     });
 
     it('returns false and does not call urlService if currentUrl is empty', () => {
-      const urlServiceSpy = spyOn(urlService, 'isCallbackFromSts');
+      const urlServiceSpy = vi
+        .spyOn(urlService, 'isCallbackFromSts')
+        .mockReturnValue(undefined as any);
       const result = callbackService.isCallback('');
 
-      expect(result).toBeFalse();
+      expect(result).toBe(false);
       expect(urlServiceSpy).not.toHaveBeenCalled();
     });
   });
@@ -60,93 +66,100 @@ describe('CallbackService ', () => {
   });
 
   describe('handleCallbackAndFireEvents', () => {
-    it('calls authorizedCallbackWithCode if current flow is code flow', waitForAsync(() => {
-      spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
-      const authorizedCallbackWithCodeSpy = spyOn(
-        codeFlowCallbackService,
-        'authenticatedCallbackWithCode'
-      ).and.returnValue(of({} as CallbackContext));
+    it('calls authorizedCallbackWithCode if current flow is code flow', async () => {
+      vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
+      const authorizedCallbackWithCodeSpy = vi
+        .spyOn(codeFlowCallbackService, 'authenticatedCallbackWithCode')
+        .mockReturnValue(of({} as CallbackContext));
 
-      callbackService
-        .handleCallbackAndFireEvents('anyUrl', { configId: 'configId1' }, [
+      await firstValueFrom(
+        callbackService.handleCallbackAndFireEvents(
+          'anyUrl',
           { configId: 'configId1' },
-        ])
-        .subscribe(() => {
-          expect(authorizedCallbackWithCodeSpy).toHaveBeenCalledOnceWith(
-            'anyUrl',
-            { configId: 'configId1' },
-            [{ configId: 'configId1' }]
-          );
-        });
-    }));
+          [{ configId: 'configId1' }]
+        )
+      );
 
-    it('calls authorizedImplicitFlowCallback without hash if current flow is implicit flow and callbackurl does not include a hash', waitForAsync(() => {
-      spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
-      spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').and.returnValue(true);
-      const authorizedCallbackWithCodeSpy = spyOn(
-        implicitFlowCallbackService,
-        'authenticatedImplicitFlowCallback'
-      ).and.returnValue(of({} as CallbackContext));
+      expect(authorizedCallbackWithCodeSpy).toHaveBeenCalledTimes(1);
+      expect(authorizedCallbackWithCodeSpy).toHaveBeenCalledWith(
+        'anyUrl',
+        { configId: 'configId1' },
+        [{ configId: 'configId1' }]
+      );
+    });
 
-      callbackService
-        .handleCallbackAndFireEvents('anyUrl', { configId: 'configId1' }, [
+    it('calls authorizedImplicitFlowCallback without hash if current flow is implicit flow and callbackurl does not include a hash', async () => {
+      vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(false);
+      vi.spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').mockReturnValue(
+        true
+      );
+      const authorizedCallbackWithCodeSpy = vi
+        .spyOn(implicitFlowCallbackService, 'authenticatedImplicitFlowCallback')
+        .mockReturnValue(of({} as CallbackContext));
+
+      await firstValueFrom(
+        callbackService.handleCallbackAndFireEvents(
+          'anyUrl',
           { configId: 'configId1' },
-        ])
-        .subscribe(() => {
-          expect(authorizedCallbackWithCodeSpy).toHaveBeenCalledWith(
-            { configId: 'configId1' },
-            [{ configId: 'configId1' }]
-          );
-        });
-    }));
+          [{ configId: 'configId1' }]
+        )
+      );
 
-    it('calls authorizedImplicitFlowCallback with hash if current flow is implicit flow and callbackurl does include a hash', waitForAsync(() => {
-      spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(false);
-      spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').and.returnValue(true);
-      const authorizedCallbackWithCodeSpy = spyOn(
-        implicitFlowCallbackService,
-        'authenticatedImplicitFlowCallback'
-      ).and.returnValue(of({} as CallbackContext));
+      expect(authorizedCallbackWithCodeSpy).toHaveBeenCalledWith(
+        { configId: 'configId1' },
+        [{ configId: 'configId1' }]
+      );
+    });
 
-      callbackService
-        .handleCallbackAndFireEvents(
+    it('calls authorizedImplicitFlowCallback with hash if current flow is implicit flow and callbackurl does include a hash', async () => {
+      vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(false);
+      vi.spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').mockReturnValue(
+        true
+      );
+      const authorizedCallbackWithCodeSpy = vi
+        .spyOn(implicitFlowCallbackService, 'authenticatedImplicitFlowCallback')
+        .mockReturnValue(of({} as CallbackContext));
+
+      await firstValueFrom(
+        callbackService.handleCallbackAndFireEvents(
           'anyUrlWithAHash#some-string',
           { configId: 'configId1' },
           [{ configId: 'configId1' }]
         )
-        .subscribe(() => {
-          expect(authorizedCallbackWithCodeSpy).toHaveBeenCalledWith(
-            { configId: 'configId1' },
-            [{ configId: 'configId1' }],
-            'some-string'
-          );
-        });
-    }));
-
-    it('emits callbackinternal no matter which flow it is', waitForAsync(() => {
-      const callbackSpy = spyOn(
-        (callbackService as any).stsCallbackInternal$,
-        'next'
       );
 
-      spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
-      const authenticatedCallbackWithCodeSpy = spyOn(
-        codeFlowCallbackService,
-        'authenticatedCallbackWithCode'
-      ).and.returnValue(of({} as CallbackContext));
+      expect(authorizedCallbackWithCodeSpy).toHaveBeenCalledWith(
+        { configId: 'configId1' },
+        [{ configId: 'configId1' }],
+        'some-string'
+      );
+    });
 
-      callbackService
-        .handleCallbackAndFireEvents('anyUrl', { configId: 'configId1' }, [
+    it('emits callbackinternal no matter which flow it is', async () => {
+      const callbackSpy = vi
+        .spyOn((callbackService as any).stsCallbackInternal$, 'next')
+        .mockReturnValue(undefined);
+
+      vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
+      const authenticatedCallbackWithCodeSpy = vi
+        .spyOn(codeFlowCallbackService, 'authenticatedCallbackWithCode')
+        .mockReturnValue(of({} as CallbackContext));
+
+      await firstValueFrom(
+        callbackService.handleCallbackAndFireEvents(
+          'anyUrl',
           { configId: 'configId1' },
-        ])
-        .subscribe(() => {
-          expect(authenticatedCallbackWithCodeSpy).toHaveBeenCalledOnceWith(
-            'anyUrl',
-            { configId: 'configId1' },
-            [{ configId: 'configId1' }]
-          );
-          expect(callbackSpy).toHaveBeenCalled();
-        });
-    }));
+          [{ configId: 'configId1' }]
+        )
+      );
+
+      expect(authenticatedCallbackWithCodeSpy).toHaveBeenCalledTimes(1);
+      expect(authenticatedCallbackWithCodeSpy).toHaveBeenCalledWith(
+        'anyUrl',
+        { configId: 'configId1' },
+        [{ configId: 'configId1' }]
+      );
+      expect(callbackSpy).toHaveBeenCalled();
+    });
   });
 });

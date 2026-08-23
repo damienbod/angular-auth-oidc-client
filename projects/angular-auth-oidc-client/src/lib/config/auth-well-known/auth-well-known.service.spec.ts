@@ -1,5 +1,6 @@
-import { TestBed, waitForAsync } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { firstValueFrom, of, throwError } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
 import { EventTypes } from '../../public-events/event-types';
 import { PublicEventsService } from '../../public-events/public-events.service';
@@ -36,75 +37,91 @@ describe('AuthWellKnownService', () => {
   });
 
   describe('getAuthWellKnownEndPoints', () => {
-    it('getAuthWellKnownEndPoints throws an error if not config provided', waitForAsync(() => {
-      service.queryAndStoreAuthWellKnownEndPoints(null).subscribe({
-        error: (error) => {
-          expect(error).toEqual(
-            new Error(
-              'Please provide a configuration before setting up the module'
-            )
-          );
-        },
-      });
-    }));
+    it('getAuthWellKnownEndPoints throws an error if not config provided', async () => {
+      try {
+        await firstValueFrom(service.queryAndStoreAuthWellKnownEndPoints(null));
+        expect.fail('expected an error');
+      } catch (error: any) {
+        expect(error).toEqual(
+          new Error(
+            'Please provide a configuration before setting up the module'
+          )
+        );
+      }
+    });
 
-    it('getAuthWellKnownEndPoints calls always dataservice', waitForAsync(() => {
-      const dataServiceSpy = spyOn(
-        dataService,
-        'getWellKnownEndPointsForConfig'
-      ).and.returnValue(of({ issuer: 'anything' }));
+    it('getAuthWellKnownEndPoints calls always dataservice', async () => {
+      const dataServiceSpy = vi
+        .spyOn(dataService, 'getWellKnownEndPointsForConfig')
+        .mockReturnValue(of({ issuer: 'anything' }));
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
-        .and.returnValue({ issuer: 'anything' });
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { issuer: 'anything' };
+          }
 
-      service
-        .queryAndStoreAuthWellKnownEndPoints({ configId: 'configId1' })
-        .subscribe((result) => {
-          expect(storagePersistenceService.read).not.toHaveBeenCalled();
-          expect(dataServiceSpy).toHaveBeenCalled();
-          expect(result).toEqual({ issuer: 'anything' });
-        });
-    }));
+          return undefined;
+        }
+      );
 
-    it('getAuthWellKnownEndPoints stored the result if http call is made', waitForAsync(() => {
-      const dataServiceSpy = spyOn(
-        dataService,
-        'getWellKnownEndPointsForConfig'
-      ).and.returnValue(of({ issuer: 'anything' }));
+      const result = await firstValueFrom(
+        service.queryAndStoreAuthWellKnownEndPoints({ configId: 'configId1' })
+      );
 
-      spyOn(storagePersistenceService, 'read')
-        .withArgs('authWellKnownEndPoints', { configId: 'configId1' })
-        .and.returnValue(null);
-      const storeSpy = spyOn(service, 'storeWellKnownEndpoints');
+      expect(storagePersistenceService.read).not.toHaveBeenCalled();
+      expect(dataServiceSpy).toHaveBeenCalled();
+      expect(result).toEqual({ issuer: 'anything' });
+    });
 
-      service
-        .queryAndStoreAuthWellKnownEndPoints({ configId: 'configId1' })
-        .subscribe((result) => {
-          expect(dataServiceSpy).toHaveBeenCalled();
-          expect(storeSpy).toHaveBeenCalled();
-          expect(result).toEqual({ issuer: 'anything' });
-        });
-    }));
+    it('getAuthWellKnownEndPoints stored the result if http call is made', async () => {
+      const dataServiceSpy = vi
+        .spyOn(dataService, 'getWellKnownEndPointsForConfig')
+        .mockReturnValue(of({ issuer: 'anything' }));
 
-    it('throws `ConfigLoadingFailed` event when error happens from http', waitForAsync(() => {
-      spyOn(dataService, 'getWellKnownEndPointsForConfig').and.returnValue(
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return null;
+          }
+
+          return undefined;
+        }
+      );
+      const storeSpy = vi
+        .spyOn(service, 'storeWellKnownEndpoints')
+        .mockReturnValue(undefined);
+      const result = await firstValueFrom(
+        service.queryAndStoreAuthWellKnownEndPoints({ configId: 'configId1' })
+      );
+
+      expect(dataServiceSpy).toHaveBeenCalled();
+      expect(storeSpy).toHaveBeenCalled();
+      expect(result).toEqual({ issuer: 'anything' });
+    });
+
+    it('throws `ConfigLoadingFailed` event when error happens from http', async () => {
+      vi.spyOn(dataService, 'getWellKnownEndPointsForConfig').mockReturnValue(
         throwError(() => new Error('error'))
       );
-      const publicEventsServiceSpy = spyOn(publicEventsService, 'fireEvent');
+      const publicEventsServiceSpy = vi
+        .spyOn(publicEventsService, 'fireEvent')
+        .mockReturnValue(undefined);
 
-      service
-        .queryAndStoreAuthWellKnownEndPoints({ configId: 'configId1' })
-        .subscribe({
-          error: (err) => {
-            expect(err).toBeTruthy();
-            expect(publicEventsServiceSpy).toHaveBeenCalledTimes(1);
-            expect(publicEventsServiceSpy).toHaveBeenCalledOnceWith(
-              EventTypes.ConfigLoadingFailed,
-              null
-            );
-          },
-        });
-    }));
+      try {
+        await firstValueFrom(
+          service.queryAndStoreAuthWellKnownEndPoints({ configId: 'configId1' })
+        );
+        expect.fail('expected an error');
+      } catch (err: any) {
+        expect(err).toBeTruthy();
+        expect(publicEventsServiceSpy).toHaveBeenCalledTimes(1);
+        expect(publicEventsServiceSpy).toHaveBeenCalledTimes(1);
+        expect(publicEventsServiceSpy).toHaveBeenCalledWith(
+          EventTypes.ConfigLoadingFailed,
+          null
+        );
+      }
+    });
   });
 });

@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { OpenIdConfiguration } from '../../openid-configuration';
 import { ensureNoDuplicatedConfigsRule } from './ensure-no-duplicated-configs.rule';
 

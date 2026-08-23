@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { mockProvider } from '../../../test/auto-mock';
 import { LoggerService } from '../../logging/logger.service';
@@ -207,7 +208,7 @@ describe('Token Helper Service', () => {
         configId: 'configId1',
       });
 
-      expect(result).toEqual(jasmine.objectContaining(expected));
+      expect(result).toEqual(expect.objectContaining(expected));
     });
   });
 

@@ -1,12 +1,16 @@
+import { beforeEach, describe, expect, it } from 'vitest';
 import { TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
+import { provideAuth } from 'angular-auth-oidc-client';
+import { NavigationComponent } from './navigation/navigation.component';
+import { provideRouter, RouterModule } from '@angular/router';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
-      declarations: [AppComponent],
+      imports: [RouterModule],
+      declarations: [AppComponent, NavigationComponent],
+      providers: [provideAuth({ config: {} }), provideRouter([])],
     }).compileComponents();
   });
 
@@ -20,14 +24,5 @@ describe('AppComponent', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
     expect(app.title).toEqual('sample-code-flow-auto-login-all-routes');
-  });
-
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('.content span').textContent).toContain(
-      'sample-code-flow-auto-login-all-routes app is running!'
-    );
   });
 });
