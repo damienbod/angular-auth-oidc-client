@@ -243,9 +243,9 @@ describe('BrowserStorageService', () => {
 
   describe('hasStorage', () => {
     it('returns false if there is no storage', () => {
-      (Storage as any) = undefined;
+      vi.stubGlobal('Storage', undefined);
+
       expect((service as any).hasStorage()).toBe(false);
-      Storage = Storage;
     });
   });
 });
