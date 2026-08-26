@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { mockClass, mockProvider } from '../../test/auto-mock';
 import { LoggerService } from '../logging/logger.service';
@@ -242,10 +242,18 @@ describe('BrowserStorageService', () => {
   });
 
   describe('hasStorage', () => {
+    // `unstubGlobals` only restores stubs *before* the next test, which would
+    // leave `Storage` undefined for anything running between this file and the
+    // next one. Spec files share globals (the builder runs Vitest with
+    // `isolate: false`), so restore it here instead of leaking it.
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
     it('returns false if there is no storage', () => {
-      (Storage as any) = undefined;
+      vi.stubGlobal('Storage', undefined);
+
       expect((service as any).hasStorage()).toBe(false);
-      Storage = Storage;
     });
   });
 });
