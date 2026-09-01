@@ -1,6 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
-import { firstValueFrom, of, ReplaySubject, throwError } from 'rxjs';
+import {
+  firstValueFrom,
+  NEVER,
+  of,
+  ReplaySubject,
+  throwError,
+  TimeoutError,
+} from 'rxjs';
 import { delay } from 'rxjs/operators';
 import { mockProvider } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
@@ -251,6 +258,34 @@ describe('RefreshSessionService ', () => {
   });
 
   describe('forceRefreshSession', () => {
+    it('limits the duration of the complete refresh token flow', async () => {
+      vi.spyOn(
+        flowHelper,
+        'isCurrentFlowCodeFlowWithRefreshTokens'
+      ).mockReturnValue(true);
+      vi.spyOn(
+        refreshSessionService as any,
+        'waitForRunningRefreshSessionIfRequired'
+      ).mockReturnValue(of(false));
+      vi.spyOn(
+        refreshSessionService as any,
+        'startRefreshSession'
+      ).mockReturnValue(NEVER);
+      const allConfigs = [
+        {
+          configId: 'configId1',
+          silentRenewTimeoutInSeconds: 0.01,
+        },
+      ];
+      const result = firstValueFrom(
+        refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs)
+      );
+
+      await vi.advanceTimersByTimeAsync(10);
+
+      await expect(result).rejects.toBeInstanceOf(TimeoutError);
+    });
+
     it('only calls start refresh session and returns idToken and accessToken if auth is true', async () => {
       vi.spyOn(
         flowHelper,
