@@ -286,6 +286,29 @@ describe('RefreshSessionService ', () => {
       await expect(result).rejects.toBeInstanceOf(TimeoutError);
     });
 
+    it('uses the default timeout for the complete refresh token flow', async () => {
+      vi.spyOn(
+        flowHelper,
+        'isCurrentFlowCodeFlowWithRefreshTokens'
+      ).mockReturnValue(true);
+      vi.spyOn(
+        refreshSessionService as any,
+        'waitForRunningRefreshSessionIfRequired'
+      ).mockReturnValue(of(false));
+      vi.spyOn(
+        refreshSessionService as any,
+        'startRefreshSession'
+      ).mockReturnValue(NEVER);
+      const allConfigs = [{ configId: 'configId1' }];
+      const result = firstValueFrom(
+        refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs)
+      );
+
+      await vi.advanceTimersByTimeAsync(20_000);
+
+      await expect(result).rejects.toBeInstanceOf(TimeoutError);
+    });
+
     it('only calls start refresh session and returns idToken and accessToken if auth is true', async () => {
       vi.spyOn(
         flowHelper,
