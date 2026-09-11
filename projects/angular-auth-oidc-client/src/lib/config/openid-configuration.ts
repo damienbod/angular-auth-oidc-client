@@ -205,12 +205,6 @@ export interface OpenIdConfiguration {
    * Default value is 3
    */
   refreshTokenRetryInSeconds?: number;
-  /**
-   * Maximum number of retries after a refresh token request fails because of a network error.
-   * By default, network errors are retried until `silentRenewTimeoutInSeconds` is reached.
-   * Set this to `0` to disable retries.
-   */
-  refreshTokenMaxRetries?: number;
   /** Adds the ngsw-bypass param to all requests */
   ngswBypass?: boolean;
   /** Allow refresh token reuse (refresh without rotation), default value is false.

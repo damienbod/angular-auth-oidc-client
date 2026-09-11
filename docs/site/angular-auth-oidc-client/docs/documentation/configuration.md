@@ -456,6 +456,7 @@ Makes it possible to turn the `iss` validation off per configuration. **You shou
 
 ### `strictIssuerValidationOnWellKnownRetrievalOff`
 
+
 - Type: `boolean`
 - Required: `false`
 
@@ -557,15 +558,6 @@ Activates Pushed Authorisation Requests (PAR) for login and popup login. <br/>
 Controls the periodic retry time interval for retrieving new tokens in seconds. <br/>
 Default = _3_. <br/>
 `silentRenewTimeoutInSeconds` and `tokenRefreshInSeconds` are the upper bounds for this value.
-
-### `refreshTokenMaxRetries`
-
-- Type: `number`
-- Required: `false`
-
-Limits the number of retries after a refresh token request fails because of a network error. <br/>
-By default, network errors are retried until `silentRenewTimeoutInSeconds` is reached. <br/>
-Set this to `0` to disable retries.
 
 ### `ngswBypass`
 

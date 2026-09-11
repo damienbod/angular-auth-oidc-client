@@ -69,9 +69,7 @@ export class RefreshTokenCallbackHandlerService {
 
           this.loggerService.logError(config, errorMessage, error);
 
-          return throwError(() =>
-            isNetworkError(error) ? error : new Error(errorMessage)
-          );
+          return throwError(() => new Error(errorMessage));
         })
       );
   }
@@ -81,22 +79,11 @@ export class RefreshTokenCallbackHandlerService {
     config: OpenIdConfiguration
   ): Observable<unknown> {
     return errors.pipe(
-      mergeMap((error, retryCount) => {
+      mergeMap((error) => {
         // retry token refresh if there is no internet connection
         if (isNetworkError(error)) {
-          const {
-            authority,
-            refreshTokenMaxRetries,
-            refreshTokenRetryInSeconds,
-          } = config;
+          const { authority, refreshTokenRetryInSeconds } = config;
           const errorMessage = `OidcService code request ${authority} - no internet connection`;
-
-          if (
-            refreshTokenMaxRetries !== undefined &&
-            retryCount >= Math.max(0, refreshTokenMaxRetries)
-          ) {
-            return throwError(() => error);
-          }
 
           this.loggerService.logWarning(config, errorMessage, error);
 
