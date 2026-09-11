@@ -128,7 +128,8 @@ export class RefreshSessionService {
             accessToken: '',
             configId,
           };
-        })
+        }),
+        timeout((config.silentRenewTimeoutInSeconds ?? 20) * 1000)
       );
     }
 
