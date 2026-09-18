@@ -629,6 +629,50 @@ describe('RefreshSessionService ', () => {
       });
     });
 
+    it('should return the error description of the iframe completion if auth is false', async () => {
+      spyOn(
+        flowHelper,
+        'isCurrentFlowCodeFlowWithRefreshTokens'
+      ).and.returnValue(false);
+      spyOn(
+        refreshSessionService as any,
+        'startRefreshSession'
+      ).and.returnValue(of(null));
+      spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
+        false
+      );
+      spyOnProperty(
+        silentRenewService,
+        'refreshSessionWithIFrameCompleted$'
+      ).and.returnValue(
+        of({
+          success: false,
+          configId: 'configId1',
+          errorMessage: 'login_required',
+          errorDescription: 'session_expired',
+        } as const)
+      );
+      const allConfigs = [
+        {
+          configId: 'configId1',
+          silentRenewTimeoutInSeconds: 10,
+        },
+      ];
+      const result = await firstValueFrom(
+        refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs)
+      );
+
+      expect(result).toEqual({
+        isAuthenticated: false,
+        errorMessage: 'login_required',
+        errorDescription: 'session_expired',
+        userData: null,
+        idToken: '',
+        accessToken: '',
+        configId: 'configId1',
+      });
+    });
+
     it('should return an empty error message if the iframe completed successfully but auth is false', async () => {
       spyOn(
         flowHelper,

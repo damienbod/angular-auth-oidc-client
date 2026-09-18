@@ -12,7 +12,10 @@ import { LoggerService } from '../logging/logger.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { ValidationResult } from '../validation/validation-result';
 import { IFrameService } from './existing-iframe.service';
-import { SilentRenewService } from './silent-renew.service';
+import {
+  SilentRenewCallbackError,
+  SilentRenewService,
+} from './silent-renew.service';
 
 describe('SilentRenewService  ', () => {
   let silentRenewService: SilentRenewService;
@@ -198,6 +201,29 @@ describe('SilentRenewService  ', () => {
           },
         });
     }));
+
+    it('keeps the error_description of the url on the thrown error', () => {
+      const config = { configId: 'configId1' };
+      const allConfigs = [config];
+      const urlParts = 'error=some_error&error_description=some_description';
+      let caughtError: unknown;
+
+      silentRenewService
+        .codeFlowCallbackSilentRenewIframe(
+          ['url-part-1', urlParts],
+          config,
+          allConfigs
+        )
+        .subscribe({ error: (error: unknown) => (caughtError = error) });
+
+      expect(caughtError).toBeInstanceOf(SilentRenewCallbackError);
+      expect(caughtError).toEqual(
+        jasmine.objectContaining({
+          message: 'some_error',
+          errorDescription: 'some_description',
+        })
+      );
+    });
   });
 
   describe('silentRenewEventHandler', () => {
@@ -400,6 +426,34 @@ describe('SilentRenewService  ', () => {
         success: false,
         configId: 'configId1',
         errorMessage: 'login_required',
+      });
+    }));
+
+    it('should emit the error description of the silent renew callback url on refreshSessionWithIFrameCompleted', fakeAsync(() => {
+      spyOn(flowHelper, 'isCurrentFlowCodeFlow').and.returnValue(true);
+      const eventData = {
+        detail:
+          'https://localhost/silent-renew?error=login_required&error_description=session_expired&state=state',
+      } as CustomEvent;
+      const allConfigs = [{ configId: 'configId1' }];
+      let result: unknown;
+
+      silentRenewService.refreshSessionWithIFrameCompleted$.subscribe(
+        (completed) => (result = completed)
+      );
+
+      silentRenewService.silentRenewEventHandler(
+        eventData,
+        allConfigs[0],
+        allConfigs
+      );
+      tick(1000);
+
+      expect(result).toEqual({
+        success: false,
+        configId: 'configId1',
+        errorMessage: 'login_required',
+        errorDescription: 'session_expired',
       });
     }));
 

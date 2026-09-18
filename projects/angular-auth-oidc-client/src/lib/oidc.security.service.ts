@@ -383,7 +383,7 @@ export class OidcSecurityService {
    * @param customParams Custom parameters to pass to the refresh request.
    * @param configId The configId to perform the action in behalf of. If not passed, the first configs will be taken
    *
-   * @returns An `Observable<LoginResponse>` containing all information about the login. If a refresh with an iframe (silent renew without refresh tokens) fails, `errorMessage` contains the error of the failed silent renew.
+   * @returns An `Observable<LoginResponse>` containing all information about the login. If a refresh with an iframe (silent renew without refresh tokens) fails, `errorMessage` contains the error of the failed silent renew and `errorDescription` its `error_description`, if the identity provider sent one.
    */
   forceRefreshSession(
     customParams?: { [key: string]: string | number | boolean },
