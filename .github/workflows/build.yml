@@ -68,7 +68,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: 22
+          # Node 24 for its npm 11. The npm 10 of Node 22 crashes while
+          # installing the packages of the scaffolded app, when it resolves the
+          # peer set of the vitest dev dependency the Angular CLI now adds:
+          # "npm error Cannot read properties of null (reading 'edgesOut')".
+          node-version: 24
 
       - name: Download Artefact
         uses: actions/download-artifact@v4
@@ -108,7 +112,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: 22
+          # Node 24 for its npm 11. The npm 10 of Node 22 crashes while
+          # installing the packages of the scaffolded app, when it resolves the
+          # peer set of the vitest dev dependency the Angular CLI now adds:
+          # "npm error Cannot read properties of null (reading 'edgesOut')".
+          node-version: 24
 
       - name: Download Artefact
         uses: actions/download-artifact@v4
@@ -148,7 +156,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: 22
+          # Node 24 for its npm 11. The npm 10 of Node 22 crashes while
+          # installing the packages of the scaffolded app, when it resolves the
+          # peer set of the vitest dev dependency the Angular CLI now adds:
+          # "npm error Cannot read properties of null (reading 'edgesOut')".
+          node-version: 24
 
       - name: Download Artefact
         uses: actions/download-artifact@v4
