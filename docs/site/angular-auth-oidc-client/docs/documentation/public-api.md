@@ -593,6 +593,8 @@ This method takes `customParams` for this request as well as a `configId` as par
 
 See also: [Custom parameters](custom-parameters.md)
 
+If the refresh with an iframe (silent renew without refresh tokens) fails, `errorMessage` contains the error of the failed silent renew, e.g. the `error` returned by the identity provider such as `login_required`.
+
 The method returns an `Observable<LoginResponse>` containing
 
 ```ts
