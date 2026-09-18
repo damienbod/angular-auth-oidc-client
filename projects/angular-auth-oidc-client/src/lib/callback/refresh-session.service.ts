@@ -187,7 +187,9 @@ export class RefreshSessionService {
 
         return {
           isAuthenticated: false,
-          errorMessage: '',
+          errorMessage: refreshCompleted.success
+            ? ''
+            : refreshCompleted.errorMessage ?? '',
           userData: null,
           idToken: '',
           accessToken: '',
