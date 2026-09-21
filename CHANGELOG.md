@@ -1,5 +1,10 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2026-09-21
+
+- feat(silent-renew): surface the error and the error_description of a failed iframe silent renew
+- [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/2294)
+
 ### 2026-08-09 21.0.3
 
 - feat: add useRefreshTokenLock to serialize refresh token renewal across tabs
