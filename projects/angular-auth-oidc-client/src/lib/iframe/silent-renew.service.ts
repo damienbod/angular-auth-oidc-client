@@ -18,8 +18,28 @@ import { IFrameService } from './existing-iframe.service';
 const IFRAME_FOR_SILENT_RENEW_IDENTIFIER = 'myiFrameForSilentRenew';
 
 export const getFrameId = (configId?: string): string => `${IFRAME_FOR_SILENT_RENEW_IDENTIFIER}_${configId}`;
+
+/**
+ * Error of a silent renew whose callback URL carried an OAuth `error`
+ * parameter. Keeps that callback's `error_description` next to the error, which
+ * identity providers use to say why the silent login was refused. It is only a
+ * carrier for the description, so `name` and `message` stay those of the plain
+ * `Error` thrown before.
+ */
+export class SilentRenewCallbackError extends Error {
+  constructor(error: string, readonly errorDescription?: string) {
+    super(error);
+  }
+}
+
 type RefreshSessionWithIFrameCompleted =
-  {success: true, authResult: AuthResult | null, configId?: string } | {success: false, configId?: string};
+  | { success: true; authResult: AuthResult | null; configId?: string }
+  | {
+      success: false;
+      configId?: string;
+      errorMessage?: string;
+      errorDescription?: string;
+    };
 @Injectable({ providedIn: 'root' })
 export class SilentRenewService {
   private readonly refreshSessionWithIFrameCompletedInternal$ =
@@ -87,7 +107,13 @@ export class SilentRenewService {
       this.flowsDataService.setNonce('', config);
       this.intervalService.stopPeriodicTokenCheck();
 
-      return throwError(() => new Error(errorParam));
+      return throwError(
+        () =>
+          new SilentRenewCallbackError(
+            errorParam,
+            params.get('error_description') ?? undefined
+          )
+      );
     }
 
     const code = params.get('code') ?? '';
@@ -153,8 +179,19 @@ export class SilentRenewService {
         this.flowsDataService.resetSilentRenewRunning(config);
       },
       error: (err: unknown) => {
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        const errorDescription =
+          err instanceof SilentRenewCallbackError
+            ? err.errorDescription
+            : undefined;
+
         this.loggerService.logError(config, 'Error: ' + err);
-        this.refreshSessionWithIFrameCompletedInternal$.next({configId: config.configId, success: false});
+        this.refreshSessionWithIFrameCompletedInternal$.next({
+          configId: config.configId,
+          success: false,
+          errorMessage,
+          ...(errorDescription === undefined ? {} : { errorDescription }),
+        });
         this.flowsDataService.resetSilentRenewRunning(config);
       },
     });

@@ -623,6 +623,133 @@ describe('RefreshSessionService ', () => {
       });
     });
 
+    it('should return the error message of the iframe completion if auth is false', async () => {
+      vi.spyOn(
+        flowHelper,
+        'isCurrentFlowCodeFlowWithRefreshTokens'
+      ).mockReturnValue(false);
+      vi.spyOn(
+        refreshSessionService as any,
+        'startRefreshSession'
+      ).mockReturnValue(of(null));
+      vi.spyOn(authStateService, 'areAuthStorageTokensValid').mockReturnValue(
+        false
+      );
+      vi.spyOn(
+        silentRenewService,
+        'refreshSessionWithIFrameCompleted$',
+        'get'
+      ).mockReturnValue(
+        of({
+          success: false,
+          configId: 'configId1',
+          errorMessage: 'login_required',
+        })
+      );
+      const allConfigs = [
+        {
+          configId: 'configId1',
+          silentRenewTimeoutInSeconds: 10,
+        },
+      ];
+      const result = await firstValueFrom(
+        refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs)
+      );
+
+      expect(result).toEqual({
+        isAuthenticated: false,
+        errorMessage: 'login_required',
+        userData: null,
+        idToken: '',
+        accessToken: '',
+        configId: 'configId1',
+      });
+    });
+
+    it('should return the error description of the iframe completion if auth is false', async () => {
+      vi.spyOn(
+        flowHelper,
+        'isCurrentFlowCodeFlowWithRefreshTokens'
+      ).mockReturnValue(false);
+      vi.spyOn(
+        refreshSessionService as any,
+        'startRefreshSession'
+      ).mockReturnValue(of(null));
+      vi.spyOn(authStateService, 'areAuthStorageTokensValid').mockReturnValue(
+        false
+      );
+      vi.spyOn(
+        silentRenewService,
+        'refreshSessionWithIFrameCompleted$',
+        'get'
+      ).mockReturnValue(
+        of({
+          success: false,
+          configId: 'configId1',
+          errorMessage: 'login_required',
+          errorDescription: 'session_expired',
+        })
+      );
+      const allConfigs = [
+        {
+          configId: 'configId1',
+          silentRenewTimeoutInSeconds: 10,
+        },
+      ];
+      const result = await firstValueFrom(
+        refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs)
+      );
+
+      expect(result).toEqual({
+        isAuthenticated: false,
+        errorMessage: 'login_required',
+        errorDescription: 'session_expired',
+        userData: null,
+        idToken: '',
+        accessToken: '',
+        configId: 'configId1',
+      });
+    });
+
+    it('should return an empty error message if the iframe completed successfully but auth is false', async () => {
+      vi.spyOn(
+        flowHelper,
+        'isCurrentFlowCodeFlowWithRefreshTokens'
+      ).mockReturnValue(false);
+      vi.spyOn(
+        refreshSessionService as any,
+        'startRefreshSession'
+      ).mockReturnValue(of(null));
+      vi.spyOn(authStateService, 'areAuthStorageTokensValid').mockReturnValue(
+        false
+      );
+      vi.spyOn(
+        silentRenewService,
+        'refreshSessionWithIFrameCompleted$',
+        'get'
+      ).mockReturnValue(
+        of({ success: true, authResult: null, configId: 'configId1' })
+      );
+      const allConfigs = [
+        {
+          configId: 'configId1',
+          silentRenewTimeoutInSeconds: 10,
+        },
+      ];
+      const result = await firstValueFrom(
+        refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs)
+      );
+
+      expect(result).toEqual({
+        isAuthenticated: false,
+        errorMessage: '',
+        userData: null,
+        idToken: '',
+        accessToken: '',
+        configId: 'configId1',
+      });
+    });
+
     it('occurs timeout error and retry mechanism exhausted max retry count throws error', async () => {
       vi.spyOn(
         flowHelper,
