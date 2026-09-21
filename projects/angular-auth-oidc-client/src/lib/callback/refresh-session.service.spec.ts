@@ -1,5 +1,5 @@
 import { fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
-import { of, ReplaySubject, throwError } from 'rxjs';
+import { firstValueFrom, of, ReplaySubject, throwError } from 'rxjs';
 import { delay } from 'rxjs/operators';
 import { mockProvider } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
@@ -586,6 +586,130 @@ describe('RefreshSessionService ', () => {
           });
         });
     }));
+
+    it('should return the error message of the iframe completion if auth is false', async () => {
+      spyOn(
+        flowHelper,
+        'isCurrentFlowCodeFlowWithRefreshTokens'
+      ).and.returnValue(false);
+      spyOn(
+        refreshSessionService as any,
+        'startRefreshSession'
+      ).and.returnValue(of(null));
+      spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
+        false
+      );
+      spyOnProperty(
+        silentRenewService,
+        'refreshSessionWithIFrameCompleted$'
+      ).and.returnValue(
+        of({
+          success: false,
+          configId: 'configId1',
+          errorMessage: 'login_required',
+        } as const)
+      );
+      const allConfigs = [
+        {
+          configId: 'configId1',
+          silentRenewTimeoutInSeconds: 10,
+        },
+      ];
+      const result = await firstValueFrom(
+        refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs)
+      );
+
+      expect(result).toEqual({
+        isAuthenticated: false,
+        errorMessage: 'login_required',
+        userData: null,
+        idToken: '',
+        accessToken: '',
+        configId: 'configId1',
+      });
+    });
+
+    it('should return the error description of the iframe completion if auth is false', async () => {
+      spyOn(
+        flowHelper,
+        'isCurrentFlowCodeFlowWithRefreshTokens'
+      ).and.returnValue(false);
+      spyOn(
+        refreshSessionService as any,
+        'startRefreshSession'
+      ).and.returnValue(of(null));
+      spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
+        false
+      );
+      spyOnProperty(
+        silentRenewService,
+        'refreshSessionWithIFrameCompleted$'
+      ).and.returnValue(
+        of({
+          success: false,
+          configId: 'configId1',
+          errorMessage: 'login_required',
+          errorDescription: 'session_expired',
+        } as const)
+      );
+      const allConfigs = [
+        {
+          configId: 'configId1',
+          silentRenewTimeoutInSeconds: 10,
+        },
+      ];
+      const result = await firstValueFrom(
+        refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs)
+      );
+
+      expect(result).toEqual({
+        isAuthenticated: false,
+        errorMessage: 'login_required',
+        errorDescription: 'session_expired',
+        userData: null,
+        idToken: '',
+        accessToken: '',
+        configId: 'configId1',
+      });
+    });
+
+    it('should return an empty error message if the iframe completed successfully but auth is false', async () => {
+      spyOn(
+        flowHelper,
+        'isCurrentFlowCodeFlowWithRefreshTokens'
+      ).and.returnValue(false);
+      spyOn(
+        refreshSessionService as any,
+        'startRefreshSession'
+      ).and.returnValue(of(null));
+      spyOn(authStateService, 'areAuthStorageTokensValid').and.returnValue(
+        false
+      );
+      spyOnProperty(
+        silentRenewService,
+        'refreshSessionWithIFrameCompleted$'
+      ).and.returnValue(
+        of({ success: true, authResult: null, configId: 'configId1' } as const)
+      );
+      const allConfigs = [
+        {
+          configId: 'configId1',
+          silentRenewTimeoutInSeconds: 10,
+        },
+      ];
+      const result = await firstValueFrom(
+        refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs)
+      );
+
+      expect(result).toEqual({
+        isAuthenticated: false,
+        errorMessage: '',
+        userData: null,
+        idToken: '',
+        accessToken: '',
+        configId: 'configId1',
+      });
+    });
 
     it('occurs timeout error and retry mechanism exhausted max retry count throws error', fakeAsync(() => {
       spyOn(
