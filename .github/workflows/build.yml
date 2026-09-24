@@ -51,6 +51,9 @@ jobs:
       - name: Copying essential additional files
         run: npm run copy-files
 
+      - name: Testing Schematics
+        run: npm run test-schematics
+
       - name: Show files
         run: ls
 

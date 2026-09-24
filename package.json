@@ -50,7 +50,8 @@
     "start-sample-code-flow-lazy-loaded": "ng serve sample-code-flow-lazy-loaded --ssl --port=4204 -o",
     "schematics-build": "tsc -p projects/schematics/tsconfig.json",
     "copy-files": "node ./tools/post-build-copies.js",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "test-schematics": "npm run schematics-build && npm run copy-files && vitest run --config projects/schematics/vitest.config.mts"
   },
   "private": true,
   "dependencies": {

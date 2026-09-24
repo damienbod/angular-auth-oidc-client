@@ -22,10 +22,12 @@ export async function getAllActions(host: Tree, options: Schema) {
     
     ngAddOptions.moduleInfo ? copyModuleFile(ngAddOptions) : noop(),
     ngAddOptions.moduleInfo ? addModuleToImports(ngAddOptions) : noop(),
-    ngAddOptions.moduleInfo ? addAppModuleToAppSpec() : noop(),
     
     ngAddOptions.standaloneInfo ? copyStandaloneFile(ngAddOptions) : noop(),
     ngAddOptions.standaloneInfo ? addStandaloneConfigsToProviders(ngAddOptions) : noop(),
+
+    // Runs for NgModule based apps with either setup, no-op for standalone apps.
+    addAppModuleToAppSpec(),
     
     addSilentRenewHtmlToAssetsArrayInAngularJson(ngAddOptions),
     copySilentRenewHtmlToRoot(ngAddOptions),

@@ -1,6 +1,8 @@
 export interface Schema {
   authorityUrlOrTenantId: string;
   flowType: FlowType;
+  standalone?: boolean;
+  legacyModules?: boolean;
   useLocalPackage: boolean;
 }
 
