@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, NEVER, of, throwError } from 'rxjs';
 import { mockProvider } from '../../test/auto-mock';
@@ -93,6 +94,65 @@ describe('RefreshSessionRefreshTokenService', () => {
         expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
         expect(err).toBeTruthy();
       }
+    });
+
+    it('preserves authorization data and the original error for network failures', async () => {
+      const networkError = new HttpErrorResponse({
+        error: new ProgressEvent('error'),
+        status: 0,
+        statusText: 'Unknown Error',
+      });
+
+      vi.spyOn(flowsService, 'processRefreshToken').mockReturnValue(
+        throwError(() => networkError)
+      );
+      const resetAuthorizationDataSpy = vi.spyOn(
+        resetAuthDataService,
+        'resetAuthorizationData'
+      );
+      const stopPeriodicTokenCheckSpy = vi.spyOn(
+        intervalService,
+        'stopPeriodicTokenCheck'
+      );
+
+      await expect(
+        firstValueFrom(
+          refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(
+            { configId: 'configId1' },
+            [{ configId: 'configId1' }]
+          )
+        )
+      ).rejects.toBe(networkError);
+
+      expect(resetAuthorizationDataSpy).not.toHaveBeenCalled();
+      expect(stopPeriodicTokenCheckSpy).not.toHaveBeenCalled();
+    });
+
+    it('times out refreshes without clearing authorization data', async () => {
+      vi.spyOn(flowsService, 'processRefreshToken').mockReturnValue(NEVER);
+      const resetAuthorizationDataSpy = vi.spyOn(
+        resetAuthDataService,
+        'resetAuthorizationData'
+      );
+      const stopPeriodicTokenCheckSpy = vi.spyOn(
+        intervalService,
+        'stopPeriodicTokenCheck'
+      );
+      const result = firstValueFrom(
+        refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(
+          {
+            configId: 'configId1',
+            silentRenewTimeoutInSeconds: 0.01,
+          },
+          [{ configId: 'configId1' }]
+        )
+      );
+
+      await vi.advanceTimersByTimeAsync(10);
+
+      await expect(result).rejects.toBeInstanceOf(Error);
+      expect(resetAuthorizationDataSpy).not.toHaveBeenCalled();
+      expect(stopPeriodicTokenCheckSpy).not.toHaveBeenCalled();
     });
 
     it('finalize with stopPeriodicTokenCheck in case of error', async () => {
@@ -359,7 +419,7 @@ describe('RefreshSessionRefreshTokenService', () => {
         expect(resetAuthorizationDataSpy).toHaveBeenCalled();
       });
 
-      it('resetAuthorizationData when the refresh exceeds silentRenewTimeoutInSeconds inside the lock', async () => {
+      it('preserves authorization data when the refresh exceeds silentRenewTimeoutInSeconds inside the lock', async () => {
         Object.defineProperty(navigator, 'locks', {
           value: {
             request: (_name: string, cb: () => Promise<unknown>) => cb(),
@@ -384,7 +444,7 @@ describe('RefreshSessionRefreshTokenService', () => {
           )
         ).rejects.toThrow();
 
-        expect(resetAuthorizationDataSpy).toHaveBeenCalled();
+        expect(resetAuthorizationDataSpy).not.toHaveBeenCalled();
       });
     });
   });

@@ -1,11 +1,12 @@
 import { DOCUMENT, inject, Injectable } from '@angular/core';
-import { defer, Observable, throwError } from 'rxjs';
+import { defer, Observable, throwError, TimeoutError } from 'rxjs';
 import { catchError, finalize, timeout } from 'rxjs/operators';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { CallbackContext } from '../flows/callback-context';
 import { createRenewCallbackContext } from '../flows/callback-context.helper';
 import { FlowsService } from '../flows/flows.service';
+import { isNetworkError } from '../flows/callback-handling/error-helper';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { LoggerService } from '../logging/logger.service';
 import { ValidationResult } from '../validation/validation-result';
@@ -26,27 +27,28 @@ export class RefreshSessionRefreshTokenService {
     customParamsRefresh?: { [key: string]: string | number | boolean }
   ): Observable<CallbackContext> {
     this.loggerService.logDebug(config, 'BEGIN refresh session Authorize');
-    let refreshTokenFailed = false;
+    let refreshTokenFailedPermanently = false;
     const locks = this.document.defaultView?.navigator?.locks;
     const refresh$ =
       config.useRefreshTokenLock && locks
         ? this.refreshWithLock(locks, config, allConfigs, customParamsRefresh)
-        : this.flowsService.processRefreshToken(
-            config,
-            allConfigs,
-            customParamsRefresh
-          );
+        : this.processRefreshToken(config, allConfigs, customParamsRefresh);
 
     return refresh$.pipe(
       catchError((error) => {
+        if (isNetworkError(error) || error instanceof TimeoutError) {
+          return throwError(() => error);
+        }
+
         this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
-        refreshTokenFailed = true;
+        refreshTokenFailedPermanently = true;
 
         return throwError(() => new Error(error));
       }),
       finalize(
         () =>
-          refreshTokenFailed && this.intervalService.stopPeriodicTokenCheck()
+          refreshTokenFailedPermanently &&
+          this.intervalService.stopPeriodicTokenCheck()
       )
     );
   }
@@ -94,12 +96,23 @@ export class RefreshSessionRefreshTokenService {
         }
 
         return new Promise<CallbackContext>((resolve, reject) => {
-          this.flowsService
-            .processRefreshToken(config, allConfigs, customParamsRefresh)
-            .pipe(timeout((config.silentRenewTimeoutInSeconds ?? 20) * 1000))
-            .subscribe({ next: resolve, error: reject });
+          this.processRefreshToken(
+            config,
+            allConfigs,
+            customParamsRefresh
+          ).subscribe({ next: resolve, error: reject });
         });
       });
     });
+  }
+
+  private processRefreshToken(
+    config: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[],
+    customParamsRefresh?: { [key: string]: string | number | boolean }
+  ): Observable<CallbackContext> {
+    return this.flowsService
+      .processRefreshToken(config, allConfigs, customParamsRefresh)
+      .pipe(timeout((config.silentRenewTimeoutInSeconds ?? 20) * 1000));
   }
 }
