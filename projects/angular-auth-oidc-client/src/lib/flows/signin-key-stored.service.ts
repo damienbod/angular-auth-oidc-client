@@ -56,7 +56,7 @@ export class SigninKeyStoredService {
     this.storagePersistenceService.write(JWT_KEYS, jwtKeys, config);
   }
 
-  readSigningKeys(
+  private readSigningKeys(
     config: OpenIdConfiguration
   ): JwtKeys | null {
     return this.storagePersistenceService.read(

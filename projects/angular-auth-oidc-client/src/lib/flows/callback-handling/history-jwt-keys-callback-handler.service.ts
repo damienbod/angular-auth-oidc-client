@@ -123,58 +123,6 @@ export class HistoryJwtKeysCallbackHandlerService {
           return throwError(() => new Error(errorMessage));
         })
       );
-/*
-    const storedJwtKeys =
-      this.signInKeyStoredService.getSigningKeys(
-        callbackContext.authResult?.id_token,
-        config
-      );
-
-    if (storedJwtKeys) {
-      callbackContext.jwtKeys = storedJwtKeys;
-
-      return of(callbackContext);
-    }
-
-    return this.signInKeyDataService.getSigningKeys(config).pipe(
-      tap((jwtKeys: JwtKeys) => this.signInKeyStoredService.storeSigningKeys(jwtKeys, config)),
-      catchError((err) => {
-        // fallback: try to load jwtKeys from storage
-        const storedJwtKeys = this.signInKeyStoredService.readSigningKeys(config);
-
-        if (!!storedJwtKeys) {
-          this.loggerService.logWarning(
-            config,
-            `Failed to retrieve signing keys, fallback to stored keys`
-          );
-
-          return of(storedJwtKeys);
-        }
-
-        return throwError(() => new Error(err));
-      }),
-      switchMap((jwtKeys) => {
-        if (jwtKeys) {
-          callbackContext.jwtKeys = jwtKeys;
-
-          return of(callbackContext);
-        }
-
-        const errorMessage = `Failed to retrieve signing key`;
-
-        this.loggerService.logWarning(config, errorMessage);
-
-        return throwError(() => new Error(errorMessage));
-      }),
-      catchError((err) => {
-        const errorMessage = `Failed to retrieve signing key with error: ${err}`;
-
-        this.loggerService.logWarning(config, errorMessage);
-
-        return throwError(() => new Error(errorMessage));
-      })
-    );
-    */
   }
 
   private responseHasIdToken(callbackContext: CallbackContext): boolean {
