@@ -38,7 +38,7 @@ export function addModuleToImports(options: NgAddOptions): Rule {
   };
 }
 
-function findAppModulePath(host: Tree, sourceRoot: string): string | null {
+export function findAppModulePath(host: Tree, sourceRoot: string): string | null {
   // Try common naming conventions for app module
   const possiblePaths = [
     `${sourceRoot}/app/app.module.ts`,     // Traditional Angular CLI naming
