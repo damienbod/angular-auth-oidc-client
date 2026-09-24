@@ -1,5 +1,5 @@
 
-import { inject, Injectable, DOCUMENT } from '@angular/core';
+import { DOCUMENT, inject, Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, switchMap, tap } from 'rxjs/operators';
 import { AuthStateService } from '../../auth-state/auth-state.service';
@@ -12,8 +12,7 @@ import { CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
 import { ResetAuthDataService } from '../reset-auth-data.service';
 import { SigninKeyDataService } from '../signin-key-data.service';
-
-const JWT_KEYS = 'jwtKeys';
+import { SigninKeyStoredService } from '../signin-key-stored.service';
 
 @Injectable({ providedIn: 'root' })
 export class HistoryJwtKeysCallbackHandlerService {
@@ -21,6 +20,7 @@ export class HistoryJwtKeysCallbackHandlerService {
   private readonly authStateService = inject(AuthStateService);
   private readonly flowsDataService = inject(FlowsDataService);
   private readonly signInKeyDataService = inject(SigninKeyDataService);
+  private readonly signInKeyStoredService = inject(SigninKeyStoredService);
   private readonly storagePersistenceService = inject(
     StoragePersistenceService
   );
@@ -87,44 +87,41 @@ export class HistoryJwtKeysCallbackHandlerService {
       AuthCallback created, begin token validation`
     );
 
-    return this.signInKeyDataService.getSigningKeys(config).pipe(
-      tap((jwtKeys: JwtKeys) => this.storeSigningKeys(jwtKeys, config)),
-      catchError((err) => {
-        // fallback: try to load jwtKeys from storage
-        const storedJwtKeys = this.readSigningKeys(config);
+    return this.signInKeyStoredService
+      .getSigningKeys(
+        callbackContext.authResult?.id_token
+        || callbackContext.authResult?.access_token,
+        config
+      )
+      .pipe(
+        catchError(() =>
+          this.signInKeyDataService.getSigningKeys(config).pipe(
+            tap((jwtKeys: JwtKeys) =>
+              this.signInKeyStoredService.storeSigningKeys(jwtKeys, config)
+            )
+          )
+        ),
+        switchMap((jwtKeys) => {
+          if (jwtKeys) {
+            callbackContext.jwtKeys = jwtKeys;
+            
+            return of(callbackContext);
+          }
 
-        if (!!storedJwtKeys) {
-          this.loggerService.logWarning(
-            config,
-            `Failed to retrieve signing keys, fallback to stored keys`
-          );
+          const errorMessage = `Failed to retrieve signing key`;
 
-          return of(storedJwtKeys);
-        }
+          this.loggerService.logWarning(config, errorMessage);
 
-        return throwError(() => new Error(err));
-      }),
-      switchMap((jwtKeys) => {
-        if (jwtKeys) {
-          callbackContext.jwtKeys = jwtKeys;
+          return throwError(() => new Error(errorMessage));
+        }),
+        catchError((err) => {
+          const errorMessage = `Failed to retrieve signing key with error: ${err}`;
 
-          return of(callbackContext);
-        }
+          this.loggerService.logWarning(config, errorMessage);
 
-        const errorMessage = `Failed to retrieve signing key`;
-
-        this.loggerService.logWarning(config, errorMessage);
-
-        return throwError(() => new Error(errorMessage));
-      }),
-      catchError((err) => {
-        const errorMessage = `Failed to retrieve signing key with error: ${err}`;
-
-        this.loggerService.logWarning(config, errorMessage);
-
-        return throwError(() => new Error(errorMessage));
-      })
-    );
+          return throwError(() => new Error(errorMessage));
+        })
+      );
   }
 
   private responseHasIdToken(callbackContext: CallbackContext): boolean {
@@ -170,14 +167,4 @@ export class HistoryJwtKeysCallbackHandlerService {
     );
   }
 
-  private storeSigningKeys(
-    jwtKeys: JwtKeys,
-    config: OpenIdConfiguration
-  ): void {
-    this.storagePersistenceService.write(JWT_KEYS, jwtKeys, config);
-  }
-
-  private readSigningKeys(config: OpenIdConfiguration): any {
-    return this.storagePersistenceService.read(JWT_KEYS, config);
-  }
 }
