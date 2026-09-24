@@ -17,7 +17,34 @@ You can use the schematics and `ng add` the library.
 ng add angular-auth-oidc-client
 ```
 
-Step through the wizard and select the appropriate configuration options for your environment. Once the wizard is complete, a module will be created to encapsulate your OIDC configuration. Many of the configured values are placeholders and will need to be adjusted for your individual use case. Once you've confirmed your configuration, the library is ready to use.
+Step through the wizard and select the appropriate configuration options for your environment. Many of the configured values are placeholders and will need to be adjusted for your individual use case. Once you've confirmed your configuration, the library is ready to use.
+
+#### Standalone or NgModule setup
+
+By default, the schematic detects how your application is bootstrapped:
+
+| Application | Created file | Registered in |
+| --- | --- | --- |
+| Standalone (`bootstrapApplication`) | `src/app/auth/auth.config.ts` | `provideAuth(authConfig)` in the providers of `app.config.ts` |
+| NgModule (`bootstrapModule`) | `src/app/auth/auth-config.module.ts` | `AuthConfigModule` in the imports of the `AppModule` |
+
+If you choose the flow that loads the configuration over HTTP, the files are named `auth-http.config.ts` and `auth-http-config.module.ts` instead.
+
+To choose the setup explicitly, pass one of these options:
+
+```bash
+# Standalone setup with provideAuth()
+ng add angular-auth-oidc-client --standalone
+
+# NgModule setup with an AuthConfigModule
+ng add angular-auth-oidc-client --legacy-modules
+```
+
+- `--standalone` also works in NgModule applications. `provideAuth(authConfig)` is then added to the `providers` of the `AppModule` and no `AuthConfigModule` is created.
+- `--legacy-modules` requires an `AppModule` (`app.module.ts` or `app-module.ts`). In a standalone application the schematic stops with an error.
+- The two options cannot be combined.
+
+In NgModule applications the schematic also imports the `AppModule` into the `TestBed` of the root component spec (`app.spec.ts`), so the test compiles the component with its module and gets the auth configuration. Components declared by the `AppModule` are removed from the `TestBed` `declarations`, because a component can only be declared in one NgModule. If the spec has a different shape, it is left unchanged.
 
 ### Npm / Yarn / pnpm
 
