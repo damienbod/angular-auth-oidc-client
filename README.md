@@ -45,7 +45,19 @@ You can use the schematics and `ng add` the library.
 ng add angular-auth-oidc-client
 ```
 
-And answer the questions. A module will be created which encapsulates your configuration.
+And answer the questions. The schematic detects how your application is bootstrapped and configures the library accordingly:
+
+- Standalone applications (`bootstrapApplication`): an `auth.config.ts` is created and `provideAuth(authConfig)` is added to the providers of your application config.
+- NgModule applications: an `AuthConfigModule` is created and imported in your `AppModule`.
+
+You can choose the setup explicitly with `--standalone` or `--legacy-modules`:
+
+```shell
+ng add angular-auth-oidc-client --standalone
+ng add angular-auth-oidc-client --legacy-modules
+```
+
+`--standalone` also works in NgModule applications, `provideAuth(authConfig)` is then added to the providers of the `AppModule`. `--legacy-modules` requires an `AppModule`. The two options cannot be combined.
 
 ![angular-auth-oidc-client schematics](https://raw.githubusercontent.com/damienbod/angular-auth-oidc-client/main/.github/angular-auth-oidc-client-schematics-720.gif)
 
@@ -188,7 +200,7 @@ AuthModule.forRoot({
 
 Current Version is Version 22.x
 
-- [Info about Version 20](https://github.com/damienbod/angular-auth-oidc-client/tree/version-21)
+- [Info about Version 21](https://github.com/damienbod/angular-auth-oidc-client/tree/version-21)
 - [Info about Version 20](https://github.com/damienbod/angular-auth-oidc-client/tree/version-20)
 - [Info about Version 19](https://github.com/damienbod/angular-auth-oidc-client/tree/version-19)
 - [Info about Version 18](https://github.com/damienbod/angular-auth-oidc-client/tree/version-18)

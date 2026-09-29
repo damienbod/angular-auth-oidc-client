@@ -1,6 +1,12 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2026-09-21 22.0.1
+
+- feat(silent-renew): surface the error and the error_description of a failed iframe silent renew
+- [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/2294)
+
 ### 2026-08-15 22.0.0
+
 - Update Angular 22
 
 ### 2026-08-09 21.0.3
@@ -363,71 +369,54 @@ See the [migration guide](https://angular-auth-oidc-client.com/docs/migrations/v
 ### 2021-07-04 Version 12.0.0
 
 - Configuration via forRoot(...) method
-
   - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/747) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1041)
 
 - Remove the "AuthorizedState" enum in Version 12
-
   - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/755) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1062)
 
 - Use a different key than redirect to store redirect route when using autologin
-
   - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/1060) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1067)
 
 - Returnvalue of loginwithpopup and login should be the same
-
   - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/1048) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1066)
 
 - How to provide client id during logoff
-
   - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/932) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1069)
 
 - urlHandler callback function parameter in LogoffRevocationService.logoff does nothing
-
   - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/966) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1069)
 
 - Convert all instances of "Authorized" to "Authenticated"
-
   - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/1088) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1085)
 
 - Support for multiple APIs with unique scopes
-
   - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/885) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1085)
 
 - Multiple access tokens for the same client_id but different scopes
-
   - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/620) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1085)
 
 - Is there a silent renew event？
-
   - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/1011) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1085)
 
 - Angular 12 Support
-
   - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/1096) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1112)
 
 - Add configuration to disable or enable id_token expired check
-
   - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/1113) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1126)
 
 - Support for Azure B2C multiple policies
-
   - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/802) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1085)
 
 - Improve AutoLoginSample
-
   - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/1138) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1144)
 
 - Accessing AuthResult response object
-
   - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/536) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1142)
 
 - Rename `stsServer` configuration parameter to `authority`
-
   - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/1161) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1166)
 
 - Only one returntype (object) when subscribing to isAuthenticated and user data to avoid confusion.
-
   - [Issue](https://github.com/damienbod/angular-auth-oidc-client/issues/1164) | [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/1165)
 
 ### 2021-06-12 Version 11.6.11

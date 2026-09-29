@@ -2,6 +2,7 @@ import { Tree, noop } from '@angular-devkit/schematics';
 import { Schema } from '../schema';
 import { addPackageJsonDependencies } from './add-dependencies';
 import { addModuleToImports } from './add-module-import';
+import { addAppModuleToAppSpec } from './add-module-to-app-spec';
 import { addStandaloneConfigsToProviders } from './add-standalone-import';
 import { addSilentRenewHtmlToAssetsArrayInAngularJson } from './adding-entry-to-assets';
 import { copyModuleFile } from './copy-module-file';
@@ -24,6 +25,9 @@ export async function getAllActions(host: Tree, options: Schema) {
     
     ngAddOptions.standaloneInfo ? copyStandaloneFile(ngAddOptions) : noop(),
     ngAddOptions.standaloneInfo ? addStandaloneConfigsToProviders(ngAddOptions) : noop(),
+
+    // Runs for NgModule based apps with either setup, no-op for standalone apps.
+    addAppModuleToAppSpec(),
     
     addSilentRenewHtmlToAssetsArrayInAngularJson(ngAddOptions),
     copySilentRenewHtmlToRoot(ngAddOptions),

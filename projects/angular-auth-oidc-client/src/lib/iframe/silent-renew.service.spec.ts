@@ -13,7 +13,10 @@ import { LoggerService } from '../logging/logger.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { ValidationResult } from '../validation/validation-result';
 import { IFrameService } from './existing-iframe.service';
-import { SilentRenewService } from './silent-renew.service';
+import {
+  SilentRenewCallbackError,
+  SilentRenewService,
+} from './silent-renew.service';
 
 describe('SilentRenewService  ', () => {
   beforeEach(() => {
@@ -218,6 +221,28 @@ describe('SilentRenewService  ', () => {
         expect(stopPeriodicTokenCheckSpy).toHaveBeenCalledTimes(1);
       }
     });
+
+    it('keeps the error_description of the url on the thrown error', async () => {
+      const config = { configId: 'configId1' };
+      const allConfigs = [config];
+      const url = 'url-part-1';
+      const urlParts = 'error=some_error&error_description=some_description';
+
+      try {
+        await firstValueFrom(
+          silentRenewService.codeFlowCallbackSilentRenewIframe(
+            [url, urlParts],
+            config,
+            allConfigs
+          )
+        );
+        expect.fail('expected an error');
+      } catch (error: any) {
+        expect(error).toBeInstanceOf(SilentRenewCallbackError);
+        expect(error.message).toBe('some_error');
+        expect(error.errorDescription).toBe('some_description');
+      }
+    });
   });
 
   describe('silentRenewEventHandler', () => {
@@ -367,7 +392,7 @@ describe('SilentRenewService  ', () => {
       expect(logErrorSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('calls next on refreshSessionWithIFrameCompleted with null in case of error', async () => {
+    it('should call next on refreshSessionWithIFrameCompleted with success false and the error message in case of an error', async () => {
       vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
       vi.spyOn(
         silentRenewService,
@@ -375,11 +400,10 @@ describe('SilentRenewService  ', () => {
       ).mockReturnValue(throwError(() => new Error('ERROR')));
       const eventData = { detail: 'detail?detail2' } as CustomEvent;
       const allConfigs = [{ configId: 'configId1' }];
+      let result: unknown;
 
       silentRenewService.refreshSessionWithIFrameCompleted$.subscribe(
-        (result) => {
-          expect(result).toEqual({ success: false, configId: 'configId1' });
-        }
+        (completed) => (result = completed)
       );
 
       silentRenewService.silentRenewEventHandler(
@@ -388,6 +412,95 @@ describe('SilentRenewService  ', () => {
         allConfigs
       );
       await vi.advanceTimersByTimeAsync(1000);
+
+      expect(result).toEqual({
+        success: false,
+        configId: 'configId1',
+        errorMessage: 'ERROR',
+      });
+    });
+
+    it('should emit the error of the silent renew callback url on refreshSessionWithIFrameCompleted', async () => {
+      vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
+      const eventData = {
+        detail:
+          'https://localhost/silent-renew?error=login_required&state=state',
+      } as CustomEvent;
+      const allConfigs = [{ configId: 'configId1' }];
+      let result: unknown;
+
+      silentRenewService.refreshSessionWithIFrameCompleted$.subscribe(
+        (completed) => (result = completed)
+      );
+
+      silentRenewService.silentRenewEventHandler(
+        eventData,
+        allConfigs[0],
+        allConfigs
+      );
+      await vi.advanceTimersByTimeAsync(1000);
+
+      expect(result).toEqual({
+        success: false,
+        configId: 'configId1',
+        errorMessage: 'login_required',
+      });
+    });
+
+    it('should emit the error description of the silent renew callback url on refreshSessionWithIFrameCompleted', async () => {
+      vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
+      const eventData = {
+        detail:
+          'https://localhost/silent-renew?error=login_required&error_description=session_expired&state=state',
+      } as CustomEvent;
+      const allConfigs = [{ configId: 'configId1' }];
+      let result: unknown;
+
+      silentRenewService.refreshSessionWithIFrameCompleted$.subscribe(
+        (completed) => (result = completed)
+      );
+
+      silentRenewService.silentRenewEventHandler(
+        eventData,
+        allConfigs[0],
+        allConfigs
+      );
+      await vi.advanceTimersByTimeAsync(1000);
+
+      expect(result).toEqual({
+        success: false,
+        configId: 'configId1',
+        errorMessage: 'login_required',
+        errorDescription: 'session_expired',
+      });
+    });
+
+    it('should emit a non error rejection as error message on refreshSessionWithIFrameCompleted', async () => {
+      vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(false);
+      vi.spyOn(
+        implicitFlowCallbackService,
+        'authenticatedImplicitFlowCallback'
+      ).mockReturnValue(throwError(() => 'some error'));
+      const eventData = { detail: 'detail' } as CustomEvent;
+      const allConfigs = [{ configId: 'configId1' }];
+      let result: unknown;
+
+      silentRenewService.refreshSessionWithIFrameCompleted$.subscribe(
+        (completed) => (result = completed)
+      );
+
+      silentRenewService.silentRenewEventHandler(
+        eventData,
+        allConfigs[0],
+        allConfigs
+      );
+      await vi.advanceTimersByTimeAsync(1000);
+
+      expect(result).toEqual({
+        success: false,
+        configId: 'configId1',
+        errorMessage: 'some error',
+      });
     });
   });
 });

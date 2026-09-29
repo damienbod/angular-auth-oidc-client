@@ -5,7 +5,7 @@ import { NgAddOptions } from '../models/ng-add-options';
 const dependenciesToAdd: any[] = [
   {
     name: 'angular-auth-oidc-client',
-    version: '22.0.0',
+    version: '22.0.1',
   },
 ];
 

@@ -24,6 +24,14 @@
       "type": "string",
       "x-prompt": "Please enter your authority URL or Azure tenant id or Http config URL"
     },
+    "standalone": {
+      "description": "Configure the library with 'provideAuth()' in the root providers of the application. Used by default when the application is bootstrapped with 'bootstrapApplication'. Cannot be combined with 'legacyModules'.",
+      "type": "boolean"
+    },
+    "legacyModules": {
+      "description": "Configure the library in an NgModule which is imported in the 'AppModule'. Used by default when the application is bootstrapped with an NgModule. Requires an 'AppModule'. Cannot be combined with 'standalone'.",
+      "type": "boolean"
+    },
     "useLocalPackage": {
       "description": "Used for local testing. When 'true' the local package path is not overwritten with the npm one when installing.",
       "type": "boolean"

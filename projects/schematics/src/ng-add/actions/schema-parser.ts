@@ -1,5 +1,6 @@
-import { Tree } from '@angular-devkit/schematics';
-import { isStandaloneSchematic } from '../../utils/angular-utils';
+import { SchematicsException, Tree } from '@angular-devkit/schematics';
+import { getProject, isStandaloneSchematic } from '../../utils/angular-utils';
+import { findAppModulePath } from './add-module-import';
 import { ModuleInfo, NgAddOptions, StandaloneInfo } from '../models/ng-add-options';
 import { FlowType, Schema } from '../schema';
 
@@ -55,9 +56,37 @@ function getStandaloneInfo(flowType: FlowType):StandaloneInfo {
   return AUTH_CONFIG_STANDALONE;
 }
 
+async function useStandaloneSetup(host: Tree, options: Schema): Promise<boolean> {
+  const { standalone, legacyModules } = options;
+
+  if (standalone && legacyModules) {
+    throw new SchematicsException(`The options '--standalone' and '--legacy-modules' cannot be used together.`);
+  }
+
+  if (legacyModules) {
+    const [, project] = getProject(host);
+
+    if (!findAppModulePath(host, project.sourceRoot)) {
+      throw new SchematicsException(
+        `The option '--legacy-modules' requires an NgModule based application, but no 'app.module.ts' or 'app-module.ts' was found. ` +
+          `Use '--standalone' instead.`
+      );
+    }
+
+    return false;
+  }
+
+  if (standalone) {
+    return true;
+  }
+
+  // Neither option given: detect the setup from how the application is bootstrapped.
+  return isStandaloneSchematic(host, options);
+}
+
 export async function parseSchema(host: Tree, options: Schema): Promise<NgAddOptions> {
   const { flowType } = options;
-  const isStandalone = await isStandaloneSchematic(host, options);
+  const isStandalone = await useStandaloneSetup(host, options);
 
   return {
     ...options,
