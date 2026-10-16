@@ -525,6 +525,64 @@ describe('RefreshSessionService ', () => {
       });
     });
 
+    it('refreshes through the refresh token lock instead of waiting for a silent renew that may run in another tab', async () => {
+      const allConfigs = [
+        {
+          configId: 'configId1',
+          silentRenewTimeoutInSeconds: 10,
+        },
+      ];
+
+      vi.spyOn(
+        flowHelper,
+        'isCurrentFlowCodeFlowWithRefreshTokens'
+      ).mockReturnValue(true);
+      vi.spyOn(
+        refreshSessionRefreshTokenService,
+        'usesRefreshTokenLock'
+      ).mockReturnValue(true);
+      vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(true);
+      vi.spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      ).mockReturnValue(of({}));
+      const registerForEventsSpy = vi.spyOn(
+        publicEventsService,
+        'registerForEvents'
+      );
+      const refreshSessionWithRefreshTokensSpy = vi
+        .spyOn(
+          refreshSessionRefreshTokenService,
+          'refreshSessionWithRefreshTokens'
+        )
+        .mockReturnValue(
+          of({
+            authResult: {
+              id_token: 'refreshed-id-token',
+              access_token: 'refreshed-access-token',
+            },
+          } as CallbackContext)
+        );
+
+      vi.spyOn(authStateService, 'areAuthStorageTokensValid').mockReturnValue(
+        true
+      );
+
+      const result = await firstValueFrom(
+        refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs)
+      );
+
+      expect(registerForEventsSpy).not.toHaveBeenCalled();
+      expect(refreshSessionWithRefreshTokensSpy).toHaveBeenCalledTimes(1);
+      expect(result).toEqual({
+        idToken: 'refreshed-id-token',
+        accessToken: 'refreshed-access-token',
+        userData: undefined,
+        isAuthenticated: true,
+        configId: 'configId1',
+      });
+    });
+
     it('propagates a failure from the running periodic silent renew', async () => {
       const allConfigs = [
         {

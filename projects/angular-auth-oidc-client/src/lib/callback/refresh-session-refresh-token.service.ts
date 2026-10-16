@@ -28,11 +28,10 @@ export class RefreshSessionRefreshTokenService {
   ): Observable<CallbackContext> {
     this.loggerService.logDebug(config, 'BEGIN refresh session Authorize');
     let refreshTokenFailedPermanently = false;
-    const locks = this.document.defaultView?.navigator?.locks;
-    const refresh$ =
-      config.useRefreshTokenLock && locks
-        ? this.refreshWithLock(locks, config, allConfigs, customParamsRefresh)
-        : this.processRefreshToken(config, allConfigs, customParamsRefresh);
+    const locks = this.getRefreshTokenLocks(config);
+    const refresh$ = locks
+      ? this.refreshWithLock(locks, config, allConfigs, customParamsRefresh)
+      : this.processRefreshToken(config, allConfigs, customParamsRefresh);
 
     return refresh$.pipe(
       catchError((error) => {
@@ -51,6 +50,22 @@ export class RefreshSessionRefreshTokenService {
           this.intervalService.stopPeriodicTokenCheck()
       )
     );
+  }
+
+  /**
+   * Whether refreshes of this config are serialised across tabs with the Web
+   * Locks API, see `useRefreshTokenLock`.
+   */
+  usesRefreshTokenLock(config: OpenIdConfiguration): boolean {
+    return !!this.getRefreshTokenLocks(config);
+  }
+
+  private getRefreshTokenLocks(
+    config: OpenIdConfiguration
+  ): LockManager | null {
+    const locks = this.document.defaultView?.navigator?.locks;
+
+    return config.useRefreshTokenLock && locks ? locks : null;
   }
 
   private refreshWithLock(
