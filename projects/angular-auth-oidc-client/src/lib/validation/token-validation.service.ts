@@ -8,7 +8,12 @@ import { LoggerService } from '../logging/logger.service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
 import { JwkWindowCryptoService } from './jwk-window-crypto.service';
 import { JwtWindowCryptoService } from './jwt-window-crypto.service';
-import { alg2kty, getImportAlg, getVerifyAlg } from './token-validation.helper';
+import {
+  alg2kty,
+  getImportAlg,
+  getVerifyAlg,
+  isEd25519Alg,
+} from './token-validation.helper';
 
 // http://openid.net/specs/openid-connect-implicit-1_0.html
 
@@ -71,6 +76,7 @@ export class TokenValidationService {
     'PS384',
     'PS512',
     'EdDSA',
+    'Ed25519',
   ];
 
   private readonly tokenHelperService = inject(TokenHelperService);
@@ -568,7 +574,7 @@ export class TokenValidationService {
 
     if (idTokenAlg.includes('384')) {
       sha = 'SHA-384';
-    } else if (idTokenAlg.includes('512') || idTokenAlg === 'EdDSA') {
+    } else if (idTokenAlg.includes('512') || isEd25519Alg(idTokenAlg)) {
       sha = 'SHA-512';
     }
 

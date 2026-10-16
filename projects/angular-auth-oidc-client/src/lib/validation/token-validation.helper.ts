@@ -1,10 +1,6 @@
 export function getVerifyAlg(
   alg: string
 ): RsaHashedImportParams | EcdsaParams | Algorithm | null {
-  if (alg === 'EdDSA') {
-    return { name: 'Ed25519' };
-  }
-
   switch (alg.charAt(0)) {
     case 'R':
       return {
@@ -12,6 +8,9 @@ export function getVerifyAlg(
         hash: 'SHA-256',
       };
     case 'E':
+      if (isEd25519Alg(alg)) {
+        return { name: 'Ed25519' };
+      }
       if (alg.includes('256')) {
         return {
           name: 'ECDSA',
@@ -31,16 +30,16 @@ export function getVerifyAlg(
 }
 
 export function alg2kty(alg: string): string {
-  if (alg === 'EdDSA') {
-    return 'OKP';
-  }
-
   switch (alg.charAt(0)) {
     case 'R':
       return 'RSA';
 
     case 'E':
-      return 'EC';
+      if (isEd25519Alg(alg)) {
+        return 'OKP';
+      } else {
+        return 'EC';
+      }
 
     default:
       throw new Error('Cannot infer kty from alg: ' + alg);
@@ -50,10 +49,6 @@ export function alg2kty(alg: string): string {
 export function getImportAlg(
   alg: string
 ): RsaHashedImportParams | EcKeyImportParams | Algorithm | null {
-  if (alg === 'EdDSA') {
-    return { name: 'Ed25519' };
-  }
-
   switch (alg.charAt(0)) {
     case 'R':
       if (alg.includes('256')) {
@@ -75,6 +70,9 @@ export function getImportAlg(
         return null;
       }
     case 'E':
+      if (isEd25519Alg(alg)) {
+        return { name: 'Ed25519' };
+      }
       if (alg.includes('256')) {
         return {
           name: 'ECDSA',
@@ -91,4 +89,9 @@ export function getImportAlg(
     default:
       return null;
   }
+}
+
+// 'EdDSA' (RFC 8037) and the fully-specified 'Ed25519' (RFC 9864)
+export function isEd25519Alg(alg: string): boolean {
+  return alg === 'EdDSA' || alg === 'Ed25519';
 }

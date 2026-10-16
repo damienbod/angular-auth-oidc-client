@@ -851,17 +851,23 @@ describe('TokenValidationService', () => {
           )
         );
 
-      it('returns true if atHash is the SHA-512 hash', async () => {
-        const result = await validate(sha512AtHash, 'EdDSA');
+      it.each(['EdDSA', 'Ed25519'])(
+        'returns true if atHash is the SHA-512 hash',
+        async (alg) => {
+          const result = await validate(sha512AtHash, alg);
 
-        expect(result).toEqual(true);
-      });
+          expect(result).toEqual(true);
+        }
+      );
 
-      it('returns false if atHash is the SHA-256 hash', async () => {
-        const result = await validate(sha256AtHash, 'EdDSA');
+      it.each(['EdDSA', 'Ed25519'])(
+        'returns false if atHash is the SHA-256 hash',
+        async (alg) => {
+          const result = await validate(sha256AtHash, alg);
 
-        expect(result).toEqual(false);
-      });
+          expect(result).toEqual(false);
+        }
+      );
 
       it.each(['RS256', 'ES256', 'PS256'])(
         'keeps using SHA-256 for %s',

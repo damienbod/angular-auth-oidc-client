@@ -46,9 +46,12 @@ describe('getVerifyAlg', () => {
     });
   });
 
-  it('returns Ed25519 if algorithm is EdDSA', () => {
-    expect(getVerifyAlg('EdDSA')).toEqual({ name: 'Ed25519' });
-  });
+  it.each(['EdDSA', 'Ed25519'])(
+    'returns Ed25519 if algorithm is %s',
+    async (alg) => {
+      expect(getVerifyAlg(alg)).toEqual({ name: 'Ed25519' });
+    }
+  );
 
   it('keeps the ECDSA mapping for ES256', () => {
     expect(getVerifyAlg('ES256')).toEqual({ name: 'ECDSA', hash: 'SHA-256' });
