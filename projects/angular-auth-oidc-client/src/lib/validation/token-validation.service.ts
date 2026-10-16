@@ -1,6 +1,6 @@
 ﻿import { inject, Injectable } from '@angular/core';
 import { base64url } from 'rfc4648';
-import { from, Observable, of } from 'rxjs';
+import { from, Observable, of, throwError } from 'rxjs';
 import { catchError, map, mergeMap, tap } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { JwkExtractor } from '../extractors/jwk.extractor';
@@ -466,17 +466,18 @@ export class TokenValidationService {
     }
 
     const kty = alg2kty(alg);
+    const crv = isEd25519Alg(alg) ? 'Ed25519' : undefined;
     const use = 'sig';
 
     try {
       foundKeys = kid
-        ? this.jwkExtractor.extractJwk(keys, { kid, kty, use }, false)
-        : this.jwkExtractor.extractJwk(keys, { kty, use }, false);
+        ? this.jwkExtractor.extractJwk(keys, { kid, kty, crv, use }, false)
+        : this.jwkExtractor.extractJwk(keys, { kty, crv, use }, false);
 
       if (foundKeys.length === 0) {
         foundKeys = kid
-          ? this.jwkExtractor.extractJwk(keys, { kid, kty })
-          : this.jwkExtractor.extractJwk(keys, { kty });
+          ? this.jwkExtractor.extractJwk(keys, { kid, kty, crv })
+          : this.jwkExtractor.extractJwk(keys, { kty, crv });
       }
 
       key = foundKeys[0];
@@ -525,7 +526,11 @@ export class TokenValidationService {
         }
       }),
       catchError((error: unknown) => {
-        // e.g. the browser does not support the algorithm (Ed25519) in WebCrypto
+        if (!isEd25519Alg(alg)) {
+          return throwError(() => error);
+        }
+
+        // e.g. the browser does not support Ed25519 in WebCrypto
         this.loggerService.logWarning(
           configuration,
           `could not verify id_token signature with alg ${alg}`,

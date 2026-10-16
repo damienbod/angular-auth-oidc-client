@@ -33,7 +33,7 @@ This library is <a href="http://openid.net/certification/#RPs">certified</a> by 
 - Modern coding guidelines with prettier, husky
 - Up to date documentation
 - Implements OIDC validation as specified, complete client side validation for REQUIRED features
-- Validates id_token signatures using WebCrypto with RS256, RS384, RS512, ES256, ES384 and EdDSA (Ed25519)
+- Validates id_token signatures using WebCrypto with RS256, RS384, RS512, ES256, ES384 and EdDSA / Ed25519 (RFC 9864)
 - Supports authentication using redirect or popup
 
 ## Installation

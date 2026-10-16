@@ -46,12 +46,9 @@ describe('getVerifyAlg', () => {
     });
   });
 
-  it.each(['EdDSA', 'Ed25519'])(
-    'returns Ed25519 if algorithm is %s',
-    async (alg) => {
-      expect(getVerifyAlg(alg)).toEqual({ name: 'Ed25519' });
-    }
-  );
+  it.each(['EdDSA', 'Ed25519'])('returns Ed25519 if algorithm is %s', (alg) => {
+    expect(getVerifyAlg(alg)).toEqual({ name: 'Ed25519' });
+  });
 
   it('keeps the ECDSA mapping for ES256', () => {
     expect(getVerifyAlg('ES256')).toEqual({ name: 'ECDSA', hash: 'SHA-256' });
@@ -73,8 +70,8 @@ describe('alg2kty', () => {
     expect(result).toEqual('EC');
   });
 
-  it('returns OKP if algorithm is EdDSA', () => {
-    expect(alg2kty('EdDSA')).toEqual('OKP');
+  it.each(['EdDSA', 'Ed25519'])('returns OKP if algorithm is %s', (alg) => {
+    expect(alg2kty(alg)).toEqual('OKP');
   });
 
   it('keeps EC for ES256 and ES384', () => {
@@ -163,8 +160,8 @@ describe('getImportAlg', () => {
     });
   });
 
-  it('returns Ed25519 if algorithm is EdDSA', () => {
-    expect(getImportAlg('EdDSA')).toEqual({ name: 'Ed25519' });
+  it.each(['EdDSA', 'Ed25519'])('returns Ed25519 if algorithm is %s', (alg) => {
+    expect(getImportAlg(alg)).toEqual({ name: 'Ed25519' });
   });
 
   it('keeps the ECDSA mapping for ES256', () => {

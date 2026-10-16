@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 export class JwkExtractor {
   extractJwk(
     keys: JsonWebKey[],
-    spec?: { kid?: string; use?: string; kty?: string },
+    spec?: { kid?: string; use?: string; kty?: string; crv?: string },
     throwOnEmpty = true
   ): JsonWebKey[] {
     if (0 === keys.length) {
@@ -14,7 +14,8 @@ export class JwkExtractor {
     const foundKeys = keys
       .filter((k) => (spec?.kid ? (k as any)['kid'] === spec.kid : true))
       .filter((k) => (spec?.use ? k['use'] === spec.use : true))
-      .filter((k) => (spec?.kty ? k['kty'] === spec.kty : true));
+      .filter((k) => (spec?.kty ? k['kty'] === spec.kty : true))
+      .filter((k) => (spec?.crv ? k['crv'] === spec.crv : true));
 
     if (foundKeys.length === 0 && throwOnEmpty) {
       throw JwkExtractorNoMatchingKeysError;

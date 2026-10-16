@@ -701,6 +701,29 @@ describe('TokenValidationService', () => {
         expect(result).toEqual(true);
       });
 
+      it('returns true for a valid signature with the RFC 9864 alg Ed25519', async () => {
+        const header = { alg: 'Ed25519', typ: 'JWT', kid };
+        const idToken = await signIdToken(header);
+
+        mockTokenParts(idToken, header);
+
+        const result = await validate(idToken, [publicJwk]);
+
+        expect(result).toEqual(true);
+      });
+
+      it('skips OKP keys of other curves when there is no kid', async () => {
+        const header = { alg: 'EdDSA', typ: 'JWT' };
+        const idToken = await signIdToken(header);
+        const x25519Key = { ...publicJwk, kid: 'x25519-key', crv: 'X25519' };
+
+        mockTokenParts(idToken, header);
+
+        const result = await validate(idToken, [x25519Key, publicJwk]);
+
+        expect(result).toEqual(true);
+      });
+
       it('returns true for a valid signature without kid', async () => {
         const header = { alg: 'EdDSA', typ: 'JWT' };
         const idToken = await signIdToken(header);
@@ -748,6 +771,20 @@ describe('TokenValidationService', () => {
           'could not verify id_token signature with alg EdDSA',
           expect.anything()
         );
+      });
+
+      it('still errors for other algorithms if the key import fails', async () => {
+        vi.spyOn(tokenHelperService, 'getHeaderFromToken').mockReturnValue({
+          alg: 'RS256',
+        });
+        vi.spyOn(
+          jwkWindowCryptoService,
+          'importVerificationKey'
+        ).mockRejectedValue(new Error('import failed'));
+
+        await expect(
+          validate('header.payload.signature', [rsaKey])
+        ).rejects.toThrow('import failed');
       });
     });
   });
@@ -852,7 +889,7 @@ describe('TokenValidationService', () => {
         );
 
       it.each(['EdDSA', 'Ed25519'])(
-        'returns true if atHash is the SHA-512 hash',
+        'returns true for %s if atHash is the SHA-512 hash',
         async (alg) => {
           const result = await validate(sha512AtHash, alg);
 
@@ -861,7 +898,7 @@ describe('TokenValidationService', () => {
       );
 
       it.each(['EdDSA', 'Ed25519'])(
-        'returns false if atHash is the SHA-256 hash',
+        'returns false for %s if atHash is the SHA-256 hash',
         async (alg) => {
           const result = await validate(sha256AtHash, alg);
 

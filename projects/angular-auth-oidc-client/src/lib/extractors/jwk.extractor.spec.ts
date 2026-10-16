@@ -226,5 +226,16 @@ describe('JwkExtractor', () => {
       expect(extracted3.length).toEqual(1);
       expect(extracted3).toContain(key7);
     });
+
+    it('returns array of keys matching the combination of spec.kty and spec.crv', () => {
+      const x25519Key = { kty: 'OKP', crv: 'X25519', use: 'sig', x: 'a' };
+      const ed25519Key = { kty: 'OKP', crv: 'Ed25519', use: 'sig', x: 'b' };
+      const extracted = service.extractJwk([x25519Key, ed25519Key], {
+        kty: 'OKP',
+        crv: 'Ed25519',
+      });
+
+      expect(extracted).toEqual([ed25519Key]);
+    });
   });
 });

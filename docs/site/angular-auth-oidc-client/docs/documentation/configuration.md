@@ -244,6 +244,10 @@ import { AuthModule } from 'angular-auth-oidc-client';
 export class AuthConfigModule {}
 ```
 
+## Supported id_token signing algorithms
+
+The id_token signature is validated with the keys from the `jwks_uri` using WebCrypto. Supported `alg` values are `RS256`, `RS384`, `RS512`, `ES256`, `ES384`, `EdDSA` and its fully-specified form `Ed25519` (RFC 9864), both for keys with `kty` `OKP` and `crv` `Ed25519`. EdDSA requires a browser that supports Ed25519 in WebCrypto (Chrome/Edge 137+, Firefox 129+, Safari 17+); in other browsers the signature validation fails and a warning is logged.
+
 ## Config Values
 
 ### `configId`
@@ -583,8 +587,6 @@ Default = _false_
 - Required: `false`
 
 Disable validation for id_token. This is not recommended! You should always validate the id_token if returned.
-
-The id_token signature is validated with the keys from the `jwks_uri` using WebCrypto. Supported `alg` values are `RS256`, `RS384`, `RS512`, `ES256`, `ES384` and `EdDSA` (Ed25519, `kty` `OKP`). EdDSA requires a browser that supports Ed25519 in WebCrypto (Chrome/Edge 137+, Firefox 129+, Safari 17+); in other browsers the signature validation fails and a warning is logged.
 
 Default = _false_
 
