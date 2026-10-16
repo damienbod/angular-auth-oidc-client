@@ -526,6 +526,7 @@ describe('RefreshSessionService ', () => {
     });
 
     it('refreshes through the refresh token lock instead of waiting for a silent renew that may run in another tab', async () => {
+      // Arrange
       const allConfigs = [
         {
           configId: 'configId1',
@@ -568,10 +569,12 @@ describe('RefreshSessionService ', () => {
         true
       );
 
+      // Act
       const result = await firstValueFrom(
         refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs)
       );
 
+      // Assert
       expect(registerForEventsSpy).not.toHaveBeenCalled();
       expect(refreshSessionWithRefreshTokensSpy).toHaveBeenCalledTimes(1);
       expect(result).toEqual({

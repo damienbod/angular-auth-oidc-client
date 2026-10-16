@@ -120,6 +120,7 @@ describe('Multi-tab refresh token lock', () => {
   });
 
   it('keeps both tabs authenticated when they force a refresh at the same time', async () => {
+    // Arrange
     const config = createConfig();
     const tab1 = createTab(config);
     const tab2 = createTab(config);
@@ -127,24 +128,22 @@ describe('Multi-tab refresh token lock', () => {
     tabs.push(tab1.injector, tab2.injector);
 
     await login(tab1.oidc);
+    await firstValueFrom(tab2.oidc.checkAuth(window.location.href, configId));
 
-    const tab2CheckAuth = await firstValueFrom(
-      tab2.oidc.checkAuth(window.location.href, configId)
-    );
-
-    expect(tab2CheckAuth.isAuthenticated).toBe(true);
-
+    // Act
     const [result1, result2] = await Promise.all([
       firstValueFrom(tab1.oidc.forceRefreshSession(undefined, configId)),
       firstValueFrom(tab2.oidc.forceRefreshSession(undefined, configId)),
     ]);
 
+    // Assert
     expect(result1.isAuthenticated).toBe(true);
     expect(result2.isAuthenticated).toBe(true);
     expect(result2.accessToken).toBe(result1.accessToken);
   }, 30000);
 
   it('keeps a refresh and a login in another tab valid when they overlap', async () => {
+    // Arrange
     const config = createConfig();
     let tab2LoginUrl: Promise<string> | null = null;
     // a freshly opened tab, whose guard redirects to the login, starts the code
@@ -163,16 +162,21 @@ describe('Multi-tab refresh token lock', () => {
 
     await login(tab1.oidc);
 
+    // Act
     const refreshResult = await firstValueFrom(
       tab1.oidc.forceRefreshSession(undefined, configId)
     );
+    const isTab2LoggedIn =
+      tab2LoginUrl !== null &&
+      (await finishLogin(tab2.oidc, await tab2LoginUrl));
 
+    // Assert
     expect(refreshResult.isAuthenticated).toBe(true);
-    expect(tab2LoginUrl).not.toBeNull();
-    expect(await finishLogin(tab2.oidc, await tab2LoginUrl!)).toBe(true);
+    expect(isTab2LoggedIn).toBe(true);
   }, 30000);
 
   it('keeps both tabs authenticated while the periodic silent renew runs in both', async () => {
+    // Arrange
     // tokens live 300s, so with 298s renew offset every tab wants to refresh
     // ~2s after each renewal
     const config = createConfig({
@@ -200,14 +204,18 @@ describe('Multi-tab refresh token lock', () => {
     await login(tab1.oidc);
     await firstValueFrom(tab2.oidc.checkAuth(window.location.href, configId));
 
+    // Act
     await new Promise((resolve) => setTimeout(resolve, 10000));
+    const isTab1Authenticated = await firstValueFrom(
+      tab1.oidc.isAuthenticated(configId)
+    );
+    const isTab2Authenticated = await firstValueFrom(
+      tab2.oidc.isAuthenticated(configId)
+    );
 
+    // Assert
     expect(failures).toEqual([]);
-    expect(await firstValueFrom(tab1.oidc.isAuthenticated(configId))).toBe(
-      true
-    );
-    expect(await firstValueFrom(tab2.oidc.isAuthenticated(configId))).toBe(
-      true
-    );
+    expect(isTab1Authenticated).toBe(true);
+    expect(isTab2Authenticated).toBe(true);
   }, 30000);
 });

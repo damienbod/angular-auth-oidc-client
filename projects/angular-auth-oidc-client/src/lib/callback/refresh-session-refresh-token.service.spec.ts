@@ -448,46 +448,56 @@ describe('RefreshSessionRefreshTokenService', () => {
       });
     });
   });
+
   describe('usesRefreshTokenLock', () => {
     it('returns true when useRefreshTokenLock is enabled and the Web Locks API is available', () => {
+      // Arrange
       Object.defineProperty(navigator, 'locks', {
         value: { request: vi.fn() },
         configurable: true,
       });
 
-      expect(
-        refreshSessionRefreshTokenService.usesRefreshTokenLock({
-          configId: 'configId1',
-          useRefreshTokenLock: true,
-        })
-      ).toBe(true);
+      // Act
+      const result = refreshSessionRefreshTokenService.usesRefreshTokenLock({
+        configId: 'configId1',
+        useRefreshTokenLock: true,
+      });
+
+      // Assert
+      expect(result).toBe(true);
     });
 
     it('returns false when useRefreshTokenLock is disabled', () => {
+      // Arrange
       Object.defineProperty(navigator, 'locks', {
         value: { request: vi.fn() },
         configurable: true,
       });
 
-      expect(
-        refreshSessionRefreshTokenService.usesRefreshTokenLock({
-          configId: 'configId1',
-        })
-      ).toBe(false);
+      // Act
+      const result = refreshSessionRefreshTokenService.usesRefreshTokenLock({
+        configId: 'configId1',
+      });
+
+      // Assert
+      expect(result).toBe(false);
     });
 
     it('returns false when the Web Locks API is unavailable', () => {
+      // Arrange
       Object.defineProperty(navigator, 'locks', {
         value: undefined,
         configurable: true,
       });
 
-      expect(
-        refreshSessionRefreshTokenService.usesRefreshTokenLock({
-          configId: 'configId1',
-          useRefreshTokenLock: true,
-        })
-      ).toBe(false);
+      // Act
+      const result = refreshSessionRefreshTokenService.usesRefreshTokenLock({
+        configId: 'configId1',
+        useRefreshTokenLock: true,
+      });
+
+      // Assert
+      expect(result).toBe(false);
     });
   });
 });

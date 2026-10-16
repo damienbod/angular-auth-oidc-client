@@ -2303,6 +2303,7 @@ describe('State Validation Service', () => {
     }
 
     it('does not compare the state with the stored one', async () => {
+      // Arrange
       const validateStateSpy = vi.spyOn(
         tokenValidationService,
         'validateStateFromHashCallback'
@@ -2312,6 +2313,7 @@ describe('State Validation Service', () => {
         true
       );
 
+      // Act
       const result = await firstValueFrom(
         stateValidationService.getValidatedStateResult(
           createRefreshCallbackContext(),
@@ -2319,16 +2321,19 @@ describe('State Validation Service', () => {
         )
       );
 
+      // Assert
       expect(validateStateSpy).not.toHaveBeenCalled();
       expect(result.authResponseIsValid).toBe(true);
       expect(result.state).toBe(ValidationResult.Ok);
     });
 
     it('validates the nonce against the refresh token placeholder instead of the stored nonce', async () => {
+      // Arrange
       const validateNonceSpy = vi
         .spyOn(tokenValidationService, 'validateIdTokenNonce')
         .mockReturnValue(true);
 
+      // Act
       await firstValueFrom(
         stateValidationService.getValidatedStateResult(
           createRefreshCallbackContext(),
@@ -2336,6 +2341,7 @@ describe('State Validation Service', () => {
         )
       );
 
+      // Assert
       expect(validateNonceSpy).toHaveBeenCalledExactlyOnceWith(
         {},
         TokenValidationService.refreshTokenNoncePlaceholder,
@@ -2345,11 +2351,13 @@ describe('State Validation Service', () => {
     });
 
     it('does not clear the stored state and nonce after a valid refresh', async () => {
+      // Arrange
       vi.spyOn(tokenValidationService, 'validateIdTokenNonce').mockReturnValue(
         true
       );
       const writeSpy = vi.spyOn(storagePersistenceService, 'write');
 
+      // Act
       await firstValueFrom(
         stateValidationService.getValidatedStateResult(
           createRefreshCallbackContext(),
@@ -2357,14 +2365,17 @@ describe('State Validation Service', () => {
         )
       );
 
+      // Assert
       expect(writeSpy).not.toHaveBeenCalled();
     });
 
     it('does not clear the stored state and nonce after an invalid refresh', async () => {
+      // Arrange
       vi.spyOn(tokenValidationService, 'validateIdTokenNonce').mockReturnValue(
         false
       );
       const writeSpy = vi.spyOn(storagePersistenceService, 'write');
+      // Act
       const result = await firstValueFrom(
         stateValidationService.getValidatedStateResult(
           createRefreshCallbackContext(),
@@ -2372,11 +2383,13 @@ describe('State Validation Service', () => {
         )
       );
 
+      // Assert
       expect(result.state).toBe(ValidationResult.IncorrectNonce);
       expect(writeSpy).not.toHaveBeenCalled();
     });
 
     it('still clears the stored state and nonce after a valid code flow callback', async () => {
+      // Arrange
       vi.spyOn(
         tokenValidationService,
         'validateStateFromHashCallback'
@@ -2399,10 +2412,12 @@ describe('State Validation Service', () => {
         isRenewProcess: false,
       };
 
+      // Act
       await firstValueFrom(
         stateValidationService.getValidatedStateResult(callbackContext, config)
       );
 
+      // Assert
       expect(writeSpy).toHaveBeenCalledWith('authNonce', null, config);
       expect(writeSpy).toHaveBeenCalledWith('authStateControl', '', config);
     });
