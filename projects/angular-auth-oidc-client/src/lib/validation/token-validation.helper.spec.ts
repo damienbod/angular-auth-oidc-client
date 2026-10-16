@@ -45,6 +45,14 @@ describe('getVerifyAlg', () => {
       hash: 'SHA-384',
     });
   });
+
+  it('returns Ed25519 if algorithm is EdDSA', () => {
+    expect(getVerifyAlg('EdDSA')).toEqual({ name: 'Ed25519' });
+  });
+
+  it('keeps the ECDSA mapping for ES256', () => {
+    expect(getVerifyAlg('ES256')).toEqual({ name: 'ECDSA', hash: 'SHA-256' });
+  });
 });
 
 describe('alg2kty', () => {
@@ -60,6 +68,15 @@ describe('alg2kty', () => {
     const result = alg2kty(algorithm);
 
     expect(result).toEqual('EC');
+  });
+
+  it('returns OKP if algorithm is EdDSA', () => {
+    expect(alg2kty('EdDSA')).toEqual('OKP');
+  });
+
+  it('keeps EC for ES256 and ES384', () => {
+    expect(alg2kty('ES256')).toEqual('EC');
+    expect(alg2kty('ES384')).toEqual('EC');
   });
 
   it('returns correct result if algorithm is E', () => {
@@ -140,6 +157,17 @@ describe('getImportAlg', () => {
     expect(result).toEqual({
       name: 'ECDSA',
       namedCurve: 'P-384',
+    });
+  });
+
+  it('returns Ed25519 if algorithm is EdDSA', () => {
+    expect(getImportAlg('EdDSA')).toEqual({ name: 'Ed25519' });
+  });
+
+  it('keeps the ECDSA mapping for ES256', () => {
+    expect(getImportAlg('ES256')).toEqual({
+      name: 'ECDSA',
+      namedCurve: 'P-256',
     });
   });
 });

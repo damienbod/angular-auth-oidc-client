@@ -1,7 +1,7 @@
 ﻿import { inject, Injectable } from '@angular/core';
 import { base64url } from 'rfc4648';
 import { from, Observable, of } from 'rxjs';
-import { map, mergeMap, tap } from 'rxjs/operators';
+import { catchError, map, mergeMap, tap } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { JwkExtractor } from '../extractors/jwk.extractor';
 import { LoggerService } from '../logging/logger.service';
@@ -70,6 +70,7 @@ export class TokenValidationService {
     'PS256',
     'PS384',
     'PS512',
+    'EdDSA',
   ];
 
   private readonly tokenHelperService = inject(TokenHelperService);
@@ -516,6 +517,16 @@ export class TokenValidationService {
             'incorrect Signature, validation failed for id_token'
           );
         }
+      }),
+      catchError((error: unknown) => {
+        // e.g. the browser does not support the algorithm (Ed25519) in WebCrypto
+        this.loggerService.logWarning(
+          configuration,
+          `could not verify id_token signature with alg ${alg}`,
+          error
+        );
+
+        return of(false);
       })
     );
   }
@@ -552,11 +563,12 @@ export class TokenValidationService {
     );
 
     // 'sha256' 'sha384' 'sha512'
+    // EdDSA (Ed25519) uses SHA-512, see OpenID Connect Core 1.0 errata set 2
     let sha = 'SHA-256';
 
     if (idTokenAlg.includes('384')) {
       sha = 'SHA-384';
-    } else if (idTokenAlg.includes('512')) {
+    } else if (idTokenAlg.includes('512') || idTokenAlg === 'EdDSA') {
       sha = 'SHA-512';
     }
 

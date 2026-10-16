@@ -1,6 +1,10 @@
 export function getVerifyAlg(
   alg: string
-): RsaHashedImportParams | EcdsaParams | null {
+): RsaHashedImportParams | EcdsaParams | Algorithm | null {
+  if (alg === 'EdDSA') {
+    return { name: 'Ed25519' };
+  }
+
   switch (alg.charAt(0)) {
     case 'R':
       return {
@@ -27,6 +31,10 @@ export function getVerifyAlg(
 }
 
 export function alg2kty(alg: string): string {
+  if (alg === 'EdDSA') {
+    return 'OKP';
+  }
+
   switch (alg.charAt(0)) {
     case 'R':
       return 'RSA';
@@ -41,7 +49,11 @@ export function alg2kty(alg: string): string {
 
 export function getImportAlg(
   alg: string
-): RsaHashedImportParams | EcKeyImportParams | null {
+): RsaHashedImportParams | EcKeyImportParams | Algorithm | null {
+  if (alg === 'EdDSA') {
+    return { name: 'Ed25519' };
+  }
+
   switch (alg.charAt(0)) {
     case 'R':
       if (alg.includes('256')) {
