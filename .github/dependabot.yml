@@ -1,0 +1,40 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns:
+          - '*'
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      angular:
+        patterns:
+          - '@angular/*'
+          - '@angular-devkit/*'
+          - '@schematics/angular'
+          - 'ng-packagr'
+      dev-dependencies:
+        dependency-type: development
+        exclude-patterns:
+          - '@angular/*'
+          - '@angular-devkit/*'
+          - '@schematics/angular'
+          - 'ng-packagr'
+
+  - package-ecosystem: npm
+    directory: /docs/site/angular-auth-oidc-client
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    groups:
+      docs:
+        patterns:
+          - '*'
