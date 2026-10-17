@@ -5,19 +5,24 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # Let a running deploy finish; a newer push queues behind it.
+  cancel-in-progress: false
+
 jobs:
   build_and_deploy_job:
     runs-on: ubuntu-latest
     name: Build and Deploy Docs Job
     steps:
       - uses: actions/checkout@v5
-        with:
-          submodules: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: docs/site/angular-auth-oidc-client/package-lock.json
 
       - name: Installing Dependencies for docs - in docs folder
         run: npm ci
