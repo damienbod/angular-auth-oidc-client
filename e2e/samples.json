@@ -1,0 +1,20 @@
+[
+  { "name": "sample-code-flow-auth0", "port": 4301 },
+  { "name": "sample-code-flow-auto-login", "port": 4302 },
+  { "name": "sample-code-flow-auto-login-all-routes", "port": 4303 },
+  { "name": "sample-code-flow-azure-b2c", "port": 4304 },
+  { "name": "sample-code-flow-azuread", "port": 4305 },
+  { "name": "sample-code-flow-http-config", "port": 4306 },
+  { "name": "sample-code-flow-lazy-loaded", "port": 4307 },
+  { "name": "sample-code-flow-multi-AAD", "port": 4308 },
+  { "name": "sample-code-flow-multi-Auth0-ID4", "port": 4309 },
+  { "name": "sample-code-flow-multi-Auth0-ID4-popup", "port": 4310 },
+  { "name": "sample-code-flow-multi-Azure-B2C", "port": 4311 },
+  { "name": "sample-code-flow-multi-iframe", "port": 4312 },
+  { "name": "sample-code-flow-par", "port": 4313 },
+  { "name": "sample-code-flow-popup", "port": 4314 },
+  { "name": "sample-code-flow-refresh-tokens", "port": 4204 },
+  { "name": "sample-code-flow-standalone", "port": 4315 },
+  { "name": "sample-implicit-flow-google", "port": 4316 },
+  { "name": "sample-implicit-flow-silent-renew", "port": 4317 }
+]

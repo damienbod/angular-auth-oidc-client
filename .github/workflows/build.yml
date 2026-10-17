@@ -97,11 +97,29 @@ jobs:
           name: angular_auth_oidc_client_artefact
           path: dist/angular-auth-oidc-client
 
-  # Runs the sample-code-flow-refresh-tokens sample in a real browser against
-  # the local test IDP server: login, reload, silent renew, multiple tabs, logout.
-  e2e_job:
+  e2e_samples:
     runs-on: ubuntu-latest
-    name: E2E Tests (sample-code-flow-refresh-tokens)
+    name: List E2E Samples
+    outputs:
+      samples: ${{ steps.list.outputs.samples }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - id: list
+        run: echo "samples=$(jq -c '[.[].name]' e2e/samples.json)" >> "$GITHUB_OUTPUT"
+
+  # Runs every sample in e2e/samples.json in a real browser against the local
+  # test IDP server, one job per sample.
+  e2e_job:
+    needs: e2e_samples
+    runs-on: ubuntu-latest
+    name: E2E Tests (${{ matrix.sample }})
+    strategy:
+      fail-fast: false
+      matrix:
+        sample: ${{ fromJSON(needs.e2e_samples.outputs.samples) }}
+    env:
+      E2E_SAMPLES: ${{ matrix.sample }}
     steps:
       - uses: actions/checkout@v5
 
@@ -131,7 +149,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.sample }}
           path: |
             e2e/playwright-report
             e2e/test-results
