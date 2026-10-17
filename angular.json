@@ -29,7 +29,12 @@
           "options": {
             "tsConfig": "projects/angular-auth-oidc-client/tsconfig.spec.json",
             "coverageExclude": ["/**/*mock*.ts", "**/*.md"],
-            "coverageReporters": ["text-summary", "html", "lcov"],
+            "coverageReporters": [
+              "text-summary",
+              "json-summary",
+              "html",
+              "lcov"
+            ],
             "runnerConfig": "vitest-base.config.ts"
           }
         },
