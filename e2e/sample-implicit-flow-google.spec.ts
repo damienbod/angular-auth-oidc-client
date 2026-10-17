@@ -13,14 +13,6 @@ import {
 
 const ORIGIN = 'http://localhost:4316';
 
-// Known library bug: UrlService.getUrlWithoutQueryParameters() keeps the URL
-// fragment, so with checkRedirectUrlWhenCheckingIfIsCallback (on by default)
-// an implicit callback `/#id_token=...` never matches the redirectUrl and is
-// never processed; the app keeps redirecting to the IdP. test.fail() keeps
-// these tests asserting the intended behaviour and makes them fail (as a
-// reminder) once the bug is fixed.
-test.fail();
-
 async function expectAuthenticated(page: Page): Promise<void> {
   await expect(page.getByText('Is Authenticated: true')).toBeVisible();
   await expect(page.getByText('Test User IDP1')).toBeVisible();
