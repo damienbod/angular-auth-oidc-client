@@ -34,6 +34,12 @@ jobs:
       - name: Linting Library
         run: npm run lint-lib
 
+      - name: Checking Formatting
+        run: npm run check-prettier
+
+      - name: Checking Blockwords
+        run: npm run check-blockwords
+
       - name: Testing Frontend
         run: npm run test-lib-ci
 
@@ -63,6 +69,25 @@ jobs:
       - name: Testing Schematics
         run: npm run test-schematics
 
+      # The integration tests import the library from dist/, so they run
+      # after the build, against the local test IDP server.
+      - name: Installing Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Starting Test IDP Server
+        working-directory: projects/integration-tests/test-idp-server
+        run: |
+          npm ci
+          ./start.sh
+
+      - name: Running Integration Tests
+        run: npm run test-integration
+
+      - name: Stopping Test IDP Server
+        if: always()
+        working-directory: projects/integration-tests/test-idp-server
+        run: ./stop.sh
+
       - name: Upload Artefact
         uses: actions/upload-artifact@v4
         with:
@@ -72,33 +97,52 @@ jobs:
   AngularScaffold:
     needs: build_job
     runs-on: ubuntu-latest
-    name: Angular latest & Schematics Job (${{ matrix.name }})
+    name: Angular ${{ matrix.ng }} & Schematics Job (${{ matrix.name }})
     strategy:
       fail-fast: false
       matrix:
         include:
-          # ng_new: options for 'ng new'. extra: options for 'ng add'.
-          # Without 'extra', ng add auto-detects standalone vs. NgModule.
+          # ng: Angular CLI version. ng_new: options for 'ng new'.
+          # extra: options for 'ng add'. Without 'extra', ng add
+          # auto-detects standalone vs. NgModule.
+          # test_args: Angular 20 apps use Karma, which watches by default.
           - name: standalone-refresh
+            ng: latest
             ng_new: ''
             flow: 'OIDC Code Flow PKCE using refresh tokens'
             extra: ''
+            test_args: ''
           - name: standalone-default
+            ng: latest
             ng_new: ''
             flow: 'Default config'
             extra: ''
+            test_args: ''
           - name: ngmodule-refresh
+            ng: latest
             ng_new: '--standalone=false'
             flow: 'OIDC Code Flow PKCE using refresh tokens'
             extra: ''
+            test_args: ''
           - name: ngmodule-standalone-opt
+            ng: latest
             ng_new: '--standalone=false'
             flow: 'Default config'
             extra: '--standalone'
+            test_args: ''
           - name: ngmodule-legacy
+            ng: latest
             ng_new: '--standalone=false'
             flow: 'Default config'
             extra: '--legacy-modules'
+            test_args: ''
+          # Minimum supported version, see the @angular/core peer dependency.
+          - name: min-standalone-refresh
+            ng: 20
+            ng_new: ''
+            flow: 'OIDC Code Flow PKCE using refresh tokens'
+            extra: ''
+            test_args: '-- --watch=false --browsers=ChromeHeadless'
     steps:
       - name: Setup Node.js
         uses: actions/setup-node@v5
@@ -115,25 +159,23 @@ jobs:
           name: angular_auth_oidc_client_artefact
           path: angular-auth-oidc-client-artefact
 
-      - name: Install AngularCLI globally
-        run: npm install -g @angular/cli
+      - name: Create Angular Project
+        run: npx -y @angular/cli@${{ matrix.ng }} new angular-auth-oidc-client-test --skip-git ${{ matrix.ng_new }}
 
       - name: Show ng Version
-        run: ng version
-
-      - name: Create Angular Project
-        run: ng new angular-auth-oidc-client-test --skip-git ${{ matrix.ng_new }}
+        working-directory: ./angular-auth-oidc-client-test
+        run: npx ng version
 
       - name: Npm Install & Install Library from local artefact
         run: |
           cp -R angular-auth-oidc-client-artefact angular-auth-oidc-client-test/
           cd angular-auth-oidc-client-test
           npm install
-          ng add ./angular-auth-oidc-client-artefact --authority-url-or-tenant-id "my-authority-url" --flow-type "${{ matrix.flow }}" --use-local-package=true --skip-confirmation ${{ matrix.extra }}
+          npx ng add ./angular-auth-oidc-client-artefact --authority-url-or-tenant-id "my-authority-url" --flow-type "${{ matrix.flow }}" --use-local-package=true --skip-confirmation ${{ matrix.extra }}
 
       - name: Test Angular Application
         working-directory: ./angular-auth-oidc-client-test
-        run: npm test
+        run: npm test ${{ matrix.test_args }}
 
       - name: Build Angular Application
         working-directory: ./angular-auth-oidc-client-test
