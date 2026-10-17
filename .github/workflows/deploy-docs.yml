@@ -5,33 +5,39 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # Let a running deploy finish; a newer push queues behind it.
+  cancel-in-progress: false
+
 jobs:
   build_and_deploy_job:
     runs-on: ubuntu-latest
     name: Build and Deploy Docs Job
     steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
+      - uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v5
         with:
-          node-version: 18
-
-      - name: Installing Dependencies
-        run: sudo npm install
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: docs/site/angular-auth-oidc-client/package-lock.json
 
       - name: Installing Dependencies for docs - in docs folder
-        run: sudo npm install
+        run: npm ci
         working-directory: docs/site/angular-auth-oidc-client
 
       - name: Building Documentation
-        run: sudo npm run build
+        run: npm run build
         working-directory: docs/site/angular-auth-oidc-client
 
       - name: Build And Deploy
-        if: ${{ github.actor == 'damienbod' || github.actor == 'FabianGosebrink' }}
+        # Skip on forks; branch protection controls who can push to main.
+        if: github.repository == 'damienbod/angular-auth-oidc-client'
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:

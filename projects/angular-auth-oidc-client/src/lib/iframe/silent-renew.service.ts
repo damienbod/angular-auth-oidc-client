@@ -17,7 +17,8 @@ import { IFrameService } from './existing-iframe.service';
 
 const IFRAME_FOR_SILENT_RENEW_IDENTIFIER = 'myiFrameForSilentRenew';
 
-export const getFrameId = (configId?: string): string => `${IFRAME_FOR_SILENT_RENEW_IDENTIFIER}_${configId}`;
+export const getFrameId = (configId?: string): string =>
+  `${IFRAME_FOR_SILENT_RENEW_IDENTIFIER}_${configId}`;
 
 /**
  * Error of a silent renew whose callback URL carried an OAuth `error`
@@ -27,7 +28,10 @@ export const getFrameId = (configId?: string): string => `${IFRAME_FOR_SILENT_RE
  * `Error` thrown before.
  */
 export class SilentRenewCallbackError extends Error {
-  constructor(error: string, readonly errorDescription?: string) {
+  constructor(
+    error: string,
+    readonly errorDescription?: string
+  ) {
     super(error);
   }
 }
@@ -69,10 +73,7 @@ export class SilentRenewService {
     if (!existingIframe) {
       this.loggerService.logDebug(config, `Creating new iframe: ${iframeId}`);
 
-      return this.iFrameService.addIFrameToWindowBody(
-        iframeId,
-        config
-      );
+      return this.iFrameService.addIFrameToWindowBody(iframeId, config);
     }
 
     this.loggerService.logDebug(config, `Using existing iframe: ${iframeId}`);
@@ -174,8 +175,12 @@ export class SilentRenewService {
     }
 
     callback$.subscribe({
-      next: ({authResult}) => {
-        this.refreshSessionWithIFrameCompletedInternal$.next({authResult, configId: config.configId, success: true});
+      next: ({ authResult }) => {
+        this.refreshSessionWithIFrameCompletedInternal$.next({
+          authResult,
+          configId: config.configId,
+          success: true,
+        });
         this.flowsDataService.resetSilentRenewRunning(config);
       },
       error: (err: unknown) => {

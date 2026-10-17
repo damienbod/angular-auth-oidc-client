@@ -194,7 +194,7 @@ export class RefreshSessionService {
           isAuthenticated: false,
           errorMessage: refreshCompleted.success
             ? ''
-            : refreshCompleted.errorMessage ?? '',
+            : (refreshCompleted.errorMessage ?? ''),
           // left off the response when the provider did not send a description
           ...(errorDescription === undefined ? {} : { errorDescription }),
           userData: null,

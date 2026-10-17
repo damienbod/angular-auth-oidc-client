@@ -25,10 +25,8 @@ export class AutoLoginAllRoutesGuard {
 
   canLoad(): Observable<boolean> {
     const url =
-      this.router
-        .currentNavigation()
-        ?.extractedUrl.toString()
-        .substring(1) ?? '';
+      this.router.currentNavigation()?.extractedUrl.toString().substring(1) ??
+      '';
 
     return checkAuth(
       url,

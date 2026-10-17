@@ -1,4 +1,3 @@
-
 import { inject, Injectable, NgZone, OnDestroy, DOCUMENT } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { take } from 'rxjs/operators';
