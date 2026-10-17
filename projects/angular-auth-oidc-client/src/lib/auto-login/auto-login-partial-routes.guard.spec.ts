@@ -512,6 +512,33 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
           configId: 'configId1',
         });
       });
+
+      it('should ignore the third argument Angular passes when used as `canMatch`', async () => {
+        const getOpenIDConfigurationSpy = vi.spyOn(
+          configurationService,
+          'getOpenIDConfiguration'
+        );
+
+        vi.spyOn(authStateService, 'areAuthStorageTokensValid').mockReturnValue(
+          true
+        );
+        vi.spyOn(
+          autoLoginService,
+          'checkSavedRedirectRouteAndNavigate'
+        ).mockReturnValue(undefined);
+
+        // A CanMatchFn is called with (route, segments, currentSnapshot).
+        const canMatchGuard = autoLoginPartialRoutesGuard as unknown as (
+          ...args: unknown[]
+        ) => ReturnType<typeof autoLoginPartialRoutesGuard>;
+        const guard$ = TestBed.runInInjectionContext(() =>
+          canMatchGuard({ path: 'customers' }, [], { routeConfig: null })
+        );
+
+        await firstValueFrom(guard$);
+
+        expect(getOpenIDConfigurationSpy).toHaveBeenCalledWith(undefined);
+      });
     });
 
     describe('autoLoginPartialRoutesGuardWithConfig', () => {

@@ -94,7 +94,9 @@ export function autoLoginPartialRoutesGuard(
     autoLoginService,
     loginService,
     authOptions,
-    configId
+    // Used as `canMatch`, Angular passes a `currentSnapshot` object as the
+    // third argument, which must not be taken as the config id.
+    typeof configId === 'string' ? configId : undefined
   );
 }
 

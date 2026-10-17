@@ -149,6 +149,18 @@ describe('UrlService Tests', () => {
         expect(result).toBe(isCallbackFromSts);
       });
     });
+
+    it('should return true for an implicit flow callback with the tokens in the fragment', () => {
+      const result = service.isCallbackFromSts(
+        'https://the-redirect.url/#id_token=anyvalue&access_token=anyvalue&state=anystate',
+        {
+          redirectUrl: 'https://the-redirect.url',
+          checkRedirectUrlWhenCheckingIfIsCallback: true,
+        }
+      );
+
+      expect(result).toBe(true);
+    });
   });
 
   describe('getUrlParameter', () => {
