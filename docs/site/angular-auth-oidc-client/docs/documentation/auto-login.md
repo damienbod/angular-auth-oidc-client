@@ -5,7 +5,7 @@ sidebar_position: 9
 
 # Auto Login
 
-The library supports route-based automatic login thanks to the functional route guard: `autoLoginPartialRoutesGuard`. The guard implements the necessary handlers for both `canActivate` and `canMatch`, and will preserve the route upon completing a successful login.
+The library supports route-based automatic login thanks to the functional route guard: `autoLoginPartialRoutesGuard`. The guard can be used with `canActivate`, `canActivateChild` and `canMatch`, and will preserve the route upon completing a successful login.
 
 ## Common Scenarios
 
@@ -29,7 +29,7 @@ const routes: Routes = [
   {
     path: 'customers',
     loadChildren: () => import('./customers/customers.routes').then((m) => m.customerRoutes),
-    canLoad: [autoLoginPartialRoutesGuard],
+    canMatch: [autoLoginPartialRoutesGuard],
   },
   { path: 'unauthorized', component: UnauthorizedComponent },
 ];
@@ -82,6 +82,12 @@ Instead of the functional guards, you can also use the guard classes.
 :::info
 
 If you use multiple configurations, the AutoLoginPartialRoutesGuard class-based guard selects the first provided configuration to perform the login.
+
+:::
+
+:::note
+
+The `AutoLoginPartialRoutesGuard` class implements `canActivate`, `canActivateChild` and `canLoad`, but not `canMatch`. Angular has deprecated `canLoad`; to guard lazy-loaded routes with `canMatch`, use the functional `autoLoginPartialRoutesGuard` instead, which also works in `NgModule` based applications.
 
 :::
 

@@ -84,7 +84,7 @@ export class AuthConfigModule {}
 
 When silent renew is enabled, a DOM event will automatically be installed in the application's host window. The event `oidc-silent-renew-message` accepts a `CustomEvent` instance with the token returned from the OAuth server in its `detail` field. The event handler will send this token to the authorization callback and complete the validation.
 
-Point the `silent_renew_url` property to an HTML file which contains the following script element to enable authorization.
+Point the `silentRenewUrl` property to an HTML file which contains the following script element to enable authorization.
 
 The `renewTimeBeforeTokenExpiresInSeconds` property can be used to start the renew process n-seconds before the tokens expired.
 

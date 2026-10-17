@@ -177,22 +177,6 @@ console.log(authenticated().isAuthenticated);
 console.log(authenticated().allConfigsAuthenticated);
 ```
 
-## isLoading$
-
-> The property is disabled and will be removed in future versions. Please use the `PublicEventsService` with the events `EventTypes.CheckingAuth`, `EventTypes.CheckingAuthFinished`, `EventTypes.CheckingAuthFinishedWithError` instead
-
-The `isLoading$` property returns an `Observable<boolean>`. Emits false when the observable, returned by either of the `checkAuth()` methods, emits a value, or errors. Initial value: true.
-
-### Example
-
-```ts
-this.isLoading$ = this.oidcSecurityService.isLoading$;
-```
-
-#### Example use case
-
-An auth guard subscribes to `isAuthenticated$` before the observable, returned by `checkAuth()`, emits a value. The `isAuthenticated$` emits false, and prompts an `authorize`, causing an infinite redirect loop. Use the `isLoading$` in combination with the `isAuthenticated$` to ensure that there is no race condition.
-
 ## checkSessionChanged$
 
 The `checkSessionChanged$` observable emits values every time the server comes back with a check session and the value `changed`. If you want to get information about when the `CheckSession` Event has been received, please take a look at the [public events](public-events.md).
@@ -627,18 +611,18 @@ this.oidcSecurityService
   .subscribe(({ isAuthenticated, userData, accessToken, idToken, configId }) => {
 ```
 
-## logoffAndRevokeTokens(configId?: string, authOptions?: AuthOptions)
+## logoffAndRevokeTokens(configId?: string, logoutAuthOptions?: LogoutAuthOptions)
 
 With this method the user is being logged out and the refresh token and the access token are revoked on the server. If the refresh token does not exist only the access token is revoked. Then the logout runs normally.
 
-This method takes a `configId` and `authOptions` as parameter and returns an observable. If you are running with multiple configs and pass the `configId` the passed config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
+This method takes a `configId` and `logoutAuthOptions` as parameter and returns an observable. If you are running with multiple configs and pass the `configId` the passed config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
 
 ```ts
 this.oidcSecurityService.logoffAndRevokeTokens().subscribe(/* ... */);
 ```
 
 ```ts
-const authOptions = {
+const logoutAuthOptions: LogoutAuthOptions = {
   customParams: {
     some: 'params',
   },
@@ -647,7 +631,7 @@ const authOptions = {
   },
 };
 
-this.oidcSecurityService.logoffAndRevokeTokens('configId', authOptions).subscribe(/* ... */);
+this.oidcSecurityService.logoffAndRevokeTokens('configId', logoutAuthOptions).subscribe(/* ... */);
 ```
 
 ## logoff(configId?: string, logoutAuthOptions?: LogoutAuthOptions)
@@ -747,8 +731,12 @@ this.oidcSecurityService.getEndSessionUrl(customParams, 'configId').subscribe(/*
 
 Creates the authorize URL which can be used to get the URL for the authentication the lib uses internally. You can pass custom params directly into the method. This method also takes a `configId`. If you are running with multiple configs and pass a `configId`, the passed config is taken. If you are running with multiple configs and do not pass a `configId`, the first config is taken. If you are running with a single config this config is taken.
 
+The method returns an `Observable<string | null>`.
+
 ```ts
-const authorizeUrl = this.oidcSecurityService.getAuthorizeUrl();
+this.oidcSecurityService.getAuthorizeUrl().subscribe((authorizeUrl) => {
+  /* ... */
+});
 ```
 
 ```ts
@@ -756,5 +744,7 @@ const customParams = {
   some: 'params',
 };
 
-const authorizeUrl = this.oidcSecurityService.getAuthorizeUrl(customParams, 'configId');
+this.oidcSecurityService.getAuthorizeUrl(customParams, 'configId').subscribe((authorizeUrl) => {
+  /* ... */
+});
 ```

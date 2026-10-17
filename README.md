@@ -131,7 +131,7 @@ And call the method `checkAuth()` from your `app.component.ts`. The method `chec
 
 ```ts
 import { Component, OnInit, inject } from '@angular/core';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { LoginResponse, OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
   /*...*/
@@ -162,7 +162,9 @@ export class AppComponent implements OnInit {
 You can get the access token by calling the method `getAccessToken()` on the `OidcSecurityService`
 
 ```ts
-const token = this.oidcSecurityService.getAccessToken().subscribe(...);
+this.oidcSecurityService.getAccessToken().subscribe((token) => {
+  /* ... */
+});
 ```
 
 And then you can use it in the HttpHeaders
@@ -170,7 +172,7 @@ And then you can use it in the HttpHeaders
 ```ts
 import { HttpHeaders } from '@angular/common/http';
 
-const token = this.oidcSecurityServices.getAccessToken().subscribe((token) => {
+this.oidcSecurityService.getAccessToken().subscribe((token) => {
   const httpOptions = {
     headers: new HttpHeaders({
       Authorization: 'Bearer ' + token,
