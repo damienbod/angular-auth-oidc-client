@@ -1,4 +1,3 @@
-
 import { inject, Injectable, RendererFactory2, DOCUMENT } from '@angular/core';
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -87,7 +86,10 @@ export class RefreshSessionIframeService {
       (e: CustomEvent) => {
         const eventData = e.detail;
 
-        if (eventData.configId === config.configId && eventData.instanceId !== instanceId) {
+        if (
+          eventData.configId === config.configId &&
+          eventData.instanceId !== instanceId
+        ) {
           this.loggerService.logDebug(
             config,
             `Destroying old handlers for config: ${config.configId} (old instance: ${instanceId}, new instance: ${eventData.instanceId})`
@@ -101,22 +103,24 @@ export class RefreshSessionIframeService {
       'window',
       'oidc-silent-renew-message',
       (e: CustomEvent) => {
-
         if (this.shouldProcessRenewMessage(e, config)) {
           const eventToPass = this.convertToLegacyEvent(e);
 
-          this.silentRenewService.silentRenewEventHandler(eventToPass, config, allConfigs);
+          this.silentRenewService.silentRenewEventHandler(
+            eventToPass,
+            config,
+            allConfigs
+          );
         }
       }
     );
-
 
     this.document.defaultView?.dispatchEvent(
       new CustomEvent('oidc-silent-renew-init', {
         detail: {
           instanceId,
-          configId: config.configId
-        }
+          configId: config.configId,
+        },
       })
     );
   }
@@ -125,7 +129,6 @@ export class RefreshSessionIframeService {
     e: CustomEvent,
     config: OpenIdConfiguration
   ): boolean {
-
     if (!e?.detail) {
       this.loggerService.logDebug(
         config,
@@ -164,5 +167,4 @@ export class RefreshSessionIframeService {
     // Otherwise, return as-is (already in legacy format)
     return e;
   }
-
 }

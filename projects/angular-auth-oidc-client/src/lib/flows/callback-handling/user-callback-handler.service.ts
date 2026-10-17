@@ -47,7 +47,11 @@ export class UserCallbackHandlerService {
         );
       }
 
-      this.publishAuthState(validationResult, isRenewProcess, configuration.configId);
+      this.publishAuthState(
+        validationResult,
+        isRenewProcess,
+        configuration.configId
+      );
 
       return of(callbackContext);
     }
@@ -70,7 +74,11 @@ export class UserCallbackHandlerService {
               );
             }
 
-            this.publishAuthState(validationResult, isRenewProcess, configuration.configId);
+            this.publishAuthState(
+              validationResult,
+              isRenewProcess,
+              configuration.configId
+            );
 
             return of(callbackContext);
           } else {
@@ -78,7 +86,11 @@ export class UserCallbackHandlerService {
               configuration,
               allConfigs
             );
-            this.publishUnauthenticatedState(validationResult, isRenewProcess, configuration.configId);
+            this.publishUnauthenticatedState(
+              validationResult,
+              isRenewProcess,
+              configuration.configId
+            );
             const errorMessage = `Called for userData but they were ${userData}`;
 
             this.loggerService.logWarning(configuration, errorMessage);

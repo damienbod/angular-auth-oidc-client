@@ -41,26 +41,32 @@ export class AuthWellKnownDataService {
             introspectionEndpoint: wellKnownEndpoints.introspection_endpoint,
             parEndpoint:
               wellKnownEndpoints.pushed_authorization_request_endpoint,
-          } as AuthWellKnownEndpoints)
+          }) as AuthWellKnownEndpoints
       ),
       map((mappedWellKnownEndpoints) => ({
         ...mappedWellKnownEndpoints,
         ...authWellknownEndpoints,
       })),
-      tap(
-        (wellKnownEndpoints) => {
-          const issuer = wellKnownEndpoints.issuer || "";
-          const wellKnownSuffix = config.authWellknownUrlSuffix || WELL_KNOWN_SUFFIX;
-          const configuredWellKnownEndpoint = authWellknownEndpointUrl.replace(wellKnownSuffix, "");
-          
-          if (!config.strictIssuerValidationOnWellKnownRetrievalOff && issuer !== configuredWellKnownEndpoint && issuer !== `${configuredWellKnownEndpoint}/`) {
-            const errorMessage = `Issuer mismatch. Well known issuer ${wellKnownEndpoints.issuer} does not match configured well known url ${authWellknownEndpointUrl}`;
+      tap((wellKnownEndpoints) => {
+        const issuer = wellKnownEndpoints.issuer || '';
+        const wellKnownSuffix =
+          config.authWellknownUrlSuffix || WELL_KNOWN_SUFFIX;
+        const configuredWellKnownEndpoint = authWellknownEndpointUrl.replace(
+          wellKnownSuffix,
+          ''
+        );
 
-            this.loggerService.logError(config, errorMessage);
-            throw new Error(errorMessage);
-          }
+        if (
+          !config.strictIssuerValidationOnWellKnownRetrievalOff &&
+          issuer !== configuredWellKnownEndpoint &&
+          issuer !== `${configuredWellKnownEndpoint}/`
+        ) {
+          const errorMessage = `Issuer mismatch. Well known issuer ${wellKnownEndpoints.issuer} does not match configured well known url ${authWellknownEndpointUrl}`;
+
+          this.loggerService.logError(config, errorMessage);
+          throw new Error(errorMessage);
         }
-      )
+      })
     );
   }
 
