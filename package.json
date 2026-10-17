@@ -66,7 +66,7 @@
     "rxjs": "~7.8.0",
     "shelljs": "^0.8.5",
     "tslib": "^2.3.1",
-    "zone.js": "^0.16.2"
+    "zone.js": "^0.16.3"
   },
   "devDependencies": {
     "@angular-devkit/core": "^22.2.0",
