@@ -104,7 +104,7 @@ export class EqualityService {
       return false;
     }
 
-    for (let i = arr1.length; i--; ) {
+    for (let i = arr1.length; i--;) {
       if (arr1[i] !== arr2[i]) {
         return false;
       }

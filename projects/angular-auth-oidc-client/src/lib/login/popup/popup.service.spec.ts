@@ -199,7 +199,7 @@ describe('PopUpService', () => {
           ({
             closed: true,
             close: () => undefined,
-          } as Window)
+          }) as Window
       );
 
       // act
@@ -223,7 +223,7 @@ describe('PopUpService', () => {
           ({
             closed: true,
             close: () => undefined,
-          } as Window)
+          }) as Window
       );
 
       // act

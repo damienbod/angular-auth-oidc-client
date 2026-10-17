@@ -1,4 +1,3 @@
-
 import { inject, Injectable, DOCUMENT } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, switchMap, tap } from 'rxjs/operators';

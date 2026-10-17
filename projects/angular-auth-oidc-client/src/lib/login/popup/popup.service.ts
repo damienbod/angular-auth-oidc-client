@@ -1,4 +1,3 @@
-
 import { inject, Injectable, DOCUMENT } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
