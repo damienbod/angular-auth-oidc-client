@@ -52,6 +52,9 @@ export class UrlService {
       u.searchParams.delete(key);
     });
 
+    // The implicit flow returns its callback parameters in the fragment.
+    u.hash = '';
+
     return u;
   }
 

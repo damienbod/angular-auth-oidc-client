@@ -65,18 +65,7 @@ test('stays unauthenticated without an IdP session', async ({ page }) => {
   await expectUnauthenticated(page);
 });
 
-// Known library bug: UrlService.getUrlWithoutQueryParameters() keeps the URL
-// fragment, so with checkRedirectUrlWhenCheckingIfIsCallback (on by default)
-// an implicit callback `/#id_token=...` never matches the redirectUrl and is
-// not processed in the main window. test.fail() keeps the affected tests
-// asserting the intended behaviour and makes them fail (as a reminder) once
-// the bug is fixed.
-const IMPLICIT_CALLBACK_BUG =
-  'UrlService keeps the fragment when matching the redirectUrl';
-
 test('logs in with the implicit flow', async ({ page }) => {
-  test.fail(true, IMPLICIT_CALLBACK_BUG);
-
   await login(page);
 
   await expect(page).not.toHaveURL(/#|id_token|access_token/);
@@ -108,8 +97,6 @@ test('logs in silently in a new tab with the IdP session', async ({
 });
 
 test('renews the tokens silently in an iframe', async ({ page }) => {
-  test.fail(true, IMPLICIT_CALLBACK_BUG);
-
   await login(page);
 
   const firstIdToken = await waitForSilentRenew(page);

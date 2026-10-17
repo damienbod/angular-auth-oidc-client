@@ -57,14 +57,7 @@ test('returns to a deep linked guarded route after login', async ({ page }) => {
   await loginViaProtectedRoute(page);
 });
 
-// Known library bug: since Angular 20 a CanMatchFn is called with a third
-// `currentSnapshot` argument, which autoLoginPartialRoutesGuard takes as its
-// `configId`, so the guard fails with "No configuration found for config id
-// '[object Object]'". test.fail() keeps these tests asserting the intended
-// behaviour and makes them fail (as a reminder) once the bug is fixed.
 test.describe('lazy loaded routes guarded with canMatch', () => {
-  test.fail();
-
   test('logs in automatically when loading the lazy loaded module', async ({
     page,
   }) => {
