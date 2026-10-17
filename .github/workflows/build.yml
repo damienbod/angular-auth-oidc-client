@@ -18,7 +18,7 @@ jobs:
       # Needed to push the coverage badge to the 'badges' branch on main.
       contents: write
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
         with:
           submodules: true
 
@@ -104,7 +104,7 @@ jobs:
         run: |
           cp -R angular-auth-oidc-client-artefact angular-auth-oidc-client-test/
           cd angular-auth-oidc-client-test
-          npm install --unsafe-perm=true
+          npm install
           ng add ./angular-auth-oidc-client-artefact --authority-url-or-tenant-id "my-authority-url" --flow-type "OIDC Code Flow PKCE using refresh tokens" --use-local-package=true --skip-confirmation
 
       - name: Test Angular Application
@@ -148,7 +148,7 @@ jobs:
         run: |
           cp -R angular-auth-oidc-client-artefact angular-auth-oidc-client-test/
           cd angular-auth-oidc-client-test
-          npm install --unsafe-perm=true
+          npm install
           ng add ./angular-auth-oidc-client-artefact --authority-url-or-tenant-id "my-authority-url" --flow-type "Default config" --use-local-package=true --skip-confirmation
 
       - name: Test Angular Application
@@ -162,7 +162,21 @@ jobs:
   AngularLatestVersionWithNgModuleSchematics:
     needs: build_job
     runs-on: ubuntu-latest
-    name: Angular latest Standalone & Schematics Job
+    name: Angular latest NgModule & Schematics Job (${{ matrix.name }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Auto-detection: an NgModule app gets the NgModule setup.
+          - name: auto-detect
+            flow: 'OIDC Code Flow PKCE using refresh tokens'
+            extra: ''
+          - name: standalone-option
+            flow: 'Default config'
+            extra: '--standalone'
+          - name: legacy-modules-option
+            flow: 'Default config'
+            extra: '--legacy-modules'
     steps:
       - name: Setup Node.js
         uses: actions/setup-node@v5
@@ -192,8 +206,8 @@ jobs:
         run: |
           cp -R angular-auth-oidc-client-artefact angular-auth-oidc-client-test/
           cd angular-auth-oidc-client-test
-          npm install --unsafe-perm=true
-          ng add ./angular-auth-oidc-client-artefact --authority-url-or-tenant-id "my-authority-url" --flow-type "OIDC Code Flow PKCE using refresh tokens" --use-local-package=true --skip-confirmation
+          npm install
+          ng add ./angular-auth-oidc-client-artefact --authority-url-or-tenant-id "my-authority-url" --flow-type "${{ matrix.flow }}" --use-local-package=true --skip-confirmation ${{ matrix.extra }}
 
       - name: Test Angular Application
         working-directory: ./angular-auth-oidc-client-test

@@ -10,24 +10,21 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Docs Job
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
         with:
           submodules: true
 
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v5
         with:
-          node-version: 18
-
-      - name: Installing Dependencies
-        run: sudo npm install
+          node-version: 22
 
       - name: Installing Dependencies for docs - in docs folder
-        run: sudo npm install
+        run: npm ci
         working-directory: docs/site/angular-auth-oidc-client
 
       - name: Building Documentation
-        run: sudo npm run build
+        run: npm run build
         working-directory: docs/site/angular-auth-oidc-client
 
       - name: Build And Deploy
