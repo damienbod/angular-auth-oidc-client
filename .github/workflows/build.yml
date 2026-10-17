@@ -97,6 +97,46 @@ jobs:
           name: angular_auth_oidc_client_artefact
           path: dist/angular-auth-oidc-client
 
+  # Runs the sample-code-flow-refresh-tokens sample in a real browser against
+  # the local test IDP server: login, reload, silent renew, multiple tabs, logout.
+  e2e_job:
+    runs-on: ubuntu-latest
+    name: E2E Tests (sample-code-flow-refresh-tokens)
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Installing Dependencies
+        run: npm ci
+
+      - name: Installing Test IDP Server Dependencies
+        run: npm ci --prefix projects/integration-tests/test-idp-server
+
+      - name: Installing Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      # The samples import the library from dist/.
+      - name: Building Library
+        run: npm run build-lib
+
+      - name: Running E2E Tests
+        run: npm run e2e
+
+      - name: Upload Playwright Report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            e2e/playwright-report
+            e2e/test-results
+          retention-days: 7
+
   AngularScaffold:
     needs: build_job
     runs-on: ubuntu-latest
