@@ -285,7 +285,7 @@ Override the default Security Token Service well-known endpoint postfix.
 ### `redirectUrl`
 
 - Type: `string`
-- Required: `false`
+- Required: `true`
 
 This is the `redirect_url` which was configured on the Security Token Service (STS).
 
@@ -301,7 +301,7 @@ Default = _true_
 ### `clientId`
 
 - Type: `string`
-- Required: `false`
+- Required: `true`
 
 The client **MUST** validate that the `aud` (audience) claim contains its `client_id` value registered at the Issuer identified by the `iss` (issuer) claim as an audience. The id token **MUST** be rejected if the id token does not list the Client as a valid audience, or if it contains additional audiences not trusted by the Client.
 
@@ -311,7 +311,8 @@ The client **MUST** validate that the `aud` (audience) claim contains its `clien
 - Required: `false`
 
 The name of the flow which to be configured. Valid options are `code`, `id_token token`, or `id_token`. <br/>
-If you want to access an API or get user data from the server, the `access_token` value returned by the `id_token` flow is required. You must use the `id_token` flow.
+Use `code` (Authorization Code Flow with PKCE), which is the recommended flow. The implicit flows (`id_token token` and `id_token`) are legacy; only `id_token token` returns an `access_token`, the `id_token` flow does not. <br/>
+Default = _code_
 
 ### `scope`
 
@@ -532,7 +533,7 @@ Default = _true_
 - Required: `false`
 
 Controls the periodic check time interval in seconds. <br/>
-Default = _3_
+Default = _4_
 
 ### `secureRoutes`
 

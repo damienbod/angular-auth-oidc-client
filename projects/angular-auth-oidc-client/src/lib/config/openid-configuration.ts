@@ -191,8 +191,8 @@ export interface OpenIdConfiguration {
    */
   triggerRefreshWhenIdTokenExpired?: boolean;
 
-  /** Controls the periodic check time interval in sections.
-   * Default value is 3.
+  /** Controls the periodic check time interval in seconds.
+   * Default value is 4.
    */
   tokenRefreshInSeconds?: number;
   /**

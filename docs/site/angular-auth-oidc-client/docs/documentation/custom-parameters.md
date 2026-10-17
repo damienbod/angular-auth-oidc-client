@@ -21,10 +21,12 @@ And you can pass them as an object like this:
 export const appConfig: ApplicationConfig = {
   providers: [
     provideAuth({
-      authority: '<your authority address here>',
-      customParamsAuthRequest: {
-        response_mode: 'fragment',
-        prompt: 'consent',
+      config: {
+        authority: '<your authority address here>',
+        customParamsAuthRequest: {
+          response_mode: 'fragment',
+          prompt: 'consent',
+        },
       },
     }),
   ],
@@ -37,7 +39,7 @@ If you want to pass dynamic custom parameters with the request URL to the Securi
 
 ```ts
 login() {
-  this.oidcSecurityService.authorize(null, { customParams: { ui_locales: 'de-CH' }});
+  this.oidcSecurityService.authorize(undefined, { customParams: { ui_locales: 'de-CH' }});
 }
 
 ```
