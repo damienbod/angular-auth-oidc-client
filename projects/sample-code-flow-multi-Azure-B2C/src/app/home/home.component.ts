@@ -27,7 +27,9 @@ export class HomeComponent {
   }
 
   logout(configId: string | undefined): void {
-    this.oidcSecurityService.logoff(configId);
+    this.oidcSecurityService
+      .logoff(configId)
+      .subscribe((result) => console.log(result));
   }
 
   refreshSession(configId: string | undefined): void {
