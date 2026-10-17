@@ -51,7 +51,8 @@
     "schematics-build": "tsc -p projects/schematics/tsconfig.json",
     "copy-files": "node ./tools/post-build-copies.js",
     "lint": "ng lint",
-    "test-schematics": "npm run schematics-build && npm run copy-files && vitest run --config projects/schematics/vitest.config.mts"
+    "test-schematics": "npm run schematics-build && npm run copy-files && vitest run --config projects/schematics/vitest.config.mts",
+    "e2e": "playwright test -c e2e/playwright.config.ts"
   },
   "private": true,
   "dependencies": {
@@ -76,6 +77,7 @@
     "@angular/cli": "^22.2.0",
     "@angular/compiler-cli": "^22.2.0",
     "@evilmartians/lefthook": "^1.0.3",
+    "@playwright/test": "^1.62.1",
     "@types/node": "^26.2.0",
     "@typescript-eslint/eslint-plugin": "^8.66.0",
     "@typescript-eslint/parser": "^8.66.0",

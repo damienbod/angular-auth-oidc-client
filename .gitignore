@@ -51,3 +51,7 @@ debug.log
 
 /.husky
 /.nx
+
+# playwright e2e
+/e2e/test-results
+/e2e/playwright-report

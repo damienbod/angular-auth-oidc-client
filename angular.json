@@ -925,6 +925,18 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "e2e": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/sample-code-flow-refresh-tokens/src/app/auth-config.module.ts",
+                  "with": "projects/sample-code-flow-refresh-tokens/src/app/auth-config.module.e2e.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -942,6 +954,9 @@
             },
             "development": {
               "buildTarget": "sample-code-flow-refresh-tokens:build:development"
+            },
+            "e2e": {
+              "buildTarget": "sample-code-flow-refresh-tokens:build:e2e"
             }
           },
           "defaultConfiguration": "development"
