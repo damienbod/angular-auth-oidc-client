@@ -5,13 +5,15 @@ on:
     branches:
       - main
   pull_request:
-    types: [opened, synchronize, reopened, closed]
     branches:
       - main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build_job:
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     name: Built, Lint and Test Library
     permissions:
@@ -19,13 +21,12 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v5
-        with:
-          submodules: true
 
       - name: Setup Node.js
         uses:  actions/setup-node@v5
         with:
           node-version: 22
+          cache: npm
 
       - name: Installing Dependencies
         run: npm ci
@@ -62,119 +63,40 @@ jobs:
       - name: Testing Schematics
         run: npm run test-schematics
 
-      - name: Show files
-        run: ls
-
       - name: Upload Artefact
         uses: actions/upload-artifact@v4
         with:
           name: angular_auth_oidc_client_artefact
           path: dist/angular-auth-oidc-client
 
-  AngularLatestVersion:
+  AngularScaffold:
     needs: build_job
     runs-on: ubuntu-latest
-    name: Angular latest
-    steps:
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
-        with:
-          # Node 24 for its npm 11. The npm 10 of Node 22 crashes while
-          # installing the packages of the scaffolded app, when it resolves the
-          # peer set of the vitest dev dependency the Angular CLI now adds:
-          # "npm error Cannot read properties of null (reading 'edgesOut')".
-          node-version: 24
-
-      - name: Download Artefact
-        uses: actions/download-artifact@v4
-        with:
-          name: angular_auth_oidc_client_artefact
-          path: angular-auth-oidc-client-artefact
-
-      - name: Install AngularCLI globally
-        run: npm install -g @angular/cli
-
-      - name: Show ng Version
-        run: ng version
-
-      - name: Create Angular Project
-        run: ng new angular-auth-oidc-client-test --skip-git
-
-      - name: Npm Install & Install Library from local artefact
-        run: |
-          cp -R angular-auth-oidc-client-artefact angular-auth-oidc-client-test/
-          cd angular-auth-oidc-client-test
-          npm install
-          ng add ./angular-auth-oidc-client-artefact --authority-url-or-tenant-id "my-authority-url" --flow-type "OIDC Code Flow PKCE using refresh tokens" --use-local-package=true --skip-confirmation
-
-      - name: Test Angular Application
-        working-directory: ./angular-auth-oidc-client-test
-        run: npm test
-
-      - name: Build Angular Application
-        working-directory: ./angular-auth-oidc-client-test
-        run: npm run build
-
-  AngularLatestVersionWithSchematics:
-    needs: build_job
-    runs-on: ubuntu-latest
-    name: Angular latest & Schematics Job
-    steps:
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
-        with:
-          # Node 24 for its npm 11. The npm 10 of Node 22 crashes while
-          # installing the packages of the scaffolded app, when it resolves the
-          # peer set of the vitest dev dependency the Angular CLI now adds:
-          # "npm error Cannot read properties of null (reading 'edgesOut')".
-          node-version: 24
-
-      - name: Download Artefact
-        uses: actions/download-artifact@v4
-        with:
-          name: angular_auth_oidc_client_artefact
-          path: angular-auth-oidc-client-artefact
-
-      - name: Install AngularCLI globally
-        run: npm install -g @angular/cli
-
-      - name: Show ng Version
-        run: ng version
-
-      - name: Create Angular Project
-        run: ng new angular-auth-oidc-client-test --skip-git
-
-      - name: Npm Install & Install Library from local artefact
-        run: |
-          cp -R angular-auth-oidc-client-artefact angular-auth-oidc-client-test/
-          cd angular-auth-oidc-client-test
-          npm install
-          ng add ./angular-auth-oidc-client-artefact --authority-url-or-tenant-id "my-authority-url" --flow-type "Default config" --use-local-package=true --skip-confirmation
-
-      - name: Test Angular Application
-        working-directory: ./angular-auth-oidc-client-test
-        run: npm test
-
-      - name: Build Angular Application
-        working-directory: ./angular-auth-oidc-client-test
-        run: npm run build
-
-  AngularLatestVersionWithNgModuleSchematics:
-    needs: build_job
-    runs-on: ubuntu-latest
-    name: Angular latest NgModule & Schematics Job (${{ matrix.name }})
+    name: Angular latest & Schematics Job (${{ matrix.name }})
     strategy:
       fail-fast: false
       matrix:
         include:
-          # Auto-detection: an NgModule app gets the NgModule setup.
-          - name: auto-detect
+          # ng_new: options for 'ng new'. extra: options for 'ng add'.
+          # Without 'extra', ng add auto-detects standalone vs. NgModule.
+          - name: standalone-refresh
+            ng_new: ''
             flow: 'OIDC Code Flow PKCE using refresh tokens'
             extra: ''
-          - name: standalone-option
+          - name: standalone-default
+            ng_new: ''
+            flow: 'Default config'
+            extra: ''
+          - name: ngmodule-refresh
+            ng_new: '--standalone=false'
+            flow: 'OIDC Code Flow PKCE using refresh tokens'
+            extra: ''
+          - name: ngmodule-standalone-opt
+            ng_new: '--standalone=false'
             flow: 'Default config'
             extra: '--standalone'
-          - name: legacy-modules-option
+          - name: ngmodule-legacy
+            ng_new: '--standalone=false'
             flow: 'Default config'
             extra: '--legacy-modules'
     steps:
@@ -200,7 +122,7 @@ jobs:
         run: ng version
 
       - name: Create Angular Project
-        run: ng new angular-auth-oidc-client-test --skip-git --standalone=false
+        run: ng new angular-auth-oidc-client-test --skip-git ${{ matrix.ng_new }}
 
       - name: Npm Install & Install Library from local artefact
         run: |
