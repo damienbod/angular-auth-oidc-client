@@ -106,6 +106,7 @@ describe('AuthWellKnownService', () => {
         status: 404,
         statusText: 'Not Found',
       });
+
       vi.spyOn(dataService, 'getWellKnownEndPointsForConfig').mockReturnValue(
         throwError(() => httpError)
       );
