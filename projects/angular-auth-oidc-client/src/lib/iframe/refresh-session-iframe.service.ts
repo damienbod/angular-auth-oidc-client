@@ -6,6 +6,14 @@ import { LoggerService } from '../logging/services/logger.service';
 import { UrlService } from '../utils/url/url.service';
 import { SilentRenewService, getFrameId } from './silent-renew.service';
 
+const SILENT_RENEW_INIT_EVENT = 'oidc-silent-renew-init';
+const SILENT_RENEW_MESSAGE_EVENT = 'oidc-silent-renew-message';
+
+interface SilentRenewInstance {
+  instanceId: number;
+  configId?: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class RefreshSessionIframeService {
   private readonly renderer = inject(RendererFactory2).createRenderer(
@@ -30,13 +38,9 @@ export class RefreshSessionIframeService {
     return this.urlService
       .getRefreshSessionSilentRenewUrl(config, customParams)
       .pipe(
-        switchMap((url) => {
-          return this.sendAuthorizeRequestUsingSilentRenew(
-            url,
-            config,
-            allConfigs
-          );
-        })
+        switchMap((url) =>
+          this.sendAuthorizeRequestUsingSilentRenew(url, config, allConfigs)
+        )
       );
   }
 
@@ -47,15 +51,23 @@ export class RefreshSessionIframeService {
   ): Observable<boolean> {
     const sessionIframe = this.silentRenewService.getOrCreateIframe(config);
 
-    this.initSilentRenewRequest(config, allConfigs);
+    this.listenForSilentRenewMessages(config, allConfigs);
     this.loggerService.logDebug(
       config,
       `sendAuthorizeRequestUsingSilentRenew for URL: ${url}`
     );
 
+    return this.navigateAndWaitUntilLoaded(sessionIframe, url, config);
+  }
+
+  private navigateAndWaitUntilLoaded(
+    iframe: HTMLIFrameElement,
+    url: string | null,
+    config: OpenIdConfiguration
+  ): Observable<boolean> {
     return new Observable((observer) => {
-      const onLoadHandler = (): void => {
-        sessionIframe.removeEventListener('load', onLoadHandler);
+      const onLoad = (): void => {
+        iframe.removeEventListener('load', onLoad);
         this.loggerService.logDebug(
           config,
           'removed event listener from IFrame'
@@ -64,12 +76,12 @@ export class RefreshSessionIframeService {
         observer.complete();
       };
 
-      sessionIframe.addEventListener('load', onLoadHandler);
-      sessionIframe.contentWindow?.location.replace(url ?? '');
+      iframe.addEventListener('load', onLoad);
+      iframe.contentWindow?.location.replace(url ?? '');
     });
   }
 
-  private initSilentRenewRequest(
+  private listenForSilentRenewMessages(
     config: OpenIdConfiguration,
     allConfigs: OpenIdConfiguration[]
   ): void {
@@ -80,48 +92,87 @@ export class RefreshSessionIframeService {
       `Creating new silent renew handlers for config: ${config.configId}, instance: ${instanceId}`
     );
 
-    const initDestroyHandler = this.renderer.listen(
-      'window',
-      'oidc-silent-renew-init',
-      (e: CustomEvent) => {
-        const eventData = e.detail;
-
-        if (
-          eventData.configId === config.configId &&
-          eventData.instanceId !== instanceId
-        ) {
-          this.loggerService.logDebug(
-            config,
-            `Destroying old handlers for config: ${config.configId} (old instance: ${instanceId}, new instance: ${eventData.instanceId})`
-          );
-          initDestroyHandler();
-          renewDestroyHandler();
-        }
-      }
+    const stopHandlingRenewMessages = this.handleRenewMessages(
+      config,
+      allConfigs
     );
-    const renewDestroyHandler = this.renderer.listen(
+
+    this.stopWhenNewerInstanceStarts(
+      instanceId,
+      config,
+      stopHandlingRenewMessages
+    );
+    this.announceInstance(instanceId, config);
+  }
+
+  private handleRenewMessages(
+    config: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[]
+  ): () => void {
+    return this.renderer.listen(
       'window',
-      'oidc-silent-renew-message',
+      SILENT_RENEW_MESSAGE_EVENT,
       (e: CustomEvent) => {
         if (this.shouldProcessRenewMessage(e, config)) {
-          const eventToPass = this.convertToLegacyEvent(e);
-
           this.silentRenewService.silentRenewEventHandler(
-            eventToPass,
+            this.convertToLegacyEvent(e),
             config,
             allConfigs
           );
         }
       }
     );
+  }
+
+  private stopWhenNewerInstanceStarts(
+    instanceId: number,
+    config: OpenIdConfiguration,
+    stopHandlingRenewMessages: () => void
+  ): void {
+    const stopWatchingForNewerInstances = this.renderer.listen(
+      'window',
+      SILENT_RENEW_INIT_EVENT,
+      (e: CustomEvent<SilentRenewInstance>) => {
+        const newInstance = e.detail;
+
+        if (
+          !this.isNewerInstanceOfSameConfig(newInstance, instanceId, config)
+        ) {
+          return;
+        }
+
+        this.loggerService.logDebug(
+          config,
+          `Destroying old handlers for config: ${config.configId} (old instance: ${instanceId}, new instance: ${newInstance.instanceId})`
+        );
+        stopWatchingForNewerInstances();
+        stopHandlingRenewMessages();
+      }
+    );
+  }
+
+  private isNewerInstanceOfSameConfig(
+    newInstance: SilentRenewInstance,
+    instanceId: number,
+    config: OpenIdConfiguration
+  ): boolean {
+    return (
+      newInstance.configId === config.configId &&
+      newInstance.instanceId !== instanceId
+    );
+  }
+
+  private announceInstance(
+    instanceId: number,
+    config: OpenIdConfiguration
+  ): void {
+    const instance: SilentRenewInstance = {
+      instanceId,
+      configId: config.configId,
+    };
 
     this.document.defaultView?.dispatchEvent(
-      new CustomEvent('oidc-silent-renew-init', {
-        detail: {
-          instanceId,
-          configId: config.configId,
-        },
-      })
+      new CustomEvent(SILENT_RENEW_INIT_EVENT, { detail: instance })
     );
   }
 
@@ -139,17 +190,9 @@ export class RefreshSessionIframeService {
     }
 
     if (e.detail.srcFrameId) {
-      const shouldProcess = getFrameId(config.configId) === e.detail.srcFrameId;
-
-      this.loggerService.logDebug(
-        config,
-        `Silent renew event from frame: ${e.detail.srcFrameId}, current configId: ${config.configId}, processing: ${shouldProcess}`
-      );
-
-      return shouldProcess;
+      return this.isMessageFromOwnIframe(e.detail.srcFrameId, config);
     }
 
-    // Fallback for backward compatibility - if no srcFrameId but has detail (legacy format)
     this.loggerService.logDebug(
       config,
       'Silent renew event without srcFrameId - processing for backward compatibility'
@@ -158,13 +201,25 @@ export class RefreshSessionIframeService {
     return true;
   }
 
+  private isMessageFromOwnIframe(
+    srcFrameId: string,
+    config: OpenIdConfiguration
+  ): boolean {
+    const isOwnIframe = getFrameId(config.configId) === srcFrameId;
+
+    this.loggerService.logDebug(
+      config,
+      `Silent renew event from frame: ${srcFrameId}, current configId: ${config.configId}, processing: ${isOwnIframe}`
+    );
+
+    return isOwnIframe;
+  }
+
   private convertToLegacyEvent(e: CustomEvent): CustomEvent {
-    // If event has the new format with url property, convert it to legacy format
     if (e?.detail?.url) {
       return new CustomEvent(e.type, { detail: e.detail.url });
     }
 
-    // Otherwise, return as-is (already in legacy format)
     return e;
   }
 }
