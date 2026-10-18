@@ -7,7 +7,7 @@ import { LogoutAuthOptions } from '../auth-options';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { CheckSessionService } from '../iframe/check-session.service';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { removeNullAndUndefinedValues } from '../utils/object/object.helper';
 import { RedirectService } from '../utils/redirect/redirect.service';

@@ -4,7 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, of } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
 import { AuthStateService } from '../../auth-state/auth-state.service';
-import { LoggerService } from '../../logging/logger.service';
+import { LoggerService } from '../../logging/services/logger.service';
 import { StateValidationResult } from '../../validation/state-validation-result';
 import { StateValidationService } from '../../validation/state-validation.service';
 import { ValidationResult } from '../../validation/validation-result';

@@ -4,7 +4,7 @@ import { from, Observable, of } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { JwkExtractor } from '../extractors/jwk.extractor';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
 import { JwkWindowCryptoService } from './jwk-window-crypto.service';
 import { JwtWindowCryptoService } from './jwt-window-crypto.service';

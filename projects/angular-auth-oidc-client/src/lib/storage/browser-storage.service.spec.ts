@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { mockClass, mockProvider } from '../../test/auto-mock';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { AbstractSecurityStorage } from './abstract-security-storage';
 import { BrowserStorageService } from './browser-storage.service';
 import { DefaultSessionStorageService } from './default-sessionstorage.service';

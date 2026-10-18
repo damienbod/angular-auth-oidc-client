@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
 import { AuthStateService } from '../../auth-state/auth-state.service';
-import { LoggerService } from '../../logging/logger.service';
+import { LoggerService } from '../../logging/services/logger.service';
 import { CallbackContext } from '../callback-context';
 import { RefreshSessionCallbackHandlerService } from './refresh-session-callback-handler.service';
 

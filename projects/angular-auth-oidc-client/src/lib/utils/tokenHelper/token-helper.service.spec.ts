@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { DOCUMENT } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { mockProvider } from '../../../test/auto-mock';
-import { LoggerService } from '../../logging/logger.service';
+import { LoggerService } from '../../logging/services/logger.service';
 import { TokenHelperService } from './token-helper.service';
 
 describe('Token Helper Service', () => {
@@ -472,5 +473,29 @@ describe('Token Helper Service', () => {
 
       expect(expected).toEqual(result);
     });
+  });
+});
+
+describe('Token Helper Service without defaultView', () => {
+  let tokenHelperService: TokenHelperService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        mockProvider(LoggerService),
+        { provide: DOCUMENT, useValue: { defaultView: null } },
+      ],
+    });
+
+    tokenHelperService = TestBed.inject(TokenHelperService);
+  });
+
+  it('decodes the payload when defaultView is null (SSR)', () => {
+    const token = 'eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiLDpMO2w7wifQ.sig';
+    const result = tokenHelperService.getPayloadFromToken(token, false, {
+      configId: 'configId1',
+    });
+
+    expect(result).toEqual({ sub: 'äöü' });
   });
 });

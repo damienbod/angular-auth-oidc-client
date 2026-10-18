@@ -10,8 +10,8 @@ import {
   PassedInitialConfig,
 } from './auth-config';
 import { StsConfigLoader } from './config/loader/config-loader';
-import { AbstractLoggerService } from './logging/abstract-logger.service';
-import { ConsoleLoggerService } from './logging/console-logger.service';
+import { AbstractLoggerService } from './logging/services/abstract-logger.service';
+import { ConsoleLoggerService } from './logging/services/console-logger.service';
 import { OidcSecurityService } from './oidc.security.service';
 import { AbstractSecurityStorage } from './storage/abstract-security-storage';
 import { DefaultSessionStorageService } from './storage/default-sessionstorage.service';

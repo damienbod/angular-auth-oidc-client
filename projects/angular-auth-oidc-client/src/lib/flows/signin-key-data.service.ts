@@ -4,7 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 import { DataService } from '../api/data.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { JwtKeys } from '../validation/jwtkeys';
 

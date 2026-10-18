@@ -10,6 +10,7 @@ import { AuthOptions } from '../auth-options';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { ConfigurationService } from '../config/config.service';
 import { LoginService } from '../login/login.service';
+import { isString } from '../utils/string/string.utils';
 import { AutoLoginService } from './auto-login.service';
 
 @Injectable({ providedIn: 'root' })
@@ -96,7 +97,7 @@ export function autoLoginPartialRoutesGuard(
     authOptions,
     // Used as `canMatch`, Angular passes a `currentSnapshot` object as the
     // third argument, which must not be taken as the config id.
-    typeof configId === 'string' ? configId : undefined
+    isString(configId) ? configId : undefined
   );
 }
 

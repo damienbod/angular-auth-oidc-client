@@ -5,7 +5,7 @@ import { catchError, map, retry, switchMap } from 'rxjs/operators';
 import { DataService } from '../../api/data.service';
 import { AuthOptions } from '../../auth-options';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
-import { LoggerService } from '../../logging/logger.service';
+import { LoggerService } from '../../logging/services/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { UrlService } from '../../utils/url/url.service';
 import { ParResponse } from './par-response';

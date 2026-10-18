@@ -8,7 +8,7 @@ import { createRenewCallbackContext } from '../flows/callback-context.helper';
 import { FlowsService } from '../flows/flows.service';
 import { isNetworkError } from '../flows/callback-handling/error-helper';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { ValidationResult } from '../validation/validation-result';
 import { IntervalService } from './interval.service';
 

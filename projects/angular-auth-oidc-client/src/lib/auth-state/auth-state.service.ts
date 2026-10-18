@@ -3,7 +3,7 @@ import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { AuthResult } from '../flows/callback-context';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';

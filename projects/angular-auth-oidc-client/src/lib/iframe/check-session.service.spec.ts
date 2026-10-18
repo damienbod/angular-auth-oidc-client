@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, of } from 'rxjs';
 import { skip } from 'rxjs/operators';
 import { mockAbstractProvider, mockProvider } from '../../test/auto-mock';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { OidcSecurityService } from '../oidc.security.service';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { AbstractSecurityStorage } from '../storage/abstract-security-storage';

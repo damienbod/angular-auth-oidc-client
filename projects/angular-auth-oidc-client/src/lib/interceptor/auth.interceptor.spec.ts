@@ -14,7 +14,7 @@ import { TestBed } from '@angular/core/testing';
 import { mockProvider } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { ConfigurationService } from '../config/config.service';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { AuthInterceptor, authInterceptor } from './auth.interceptor';
 import { ClosestMatchingRouteService } from './closest-matching-route.service';
 

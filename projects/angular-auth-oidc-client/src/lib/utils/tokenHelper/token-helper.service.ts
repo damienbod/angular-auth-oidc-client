@@ -1,6 +1,6 @@
 import { inject, Injectable, DOCUMENT } from '@angular/core';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
-import { LoggerService } from '../../logging/logger.service';
+import { LoggerService } from '../../logging/services/logger.service';
 
 const PARTS_OF_TOKEN = 3;
 
@@ -112,10 +112,9 @@ export class TokenHelperService {
         throw Error('Illegal base64url string!');
     }
 
-    const decoded =
-      typeof this.document.defaultView !== 'undefined'
-        ? this.document.defaultView?.atob(output)
-        : Buffer.from(output, 'base64').toString('binary');
+    const decoded = this.document.defaultView
+      ? this.document.defaultView.atob(output)
+      : Buffer.from(output, 'base64').toString('binary');
 
     if (!decoded) {
       return '';
@@ -140,19 +139,20 @@ export class TokenHelperService {
     token: string | undefined | null,
     configuration: OpenIdConfiguration
   ): token is string {
+    // Never log the token itself, it may be a valid (opaque) credential.
     if (!token) {
       this.loggerService.logError(
         configuration,
-        `token '${token}' is not valid --> token falsy`
+        `token is not valid --> token falsy`
       );
 
       return false;
     }
 
-    if (!(token as string).includes('.')) {
+    if (!token.includes('.')) {
       this.loggerService.logError(
         configuration,
-        `token '${token}' is not valid --> no dots included`
+        `token is not valid --> no dots included`
       );
 
       return false;
@@ -163,7 +163,7 @@ export class TokenHelperService {
     if (parts.length !== PARTS_OF_TOKEN) {
       this.loggerService.logError(
         configuration,
-        `token '${token}' is not valid --> token has to have exactly ${
+        `token is not valid --> token has to have exactly ${
           PARTS_OF_TOKEN - 1
         } dots`
       );

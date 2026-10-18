@@ -9,7 +9,7 @@ import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';

@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { mockProvider } from '../../../test/auto-mock';
-import { LogLevel } from '../../logging/log-level';
-import { LoggerService } from '../../logging/logger.service';
+import { LogLevel } from '../../logging/types/logging.types';
+import { LoggerService } from '../../logging/services/logger.service';
 import { OpenIdConfiguration } from '../openid-configuration';
 import { ConfigValidationService } from './config-validation.service';
 import { allMultipleConfigRules } from './rules';

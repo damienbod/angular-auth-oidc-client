@@ -4,7 +4,7 @@ import { Observable, of, throwError, timer } from 'rxjs';
 import { catchError, mergeMap, retryWhen, switchMap } from 'rxjs/operators';
 import { DataService } from '../../api/data.service';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
-import { LoggerService } from '../../logging/logger.service';
+import { LoggerService } from '../../logging/services/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { UrlService } from '../../utils/url/url.service';
 import { AuthResult, CallbackContext } from '../callback-context';

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, of } from 'rxjs';
 import { mockProvider } from '../../test/auto-mock';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { UrlService } from '../utils/url/url.service';
 import { RefreshSessionIframeService } from './refresh-session-iframe.service';
 import { SilentRenewService, getFrameId } from './silent-renew.service';

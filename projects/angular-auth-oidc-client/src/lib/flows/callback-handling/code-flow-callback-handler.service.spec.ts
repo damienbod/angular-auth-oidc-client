@@ -5,7 +5,7 @@ import { firstValueFrom, of, throwError } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
 import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
 import { DataService } from '../../api/data.service';
-import { LoggerService } from '../../logging/logger.service';
+import { LoggerService } from '../../logging/services/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { UrlService } from '../../utils/url/url.service';
 import { TokenValidationService } from '../../validation/token-validation.service';

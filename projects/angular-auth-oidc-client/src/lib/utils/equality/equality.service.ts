@@ -121,7 +121,10 @@ export class EqualityService {
       return false;
     }
 
-    return arr1.every((v) => arr2.includes(v));
+    const sorted1 = [...arr1].sort();
+    const sorted2 = [...arr2].sort();
+
+    return this.arraysStrictEqual(sorted1, sorted2);
   }
 
   private isNullOrUndefined(val: any): boolean {

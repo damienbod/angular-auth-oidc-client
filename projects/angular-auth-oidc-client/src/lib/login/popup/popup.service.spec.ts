@@ -3,7 +3,7 @@ import type { Mock } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { mockProvider } from '../../../test/auto-mock';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
-import { LoggerService } from '../../logging/logger.service';
+import { LoggerService } from '../../logging/services/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { PopupResult } from './popup-result';
 import { PopUpService } from './popup.service';
