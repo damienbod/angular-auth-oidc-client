@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
+import { isString } from '../../utils/string/string.utils';
 import {
   FormattedMessage,
   LogLabel,
@@ -124,7 +125,7 @@ export class LoggerService {
    * Logging must never throw.
    */
   private formatMessage(message: string | object): FormattedMessage {
-    if (typeof message === 'string') {
+    if (isString(message)) {
       return this.formatAsText(message);
     }
 
