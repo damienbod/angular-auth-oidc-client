@@ -761,7 +761,9 @@ describe('CheckSessionService', () => {
       // Arrange
       vi.useFakeTimers();
       vi.setSystemTime(new Date('2026-01-01T00:00:00Z'));
-      const fakeIframe = { contentWindow: null } as any;
+      const fakeIframe = {
+        contentWindow: { location: { replace: vi.fn() } },
+      } as any;
 
       vi.spyOn(checkSessionService as any, 'getExistingIframe').mockReturnValue(
         fakeIframe
@@ -786,7 +788,7 @@ describe('CheckSessionService', () => {
       );
     });
 
-    it('returns falsy observable when lastIframerefresh and iframeRefreshInterval are bigger than now', () => {
+    it('emits right away without reloading the iframe when it was refreshed within the refresh interval', () => {
       const serviceAsAny = checkSessionService as any;
       const dateNow = new Date();
       const lastRefresh = dateNow.setMinutes(dateNow.getMinutes() + 30);
@@ -796,14 +798,165 @@ describe('CheckSessionService', () => {
 
       const emissions: any[] = [];
       let completed = false;
+      const readSpy = vi.spyOn(storagePersistenceService, 'read');
 
       serviceAsAny.init().subscribe({
         next: (result: any) => emissions.push(result),
         complete: () => (completed = true),
       });
 
-      expect(emissions).toEqual([]);
+      expect(emissions).toEqual([undefined]);
       expect(completed).toBe(true);
+      expect(readSpy).not.toHaveBeenCalled();
+    });
+
+    it('completes without emitting and waits for no load when the iframe has no contentWindow', () => {
+      // Arrange
+      const fakeIframe = { contentWindow: null } as any;
+
+      vi.spyOn(checkSessionService as any, 'getExistingIframe').mockReturnValue(
+        fakeIframe
+      );
+      vi.spyOn(storagePersistenceService, 'read').mockReturnValue({
+        checkSessionIframe: 'https://idp.example.com/checksession',
+      });
+      vi.spyOn(loggerService, 'logWarning').mockImplementation(() => undefined);
+
+      // Act
+      const { emissions, isCompleted } = collect(
+        (checkSessionService as any).init(config)
+      );
+
+      // Assert
+      expect(emissions).toEqual([]);
+      expect(isCompleted()).toBe(true);
+      expect(fakeIframe.onload).toBeUndefined();
+    });
+  });
+
+  describe('heartbeat with a real init', () => {
+    const config = { configId: 'configId1', clientId: 'clientId' };
+    let postMessage: ReturnType<typeof vi.fn>;
+    let fakeIframe: any;
+    let authWellKnownEndPoints: { checkSessionIframe?: string } | undefined;
+
+    beforeEach(() => {
+      vi.useFakeTimers();
+      postMessage = vi.fn();
+      fakeIframe = {
+        contentWindow: { postMessage, location: { replace: vi.fn() } },
+      };
+      authWellKnownEndPoints = {
+        checkSessionIframe: 'https://idp.example.com/checksession',
+      };
+      vi.spyOn(checkSessionService as any, 'getExistingIframe').mockReturnValue(
+        fakeIframe
+      );
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return authWellKnownEndPoints;
+          }
+
+          if (args[0] === 'session_state') {
+            return 'session_state';
+          }
+
+          return undefined;
+        }
+      );
+      vi.spyOn(loggerService, 'logWarning').mockImplementation(() => undefined);
+    });
+
+    afterEach(() => {
+      checkSessionService.stop();
+      vi.useRealTimers();
+    });
+
+    it('keeps polling with the loaded iframe while it was refreshed within the refresh interval', () => {
+      // Arrange
+      checkSessionService.start(config);
+      fakeIframe.onload();
+
+      // Act
+      vi.advanceTimersByTime(3000 * 3);
+
+      // Assert
+      expect(postMessage).toHaveBeenCalledTimes(4);
+      expect(fakeIframe.contentWindow.location.replace).toHaveBeenCalledTimes(
+        1
+      );
+    });
+
+    it('reloads the iframe once the refresh interval has passed', () => {
+      // Arrange
+      checkSessionService.start(config);
+      fakeIframe.onload();
+
+      // Act
+      vi.advanceTimersByTime(60000);
+
+      // Assert
+      expect(fakeIframe.contentWindow.location.replace).toHaveBeenCalledTimes(
+        2
+      );
+    });
+
+    it('can be started again after the check session iframe disappeared from the well-known endpoints', () => {
+      // Arrange
+      checkSessionService.start(config);
+      fakeIframe.onload();
+      authWellKnownEndPoints = {};
+      vi.advanceTimersByTime(60000);
+      postMessage.mockClear();
+      authWellKnownEndPoints = {
+        checkSessionIframe: 'https://idp.example.com/checksession',
+      };
+
+      // Act
+      checkSessionService.start(config);
+      fakeIframe.onload();
+
+      // Assert
+      expect(postMessage).toHaveBeenCalledTimes(1);
+    });
+
+    it('can be started again after the well-known endpoints were removed', () => {
+      // Arrange
+      checkSessionService.start(config);
+      fakeIframe.onload();
+      authWellKnownEndPoints = undefined;
+      vi.advanceTimersByTime(60000);
+      postMessage.mockClear();
+      authWellKnownEndPoints = {
+        checkSessionIframe: 'https://idp.example.com/checksession',
+      };
+
+      // Act
+      checkSessionService.start(config);
+      fakeIframe.onload();
+
+      // Assert
+      expect(postMessage).toHaveBeenCalledTimes(1);
+    });
+
+    it('can be started again after the iframe lost its contentWindow', () => {
+      // Arrange
+      const contentWindow = fakeIframe.contentWindow;
+
+      checkSessionService.start(config);
+      fakeIframe.onload();
+      fakeIframe.contentWindow = null;
+      vi.advanceTimersByTime(60000);
+      fakeIframe.contentWindow = contentWindow;
+      postMessage.mockClear();
+
+      // Act
+      checkSessionService.start(config);
+      fakeIframe.onload();
+
+      // Assert
+      expect(postMessage).toHaveBeenCalledTimes(1);
     });
   });
 
