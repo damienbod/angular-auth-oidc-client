@@ -119,7 +119,7 @@ describe('Multi-tab refresh token lock', () => {
     localStorage.clear();
   });
 
-  it('keeps both tabs authenticated when they force a refresh at the same time', async () => {
+  it('should keep both tabs authenticated when they force a refresh at the same time', async () => {
     // Arrange
     const config = createConfig();
     const tab1 = createTab(config);
@@ -142,7 +142,7 @@ describe('Multi-tab refresh token lock', () => {
     expect(result2.accessToken).toBe(result1.accessToken);
   }, 30000);
 
-  it('keeps a refresh and a login in another tab valid when they overlap', async () => {
+  it('should keep a refresh and a login in another tab valid when they overlap', async () => {
     // Arrange
     const config = createConfig();
     let tab2LoginUrl: Promise<string> | null = null;
@@ -175,7 +175,7 @@ describe('Multi-tab refresh token lock', () => {
     expect(isTab2LoggedIn).toBe(true);
   }, 30000);
 
-  it('keeps both tabs authenticated while the periodic silent renew runs in both', async () => {
+  it('should keep both tabs authenticated while the periodic silent renew runs in both', async () => {
     // Arrange
     // tokens live 300s, so with 298s renew offset every tab wants to refresh
     // ~2s after each renewal

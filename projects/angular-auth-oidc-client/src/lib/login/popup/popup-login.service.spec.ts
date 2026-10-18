@@ -54,7 +54,7 @@ describe('PopUpLoginService', () => {
   });
 
   describe('loginWithPopUpStandard', () => {
-    it('does nothing if it has an invalid response type', async () => {
+    it('should do nothing if it has an invalid response type', async () => {
       // arrange
       const config = { responseType: 'stubValue' };
 
@@ -79,7 +79,7 @@ describe('PopUpLoginService', () => {
       }
     });
 
-    it('calls urlService.getAuthorizeUrl() if everything fits', async () => {
+    it('should call urlService.getAuthorizeUrl() if everything fits', async () => {
       // arrange
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
@@ -111,7 +111,7 @@ describe('PopUpLoginService', () => {
       expect(urlService.getAuthorizeUrl).toHaveBeenCalled();
     });
 
-    it('opens popup if everything fits', async () => {
+    it('should open popup if everything fits', async () => {
       // arrange
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
@@ -146,7 +146,7 @@ describe('PopUpLoginService', () => {
       expect(popupSpy).toHaveBeenCalled();
     });
 
-    it('returns three properties when popupservice received an url', async () => {
+    it('should return three properties when popupservice received an url', async () => {
       // arrange
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
@@ -200,7 +200,7 @@ describe('PopUpLoginService', () => {
       });
     });
 
-    it('returns two properties if popup was closed by user', async () => {
+    it('should return two properties if popup was closed by user', async () => {
       // arrange
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',

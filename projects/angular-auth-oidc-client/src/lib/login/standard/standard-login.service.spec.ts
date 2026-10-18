@@ -58,7 +58,7 @@ describe('StandardLoginService', () => {
   });
 
   describe('loginStandard', () => {
-    it('does nothing if it has an invalid response type', () => {
+    it('should do nothing if it has an invalid response type', () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -84,7 +84,7 @@ describe('StandardLoginService', () => {
       expect(queryAndStoreAuthWellKnownEndPointsSpy).not.toHaveBeenCalled();
     });
 
-    it('calls flowsDataService.setCodeFlowInProgress() if everything fits', () => {
+    it('should call flowsDataService.setCodeFlowInProgress() if everything fits', () => {
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
@@ -108,7 +108,7 @@ describe('StandardLoginService', () => {
       expect(flowsDataSpy).toHaveBeenCalled();
     });
 
-    it('redirects to URL with no URL handler', async () => {
+    it('should redirect to URL with no URL handler', async () => {
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
@@ -131,7 +131,7 @@ describe('StandardLoginService', () => {
       expect(redirectSpy).toHaveBeenCalledWith('someUrl');
     });
 
-    it('redirects to URL with URL handler when urlHandler is given', async () => {
+    it('should redirect to URL with URL handler when urlHandler is given', async () => {
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
@@ -161,7 +161,7 @@ describe('StandardLoginService', () => {
       expect(redirectSpy).not.toHaveBeenCalled();
     });
 
-    it('calls resetSilentRenewRunning', async () => {
+    it('should call resetSilentRenewRunning', async () => {
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
@@ -186,7 +186,7 @@ describe('StandardLoginService', () => {
       expect(flowsDataSpy).toHaveBeenCalled();
     });
 
-    it('calls getAuthorizeUrl with custom params if they are given as parameter', async () => {
+    it('should call getAuthorizeUrl with custom params if they are given as parameter', async () => {
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',
@@ -219,7 +219,7 @@ describe('StandardLoginService', () => {
       });
     });
 
-    it('does nothing, logs only if getAuthorizeUrl returns falsy', async () => {
+    it('should do nothing but log if getAuthorizeUrl returns falsy', async () => {
       const config = {
         authWellknownEndpointUrl: 'authWellknownEndpoint',
         responseType: 'stubValue',

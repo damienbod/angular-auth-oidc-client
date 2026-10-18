@@ -57,7 +57,7 @@ describe('StateValidationCallbackHandlerService', () => {
   });
 
   describe('callbackStateValidation', () => {
-    it('returns callbackContext with validationResult if validationResult is valid', async () => {
+    it('should return callbackContext with validationResult if validationResult is valid', async () => {
       vi.spyOn(
         stateValidationService,
         'getValidatedStateResult'
@@ -84,7 +84,7 @@ describe('StateValidationCallbackHandlerService', () => {
       } as CallbackContext);
     });
 
-    it('logs error in case of an error', async () => {
+    it('should log error in case of an error', async () => {
       vi.spyOn(
         stateValidationService,
         'getValidatedStateResult'
@@ -117,7 +117,7 @@ describe('StateValidationCallbackHandlerService', () => {
       );
     });
 
-    it('calls resetAuthDataService.resetAuthorizationData and authStateService.updateAndPublishAuthState in case of an error', async () => {
+    it('should call resetAuthDataService.resetAuthorizationData and authStateService.updateAndPublishAuthState in case of an error', async () => {
       vi.spyOn(
         stateValidationService,
         'getValidatedStateResult'

@@ -105,37 +105,37 @@ describe('JwkExtractor', () => {
   });
 
   describe('extractJwk', () => {
-    it('throws error if no keys are present in array', () => {
+    it('should throw error if no keys are present in array', () => {
       expect(() => {
         service.extractJwk([]);
       }).toThrow(JwkExtractorInvalidArgumentError);
     });
 
-    it('throws error if spec.kid is present, but no key was matching', () => {
+    it('should throw error if spec.kid is present, but no key was matching', () => {
       expect(() => {
         service.extractJwk(keys, { kid: 'doot' });
       }).toThrow(JwkExtractorNoMatchingKeysError);
     });
 
-    it('throws error if spec.use is present, but no key was matching', () => {
+    it('should throw error if spec.use is present, but no key was matching', () => {
       expect(() => {
         service.extractJwk(keys, { use: 'blorp' });
       }).toThrow(JwkExtractorNoMatchingKeysError);
     });
 
-    it('does not throw error if no key is matching when throwOnEmpty is false', () => {
+    it('should not throw error if no key is matching when throwOnEmpty is false', () => {
       const result = service.extractJwk(keys, { use: 'blorp' }, false);
 
       expect(result.length).toEqual(0);
     });
 
-    it('throws error if multiple keys are present, and spec is not present', () => {
+    it('should throw error if multiple keys are present, and spec is not present', () => {
       expect(() => {
         service.extractJwk(keys);
       }).toThrow(JwkExtractorSeveralMatchingKeysError);
     });
 
-    it('returns array of keys matching spec.kid', () => {
+    it('should return array of keys matching spec.kid', () => {
       const extracted = service.extractJwk(keys, {
         kid: '5626CE6A8F4F5FCD79C6642345282CA76D337548RS256',
       });
@@ -156,7 +156,7 @@ describe('JwkExtractor', () => {
       expect(extracted2).toContain(key7);
     });
 
-    it('returns array of keys matching spec.use', () => {
+    it('should return array of keys matching spec.use', () => {
       const extracted = service.extractJwk(keys, { use: 'sig' });
 
       expect(extracted.length).toEqual(6);
@@ -174,7 +174,7 @@ describe('JwkExtractor', () => {
       expect(extracted2).toContain(key7);
     });
 
-    it('returns array of keys matching the combination of spec.use and spec.kid', () => {
+    it('should return array of keys matching the combination of spec.use and spec.kid', () => {
       const extracted = service.extractJwk(keys, { kid: 'boop', use: 'sig' });
 
       expect(extracted.length).toEqual(3);
@@ -189,7 +189,7 @@ describe('JwkExtractor', () => {
       expect(extracted2).toContain(key7);
     });
 
-    it('returns array of keys matching spec.kty', () => {
+    it('should return array of keys matching spec.kty', () => {
       const extracted = service.extractJwk(keys, { kty: 'RSA' });
 
       expect(extracted.length).toEqual(5);
@@ -208,7 +208,7 @@ describe('JwkExtractor', () => {
       expect(extracted2).toContain(key9);
     });
 
-    it('returns array of keys matching the combination of spec.kty and spec.use', () => {
+    it('should return array of keys matching the combination of spec.kty and spec.use', () => {
       const extracted = service.extractJwk(keys, { kty: 'RSA', use: 'enc' });
 
       expect(extracted.length).toEqual(1);

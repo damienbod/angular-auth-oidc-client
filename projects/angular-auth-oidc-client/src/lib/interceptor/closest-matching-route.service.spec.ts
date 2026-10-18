@@ -22,7 +22,7 @@ describe('ClosestMatchingRouteService', () => {
   });
 
   describe('getConfigForClosestMatchingRoute', () => {
-    it('gets best match for configured routes', () => {
+    it('should get best match for configured routes', () => {
       const allConfigs = [
         {
           configId: 'configId1',
@@ -47,7 +47,7 @@ describe('ClosestMatchingRouteService', () => {
       expect(matchingConfig).toEqual(allConfigs[0]);
     });
 
-    it('gets best match for configured routes - same route prefix', () => {
+    it('should get best match for configured routes - same route prefix', () => {
       const allConfigs = [
         {
           configId: 'configId1',
@@ -72,7 +72,7 @@ describe('ClosestMatchingRouteService', () => {
       expect(matchingConfig).toEqual(allConfigs[0]);
     });
 
-    it('gets best match for configured routes - main route', () => {
+    it('should get best match for configured routes - main route', () => {
       const allConfigs = [
         {
           configId: 'configId1',
@@ -97,7 +97,7 @@ describe('ClosestMatchingRouteService', () => {
       expect(matchingConfig).toEqual(allConfigs[0]);
     });
 
-    it('gets best match for configured routes - request route with params', () => {
+    it('should get best match for configured routes - request route with params', () => {
       const allConfigs = [
         {
           configId: 'configId1',
@@ -122,7 +122,7 @@ describe('ClosestMatchingRouteService', () => {
       expect(matchingConfig).toEqual(allConfigs[0]);
     });
 
-    it('gets best match for configured routes - configured route with params', () => {
+    it('should get best match for configured routes - configured route with params', () => {
       const allConfigs = [
         {
           configId: 'configId1',
@@ -147,7 +147,7 @@ describe('ClosestMatchingRouteService', () => {
       expect(matchingConfig).toBeNull();
     });
 
-    it('gets best match for configured routes - configured route with wildcards no match', () => {
+    it('should get best match for configured routes - configured route with wildcards no match', () => {
       const allConfigs = [
         {
           configId: 'configId1',
@@ -172,7 +172,7 @@ describe('ClosestMatchingRouteService', () => {
       expect(matchingConfig).toBeNull();
     });
 
-    it('gets best match for configured routes - configured route with wildcards', () => {
+    it('should get best match for configured routes - configured route with wildcards', () => {
       const allConfigs = [
         {
           configId: 'configId1',
@@ -197,7 +197,7 @@ describe('ClosestMatchingRouteService', () => {
       expect(matchingConfig).toEqual(allConfigs[0]);
     });
 
-    it('treats a config without secureRoutes as having no routes', () => {
+    it('should treat a config without secureRoutes as having no routes', () => {
       const allConfigs = [{ configId: 'configId1' }];
       const { matchingConfig, matchingRoute } =
         service.getConfigIdForClosestMatchingRoute(
@@ -209,7 +209,7 @@ describe('ClosestMatchingRouteService', () => {
       expect(matchingRoute).toBeNull();
     });
 
-    it('gets best match for configured routes - no config Id', () => {
+    it('should get best match for configured routes - no config Id', () => {
       const allConfigs = [
         {
           configId: 'configId1',

@@ -52,84 +52,79 @@ describe('AuthWellKnownDataService', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('getWellKnownDocument', () => {
+  describe('getWellKnownEndPointsForConfig url handling', () => {
     it('should add suffix if it does not exist on current URL', async () => {
       const dataServiceSpy = vi
         .spyOn(dataService, 'get')
-        .mockReturnValue(of(null));
+        .mockReturnValue(of({}));
       const urlWithoutSuffix = 'myUrl';
       const urlWithSuffix = `${urlWithoutSuffix}/.well-known/openid-configuration`;
+      const config = {
+        configId: 'configId1',
+        authWellknownEndpointUrl: urlWithoutSuffix,
+        strictIssuerValidationOnWellKnownRetrievalOff: true,
+      };
 
-      await firstValueFrom(
-        (service as any).getWellKnownDocument(urlWithoutSuffix, {
-          configId: 'configId1',
-        })
-      );
+      await firstValueFrom(service.getWellKnownEndPointsForConfig(config));
 
       expect(dataServiceSpy).toHaveBeenCalledTimes(1);
-      expect(dataServiceSpy).toHaveBeenCalledWith(urlWithSuffix, {
-        configId: 'configId1',
-      });
+      expect(dataServiceSpy).toHaveBeenCalledWith(urlWithSuffix, config);
     });
 
     it('should not add suffix if it does exist on current url', async () => {
       const dataServiceSpy = vi
         .spyOn(dataService, 'get')
-        .mockReturnValue(of(null));
+        .mockReturnValue(of({}));
       const urlWithSuffix = `myUrl/.well-known/openid-configuration`;
+      const config = {
+        configId: 'configId1',
+        authWellknownEndpointUrl: urlWithSuffix,
+        strictIssuerValidationOnWellKnownRetrievalOff: true,
+      };
 
-      await firstValueFrom(
-        (service as any).getWellKnownDocument(urlWithSuffix, {
-          configId: 'configId1',
-        })
-      );
+      await firstValueFrom(service.getWellKnownEndPointsForConfig(config));
 
       expect(dataServiceSpy).toHaveBeenCalledTimes(1);
-      expect(dataServiceSpy).toHaveBeenCalledWith(urlWithSuffix, {
-        configId: 'configId1',
-      });
+      expect(dataServiceSpy).toHaveBeenCalledWith(urlWithSuffix, config);
     });
 
     it('should not add suffix if it does exist in the middle of current url', async () => {
       const dataServiceSpy = vi
         .spyOn(dataService, 'get')
-        .mockReturnValue(of(null));
+        .mockReturnValue(of({}));
       const urlWithSuffix = `myUrl/.well-known/openid-configuration/and/some/more/stuff`;
+      const config = {
+        configId: 'configId1',
+        authWellknownEndpointUrl: urlWithSuffix,
+        strictIssuerValidationOnWellKnownRetrievalOff: true,
+      };
 
-      await firstValueFrom(
-        (service as any).getWellKnownDocument(urlWithSuffix, {
-          configId: 'configId1',
-        })
-      );
+      await firstValueFrom(service.getWellKnownEndPointsForConfig(config));
 
       expect(dataServiceSpy).toHaveBeenCalledTimes(1);
-      expect(dataServiceSpy).toHaveBeenCalledWith(urlWithSuffix, {
-        configId: 'configId1',
-      });
+      expect(dataServiceSpy).toHaveBeenCalledWith(urlWithSuffix, config);
     });
 
     it('should use the custom suffix provided in the config', async () => {
       const dataServiceSpy = vi
         .spyOn(dataService, 'get')
-        .mockReturnValue(of(null));
+        .mockReturnValue(of({}));
       const urlWithoutSuffix = `myUrl`;
       const urlWithSuffix = `${urlWithoutSuffix}/.well-known/test-openid-configuration`;
+      const config = {
+        configId: 'configId1',
+        authWellknownEndpointUrl: urlWithoutSuffix,
+        authWellknownUrlSuffix: '/.well-known/test-openid-configuration',
+        strictIssuerValidationOnWellKnownRetrievalOff: true,
+      };
 
-      await firstValueFrom(
-        (service as any).getWellKnownDocument(urlWithoutSuffix, {
-          configId: 'configId1',
-          authWellknownUrlSuffix: '/.well-known/test-openid-configuration',
-        })
-      );
+      await firstValueFrom(service.getWellKnownEndPointsForConfig(config));
 
       expect(dataServiceSpy).toHaveBeenCalledTimes(1);
-      expect(dataServiceSpy).toHaveBeenCalledWith(urlWithSuffix, {
-        configId: 'configId1',
-        authWellknownUrlSuffix: '/.well-known/test-openid-configuration',
-      });
+      expect(dataServiceSpy).toHaveBeenCalledWith(urlWithSuffix, config);
     });
 
-    it('should retry once', async () => {
+    it('should return the endpoints when the request succeeds after one retry', async () => {
       vi.spyOn(dataService, 'get').mockReturnValue(
         createRetriableStream(
           throwError(() => new Error('one')),
@@ -138,16 +133,17 @@ describe('AuthWellKnownDataService', () => {
       );
 
       const res = await firstValueFrom(
-        (service as any).getWellKnownDocument('anyurl', {
+        service.getWellKnownEndPointsForConfig({
           configId: 'configId1',
+          authWellknownEndpointUrl: DUMMY_WELL_KNOWN_DOCUMENT.issuer,
         })
       );
 
-      expect(res).toBeTruthy();
-      expect(res).toEqual(DUMMY_WELL_KNOWN_DOCUMENT);
+      expect(res.issuer).toBe(DUMMY_WELL_KNOWN_DOCUMENT.issuer);
+      expect(res.jwksUri).toBe(DUMMY_WELL_KNOWN_DOCUMENT.jwks_uri);
     });
 
-    it('should retry twice', async () => {
+    it('should return the endpoints when the request succeeds after two retries', async () => {
       vi.spyOn(dataService, 'get').mockReturnValue(
         createRetriableStream(
           throwError(() => new Error('one')),
@@ -157,13 +153,14 @@ describe('AuthWellKnownDataService', () => {
       );
 
       const res = await firstValueFrom(
-        (service as any).getWellKnownDocument('anyurl', {
+        service.getWellKnownEndPointsForConfig({
           configId: 'configId1',
+          authWellknownEndpointUrl: DUMMY_WELL_KNOWN_DOCUMENT.issuer,
         })
       );
 
-      expect(res).toBeTruthy();
-      expect(res).toEqual(DUMMY_WELL_KNOWN_DOCUMENT);
+      expect(res.issuer).toBe(DUMMY_WELL_KNOWN_DOCUMENT.issuer);
+      expect(res.jwksUri).toBe(DUMMY_WELL_KNOWN_DOCUMENT.jwks_uri);
     });
 
     it('should fail after three tries', async () => {
@@ -178,22 +175,23 @@ describe('AuthWellKnownDataService', () => {
 
       await expect(
         firstValueFrom(
-          (service as any).getWellKnownDocument('anyurl', 'configId')
+          service.getWellKnownEndPointsForConfig({
+            configId: 'configId1',
+            authWellknownEndpointUrl: DUMMY_WELL_KNOWN_DOCUMENT.issuer,
+          })
         )
-      ).rejects.toBeTruthy();
+      ).rejects.toThrow('three');
     });
   });
 
   describe('getWellKnownEndPointsForConfig', () => {
-    it('calling internal getWellKnownDocument and maps', async () => {
-      vi.spyOn(dataService, 'get').mockReturnValue(
+    it('should get the well-known document and map it', async () => {
+      const dataServiceSpy = vi.spyOn(dataService, 'get').mockReturnValue(
         of({
           issuer: 'localhost',
           jwks_uri: 'jwks_uri',
         })
       );
-
-      const spy = vi.spyOn(service as any, 'getWellKnownDocument');
       const result = await firstValueFrom(
         service.getWellKnownEndPointsForConfig({
           configId: 'configId1',
@@ -201,13 +199,13 @@ describe('AuthWellKnownDataService', () => {
         })
       );
 
-      expect(spy).toHaveBeenCalled();
+      expect(dataServiceSpy).toHaveBeenCalledTimes(1);
       expect((result as any).jwks_uri).toBeUndefined();
       expect(result.jwksUri).toBe('jwks_uri');
       expect(result.issuer).toBe('localhost');
     });
 
-    it('throws error and logs if no authwellknownUrl is given', async () => {
+    it('should throw error and log if no authwellknownUrl is given', async () => {
       const loggerSpy = vi
         .spyOn(loggerService, 'logError')
         .mockReturnValue(undefined);
@@ -253,7 +251,7 @@ describe('AuthWellKnownDataService', () => {
       expect(result).toEqual(expect.objectContaining(expected));
     });
 
-    it('throws error and logs if well known issuer does not match authwellknownUrl', async () => {
+    it('should throw error and log if well known issuer does not match authwellknownUrl', async () => {
       const loggerSpy = vi
         .spyOn(loggerService, 'logError')
         .mockReturnValue(undefined);
@@ -293,7 +291,7 @@ describe('AuthWellKnownDataService', () => {
       }
     });
 
-    it('throws no error if well known issuer does not match authwellknownUrl and validation is disabled', async () => {
+    it('should throw no error if well known issuer does not match authwellknownUrl and validation is disabled', async () => {
       const loggerSpy = vi
         .spyOn(loggerService, 'logError')
         .mockReturnValue(undefined);
@@ -319,7 +317,7 @@ describe('AuthWellKnownDataService', () => {
       expect(loggerSpy).not.toHaveBeenCalled();
     });
 
-    it('should not throws error and logs if well known issuer has a trailing slash compared to authwellknownUrl ', async () => {
+    it('should not throw an error but log if well known issuer has a trailing slash compared to authwellknownUrl ', async () => {
       const trailingSlashIssuerWellKnown = {
         ...DUMMY_WELL_KNOWN_DOCUMENT,
         issuer: DUMMY_WELL_KNOWN_DOCUMENT.issuer + '/',

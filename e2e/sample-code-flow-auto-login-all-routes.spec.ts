@@ -18,7 +18,7 @@ async function expectAuthenticatedHome(page: Page): Promise<void> {
   await expect(page.getByText('Test User IDP1')).toBeVisible();
 }
 
-test('logs in automatically on the first visit via the callback route', async ({
+test('should log in automatically on the first visit via the callback route', async ({
   page,
 }) => {
   const authorizeRequest = page.waitForRequest(isAuthorizeRequest());
@@ -35,14 +35,14 @@ test('logs in automatically on the first visit via the callback route', async ({
   await expectAuthenticatedHome(page);
 });
 
-test('returns to a deep linked route after login', async ({ page }) => {
+test('should return to a deep linked route after login', async ({ page }) => {
   await page.goto('/customers/details');
 
   await expect(page.getByText('customers works!')).toBeVisible();
   await expect(page).toHaveURL(/\/customers\/details$/);
 });
 
-test('stays authenticated across reloads and guarded routes', async ({
+test('should stay authenticated across reloads and guarded routes', async ({
   page,
 }) => {
   await page.goto('/');
@@ -60,7 +60,9 @@ test('stays authenticated across reloads and guarded routes', async ({
   expect(authorizeRequests).toEqual([]);
 });
 
-test('renews the tokens silently with refresh tokens', async ({ page }) => {
+test('should renew the tokens silently with refresh tokens', async ({
+  page,
+}) => {
   await page.goto('/');
   await expectAuthenticatedHome(page);
 
@@ -69,7 +71,7 @@ test('renews the tokens silently with refresh tokens', async ({ page }) => {
   await expectAuthenticatedHome(page);
 });
 
-test('logs out and is logged in again by the guard', async ({ page }) => {
+test('should log out and is logged in again by the guard', async ({ page }) => {
   await page.goto('/');
   await expectAuthenticatedHome(page);
 

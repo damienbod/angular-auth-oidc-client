@@ -37,13 +37,13 @@ describe('IntervalService', () => {
   });
 
   describe('isTokenValidationRunning', () => {
-    it('returns false when no validation subscription is running', () => {
+    it('should return false when no validation subscription is running', () => {
       intervalService.runTokenValidationRunning = null;
 
       expect(intervalService.isTokenValidationRunning()).toBe(false);
     });
 
-    it('returns true when a validation subscription is running', () => {
+    it('should return true when a validation subscription is running', () => {
       intervalService.runTokenValidationRunning = new Subscription();
 
       expect(intervalService.isTokenValidationRunning()).toBe(true);
@@ -51,7 +51,7 @@ describe('IntervalService', () => {
   });
 
   describe('stopPeriodicTokenCheck', () => {
-    it('calls unsubscribe and sets to null', () => {
+    it('should call unsubscribe and set to null', () => {
       intervalService.runTokenValidationRunning = new Subscription();
       const spy = vi
         .spyOn(intervalService.runTokenValidationRunning, 'unsubscribe')
@@ -63,7 +63,7 @@ describe('IntervalService', () => {
       expect(intervalService.runTokenValidationRunning).toBeNull();
     });
 
-    it('does nothing if `runTokenValidationRunning` is null', () => {
+    it('should do nothing if `runTokenValidationRunning` is null', () => {
       intervalService.runTokenValidationRunning = new Subscription();
       const spy = vi
         .spyOn(intervalService.runTokenValidationRunning, 'unsubscribe')
@@ -77,7 +77,7 @@ describe('IntervalService', () => {
   });
 
   describe('startPeriodicTokenCheck', () => {
-    it('starts check after correct milliseconds', async () => {
+    it('should start check after correct milliseconds', async () => {
       const periodicCheck = intervalService.startPeriodicTokenCheck(0.5);
       const spy = vi.fn();
       const sub = periodicCheck.subscribe(() => {

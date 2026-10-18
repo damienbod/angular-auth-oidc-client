@@ -12,7 +12,7 @@ describe('ensureNoDuplicatedConfigsRule', () => {
     ...overrides,
   });
 
-  it('returns an error when a config is not set (passed without a config property)', () => {
+  it('should return an error when a config is not set (passed without a config property)', () => {
     const result = ensureNoDuplicatedConfigsRule([
       null as unknown as OpenIdConfiguration,
     ]);
@@ -26,7 +26,7 @@ describe('ensureNoDuplicatedConfigsRule', () => {
     });
   });
 
-  it('returns a warning when two configs share authority, clientId and scope', () => {
+  it('should return a warning when two configs share authority, clientId and scope', () => {
     const result = ensureNoDuplicatedConfigsRule([
       createConfig(),
       createConfig(),
@@ -41,7 +41,7 @@ describe('ensureNoDuplicatedConfigsRule', () => {
     });
   });
 
-  it('returns a positive result for distinct configs', () => {
+  it('should return a positive result for distinct configs', () => {
     const result = ensureNoDuplicatedConfigsRule([
       createConfig(),
       createConfig({ clientId: 'clientId2' }),

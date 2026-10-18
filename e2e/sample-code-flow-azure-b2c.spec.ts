@@ -21,7 +21,9 @@ async function expectAuthenticated(page: Page): Promise<void> {
   await expect(page.getByText('Test User IDP1')).toBeVisible();
 }
 
-test('logs in automatically when opening a guarded route', async ({ page }) => {
+test('should log in automatically when opening a guarded route', async ({
+  page,
+}) => {
   const wellKnown = page.waitForRequest(
     `${idp()}/.well-known/openid-configuration`
   );
@@ -47,7 +49,7 @@ test('logs in automatically when opening a guarded route', async ({ page }) => {
   expect(userInfoRequests).toEqual([]);
 });
 
-test('returns to the requested route after login', async ({ page }) => {
+test('should return to the requested route after login', async ({ page }) => {
   await page.goto('/protected');
 
   await expect(page.getByText('protected works!')).toBeVisible();
@@ -55,7 +57,7 @@ test('returns to the requested route after login', async ({ page }) => {
   await expect(navLink(page, 'Logout')).toBeVisible();
 });
 
-test('stays authenticated after a page reload', async ({ page }) => {
+test('should stay authenticated after a page reload', async ({ page }) => {
   await page.goto('/home');
   await expectAuthenticated(page);
 
@@ -67,7 +69,9 @@ test('stays authenticated after a page reload', async ({ page }) => {
   expect(authorizeRequests).toEqual([]);
 });
 
-test('renews the tokens silently with refresh tokens', async ({ page }) => {
+test('should renew the tokens silently with refresh tokens', async ({
+  page,
+}) => {
   await page.goto('/home');
   await expectAuthenticated(page);
 
@@ -76,7 +80,7 @@ test('renews the tokens silently with refresh tokens', async ({ page }) => {
   await expectAuthenticated(page);
 });
 
-test('refreshes the session on demand', async ({ page }) => {
+test('should refresh the session on demand', async ({ page }) => {
   await page.goto('/home');
   await expectAuthenticated(page);
 
@@ -88,7 +92,7 @@ test('refreshes the session on demand', async ({ page }) => {
   await expectAuthenticated(page);
 });
 
-test('logs out through the end session endpoint', async ({ page }) => {
+test('should log out through the end session endpoint', async ({ page }) => {
   await page.goto('/home');
   await expectAuthenticated(page);
 

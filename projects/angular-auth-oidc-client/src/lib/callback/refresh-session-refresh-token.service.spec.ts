@@ -59,7 +59,7 @@ describe('RefreshSessionRefreshTokenService', () => {
   });
 
   describe('refreshSessionWithRefreshTokens', () => {
-    it('calls flowsService.processRefreshToken()', async () => {
+    it('should call flowsService.processRefreshToken()', async () => {
       const spy = vi
         .spyOn(flowsService, 'processRefreshToken')
         .mockReturnValue(of({} as CallbackContext));
@@ -74,7 +74,7 @@ describe('RefreshSessionRefreshTokenService', () => {
       expect(spy).toHaveBeenCalled();
     });
 
-    it('resetAuthorizationData in case of error', async () => {
+    it('should reset authorization data in case of error', async () => {
       vi.spyOn(flowsService, 'processRefreshToken').mockReturnValue(
         throwError(() => new Error('error'))
       );
@@ -93,7 +93,7 @@ describe('RefreshSessionRefreshTokenService', () => {
       expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
     });
 
-    it('preserves authorization data and the original error for network failures', async () => {
+    it('should preserve authorization data and the original error for network failures', async () => {
       const networkError = new HttpErrorResponse({
         error: new ProgressEvent('error'),
         status: 0,
@@ -125,7 +125,7 @@ describe('RefreshSessionRefreshTokenService', () => {
       expect(stopPeriodicTokenCheckSpy).not.toHaveBeenCalled();
     });
 
-    it('times out refreshes without clearing authorization data', async () => {
+    it('should time out refreshes without clearing authorization data', async () => {
       vi.spyOn(flowsService, 'processRefreshToken').mockReturnValue(NEVER);
       const resetAuthorizationDataSpy = vi.spyOn(
         resetAuthDataService,
@@ -153,7 +153,7 @@ describe('RefreshSessionRefreshTokenService', () => {
       expect(stopPeriodicTokenCheckSpy).not.toHaveBeenCalled();
     });
 
-    it('finalize with stopPeriodicTokenCheck in case of error', async () => {
+    it('should stop the periodic token check in case of error', async () => {
       vi.spyOn(flowsService, 'processRefreshToken').mockReturnValue(
         throwError(() => new Error('error'))
       );
@@ -175,7 +175,7 @@ describe('RefreshSessionRefreshTokenService', () => {
     });
 
     describe('cross-tab refresh token lock', () => {
-      it('does not request a lock when useRefreshTokenLock is disabled', async () => {
+      it('should not request a lock when useRefreshTokenLock is disabled', async () => {
         const requestSpy = vi
           .fn()
           .mockName('request')
@@ -202,7 +202,7 @@ describe('RefreshSessionRefreshTokenService', () => {
         expect(processSpy).toHaveBeenCalled();
       });
 
-      it('reuses the stored tokens and skips processRefreshToken when another tab already refreshed', async () => {
+      it('should reuse the stored tokens and skips processRefreshToken when another tab already refreshed', async () => {
         Object.defineProperty(navigator, 'locks', {
           value: {
             request: (_name: string, cb: () => Promise<unknown>) => cb(),
@@ -259,7 +259,7 @@ describe('RefreshSessionRefreshTokenService', () => {
         });
       });
 
-      it('reuses the stored tokens when no access token existed before the lock', async () => {
+      it('should reuse the stored tokens when no access token existed before the lock', async () => {
         Object.defineProperty(navigator, 'locks', {
           value: {
             request: (_name: string, cb: () => Promise<unknown>) => cb(),
@@ -289,7 +289,7 @@ describe('RefreshSessionRefreshTokenService', () => {
         expect(callbackContext.refreshToken).toBe('stored-refresh-token');
       });
 
-      it('still refreshes inside the lock when no other tab refreshed while waiting', async () => {
+      it('should still refresh inside the lock when no other tab refreshed while waiting', async () => {
         Object.defineProperty(navigator, 'locks', {
           value: {
             request: (_name: string, cb: () => Promise<unknown>) => cb(),
@@ -313,7 +313,7 @@ describe('RefreshSessionRefreshTokenService', () => {
         expect(processSpy).toHaveBeenCalled();
       });
 
-      it('still refreshes inside the lock when another tab refreshed but the stored tokens are no longer valid', async () => {
+      it('should still refresh inside the lock when another tab refreshed but the stored tokens are no longer valid', async () => {
         Object.defineProperty(navigator, 'locks', {
           value: {
             request: (_name: string, cb: () => Promise<unknown>) => cb(),
@@ -340,7 +340,7 @@ describe('RefreshSessionRefreshTokenService', () => {
         expect(processSpy).toHaveBeenCalled();
       });
 
-      it('requests the lock with a per-config name when useRefreshTokenLock is enabled', async () => {
+      it('should request the lock with a per-config name when useRefreshTokenLock is enabled', async () => {
         const requestSpy = vi
           .fn()
           .mockName('request')
@@ -372,7 +372,7 @@ describe('RefreshSessionRefreshTokenService', () => {
         expect(processSpy).toHaveBeenCalled();
       });
 
-      it('still refreshes when useRefreshTokenLock is enabled but the Web Locks API is unavailable', async () => {
+      it('should still refresh when useRefreshTokenLock is enabled but the Web Locks API is unavailable', async () => {
         Object.defineProperty(navigator, 'locks', {
           value: undefined,
           configurable: true,
@@ -391,7 +391,7 @@ describe('RefreshSessionRefreshTokenService', () => {
         expect(processSpy).toHaveBeenCalled();
       });
 
-      it('resetAuthorizationData in case of error inside the lock', async () => {
+      it('should reset authorization data in case of error inside the lock', async () => {
         Object.defineProperty(navigator, 'locks', {
           value: {
             request: (_name: string, cb: () => Promise<unknown>) => cb(),
@@ -417,7 +417,7 @@ describe('RefreshSessionRefreshTokenService', () => {
         expect(resetAuthorizationDataSpy).toHaveBeenCalled();
       });
 
-      it('preserves authorization data when the refresh exceeds silentRenewTimeoutInSeconds inside the lock', async () => {
+      it('should preserve authorization data when the refresh exceeds silentRenewTimeoutInSeconds inside the lock', async () => {
         Object.defineProperty(navigator, 'locks', {
           value: {
             request: (_name: string, cb: () => Promise<unknown>) => cb(),
@@ -450,7 +450,7 @@ describe('RefreshSessionRefreshTokenService', () => {
   });
 
   describe('usesRefreshTokenLock', () => {
-    it('returns true when useRefreshTokenLock is enabled and the Web Locks API is available', () => {
+    it('should return true when useRefreshTokenLock is enabled and the Web Locks API is available', () => {
       // Arrange
       Object.defineProperty(navigator, 'locks', {
         value: { request: vi.fn() },
@@ -467,7 +467,7 @@ describe('RefreshSessionRefreshTokenService', () => {
       expect(result).toBe(true);
     });
 
-    it('returns false when useRefreshTokenLock is disabled', () => {
+    it('should return false when useRefreshTokenLock is disabled', () => {
       // Arrange
       Object.defineProperty(navigator, 'locks', {
         value: { request: vi.fn() },
@@ -483,7 +483,7 @@ describe('RefreshSessionRefreshTokenService', () => {
       expect(result).toBe(false);
     });
 
-    it('returns false when the Web Locks API is unavailable', () => {
+    it('should return false when the Web Locks API is unavailable', () => {
       // Arrange
       Object.defineProperty(navigator, 'locks', {
         value: undefined,

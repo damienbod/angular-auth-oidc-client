@@ -87,7 +87,7 @@ describe('RefreshSessionIframeService', () => {
   });
 
   describe('refreshSessionWithIframe', () => {
-    it('asks the url service for the silent renew url with the custom params', () => {
+    it('should ask the url service for the silent renew url with the custom params', () => {
       const customParams = { prompt: 'none' };
 
       subscriptions.add(
@@ -102,13 +102,13 @@ describe('RefreshSessionIframeService', () => {
       );
     });
 
-    it('uses the silent renew iframe of the config', () => {
+    it('should use the silent renew iframe of the config', () => {
       startRefresh();
 
       expect(silentRenewService.getOrCreateIframe).toHaveBeenCalledWith(config);
     });
 
-    it('navigates the silent renew iframe to the authorize url', () => {
+    it('should navigate the silent renew iframe to the authorize url', () => {
       startRefresh();
 
       expect(iframe.contentWindow?.location.replace).toHaveBeenCalledWith(
@@ -116,7 +116,7 @@ describe('RefreshSessionIframeService', () => {
       );
     });
 
-    it('navigates the silent renew iframe to an empty url when no url could be created', () => {
+    it('should navigate the silent renew iframe to an empty url when no url could be created', () => {
       vi.spyOn(urlService, 'getRefreshSessionSilentRenewUrl').mockReturnValue(
         of(null)
       );
@@ -126,13 +126,13 @@ describe('RefreshSessionIframeService', () => {
       expect(iframe.contentWindow?.location.replace).toHaveBeenCalledWith('');
     });
 
-    it('does not fail when the iframe has no content window', () => {
+    it('should not fail when the iframe has no content window', () => {
       iframe.contentWindow = null;
 
       expect(() => startRefresh()).not.toThrow();
     });
 
-    it('does not emit before the iframe has loaded', () => {
+    it('should not emit before the iframe has loaded', () => {
       const next = vi.fn();
 
       startRefresh(config, { next });
@@ -140,7 +140,7 @@ describe('RefreshSessionIframeService', () => {
       expect(next).not.toHaveBeenCalled();
     });
 
-    it('emits true and completes once the iframe has loaded', () => {
+    it('should emit true and complete once the iframe has loaded', () => {
       const next = vi.fn();
       const complete = vi.fn();
 
@@ -151,7 +151,7 @@ describe('RefreshSessionIframeService', () => {
       expect(complete).toHaveBeenCalledTimes(1);
     });
 
-    it('stops listening to the iframe load event after it fired', () => {
+    it('should stop listening to the iframe load event after it fired', () => {
       const removeEventListenerSpy = vi.spyOn(iframe, 'removeEventListener');
 
       startRefresh();
@@ -163,7 +163,7 @@ describe('RefreshSessionIframeService', () => {
       );
     });
 
-    it('announces its silent renew handlers on the window', () => {
+    it('should announce its silent renew handlers on the window', () => {
       const announcements: CustomEvent[] = [];
       const collect = (e: Event): number =>
         announcements.push(e as CustomEvent);
@@ -181,7 +181,7 @@ describe('RefreshSessionIframeService', () => {
   });
 
   describe('silent renew messages', () => {
-    it('hands a message from its own iframe to the silent renew service as a legacy event', () => {
+    it('should hand a message from its own iframe to the silent renew service as a legacy event', () => {
       const handlerSpy = vi.spyOn(
         silentRenewService,
         'silentRenewEventHandler'
@@ -204,7 +204,7 @@ describe('RefreshSessionIframeService', () => {
       expect(passedConfigs).toBe(allConfigs);
     });
 
-    it('ignores a message from the iframe of another config', () => {
+    it('should ignore a message from the iframe of another config', () => {
       const handlerSpy = vi.spyOn(
         silentRenewService,
         'silentRenewEventHandler'
@@ -219,7 +219,7 @@ describe('RefreshSessionIframeService', () => {
       expect(handlerSpy).not.toHaveBeenCalled();
     });
 
-    it('ignores a message from a frame that is no silent renew iframe', () => {
+    it('should ignore a message from a frame that is no silent renew iframe', () => {
       const handlerSpy = vi.spyOn(
         silentRenewService,
         'silentRenewEventHandler'
@@ -234,7 +234,7 @@ describe('RefreshSessionIframeService', () => {
       expect(handlerSpy).not.toHaveBeenCalled();
     });
 
-    it('hands a legacy message without frame id to the silent renew service unchanged', () => {
+    it('should hand a legacy message without frame id to the silent renew service unchanged', () => {
       const handlerSpy = vi.spyOn(
         silentRenewService,
         'silentRenewEventHandler'
@@ -253,7 +253,7 @@ describe('RefreshSessionIframeService', () => {
       );
     });
 
-    it('ignores a message without payload', () => {
+    it('should ignore a message without payload', () => {
       const handlerSpy = vi.spyOn(
         silentRenewService,
         'silentRenewEventHandler'
@@ -265,7 +265,7 @@ describe('RefreshSessionIframeService', () => {
       expect(handlerSpy).not.toHaveBeenCalled();
     });
 
-    it('removes the handlers of an older refresh when a newer one for the same config starts', () => {
+    it('should remove the handlers of an older refresh when a newer one for the same config starts', () => {
       const handlerSpy = vi.spyOn(
         silentRenewService,
         'silentRenewEventHandler'
@@ -281,7 +281,7 @@ describe('RefreshSessionIframeService', () => {
       expect(handlerSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('keeps the handlers of other configs when a refresh for another config starts', () => {
+    it('should keep the handlers of other configs when a refresh for another config starts', () => {
       const handlerSpy = vi.spyOn(
         silentRenewService,
         'silentRenewEventHandler'
@@ -301,7 +301,7 @@ describe('RefreshSessionIframeService', () => {
       );
     });
 
-    it('stops handling messages once a newer refresh for the same config took over', () => {
+    it('should stop handling messages once a newer refresh for the same config took over', () => {
       const handlerSpy = vi.spyOn(
         silentRenewService,
         'silentRenewEventHandler'

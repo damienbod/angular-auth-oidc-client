@@ -41,7 +41,9 @@ async function login(page: Page, index: number): Promise<void> {
   await expect(userData(page)).toContainText(USER_NAMES[realm]);
 }
 
-test('is unauthenticated for all configs on first visit', async ({ page }) => {
+test('should be unauthenticated for all configs on first visit', async ({
+  page,
+}) => {
   await page.goto('/');
 
   for (const { configId } of CONFIGS) {
@@ -55,7 +57,7 @@ test('is unauthenticated for all configs on first visit', async ({ page }) => {
   }
 });
 
-test('logs in with each config against its own IdP', async ({ page }) => {
+test('should log in with each config against its own IdP', async ({ page }) => {
   await page.goto('/');
 
   const authorizeRequest = page.waitForRequest(isAuthorizeRequest('idp2'));
@@ -77,7 +79,7 @@ test('logs in with each config against its own IdP', async ({ page }) => {
   }
 });
 
-test('stays authenticated with all configs after a page reload', async ({
+test('should stay authenticated with all configs after a page reload', async ({
   page,
 }) => {
   await page.goto('/');
@@ -95,7 +97,9 @@ test('stays authenticated with all configs after a page reload', async ({
   expect(authorizeRequests).toEqual([]);
 });
 
-test('renews the configs with refresh tokens silently', async ({ page }) => {
+test('should renew the configs with refresh tokens silently', async ({
+  page,
+}) => {
   await page.goto('/');
   await login(page, 0);
   await login(page, 1);
@@ -109,7 +113,7 @@ test('renews the configs with refresh tokens silently', async ({ page }) => {
   await expect(userData(page)).toContainText(USER_NAMES.idp2);
 });
 
-test('refreshes the session of one config on demand', async ({ page }) => {
+test('should refresh the session of one config on demand', async ({ page }) => {
   await page.goto('/');
   await login(page, 0);
   await login(page, 1);
@@ -129,7 +133,10 @@ test('refreshes the session of one config on demand', async ({ page }) => {
   await expect(userData(page)).toContainText(USER_NAMES.idp2);
 });
 
-test('logs out one config and keeps the others', async ({ page, baseURL }) => {
+test('should log out one config and keep the others', async ({
+  page,
+  baseURL,
+}) => {
   await page.goto('/');
   await login(page, 0);
   await login(page, 1);
