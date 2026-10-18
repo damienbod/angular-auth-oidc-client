@@ -84,7 +84,7 @@ describe('State Validation Service', () => {
   });
 
   describe('isIdTokenAfterRefreshTokenRequestValid', () => {
-    it('validate refresh good ', () => {
+    it('should validate refresh good', () => {
       const accessToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJpc3MiOiJodHRwczovL2RhbWllbmJvZC5iMmNsb2dpbi5jb20vYTA5NThmNDUtMTk1Yi00MDM2LTkyNTktZGUyZjdlNTk0ZGI2L3YyLjAvIiwiZXhwIjoxNTg5MjEwMDg2LCJuYmYiOjE1ODkyMDY0ODYsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsIm5hbWUiOiJkYW1pZW5ib2QiLCJlbWFpbHMiOlsiZGFtaWVuQGRhbWllbmJvZC5vbm1pY3Jvc29mdC5jb20iXSwidGZwIjoiQjJDXzFfYjJjcG9saWN5ZGFtaWVuIiwibm9uY2UiOiIwMDdjNDE1M2I2YTA1MTdjMGU0OTc0NzZmYjI0OTk0OGVjNWNsT3ZRUSIsInNjcCI6ImRlbW8ucmVhZCIsImF6cCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInZlciI6IjEuMCIsImlhdCI6MTU4OTIwNjQ4Nn0.Zyg8GAsyj8_ljdheJ57oQ8ldZMon4nLs1VCkBnIon2cXGrXlTA_fYP_Ypf5x5OZcCg-wXdo9RttsLRD69v1cnd5eUc9crzkJ18BruRdhoVQdlrGuakwKujozY2-EU8KNH64qSDpPOqQ9m4jdzGAOkY0wWitOlvYoNZHDzDS4ZIWn8W5H2nwAbf8LMAdXqy41YaIBF4lo3ZaKoUKQqCwIG_0aLvRQcmiwkEoQ5-EUb_hdOejTIbIT5PryyqMnvJYgyrKTf1VY060YpETH19PMosNriwPrPesJhsruphqzaJexg0Pt09ILoMHJhebkON-oPjXLjDOGLfnRTPp6oP_Drg';
       const idToken =
@@ -157,7 +157,7 @@ describe('State Validation Service', () => {
       expect(isValid).toBe(true);
     });
 
-    it('validate refresh invalid iss ', () => {
+    it('should validate refresh invalid iss', () => {
       const accessToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJpc3MiOiJodHRwczovL2RhbWllbmJvZC5iMmNsb2dpbi5jb20vYTA5NThmNDUtMTk1Yi00MDM2LTkyNTktZGUyZjdlNTk0ZGI2L3YyLjAvIiwiZXhwIjoxNTg5MjEwMDg2LCJuYmYiOjE1ODkyMDY0ODYsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsIm5hbWUiOiJkYW1pZW5ib2QiLCJlbWFpbHMiOlsiZGFtaWVuQGRhbWllbmJvZC5vbm1pY3Jvc29mdC5jb20iXSwidGZwIjoiQjJDXzFfYjJjcG9saWN5ZGFtaWVuIiwibm9uY2UiOiIwMDdjNDE1M2I2YTA1MTdjMGU0OTc0NzZmYjI0OTk0OGVjNWNsT3ZRUSIsInNjcCI6ImRlbW8ucmVhZCIsImF6cCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInZlciI6IjEuMCIsImlhdCI6MTU4OTIwNjQ4Nn0.Zyg8GAsyj8_ljdheJ57oQ8ldZMon4nLs1VCkBnIon2cXGrXlTA_fYP_Ypf5x5OZcCg-wXdo9RttsLRD69v1cnd5eUc9crzkJ18BruRdhoVQdlrGuakwKujozY2-EU8KNH64qSDpPOqQ9m4jdzGAOkY0wWitOlvYoNZHDzDS4ZIWn8W5H2nwAbf8LMAdXqy41YaIBF4lo3ZaKoUKQqCwIG_0aLvRQcmiwkEoQ5-EUb_hdOejTIbIT5PryyqMnvJYgyrKTf1VY060YpETH19PMosNriwPrPesJhsruphqzaJexg0Pt09ILoMHJhebkON-oPjXLjDOGLfnRTPp6oP_Drg';
       const idToken =
@@ -230,7 +230,7 @@ describe('State Validation Service', () => {
       expect(isValid).toBe(false);
     });
 
-    it('validate refresh invalid sub ', () => {
+    it('should validate refresh invalid sub', () => {
       const accessToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJpc3MiOiJodHRwczovL2RhbWllbmJvZC5iMmNsb2dpbi5jb20vYTA5NThmNDUtMTk1Yi00MDM2LTkyNTktZGUyZjdlNTk0ZGI2L3YyLjAvIiwiZXhwIjoxNTg5MjEwMDg2LCJuYmYiOjE1ODkyMDY0ODYsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsIm5hbWUiOiJkYW1pZW5ib2QiLCJlbWFpbHMiOlsiZGFtaWVuQGRhbWllbmJvZC5vbm1pY3Jvc29mdC5jb20iXSwidGZwIjoiQjJDXzFfYjJjcG9saWN5ZGFtaWVuIiwibm9uY2UiOiIwMDdjNDE1M2I2YTA1MTdjMGU0OTc0NzZmYjI0OTk0OGVjNWNsT3ZRUSIsInNjcCI6ImRlbW8ucmVhZCIsImF6cCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInZlciI6IjEuMCIsImlhdCI6MTU4OTIwNjQ4Nn0.Zyg8GAsyj8_ljdheJ57oQ8ldZMon4nLs1VCkBnIon2cXGrXlTA_fYP_Ypf5x5OZcCg-wXdo9RttsLRD69v1cnd5eUc9crzkJ18BruRdhoVQdlrGuakwKujozY2-EU8KNH64qSDpPOqQ9m4jdzGAOkY0wWitOlvYoNZHDzDS4ZIWn8W5H2nwAbf8LMAdXqy41YaIBF4lo3ZaKoUKQqCwIG_0aLvRQcmiwkEoQ5-EUb_hdOejTIbIT5PryyqMnvJYgyrKTf1VY060YpETH19PMosNriwPrPesJhsruphqzaJexg0Pt09ILoMHJhebkON-oPjXLjDOGLfnRTPp6oP_Drg';
       const idToken =
@@ -303,7 +303,7 @@ describe('State Validation Service', () => {
       expect(isValid).toBe(false);
     });
 
-    it('validate refresh invalid auth_time ', () => {
+    it('should validate refresh invalid auth_time', () => {
       const accessToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJpc3MiOiJodHRwczovL2RhbWllbmJvZC5iMmNsb2dpbi5jb20vYTA5NThmNDUtMTk1Yi00MDM2LTkyNTktZGUyZjdlNTk0ZGI2L3YyLjAvIiwiZXhwIjoxNTg5MjEwMDg2LCJuYmYiOjE1ODkyMDY0ODYsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsIm5hbWUiOiJkYW1pZW5ib2QiLCJlbWFpbHMiOlsiZGFtaWVuQGRhbWllbmJvZC5vbm1pY3Jvc29mdC5jb20iXSwidGZwIjoiQjJDXzFfYjJjcG9saWN5ZGFtaWVuIiwibm9uY2UiOiIwMDdjNDE1M2I2YTA1MTdjMGU0OTc0NzZmYjI0OTk0OGVjNWNsT3ZRUSIsInNjcCI6ImRlbW8ucmVhZCIsImF6cCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInZlciI6IjEuMCIsImlhdCI6MTU4OTIwNjQ4Nn0.Zyg8GAsyj8_ljdheJ57oQ8ldZMon4nLs1VCkBnIon2cXGrXlTA_fYP_Ypf5x5OZcCg-wXdo9RttsLRD69v1cnd5eUc9crzkJ18BruRdhoVQdlrGuakwKujozY2-EU8KNH64qSDpPOqQ9m4jdzGAOkY0wWitOlvYoNZHDzDS4ZIWn8W5H2nwAbf8LMAdXqy41YaIBF4lo3ZaKoUKQqCwIG_0aLvRQcmiwkEoQ5-EUb_hdOejTIbIT5PryyqMnvJYgyrKTf1VY060YpETH19PMosNriwPrPesJhsruphqzaJexg0Pt09ILoMHJhebkON-oPjXLjDOGLfnRTPp6oP_Drg';
       const idToken =
@@ -376,7 +376,7 @@ describe('State Validation Service', () => {
       expect(isValid).toBe(false);
     });
 
-    it('validate refresh good full', () => {
+    it('should validate refresh good full', () => {
       const accessToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJpc3MiOiJodHRwczovL2RhbWllbmJvZC5iMmNsb2dpbi5jb20vYTA5NThmNDUtMTk1Yi00MDM2LTkyNTktZGUyZjdlNTk0ZGI2L3YyLjAvIiwiZXhwIjoxNTg5MjEwMDg2LCJuYmYiOjE1ODkyMDY0ODYsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsIm5hbWUiOiJkYW1pZW5ib2QiLCJlbWFpbHMiOlsiZGFtaWVuQGRhbWllbmJvZC5vbm1pY3Jvc29mdC5jb20iXSwidGZwIjoiQjJDXzFfYjJjcG9saWN5ZGFtaWVuIiwibm9uY2UiOiIwMDdjNDE1M2I2YTA1MTdjMGU0OTc0NzZmYjI0OTk0OGVjNWNsT3ZRUSIsInNjcCI6ImRlbW8ucmVhZCIsImF6cCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInZlciI6IjEuMCIsImlhdCI6MTU4OTIwNjQ4Nn0.Zyg8GAsyj8_ljdheJ57oQ8ldZMon4nLs1VCkBnIon2cXGrXlTA_fYP_Ypf5x5OZcCg-wXdo9RttsLRD69v1cnd5eUc9crzkJ18BruRdhoVQdlrGuakwKujozY2-EU8KNH64qSDpPOqQ9m4jdzGAOkY0wWitOlvYoNZHDzDS4ZIWn8W5H2nwAbf8LMAdXqy41YaIBF4lo3ZaKoUKQqCwIG_0aLvRQcmiwkEoQ5-EUb_hdOejTIbIT5PryyqMnvJYgyrKTf1VY060YpETH19PMosNriwPrPesJhsruphqzaJexg0Pt09ILoMHJhebkON-oPjXLjDOGLfnRTPp6oP_Drg';
       const idToken =
@@ -449,7 +449,7 @@ describe('State Validation Service', () => {
       expect(isValid).toBe(true);
     });
 
-    it('validate refresh good no existing id_token', () => {
+    it('should validate refresh good no existing id_token', () => {
       const accessToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJpc3MiOiJodHRwczovL2RhbWllbmJvZC5iMmNsb2dpbi5jb20vYTA5NThmNDUtMTk1Yi00MDM2LTkyNTktZGUyZjdlNTk0ZGI2L3YyLjAvIiwiZXhwIjoxNTg5MjEwMDg2LCJuYmYiOjE1ODkyMDY0ODYsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsIm5hbWUiOiJkYW1pZW5ib2QiLCJlbWFpbHMiOlsiZGFtaWVuQGRhbWllbmJvZC5vbm1pY3Jvc29mdC5jb20iXSwidGZwIjoiQjJDXzFfYjJjcG9saWN5ZGFtaWVuIiwibm9uY2UiOiIwMDdjNDE1M2I2YTA1MTdjMGU0OTc0NzZmYjI0OTk0OGVjNWNsT3ZRUSIsInNjcCI6ImRlbW8ucmVhZCIsImF6cCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInZlciI6IjEuMCIsImlhdCI6MTU4OTIwNjQ4Nn0.Zyg8GAsyj8_ljdheJ57oQ8ldZMon4nLs1VCkBnIon2cXGrXlTA_fYP_Ypf5x5OZcCg-wXdo9RttsLRD69v1cnd5eUc9crzkJ18BruRdhoVQdlrGuakwKujozY2-EU8KNH64qSDpPOqQ9m4jdzGAOkY0wWitOlvYoNZHDzDS4ZIWn8W5H2nwAbf8LMAdXqy41YaIBF4lo3ZaKoUKQqCwIG_0aLvRQcmiwkEoQ5-EUb_hdOejTIbIT5PryyqMnvJYgyrKTf1VY060YpETH19PMosNriwPrPesJhsruphqzaJexg0Pt09ILoMHJhebkON-oPjXLjDOGLfnRTPp6oP_Drg';
       const idToken =
@@ -522,7 +522,7 @@ describe('State Validation Service', () => {
       expect(isValid).toBe(true);
     });
 
-    it('validate refresh invalid aud ', () => {
+    it('should validate refresh invalid aud', () => {
       const accessToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJpc3MiOiJodHRwczovL2RhbWllbmJvZC5iMmNsb2dpbi5jb20vYTA5NThmNDUtMTk1Yi00MDM2LTkyNTktZGUyZjdlNTk0ZGI2L3YyLjAvIiwiZXhwIjoxNTg5MjEwMDg2LCJuYmYiOjE1ODkyMDY0ODYsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsIm5hbWUiOiJkYW1pZW5ib2QiLCJlbWFpbHMiOlsiZGFtaWVuQGRhbWllbmJvZC5vbm1pY3Jvc29mdC5jb20iXSwidGZwIjoiQjJDXzFfYjJjcG9saWN5ZGFtaWVuIiwibm9uY2UiOiIwMDdjNDE1M2I2YTA1MTdjMGU0OTc0NzZmYjI0OTk0OGVjNWNsT3ZRUSIsInNjcCI6ImRlbW8ucmVhZCIsImF6cCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInZlciI6IjEuMCIsImlhdCI6MTU4OTIwNjQ4Nn0.Zyg8GAsyj8_ljdheJ57oQ8ldZMon4nLs1VCkBnIon2cXGrXlTA_fYP_Ypf5x5OZcCg-wXdo9RttsLRD69v1cnd5eUc9crzkJ18BruRdhoVQdlrGuakwKujozY2-EU8KNH64qSDpPOqQ9m4jdzGAOkY0wWitOlvYoNZHDzDS4ZIWn8W5H2nwAbf8LMAdXqy41YaIBF4lo3ZaKoUKQqCwIG_0aLvRQcmiwkEoQ5-EUb_hdOejTIbIT5PryyqMnvJYgyrKTf1VY060YpETH19PMosNriwPrPesJhsruphqzaJexg0Pt09ILoMHJhebkON-oPjXLjDOGLfnRTPp6oP_Drg';
       const idToken =
@@ -595,7 +595,7 @@ describe('State Validation Service', () => {
       expect(isValid).toBe(false);
     });
 
-    it('validate refresh invalid azp ', () => {
+    it('should validate refresh invalid azp', () => {
       const accessToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJpc3MiOiJodHRwczovL2RhbWllbmJvZC5iMmNsb2dpbi5jb20vYTA5NThmNDUtMTk1Yi00MDM2LTkyNTktZGUyZjdlNTk0ZGI2L3YyLjAvIiwiZXhwIjoxNTg5MjEwMDg2LCJuYmYiOjE1ODkyMDY0ODYsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsIm5hbWUiOiJkYW1pZW5ib2QiLCJlbWFpbHMiOlsiZGFtaWVuQGRhbWllbmJvZC5vbm1pY3Jvc29mdC5jb20iXSwidGZwIjoiQjJDXzFfYjJjcG9saWN5ZGFtaWVuIiwibm9uY2UiOiIwMDdjNDE1M2I2YTA1MTdjMGU0OTc0NzZmYjI0OTk0OGVjNWNsT3ZRUSIsInNjcCI6ImRlbW8ucmVhZCIsImF6cCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInZlciI6IjEuMCIsImlhdCI6MTU4OTIwNjQ4Nn0.Zyg8GAsyj8_ljdheJ57oQ8ldZMon4nLs1VCkBnIon2cXGrXlTA_fYP_Ypf5x5OZcCg-wXdo9RttsLRD69v1cnd5eUc9crzkJ18BruRdhoVQdlrGuakwKujozY2-EU8KNH64qSDpPOqQ9m4jdzGAOkY0wWitOlvYoNZHDzDS4ZIWn8W5H2nwAbf8LMAdXqy41YaIBF4lo3ZaKoUKQqCwIG_0aLvRQcmiwkEoQ5-EUb_hdOejTIbIT5PryyqMnvJYgyrKTf1VY060YpETH19PMosNriwPrPesJhsruphqzaJexg0Pt09ILoMHJhebkON-oPjXLjDOGLfnRTPp6oP_Drg';
       const idToken =
@@ -887,7 +887,7 @@ describe('State Validation Service', () => {
       expect(state.idToken).toBe('');
     });
 
-    it('access_token should equal result.access_token and is valid if response_type is "id_token token"', async () => {
+    it('should set the access_token and be valid if response_type is "id_token token"', async () => {
       vi.spyOn(tokenHelperService, 'getPayloadFromToken').mockReturnValue(
         'decoded_id_token'
       );
@@ -1757,7 +1757,7 @@ describe('State Validation Service', () => {
       );
     });
 
-    it('Reponse is valid if authConfiguration.response_type does not equal "id_token token"', async () => {
+    it('should be valid if response_type does not equal "id_token token"', async () => {
       vi.spyOn(tokenValidationService, 'hasIdTokenExpired').mockReturnValue(
         false
       );
@@ -1861,7 +1861,7 @@ describe('State Validation Service', () => {
       expect(state.authResponseIsValid).toBe(true);
     });
 
-    it('Response is invalid if validateIdTokenAtHash is false', async () => {
+    it('should be invalid if validateIdTokenAtHash is false', async () => {
       vi.spyOn(
         tokenValidationService,
         'validateStateFromHashCallback'
@@ -2279,7 +2279,7 @@ describe('State Validation Service', () => {
       };
     }
 
-    it('does not compare the state with the stored one', async () => {
+    it('should not compare the state with the stored one', async () => {
       // Arrange
       const validateStateSpy = vi.spyOn(
         tokenValidationService,
@@ -2304,7 +2304,7 @@ describe('State Validation Service', () => {
       expect(result.state).toBe(ValidationResult.Ok);
     });
 
-    it('validates the nonce against the refresh token placeholder instead of the stored nonce', async () => {
+    it('should validate the nonce against the refresh token placeholder instead of the stored nonce', async () => {
       // Arrange
       const validateNonceSpy = vi
         .spyOn(tokenValidationService, 'validateIdTokenNonce')
@@ -2327,7 +2327,7 @@ describe('State Validation Service', () => {
       );
     });
 
-    it('does not clear the stored state and nonce after a valid refresh', async () => {
+    it('should not clear the stored state and nonce after a valid refresh', async () => {
       // Arrange
       vi.spyOn(tokenValidationService, 'validateIdTokenNonce').mockReturnValue(
         true
@@ -2346,7 +2346,7 @@ describe('State Validation Service', () => {
       expect(writeSpy).not.toHaveBeenCalled();
     });
 
-    it('does not clear the stored state and nonce after an invalid refresh', async () => {
+    it('should not clear the stored state and nonce after an invalid refresh', async () => {
       // Arrange
       vi.spyOn(tokenValidationService, 'validateIdTokenNonce').mockReturnValue(
         false
@@ -2365,7 +2365,7 @@ describe('State Validation Service', () => {
       expect(writeSpy).not.toHaveBeenCalled();
     });
 
-    it('still clears the stored state and nonce after a valid code flow callback', async () => {
+    it('should still clear the stored state and nonce after a valid code flow callback', async () => {
       // Arrange
       vi.spyOn(
         tokenValidationService,
@@ -2422,7 +2422,7 @@ describe('State Validation Service', () => {
       config.responseType = 'code';
     });
 
-    it('sets an empty access token when the code flow response contains none', async () => {
+    it('should set an empty access token when the code flow response contains none', async () => {
       // Arrange
       vi.spyOn(
         tokenValidationService,
@@ -2443,7 +2443,7 @@ describe('State Validation Service', () => {
       expect(result.state).toBe(ValidationResult.Ok);
     });
 
-    it('uses an iat max offset of 120 seconds when none is configured', async () => {
+    it('should use an iat max offset of 120 seconds when none is configured', async () => {
       // Arrange
       vi.spyOn(
         tokenValidationService,
@@ -2484,7 +2484,7 @@ describe('State Validation Service', () => {
       expect(result.state).toBe(ValidationResult.MaxOffsetExpired);
     });
 
-    it('clears the stored state when validation fails and autoCleanStateAfterAuthentication is true', async () => {
+    it('should clear the stored state when validation fails and autoCleanStateAfterAuthentication is true', async () => {
       // Arrange
       vi.spyOn(
         tokenValidationService,
@@ -2506,7 +2506,7 @@ describe('State Validation Service', () => {
       expect(writeSpy).toHaveBeenCalledWith('authStateControl', '', config);
     });
 
-    it('keeps the stored state when validation fails and autoCleanStateAfterAuthentication is false', async () => {
+    it('should keep the stored state when validation fails and autoCleanStateAfterAuthentication is false', async () => {
       // Arrange
       vi.spyOn(
         tokenValidationService,

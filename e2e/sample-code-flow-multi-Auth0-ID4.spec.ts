@@ -58,7 +58,9 @@ async function loginToBoth(page: Page): Promise<void> {
   );
 }
 
-test('is unauthenticated for both configs on first visit', async ({ page }) => {
+test('should be unauthenticated for both configs on first visit', async ({
+  page,
+}) => {
   await page.goto('/');
 
   await expectAuthenticatedConfigs(page, []);
@@ -67,7 +69,7 @@ test('is unauthenticated for both configs on first visit', async ({ page }) => {
   );
 });
 
-test('logs in to both configs at their own IdP', async ({ page }) => {
+test('should log in to both configs at their own IdP', async ({ page }) => {
   await page.goto('/');
 
   for (const { configId, realm } of CONFIGS) {
@@ -89,7 +91,7 @@ test('logs in to both configs at their own IdP', async ({ page }) => {
   await expect(page.locator('pre').first()).toContainText(USER_NAMES.idp2);
 });
 
-test('sends the Auth0 audience only for the second config', async ({
+test('should send the Auth0 audience only for the second config', async ({
   page,
 }) => {
   await page.goto('/');
@@ -109,7 +111,9 @@ test('sends the Auth0 audience only for the second config', async ({
   ).toBe('https://auth0-api-spa');
 });
 
-test('renews both configs silently with refresh tokens', async ({ page }) => {
+test('should renew both configs silently with refresh tokens', async ({
+  page,
+}) => {
   await loginToBoth(page);
 
   await Promise.all([
@@ -123,7 +127,7 @@ test('renews both configs silently with refresh tokens', async ({ page }) => {
   );
 });
 
-test('refreshes each config on demand', async ({ page }) => {
+test('should refresh each config on demand', async ({ page }) => {
   await loginToBoth(page);
 
   const firstRefresh = page.waitForRequest(
@@ -150,7 +154,7 @@ test('refreshes each config on demand', async ({ page }) => {
   expect((await (await secondRefresh).response())?.status()).toBe(200);
 });
 
-test('revokes the refresh token of one config', async ({ page }) => {
+test('should revoke the refresh token of one config', async ({ page }) => {
   await loginToBoth(page);
 
   const revocation = page.waitForRequest(isRevocationRequest('idp2'));
@@ -165,7 +169,9 @@ test('revokes the refresh token of one config', async ({ page }) => {
   expect((await (await revocation).response())?.status()).toBe(200);
 });
 
-test('logs out and revokes the tokens of one config', async ({ page }) => {
+test('should log out and revokes the tokens of one config', async ({
+  page,
+}) => {
   await loginToBoth(page);
 
   const revocation = page.waitForRequest(isRevocationRequest('idp1'));
@@ -180,7 +186,7 @@ test('logs out and revokes the tokens of one config', async ({ page }) => {
   await expectAuthenticatedConfigs(page, [CONFIGS[1].configId]);
 });
 
-test('logs out of one config while the other stays authenticated', async ({
+test('should log out of one config while the other stays authenticated', async ({
   page,
 }) => {
   await loginToBoth(page);

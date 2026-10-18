@@ -66,7 +66,7 @@ async function login(page: Page): Promise<void> {
   await expectAuthenticated(page);
 }
 
-test('loads the config over HTTP', async ({ page }) => {
+test('should load the config over HTTP', async ({ page }) => {
   const configRequest = page.waitForRequest(CONFIG_URL);
 
   await page.goto('/');
@@ -78,7 +78,7 @@ test('loads the config over HTTP', async ({ page }) => {
   await expect(page.getByText(`"authority": "${idp()}"`)).toBeVisible();
 });
 
-test('logs in with the code flow and PKCE', async ({ page }) => {
+test('should log in with the code flow and PKCE', async ({ page }) => {
   await page.goto('/');
 
   const authorizeRequest = page.waitForRequest(isAuthorizeRequest());
@@ -94,7 +94,7 @@ test('logs in with the code flow and PKCE', async ({ page }) => {
   await expect(page).toHaveURL(/\/home$/);
 });
 
-test('stays authenticated after a page reload', async ({ page }) => {
+test('should stay authenticated after a page reload', async ({ page }) => {
   await login(page);
 
   const authorizeRequests = collectRequests(page, isAuthorizeRequest());
@@ -105,7 +105,7 @@ test('stays authenticated after a page reload', async ({ page }) => {
   expect(authorizeRequests).toEqual([]);
 });
 
-test('refreshes the session in an iframe', async ({ page }) => {
+test('should refresh the session in an iframe', async ({ page }) => {
   await login(page);
 
   const renew = waitForIframeRenew(page);
@@ -124,7 +124,7 @@ test('refreshes the session in an iframe', async ({ page }) => {
   ).toBe(true);
 });
 
-test('logs off locally without calling the IdP', async ({ page }) => {
+test('should log off locally without calling the IdP', async ({ page }) => {
   await login(page);
 
   const logoutRequests = collectRequests(page, isLogoutRequest());
@@ -135,7 +135,10 @@ test('logs off locally without calling the IdP', async ({ page }) => {
   expect(logoutRequests).toEqual([]);
 });
 
-test('logs out through the end session endpoint', async ({ page, baseURL }) => {
+test('should log out through the end session endpoint', async ({
+  page,
+  baseURL,
+}) => {
   await login(page);
 
   const logoutRequest = page.waitForRequest(isLogoutRequest());

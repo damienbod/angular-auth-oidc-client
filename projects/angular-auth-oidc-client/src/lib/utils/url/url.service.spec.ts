@@ -164,7 +164,7 @@ describe('UrlService Tests', () => {
       expect(result).toBe(true);
     });
 
-    it('returns false and logs an error when the redirect check is enabled but no redirectUrl is configured', () => {
+    it('should return false and logs an error when the redirect check is enabled but no redirectUrl is configured', () => {
       // Arrange
       const config = {
         configId: 'configId1',
@@ -188,25 +188,25 @@ describe('UrlService Tests', () => {
   });
 
   describe('getUrlParameter', () => {
-    it('returns empty string when there is no urlToCheck', () => {
+    it('should return empty string when there is no urlToCheck', () => {
       const result = service.getUrlParameter('', 'code');
 
       expect(result).toBe('');
     });
 
-    it('returns empty string when there is no name', () => {
+    it('should return empty string when there is no name', () => {
       const result = service.getUrlParameter('url', '');
 
       expect(result).toBe('');
     });
 
-    it('returns empty string when name is not a uri', () => {
+    it('should return empty string when name is not a uri', () => {
       const result = service.getUrlParameter('url', 'anything');
 
       expect(result).toBe('');
     });
 
-    it('parses Url correctly with hash in the end', () => {
+    it('should parse Url correctly with hash in the end', () => {
       const urlToCheck =
         'https://www.example.com/signin?code=thisisacode&state=0000.1234.000#';
       const code = service.getUrlParameter(urlToCheck, 'code');
@@ -216,7 +216,7 @@ describe('UrlService Tests', () => {
       expect(state).toBe('0000.1234.000');
     });
 
-    it('parses url with special chars in param and hash in the end', () => {
+    it('should parse url with special chars in param and hash in the end', () => {
       const urlToCheck =
         'https://www.example.com/signin?code=thisisa$-_.+!*(),code&state=0000.1234.000#';
       const code = service.getUrlParameter(urlToCheck, 'code');
@@ -226,7 +226,7 @@ describe('UrlService Tests', () => {
       expect(state).toBe('0000.1234.000');
     });
 
-    it('parses Url correctly with number&delimiter in params', () => {
+    it('should parse Url correctly with number&delimiter in params', () => {
       const urlToCheck =
         'https://www.example.com/signin?code=thisisacode&state=0000.1234.000';
       const code = service.getUrlParameter(urlToCheck, 'code');
@@ -236,7 +236,7 @@ describe('UrlService Tests', () => {
       expect(state).toBe('0000.1234.000');
     });
 
-    it('gets correct param if params divided vith slash', () => {
+    it('should get correct param if params divided vith slash', () => {
       const urlToCheck =
         'https://www.example.com/signin?state=0000.1234.000&ui_locales=de&code=thisisacode#lang=de';
       const code = service.getUrlParameter(urlToCheck, 'code');
@@ -246,7 +246,7 @@ describe('UrlService Tests', () => {
       expect(state).toBe('0000.1234.000');
     });
 
-    it('gets correct params when response_mode=fragment', () => {
+    it('should get correct params when response_mode=fragment', () => {
       // Test url taken from an example in the RFC: https://datatracker.ietf.org/doc/html/rfc6749#section-4.2.2
       const urlToCheck =
         'http://example.com/cb#access_token=2YotnFZFEjr1zCsicMWpAA&state=xyz&token_type=example&expires_in=3600';
@@ -261,7 +261,7 @@ describe('UrlService Tests', () => {
       expect(expiresIn).toBe('3600');
     });
 
-    it('gets correct params when square brackets are present', () => {
+    it('should get correct params when square brackets are present', () => {
       const urlToCheck =
         'http://example.com/cb#state=abc[&code=abc&arr[]=1&some_param=abc]&arr[]=2&arr[]=3';
       const state = service.getUrlParameter(urlToCheck, 'state');
@@ -277,7 +277,7 @@ describe('UrlService Tests', () => {
   });
 
   describe('createAuthorizeUrl', () => {
-    it('returns empty string when no authoizationendpoint given -> wellKnownEndpoints null', () => {
+    it('should return empty string when no authoizationendpoint given -> wellKnownEndpoints null', () => {
       const value = (service as any).createAuthorizeUrl(
         '', // Implicit Flow
         'https://localhost:44386',
@@ -288,7 +288,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual('');
     });
 
-    it('returns empty string when no authoizationendpoint given -> configurationProvider null', () => {
+    it('should return empty string when no authoizationendpoint given -> configurationProvider null', () => {
       (service as any).configurationProvider = null;
 
       const value = (service as any).createAuthorizeUrl(
@@ -301,7 +301,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual('');
     });
 
-    it('returns empty string when clientId is null', () => {
+    it('should return empty string when clientId is null', () => {
       const config = { configId: 'configId1', clientId: '' };
       const authorizationEndpoint = 'authorizationEndpoint';
 
@@ -326,7 +326,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual('');
     });
 
-    it('returns empty string when responseType is null', () => {
+    it('should return empty string when responseType is null', () => {
       const config = {
         configId: 'configId1',
         clientId: 'something',
@@ -355,7 +355,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual('');
     });
 
-    it('returns empty string when scope is null', () => {
+    it('should return empty string when scope is null', () => {
       const config = {
         configId: 'configId1',
         clientId: 'something',
@@ -385,7 +385,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual('');
     });
 
-    it('createAuthorizeUrl with code flow and codeChallenge adds "code_challenge" and "code_challenge_method" param', () => {
+    it('should add code_challenge and code_challenge_method params to the authorize url for code flow', () => {
       const config = {
         authority: 'https://localhost:5001',
       } as OpenIdConfiguration;
@@ -429,7 +429,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('createAuthorizeUrl with prompt adds prompt value', () => {
+    it('should add the prompt value to the authorize url', () => {
       const config = {
         authority: 'https://localhost:5001',
       } as OpenIdConfiguration;
@@ -473,7 +473,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('createAuthorizeUrl with prompt and custom values adds prompt value and custom values', () => {
+    it('should add the prompt value and custom values to the authorize url', () => {
       const config = {
         authority: 'https://localhost:5001',
       } as OpenIdConfiguration;
@@ -519,7 +519,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('createAuthorizeUrl with hdParam adds hdparam value', () => {
+    it('should add the hd_param value to the authorize url', () => {
       const config = {
         authority: 'https://localhost:5001',
       } as OpenIdConfiguration;
@@ -563,7 +563,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('createAuthorizeUrl with custom value', () => {
+    it('should add a custom value to the authorize url', () => {
       const config = {
         authority: 'https://localhost:5001',
       } as OpenIdConfiguration;
@@ -610,7 +610,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('createAuthorizeUrl with custom values', () => {
+    it('should add custom values to the authorize url', () => {
       const config = {
         authority: 'https://localhost:5001',
       } as OpenIdConfiguration;
@@ -659,7 +659,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('createAuthorizeUrl creates URL with with custom values and dynamic custom values', () => {
+    it('should create an authorize url with custom values and dynamic custom values', () => {
       const config = {
         authority: 'https://localhost:5001',
         redirectUrl: 'https://localhost:44386',
@@ -710,7 +710,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('createAuthorizeUrl creates URL with custom values equals null and dynamic custom values', () => {
+    it('should create an authorize url with null custom values and dynamic custom values', () => {
       const config = {
         authority: 'https://localhost:5001',
         redirectUrl: 'https://localhost:44386',
@@ -755,7 +755,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('createAuthorizeUrl creates URL with custom values not given and dynamic custom values', () => {
+    it('should create an authorize url without custom values but with dynamic custom values', () => {
       const config = {
         authority: 'https://localhost:5001',
         redirectUrl: 'https://localhost:44386',
@@ -800,7 +800,7 @@ describe('UrlService Tests', () => {
     });
 
     // https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-reference-oidc
-    it('createAuthorizeUrl with custom URL like active-directory-b2c', () => {
+    it('should create an authorize url for a custom url like active-directory-b2c', () => {
       const config = {
         authority: 'https://localhost:5001',
       } as OpenIdConfiguration;
@@ -842,7 +842,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('createAuthorizeUrl default', () => {
+    it('should create a default authorize url', () => {
       const config = {
         authority: 'https://localhost:5001',
       } as OpenIdConfiguration;
@@ -933,7 +933,7 @@ describe('UrlService Tests', () => {
   });
 
   describe('createRevocationEndpointBodyAccessToken', () => {
-    it('createRevocationBody access_token default', () => {
+    it('should create a default access_token revocation body', () => {
       const config = {
         authority: 'https://localhost:5001',
       } as OpenIdConfiguration;
@@ -969,7 +969,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('createRevocationEndpointBodyAccessToken returns null when no clientId is given', () => {
+    it('should return null for the access_token revocation body when no clientId is given', () => {
       const config = {
         authority: 'https://localhost:5001',
         clientId: '',
@@ -984,7 +984,7 @@ describe('UrlService Tests', () => {
   });
 
   describe('createRevocationEndpointBodyRefreshToken', () => {
-    it('createRevocationBody refresh_token default', () => {
+    it('should create a default refresh_token revocation body', () => {
       const config = {
         authority: 'https://localhost:5001',
       } as OpenIdConfiguration;
@@ -1020,7 +1020,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('createRevocationEndpointBodyRefreshToken returns null when no clientId is given', () => {
+    it('should return null for the refresh_token revocation body when no clientId is given', () => {
       const config = {
         authority: 'https://localhost:5001',
         clientId: undefined,
@@ -1035,7 +1035,7 @@ describe('UrlService Tests', () => {
   });
 
   describe('getRevocationEndpointUrl', () => {
-    it('getRevocationEndpointUrl with params', () => {
+    it('should return the revocation endpoint url with params', () => {
       const config = {
         authority: 'https://localhost:5001',
       } as OpenIdConfiguration;
@@ -1067,7 +1067,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('getRevocationEndpointUrl default', () => {
+    it('should return the default revocation endpoint url', () => {
       const config = {
         authority: 'https://localhost:5001',
       } as OpenIdConfiguration;
@@ -1099,7 +1099,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('getRevocationEndpointUrl returns null when there is not revociationendpoint given', () => {
+    it('should return null for the revocation endpoint url when no revocation endpoint is given', () => {
       vi.spyOn(storagePersistenceService, 'read').mockImplementation(
         (...args: any[]) => {
           if (args[0] === 'authWellKnownEndPoints') {
@@ -1116,7 +1116,7 @@ describe('UrlService Tests', () => {
       expect(value).toBeNull();
     });
 
-    it('getRevocationEndpointUrl returns null when there is no wellKnownEndpoints given', () => {
+    it('should return null for the revocation endpoint url when no well-known endpoints are given', () => {
       const value = service.getRevocationEndpointUrl({});
 
       expect(value).toBeNull();
@@ -1124,14 +1124,14 @@ describe('UrlService Tests', () => {
   });
 
   describe('getRedirectUrl', () => {
-    it('returns configured redirectUrl', () => {
+    it('should return configured redirectUrl', () => {
       const config = { configId: 'configId1', redirectUrl: 'one-url' };
       const url = (service as any).getRedirectUrl(config);
 
       expect(url).toEqual('one-url');
     });
 
-    it('returns redefined redirectUrl in AuthOptions', () => {
+    it('should return redefined redirectUrl in AuthOptions', () => {
       const config = { configId: 'configId1', redirectUrl: 'one-url' };
       const url = (service as any).getRedirectUrl(config, {
         redirectUrl: 'other-url',
@@ -1142,13 +1142,13 @@ describe('UrlService Tests', () => {
   });
 
   describe('getAuthorizeUrl', () => {
-    it('returns null if no config is given', async () => {
+    it('should return null if no config is given', async () => {
       const url = await firstValueFrom(service.getAuthorizeUrl(null));
 
       expect(url).toBeNull();
     });
 
-    it('returns null if current flow is code flow and no redirect url is defined', async () => {
+    it('should return null if current flow is code flow and no redirect url is defined', async () => {
       vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
 
       const result = await firstValueFrom(
@@ -1158,7 +1158,7 @@ describe('UrlService Tests', () => {
       expect(result).toBeNull();
     });
 
-    it('returns empty string if current flow is code flow, config disabled pkce and there is a redirecturl', async () => {
+    it('should return empty string if current flow is code flow, config disabled pkce and there is a redirecturl', async () => {
       vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
       const config = {
         configId: 'configId1',
@@ -1170,7 +1170,7 @@ describe('UrlService Tests', () => {
       expect(result).toBe('');
     });
 
-    it('returns url if current flow is code flow, pkce enabled, there is a redirecturl and awkep are given', async () => {
+    it('should return url if current flow is code flow, pkce enabled, there is a redirecturl and awkep are given', async () => {
       vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
       const config = {
         configId: 'configId1',
@@ -1204,7 +1204,7 @@ describe('UrlService Tests', () => {
       );
     });
 
-    it('calls createUrlImplicitFlowAuthorize if current flow is NOT code flow', async () => {
+    it('should call createUrlImplicitFlowAuthorize if current flow is NOT code flow', async () => {
       vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(false);
       const spyCreateUrlCodeFlowAuthorize = vi
         .spyOn(service as any, 'createUrlCodeFlowAuthorize')
@@ -1219,7 +1219,7 @@ describe('UrlService Tests', () => {
       expect(spyCreateUrlImplicitFlowAuthorize).toHaveBeenCalled();
     });
 
-    it('return empty string if flow is not code flow and createUrlImplicitFlowAuthorize returns falsy', async () => {
+    it('should return empty string if flow is not code flow and createUrlImplicitFlowAuthorize returns falsy', async () => {
       vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(false);
       const spy = vi
         .spyOn(service as any, 'createUrlImplicitFlowAuthorize')
@@ -1233,7 +1233,7 @@ describe('UrlService Tests', () => {
   });
 
   describe('getRefreshSessionSilentRenewUrl', () => {
-    it('calls createUrlCodeFlowWithSilentRenew if current flow is code flow', () => {
+    it('should call createUrlCodeFlowWithSilentRenew if current flow is code flow', () => {
       vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
       const spy = vi
         .spyOn(service as any, 'createUrlCodeFlowWithSilentRenew')
@@ -1243,7 +1243,7 @@ describe('UrlService Tests', () => {
       expect(spy).toHaveBeenCalled();
     });
 
-    it('calls createUrlImplicitFlowWithSilentRenew if current flow is NOT code flow', () => {
+    it('should call createUrlImplicitFlowWithSilentRenew if current flow is NOT code flow', () => {
       vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(false);
       const spyCreateUrlCodeFlowWithSilentRenew = vi
         .spyOn(service as any, 'createUrlCodeFlowWithSilentRenew')
@@ -1257,7 +1257,7 @@ describe('UrlService Tests', () => {
       expect(spyCreateUrlImplicitFlowWithSilentRenew).toHaveBeenCalled();
     });
 
-    it('return empty string if flow is not code flow and createUrlImplicitFlowWithSilentRenew returns falsy', async () => {
+    it('should return empty string if flow is not code flow and createUrlImplicitFlowWithSilentRenew returns falsy', async () => {
       vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(false);
       const spy = vi
         .spyOn(service as any, 'createUrlImplicitFlowWithSilentRenew')
@@ -1273,7 +1273,7 @@ describe('UrlService Tests', () => {
   });
 
   describe('createBodyForCodeFlowCodeRequest', () => {
-    it('returns null if no code verifier is set', () => {
+    it('should return null if no code verifier is set', () => {
       vi.spyOn(flowsDataService, 'getCodeVerifier').mockReturnValue(null);
       const result = service.createBodyForCodeFlowCodeRequest(
         'notRelevantParam',
@@ -1283,7 +1283,7 @@ describe('UrlService Tests', () => {
       expect(result).toBeNull();
     });
 
-    it('returns null if no clientId is set', () => {
+    it('should return null if no clientId is set', () => {
       const codeVerifier = 'codeverifier';
 
       vi.spyOn(flowsDataService, 'getCodeVerifier').mockReturnValue(
@@ -1298,7 +1298,7 @@ describe('UrlService Tests', () => {
       expect(result).toBeNull();
     });
 
-    it('returns null if silentrenewRunning is false and redirectUrl is falsy', () => {
+    it('should return null if silentrenewRunning is false and redirectUrl is falsy', () => {
       const codeVerifier = 'codeverifier';
       const code = 'code';
       const redirectUrl = '';
@@ -1317,7 +1317,7 @@ describe('UrlService Tests', () => {
       expect(result).toBeNull();
     });
 
-    it('returns correctUrl with silentrenewRunning is false', () => {
+    it('should return correctUrl with silentrenewRunning is false', () => {
       const codeVerifier = 'codeverifier';
       const code = 'code';
       const redirectUrl = 'redirectUrl';
@@ -1337,7 +1337,7 @@ describe('UrlService Tests', () => {
       expect(result).toBe(expected);
     });
 
-    it('returns correctUrl with silentrenewRunning is true', () => {
+    it('should return correctUrl with silentrenewRunning is true', () => {
       const codeVerifier = 'codeverifier';
       const code = 'code';
       const silentRenewUrl = 'silentRenewUrl';
@@ -1357,7 +1357,7 @@ describe('UrlService Tests', () => {
       expect(result).toBe(expected);
     });
 
-    it('returns correctUrl when customTokenParams are provided', () => {
+    it('should return correctUrl when customTokenParams are provided', () => {
       const codeVerifier = 'codeverifier';
       const code = 'code';
       const silentRenewUrl = 'silentRenewUrl';
@@ -1379,7 +1379,7 @@ describe('UrlService Tests', () => {
       expect(result).toBe(expected);
     });
 
-    it('returns null if pkce is enabled and no code verifier is given', () => {
+    it('should return null if pkce is enabled and no code verifier is given', () => {
       const code = 'code';
       const customTokenParams = { foo: 'bar' };
       const config = {
@@ -1407,7 +1407,7 @@ describe('UrlService Tests', () => {
       );
     });
 
-    it('omits code_verifier and does not read it when disablePkce is true', () => {
+    it('should omit code_verifier and not read it when disablePkce is true', () => {
       // Arrange
       const code = 'code';
       const redirectUrl = 'redirectUrl';
@@ -1432,7 +1432,7 @@ describe('UrlService Tests', () => {
   });
 
   describe('createBodyForCodeFlowRefreshTokensRequest', () => {
-    it('returns correct URL', () => {
+    it('should return correct URL', () => {
       const clientId = 'clientId';
       const refreshToken = 'refreshToken';
       const result = service.createBodyForCodeFlowRefreshTokensRequest(
@@ -1445,7 +1445,7 @@ describe('UrlService Tests', () => {
       );
     });
 
-    it('returns correct URL with custom params if custom params are passed', () => {
+    it('should return correct URL with custom params if custom params are passed', () => {
       const clientId = 'clientId';
       const refreshToken = 'refreshToken';
       const result = service.createBodyForCodeFlowRefreshTokensRequest(
@@ -1459,7 +1459,7 @@ describe('UrlService Tests', () => {
       );
     });
 
-    it('returns null if clientId is falsy', () => {
+    it('should return null if clientId is falsy', () => {
       const clientId = '';
       const refreshToken = 'refreshToken';
       const result = service.createBodyForCodeFlowRefreshTokensRequest(
@@ -1472,7 +1472,7 @@ describe('UrlService Tests', () => {
   });
 
   describe('createBodyForParCodeFlowRequest', () => {
-    it('returns null redirectUrl is falsy', async () => {
+    it('should return null redirectUrl is falsy', async () => {
       const resultObs$ = service.createBodyForParCodeFlowRequest({
         redirectUrl: '',
       });
@@ -1481,7 +1481,7 @@ describe('UrlService Tests', () => {
       expect(result).toBe(null);
     });
 
-    it('returns basic URL with no extras if properties are given', async () => {
+    it('should return basic URL with no extras if properties are given', async () => {
       const config = {
         clientId: 'testClientId',
         responseType: 'testResponseType',
@@ -1511,7 +1511,7 @@ describe('UrlService Tests', () => {
       );
     });
 
-    it('returns basic URL with hdParam if properties are given', async () => {
+    it('should return basic URL with hdParam if properties are given', async () => {
       const config = {
         clientId: 'testClientId',
         responseType: 'testResponseType',
@@ -1541,7 +1541,7 @@ describe('UrlService Tests', () => {
       );
     });
 
-    it('returns basic URL with hdParam and custom params if properties are given', async () => {
+    it('should return basic URL with hdParam and custom params if properties are given', async () => {
       const config = {
         clientId: 'testClientId',
         responseType: 'testResponseType',
@@ -1571,7 +1571,7 @@ describe('UrlService Tests', () => {
       );
     });
 
-    it('returns basic URL with hdParam and custom params and passed cutom params if properties are given', async () => {
+    it('should return basic URL with hdParam and custom params and passed cutom params if properties are given', async () => {
       const config = {
         clientId: 'testClientId',
         responseType: 'testResponseType',
@@ -1605,7 +1605,7 @@ describe('UrlService Tests', () => {
       );
     });
 
-    it('omits code_challenge and code_challenge_method when disablePkce is true', async () => {
+    it('should omit code_challenge and code_challenge_method when disablePkce is true', async () => {
       const config = {
         clientId: 'testClientId',
         responseType: 'testResponseType',
@@ -1639,7 +1639,7 @@ describe('UrlService Tests', () => {
       expect(generateCodeChallengeSpy).not.toHaveBeenCalled();
     });
 
-    it('uses empty values for client_id, response_type and scope when they are not configured', async () => {
+    it('should use empty values for client_id, response_type and scope when they are not configured', async () => {
       // Arrange
       const config = {
         redirectUrl: 'testRedirectUrl',
@@ -1665,7 +1665,7 @@ describe('UrlService Tests', () => {
   });
 
   describe('createUrlImplicitFlowWithSilentRenew', () => {
-    it('returns null if silentrenewUrl is falsy', () => {
+    it('should return null if silentrenewUrl is falsy', () => {
       const state = 'testState';
       const nonce = 'testNonce';
       const silentRenewUrl = null;
@@ -1685,7 +1685,7 @@ describe('UrlService Tests', () => {
       expect(result).toBeNull();
     });
 
-    it('returns correct URL if wellknownendpoints are given', () => {
+    it('should return correct URL if wellknownendpoints are given', () => {
       const state = 'testState';
       const nonce = 'testNonce';
       const silentRenewUrl = 'http://any-url.com';
@@ -1726,7 +1726,7 @@ describe('UrlService Tests', () => {
       );
     });
 
-    it('returns null if wellknownendpoints are not given', () => {
+    it('should return null if wellknownendpoints are not given', () => {
       const state = 'testState';
       const nonce = 'testNonce';
       const silentRenewUrl = 'http://any-url.com';
@@ -1762,7 +1762,7 @@ describe('UrlService Tests', () => {
   });
 
   describe('createUrlCodeFlowWithSilentRenew', () => {
-    it('returns empty string if silentrenewUrl is falsy', async () => {
+    it('should return empty string if silentrenewUrl is falsy', async () => {
       const state = 'testState';
       const nonce = 'testNonce';
       const silentRenewUrl = null;
@@ -1791,7 +1791,7 @@ describe('UrlService Tests', () => {
       expect(result).toBe('');
     });
 
-    it('returns correct URL if wellknownendpoints are given', async () => {
+    it('should return correct URL if wellknownendpoints are given', async () => {
       const state = 'testState';
       const nonce = 'testNonce';
       const silentRenewUrl = 'http://any-url.com';
@@ -1839,7 +1839,7 @@ describe('UrlService Tests', () => {
       );
     });
 
-    it('returns empty string if no wellknownendpoints are given', async () => {
+    it('should return empty string if no wellknownendpoints are given', async () => {
       const state = 'testState';
       const nonce = 'testNonce';
       const silentRenewUrl = 'http://any-url.com';
@@ -1883,7 +1883,7 @@ describe('UrlService Tests', () => {
   });
 
   describe('createUrlImplicitFlowAuthorize', () => {
-    it('returns correct URL if wellknownendpoints are given', () => {
+    it('should return correct URL if wellknownendpoints are given', () => {
       const state = 'testState';
       const nonce = 'testNonce';
       const redirectUrl = 'http://any-url.com';
@@ -1922,7 +1922,7 @@ describe('UrlService Tests', () => {
       );
     });
 
-    it('returns empty string if no wellknownendpoints are given', () => {
+    it('should return empty string if no wellknownendpoints are given', () => {
       const state = 'testState';
       const nonce = 'testNonce';
       const redirectUrl = 'http://any-url.com';
@@ -1952,7 +1952,7 @@ describe('UrlService Tests', () => {
       expect(result).toBe(null);
     });
 
-    it('returns null if there is nor redirecturl', () => {
+    it('should return null if there is nor redirecturl', () => {
       const state = 'testState';
       const nonce = 'testNonce';
       const redirectUrl = '';
@@ -1983,7 +1983,7 @@ describe('UrlService Tests', () => {
   });
 
   describe('createUrlCodeFlowAuthorize', () => {
-    it('returns null if redirectUrl is falsy', async () => {
+    it('should return null if redirectUrl is falsy', async () => {
       const state = 'testState';
       const nonce = 'testNonce';
       const redirectUrl = null;
@@ -2004,7 +2004,7 @@ describe('UrlService Tests', () => {
       expect(result).toBeNull();
     });
 
-    it('returns correct URL if wellknownendpoints are given', async () => {
+    it('should return correct URL if wellknownendpoints are given', async () => {
       const state = 'testState';
       const nonce = 'testNonce';
       const scope = 'testScope';
@@ -2051,7 +2051,7 @@ describe('UrlService Tests', () => {
       );
     });
 
-    it('returns correct URL if wellknownendpoints and custom params are given', async () => {
+    it('should return correct URL if wellknownendpoints and custom params are given', async () => {
       const state = 'testState';
       const nonce = 'testNonce';
       const scope = 'testScope';
@@ -2104,7 +2104,7 @@ describe('UrlService Tests', () => {
       );
     });
 
-    it('returns empty string if no wellknownendpoints are given', async () => {
+    it('should return empty string if no wellknownendpoints are given', async () => {
       const state = 'testState';
       const nonce = 'testNonce';
       const redirectUrl = 'http://any-url.com';
@@ -2144,13 +2144,13 @@ describe('UrlService Tests', () => {
   });
 
   describe('getEndSessionUrl', () => {
-    it('returns null if no config given', () => {
+    it('should return null if no config given', () => {
       const value = service.getEndSessionUrl(null);
 
       expect(value).toBeNull();
     });
 
-    it('create URL when all parameters given', () => {
+    it('should create URL when all parameters given', () => {
       //Arrange
       const config = {
         postLogoutRedirectUri: 'https://localhost:44386/Unauthorized',
@@ -2180,7 +2180,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('create URL when all parameters given but no idTokenHint', () => {
+    it('should create URL when all parameters given but no idTokenHint', () => {
       // Arrange
       const config = {
         postLogoutRedirectUri: 'https://localhost:44386/Unauthorized',
@@ -2208,7 +2208,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('create URL when all parameters and customParamsEndSession given', () => {
+    it('should create URL when all parameters and customParamsEndSession given', () => {
       // Arrange
       const config = {
         postLogoutRedirectUri: 'https://localhost:44386/Unauthorized',
@@ -2238,7 +2238,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('with azure-ad-b2c policy parameter', () => {
+    it('should create an authorize url with an azure-ad-b2c policy parameter', () => {
       // Arrange
       const config = {
         postLogoutRedirectUri: 'https://localhost:44386/Unauthorized',
@@ -2272,7 +2272,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('create URL without postLogoutRedirectUri when not given', () => {
+    it('should create URL without postLogoutRedirectUri when not given', () => {
       const config = {
         postLogoutRedirectUri: '',
       } as OpenIdConfiguration;
@@ -2300,7 +2300,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('returns null if no wellknownEndpoints.endSessionEndpoint given', () => {
+    it('should return null if no wellknownEndpoints.endSessionEndpoint given', () => {
       // Arrange
       vi.spyOn(storagePersistenceService, 'read').mockImplementation(
         (...args: any[]) => {
@@ -2324,7 +2324,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(null);
     });
 
-    it('returns auth0 format URL if authority ends with .auth0', () => {
+    it('should return auth0 format URL if authority ends with .auth0', () => {
       // Arrange
       const config = {
         authority: 'something.auth0.com',
@@ -2339,7 +2339,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('returns auth0 format URL without returnTo if no postLogoutRedirectUri is configured', () => {
+    it('should return auth0 format URL without returnTo if no postLogoutRedirectUri is configured', () => {
       // Arrange
       const config = {
         authority: 'something.auth0.com',
@@ -2354,7 +2354,7 @@ describe('UrlService Tests', () => {
       );
     });
 
-    it('returns auth0 format URL for a custom domain when useCustomAuth0Domain is true', () => {
+    it('should return auth0 format URL for a custom domain when useCustomAuth0Domain is true', () => {
       // Arrange
       const config = {
         authority: 'https://login.my-company.com',
@@ -2370,7 +2370,7 @@ describe('UrlService Tests', () => {
       );
     });
 
-    it('returns auth0 format URL with an empty client_id when no clientId is configured', () => {
+    it('should return auth0 format URL with an empty client_id when no clientId is configured', () => {
       // Arrange
       const config = {
         authority: 'something.auth0.com',
@@ -2384,7 +2384,7 @@ describe('UrlService Tests', () => {
   });
 
   describe('getAuthorizeParUrl', () => {
-    it('returns null if authWellKnownEndPoints is undefined', () => {
+    it('should return null if authWellKnownEndPoints is undefined', () => {
       vi.spyOn(storagePersistenceService, 'read').mockImplementation(
         (...args: any[]) => {
           if (args[0] === 'authWellKnownEndPoints') {
@@ -2400,7 +2400,7 @@ describe('UrlService Tests', () => {
       expect(result).toBe(null);
     });
 
-    it('returns null if authWellKnownEndPoints-authorizationEndpoint is undefined', () => {
+    it('should return null if authWellKnownEndPoints-authorizationEndpoint is undefined', () => {
       vi.spyOn(storagePersistenceService, 'read').mockImplementation(
         (...args: any[]) => {
           if (args[0] === 'authWellKnownEndPoints') {
@@ -2418,7 +2418,7 @@ describe('UrlService Tests', () => {
       expect(result).toBe(null);
     });
 
-    it('returns null if configurationProvider.openIDConfiguration has no clientId', () => {
+    it('should return null if configurationProvider.openIDConfiguration has no clientId', () => {
       const config = { clientId: '' } as OpenIdConfiguration;
 
       vi.spyOn(storagePersistenceService, 'read').mockImplementation(
@@ -2438,7 +2438,7 @@ describe('UrlService Tests', () => {
       expect(result).toBe(null);
     });
 
-    it('returns correct URL when everything is given', () => {
+    it('should return correct URL when everything is given', () => {
       const config = { clientId: 'clientId' };
 
       vi.spyOn(storagePersistenceService, 'read').mockImplementation(

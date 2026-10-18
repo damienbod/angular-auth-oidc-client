@@ -63,7 +63,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
   });
 
   describe('callbackHistoryAndResetJwtKeys', () => {
-    it('writes authResult into the storage', async () => {
+    it('should write authResult into the storage', async () => {
       const storagePersistenceServiceSpy = vi
         .spyOn(storagePersistenceService, 'write')
         .mockReturnValue(undefined as any);
@@ -101,7 +101,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       expect(storagePersistenceServiceSpy).toHaveBeenCalledTimes(2);
     });
 
-    it('writes refresh_token into the storage without reuse (refresh token rotation)', async () => {
+    it('should write refresh_token into the storage without reuse (refresh token rotation)', async () => {
       const DUMMY_AUTH_RESULT = {
         refresh_token: 'dummy_refresh_token',
         id_token: 'some-id-token',
@@ -139,7 +139,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       expect(storagePersistenceServiceSpy).toHaveBeenCalledTimes(2);
     });
 
-    it('writes refresh_token into the storage with reuse (without refresh token rotation)', async () => {
+    it('should write refresh_token into the storage with reuse (without refresh token rotation)', async () => {
       const DUMMY_AUTH_RESULT = {
         refresh_token: 'dummy_refresh_token',
         id_token: 'some-id-token',
@@ -179,7 +179,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       expect(storagePersistenceServiceSpy).toHaveBeenCalledTimes(3);
     });
 
-    it('resetBrowserHistory if historyCleanup is turned on and is not in a renewProcess', async () => {
+    it('should reset the browser history if historyCleanup is turned on and not in a renew process', async () => {
       const DUMMY_AUTH_RESULT = {
         id_token: 'some-id-token',
       };
@@ -212,7 +212,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       expect(windowSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('returns callbackContext with jwtkeys filled if everything works fine', async () => {
+    it('should return callbackContext with jwtkeys filled if everything works fine', async () => {
       const DUMMY_AUTH_RESULT = {
         id_token: 'some-id-token',
       };
@@ -246,7 +246,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       } as CallbackContext);
     });
 
-    it('returns error if no jwtKeys have been in the call --> keys are null', async () => {
+    it('should return error if no jwtKeys have been in the call --> keys are null', async () => {
       const DUMMY_AUTH_RESULT = {
         id_token: 'some-id-token',
       };
@@ -281,7 +281,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       }
     });
 
-    it('returns error if no jwtKeys have been in the call --> keys throw an error', async () => {
+    it('should return error if no jwtKeys have been in the call --> keys throw an error', async () => {
       const DUMMY_AUTH_RESULT = {
         id_token: 'some-id-token',
       };
@@ -316,7 +316,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       }
     });
 
-    it('returns error if callbackContext.authresult has an error property filled', async () => {
+    it('should return error if callbackContext.authresult has an error property filled', async () => {
       const callbackContext = {
         authResult: { error: 'someError' },
       } as CallbackContext;
@@ -343,7 +343,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       }
     });
 
-    it('calls resetAuthorizationData, resets nonce and authStateService in case of an error', async () => {
+    it('should call resetAuthorizationData, resets nonce and authStateService in case of an error', async () => {
       const callbackContext = {
         authResult: { error: 'someError' },
         isRenewProcess: false,
@@ -384,7 +384,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       });
     });
 
-    it('calls authStateService.updateAndPublishAuthState with login required if the error is `login_required`', async () => {
+    it('should call authStateService.updateAndPublishAuthState with login required if the error is `login_required`', async () => {
       const callbackContext = {
         authResult: { error: 'login_required' },
         isRenewProcess: false,
@@ -579,7 +579,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
   });
 
   describe('historyCleanUpTurnedOn ', () => {
-    it('check for false if historyCleanUpTurnedOn is on', () => {
+    it('should check for false if historyCleanUpTurnedOn is on', () => {
       const config = {
         configId: 'configId1',
         historyCleanupOff: true,
@@ -589,7 +589,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       expect(value).toEqual(false);
     });
 
-    it('check for true if historyCleanUpTurnedOn is off', () => {
+    it('should check for true if historyCleanUpTurnedOn is off', () => {
       const config = {
         configId: 'configId1',
         historyCleanupOff: false,

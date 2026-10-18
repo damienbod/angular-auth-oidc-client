@@ -91,7 +91,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('userData$', () => {
-    it('calls userService.userData$', async () => {
+    it('should call userService.userData$', async () => {
       await firstValueFrom(oidcSecurityService.userData$);
 
       // 1x from this subscribe
@@ -101,7 +101,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('userData', () => {
-    it('calls userService.userData$', () => {
+    it('should call userService.userData$', () => {
       const _userdata = oidcSecurityService.userData();
 
       expect(userDataSpy).toHaveBeenCalledTimes(1);
@@ -109,7 +109,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('isAuthenticated$', () => {
-    it('calls authStateService.isAuthenticated$', async () => {
+    it('should call authStateService.isAuthenticated$', async () => {
       await firstValueFrom(oidcSecurityService.isAuthenticated$);
 
       // 1x from this subscribe
@@ -119,7 +119,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('authenticated', () => {
-    it('calls authStateService.isAuthenticated$', () => {
+    it('should call authStateService.isAuthenticated$', () => {
       const _authenticated = oidcSecurityService.authenticated();
 
       expect(authenticatedSpy).toHaveBeenCalledTimes(1);
@@ -127,7 +127,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('checkSessionChanged$', () => {
-    it('calls checkSessionService.checkSessionChanged$', async () => {
+    it('should call checkSessionService.checkSessionChanged$', async () => {
       const spy = vi
         .spyOn(checkSessionService, 'checkSessionChanged$', 'get')
         .mockReturnValue(of(true));
@@ -139,7 +139,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('stsCallback$', () => {
-    it('calls callbackService.stsCallback$', () => {
+    it('should call callbackService.stsCallback$', () => {
       const spy = vi
         .spyOn(callbackService, 'stsCallback$', 'get')
         .mockReturnValue(of());
@@ -157,7 +157,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('preloadAuthWellKnownDocument', () => {
-    it('calls authWellKnownService.queryAndStoreAuthWellKnownEndPoints with config', async () => {
+    it('should call authWellKnownService.queryAndStoreAuthWellKnownEndPoints with config', async () => {
       const config = { configId: 'configid1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -175,7 +175,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('getConfigurations', () => {
-    it('is not of type observable', () => {
+    it('should not be of type observable', () => {
       vi.spyOn(configurationService, 'getAllConfigurations').mockReturnValue(
         []
       );
@@ -185,7 +185,7 @@ describe('OidcSecurityService', () => {
       );
     });
 
-    it('calls configurationProvider.getAllConfigurations', () => {
+    it('should call configurationProvider.getAllConfigurations', () => {
       const spy = vi
         .spyOn(configurationService, 'getAllConfigurations')
         .mockReturnValue(undefined as any);
@@ -197,7 +197,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('getConfiguration', () => {
-    it('is of type observable', () => {
+    it('should be of type observable', () => {
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
         of(null)
       );
@@ -207,7 +207,7 @@ describe('OidcSecurityService', () => {
       );
     });
 
-    it('calls configurationProvider.getOpenIDConfiguration with passed configId when configId is passed', () => {
+    it('should call configurationProvider.getOpenIDConfiguration with passed configId when configId is passed', () => {
       const spy = vi
         .spyOn(configurationService, 'getOpenIDConfiguration')
         .mockReturnValue(undefined as any);
@@ -221,7 +221,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('getUserData', () => {
-    it('calls userService.getUserDataFromStore with config', async () => {
+    it('should call userService.getUserDataFromStore with config', async () => {
       const config = { configId: 'configId1' };
       const configSpy = vi
         .spyOn(configurationService, 'getOpenIDConfiguration')
@@ -239,7 +239,7 @@ describe('OidcSecurityService', () => {
       expect(spy).toHaveBeenCalledWith(config);
     });
 
-    it('returns userdata', async () => {
+    it('should return userdata', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -259,7 +259,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('checkAuth', () => {
-    it('calls checkAuthService.checkAuth() without url if none is passed', async () => {
+    it('should call checkAuthService.checkAuth() without url if none is passed', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfigurations').mockReturnValue(
@@ -276,7 +276,7 @@ describe('OidcSecurityService', () => {
       expect(spy).toHaveBeenCalledWith(config, [config], undefined);
     });
 
-    it('calls checkAuthService.checkAuth() with url if one is passed', async () => {
+    it('should call checkAuthService.checkAuth() with url if one is passed', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfigurations').mockReturnValue(
@@ -295,7 +295,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('checkAuthMultiple', () => {
-    it('calls checkAuthService.checkAuthMultiple() without url if none is passed', async () => {
+    it('should call checkAuthService.checkAuthMultiple() without url if none is passed', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfigurations').mockReturnValue(
@@ -312,7 +312,7 @@ describe('OidcSecurityService', () => {
       expect(spy).toHaveBeenCalledWith([config], undefined);
     });
 
-    it('calls checkAuthService.checkAuthMultiple() with url if one is passed', async () => {
+    it('should call checkAuthService.checkAuthMultiple() with url if one is passed', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfigurations').mockReturnValue(
@@ -331,7 +331,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('isAuthenticated()', () => {
-    it('calls authStateService.isAuthenticated with passed configId when configId is passed', async () => {
+    it('should call authStateService.isAuthenticated with passed configId when configId is passed', async () => {
       const config = { configId: 'configId1' };
       const configSpy = vi
         .spyOn(configurationService, 'getOpenIDConfiguration')
@@ -349,7 +349,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('checkAuthIncludingServer', () => {
-    it('calls checkAuthService.checkAuthIncludingServer()', async () => {
+    it('should call checkAuthService.checkAuthIncludingServer()', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfigurations').mockReturnValue(
@@ -368,7 +368,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('getAccessToken', () => {
-    it('calls authStateService.getAccessToken()', async () => {
+    it('should call authStateService.getAccessToken()', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -387,7 +387,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('getIdToken', () => {
-    it('calls authStateService.getIdToken()', async () => {
+    it('should call authStateService.getIdToken()', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -404,7 +404,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('getRefreshToken', () => {
-    it('calls authStateService.getRefreshToken()', async () => {
+    it('should call authStateService.getRefreshToken()', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -422,7 +422,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('getAuthenticationResult', () => {
-    it('calls authStateService.getAuthenticationResult()', async () => {
+    it('should call authStateService.getAuthenticationResult()', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -441,7 +441,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('getPayloadFromIdToken', () => {
-    it('calls `authStateService.getIdToken` method, encode = false', async () => {
+    it('should call `authStateService.getIdToken` method, encode = false', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -458,7 +458,7 @@ describe('OidcSecurityService', () => {
       expect(spy).toHaveBeenCalledWith('some-token', false, config);
     });
 
-    it('calls `authStateService.getIdToken` method, encode = true', async () => {
+    it('should call `authStateService.getIdToken` method, encode = true', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -477,7 +477,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('getPayloadFromAccessToken', () => {
-    it('calls `authStateService.getAccessToken` method, encode = false', async () => {
+    it('should call `authStateService.getAccessToken` method, encode = false', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -496,7 +496,7 @@ describe('OidcSecurityService', () => {
       expect(spy).toHaveBeenCalledWith('some-access-token', false, config);
     });
 
-    it('calls `authStateService.getAccessToken` method, encode = true', async () => {
+    it('should call `authStateService.getAccessToken` method, encode = true', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -517,7 +517,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('setState', () => {
-    it('calls flowsDataService.setAuthStateControl with param', async () => {
+    it('should call flowsDataService.setAuthStateControl with param', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -535,7 +535,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('getState', () => {
-    it('calls flowsDataService.getAuthStateControl', async () => {
+    it('should call flowsDataService.getAuthStateControl', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -553,7 +553,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('authorize', () => {
-    it('calls login service login', () => {
+    it('should call login service login', () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -568,7 +568,7 @@ describe('OidcSecurityService', () => {
       expect(spy).toHaveBeenCalledWith(config, undefined);
     });
 
-    it('calls login service login with authoptions', () => {
+    it('should call login service login with authoptions', () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -589,7 +589,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('authorizeWithPopUp', () => {
-    it('calls login service loginWithPopUp', async () => {
+    it('should call login service loginWithPopUp', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfigurations').mockReturnValue(
@@ -607,7 +607,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('forceRefreshSession', () => {
-    it('calls refreshSessionService userForceRefreshSession with configId from config when none is passed', async () => {
+    it('should call refreshSessionService userForceRefreshSession with configId from config when none is passed', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfigurations').mockReturnValue(
@@ -626,7 +626,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('logoffAndRevokeTokens', () => {
-    it('calls logoffRevocationService.logoffAndRevokeTokens', async () => {
+    it('should call logoffRevocationService.logoffAndRevokeTokens', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfigurations').mockReturnValue(
@@ -644,7 +644,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('logoff', () => {
-    it('calls logoffRevocationService.logoff', async () => {
+    it('should call logoffRevocationService.logoff', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfigurations').mockReturnValue(
@@ -662,7 +662,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('logoffLocal', () => {
-    it('calls logoffRevocationService.logoffLocal', () => {
+    it('should call logoffRevocationService.logoffLocal', () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfigurations').mockReturnValue(
@@ -679,7 +679,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('logoffLocalMultiple', () => {
-    it('calls logoffRevocationService.logoffLocalMultiple', () => {
+    it('should call logoffRevocationService.logoffLocalMultiple', () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfigurations').mockReturnValue(
@@ -696,7 +696,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('revokeAccessToken', () => {
-    it('calls logoffRevocationService.revokeAccessToken', async () => {
+    it('should call logoffRevocationService.revokeAccessToken', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -712,7 +712,7 @@ describe('OidcSecurityService', () => {
       expect(spy).toHaveBeenCalledWith(config, undefined);
     });
 
-    it('calls logoffRevocationService.revokeAccessToken with accesstoken', async () => {
+    it('should call logoffRevocationService.revokeAccessToken with accesstoken', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -732,7 +732,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('revokeRefreshToken', () => {
-    it('calls logoffRevocationService.revokeRefreshToken', async () => {
+    it('should call logoffRevocationService.revokeRefreshToken', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -748,7 +748,7 @@ describe('OidcSecurityService', () => {
       expect(spy).toHaveBeenCalledWith(config, undefined);
     });
 
-    it('calls logoffRevocationService.revokeRefreshToken with refresh token', async () => {
+    it('should call logoffRevocationService.revokeRefreshToken with refresh token', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -768,7 +768,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('getEndSessionUrl', () => {
-    it('calls urlService.getEndSessionUrl', async () => {
+    it('should call urlService.getEndSessionUrl', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -785,7 +785,7 @@ describe('OidcSecurityService', () => {
       expect(spy).toHaveBeenCalledWith(config, undefined);
     });
 
-    it('calls urlService.getEndSessionUrl with customparams', async () => {
+    it('should call urlService.getEndSessionUrl with customparams', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -806,7 +806,7 @@ describe('OidcSecurityService', () => {
   });
 
   describe('getAuthorizeUrl', () => {
-    it('calls urlService.getAuthorizeUrl ', async () => {
+    it('should call urlService.getAuthorizeUrl', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
@@ -823,7 +823,7 @@ describe('OidcSecurityService', () => {
       expect(spy).toHaveBeenCalledWith(config, undefined);
     });
 
-    it('calls urlService.getAuthorizeUrl with customparams', async () => {
+    it('should call urlService.getAuthorizeUrl with customparams', async () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(

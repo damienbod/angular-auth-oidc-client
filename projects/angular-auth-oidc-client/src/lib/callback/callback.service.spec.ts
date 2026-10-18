@@ -38,7 +38,7 @@ describe('CallbackService ', () => {
   });
 
   describe('isCallback', () => {
-    it('calls urlService.isCallbackFromSts with passed url', () => {
+    it('should call urlService.isCallbackFromSts with passed url', () => {
       const urlServiceSpy = vi
         .spyOn(urlService, 'isCallbackFromSts')
         .mockReturnValue(undefined as any);
@@ -48,7 +48,7 @@ describe('CallbackService ', () => {
       expect(urlServiceSpy).toHaveBeenCalledWith('anyUrl', undefined);
     });
 
-    it('returns false and does not call urlService if currentUrl is empty', () => {
+    it('should return false and not call urlService if currentUrl is empty', () => {
       const urlServiceSpy = vi
         .spyOn(urlService, 'isCallbackFromSts')
         .mockReturnValue(undefined as any);
@@ -60,13 +60,13 @@ describe('CallbackService ', () => {
   });
 
   describe('stsCallback$', () => {
-    it('is of type Observable', () => {
+    it('should be of type Observable', () => {
       expect(callbackService.stsCallback$).toBeInstanceOf(Observable);
     });
   });
 
   describe('handleCallbackAndFireEvents', () => {
-    it('calls authorizedCallbackWithCode if current flow is code flow', async () => {
+    it('should call authorizedCallbackWithCode if current flow is code flow', async () => {
       vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
       const authorizedCallbackWithCodeSpy = vi
         .spyOn(codeFlowCallbackService, 'authenticatedCallbackWithCode')
@@ -88,7 +88,7 @@ describe('CallbackService ', () => {
       );
     });
 
-    it('calls authorizedImplicitFlowCallback without hash if current flow is implicit flow and callbackurl does not include a hash', async () => {
+    it('should call authorizedImplicitFlowCallback without hash if current flow is implicit flow and callbackurl does not include a hash', async () => {
       vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(false);
       vi.spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').mockReturnValue(
         true
@@ -111,7 +111,7 @@ describe('CallbackService ', () => {
       );
     });
 
-    it('calls authorizedImplicitFlowCallback with hash if current flow is implicit flow and callbackurl does include a hash', async () => {
+    it('should call authorizedImplicitFlowCallback with hash if current flow is implicit flow and callbackurl does include a hash', async () => {
       vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(false);
       vi.spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').mockReturnValue(
         true
@@ -135,7 +135,7 @@ describe('CallbackService ', () => {
       );
     });
 
-    it('emits callbackinternal no matter which flow it is', async () => {
+    it('should emit callbackinternal no matter which flow it is', async () => {
       const callbackSpy = vi
         .spyOn((callbackService as any).stsCallbackInternal$, 'next')
         .mockReturnValue(undefined);

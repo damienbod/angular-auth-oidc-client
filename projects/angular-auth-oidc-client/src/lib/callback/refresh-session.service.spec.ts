@@ -256,7 +256,7 @@ describe('RefreshSessionService ', () => {
       );
     });
 
-    it('throws an error and does not start a refresh when no config is given', async () => {
+    it('should throw an error and not start a refresh when no config is given', async () => {
       // Arrange
       const forceRefreshSessionSpy = vi.spyOn(
         refreshSessionService,
@@ -285,7 +285,7 @@ describe('RefreshSessionService ', () => {
   });
 
   describe('forceRefreshSession', () => {
-    it('limits the duration of the complete refresh token flow', async () => {
+    it('should limit the duration of the complete refresh token flow', async () => {
       vi.spyOn(
         flowHelper,
         'isCurrentFlowCodeFlowWithRefreshTokens'
@@ -313,7 +313,7 @@ describe('RefreshSessionService ', () => {
       await expect(result).rejects.toBeInstanceOf(TimeoutError);
     });
 
-    it('uses the default timeout for the complete refresh token flow', async () => {
+    it('should use the default timeout for the complete refresh token flow', async () => {
       vi.spyOn(
         flowHelper,
         'isCurrentFlowCodeFlowWithRefreshTokens'
@@ -342,7 +342,7 @@ describe('RefreshSessionService ', () => {
       await expect(result).rejects.toBeInstanceOf(TimeoutError);
     });
 
-    it('only calls start refresh session and returns idToken and accessToken if auth is true', async () => {
+    it('should only start the refresh session and return idToken and accessToken if auth is true', async () => {
       vi.spyOn(
         flowHelper,
         'isCurrentFlowCodeFlowWithRefreshTokens'
@@ -372,7 +372,7 @@ describe('RefreshSessionService ', () => {
       expect(result.accessToken).toEqual('access-token');
     });
 
-    it('only calls start refresh session and returns null if auth is false', async () => {
+    it('should only start the refresh session and return null if auth is false', async () => {
       vi.spyOn(
         flowHelper,
         'isCurrentFlowCodeFlowWithRefreshTokens'
@@ -404,7 +404,7 @@ describe('RefreshSessionService ', () => {
       });
     });
 
-    it('returns tokens from the completed refresh result when auth-state getters are stale', async () => {
+    it('should return tokens from the completed refresh result when auth-state getters are stale', async () => {
       const allConfigs = [
         {
           configId: 'configId1',
@@ -456,7 +456,7 @@ describe('RefreshSessionService ', () => {
       });
     });
 
-    it('falls back to auth-state getters when no refresh auth result is available', async () => {
+    it('should fall back to auth-state getters when no refresh auth result is available', async () => {
       const allConfigs = [
         {
           configId: 'configId1',
@@ -494,7 +494,7 @@ describe('RefreshSessionService ', () => {
       expect(result.accessToken).toBe('stored-access-token');
     });
 
-    it('waits for a running periodic silent renew instead of starting a manual refresh', async () => {
+    it('should wait for a running periodic silent renew instead of starting a manual refresh', async () => {
       const allConfigs = [
         {
           configId: 'configId1',
@@ -558,7 +558,7 @@ describe('RefreshSessionService ', () => {
       });
     });
 
-    it('refreshes through the refresh token lock instead of waiting for a silent renew that may run in another tab', async () => {
+    it('should refresh through the refresh token lock instead of waiting for a silent renew that may run in another tab', async () => {
       // Arrange
       const allConfigs = [
         {
@@ -619,7 +619,7 @@ describe('RefreshSessionService ', () => {
       });
     });
 
-    it('propagates a failure from the running periodic silent renew', async () => {
+    it('should propagate a failure from the running periodic silent renew', async () => {
       const allConfigs = [
         {
           configId: 'configId1',
@@ -660,7 +660,7 @@ describe('RefreshSessionService ', () => {
       expect(actualError).toBe(expectedError);
     });
 
-    it('times out while waiting for a running periodic silent renew', async () => {
+    it('should time out while waiting for a running periodic silent renew', async () => {
       const allConfigs = [
         {
           configId: 'configId1',
@@ -698,7 +698,7 @@ describe('RefreshSessionService ', () => {
       );
     });
 
-    it('calls start refresh session and waits for completed, returns idtoken and accesstoken if auth is true', async () => {
+    it('should call start refresh session and waits for completed, returns idtoken and accesstoken if auth is true', async () => {
       vi.spyOn(
         flowHelper,
         'isCurrentFlowCodeFlowWithRefreshTokens'
@@ -738,7 +738,7 @@ describe('RefreshSessionService ', () => {
       expect(result.accessToken).toBe('some-access_token');
     });
 
-    it('calls start refresh session and waits for completed, returns LoginResponse if auth is false', async () => {
+    it('should call start refresh session and waits for completed, returns LoginResponse if auth is false', async () => {
       vi.spyOn(
         flowHelper,
         'isCurrentFlowCodeFlowWithRefreshTokens'
@@ -902,7 +902,7 @@ describe('RefreshSessionService ', () => {
       });
     });
 
-    it('occurs timeout error and retry mechanism exhausted max retry count throws error', async () => {
+    it('should occur timeout error and retry mechanism exhausted max retry count throws error', async () => {
       vi.spyOn(
         flowHelper,
         'isCurrentFlowCodeFlowWithRefreshTokens'
@@ -959,7 +959,7 @@ describe('RefreshSessionService ', () => {
       );
     });
 
-    it('occurs unknown error throws it to subscriber', async () => {
+    it('should occur unknown error throws it to subscriber', async () => {
       const allConfigs = [
         {
           configId: 'configId1',
@@ -997,7 +997,7 @@ describe('RefreshSessionService ', () => {
       expect(resetSilentRenewRunningSpy).not.toHaveBeenCalled();
     });
 
-    it('returns empty tokens if auth is true but the iframe completion was not successful', async () => {
+    it('should return empty tokens if auth is true but the iframe completion was not successful', async () => {
       // Arrange
       vi.spyOn(
         flowHelper,
@@ -1045,7 +1045,7 @@ describe('RefreshSessionService ', () => {
       });
     });
 
-    it('returns empty tokens if auth is true and the successful iframe completion carries no tokens', async () => {
+    it('should return empty tokens if auth is true and the successful iframe completion carries no tokens', async () => {
       // Arrange
       vi.spyOn(
         flowHelper,
@@ -1082,7 +1082,7 @@ describe('RefreshSessionService ', () => {
       expect(result.isAuthenticated).toBe(true);
     });
 
-    it('times out the iframe refresh immediately and fails after the retries when no silent renew timeout is configured', async () => {
+    it('should time out the iframe refresh immediately and fail after the retries when no silent renew timeout is configured', async () => {
       // Arrange
       vi.spyOn(
         flowHelper,
@@ -1126,7 +1126,7 @@ describe('RefreshSessionService ', () => {
     });
 
     describe('NOT isCurrentFlowCodeFlowWithRefreshTokens', () => {
-      it('does return null when not authenticated', async () => {
+      it('should return null when not authenticated', async () => {
         const allConfigs = [
           {
             configId: 'configId1',
@@ -1165,7 +1165,7 @@ describe('RefreshSessionService ', () => {
         });
       });
 
-      it('return value only returns once', async () => {
+      it('should return value only returns once', async () => {
         const allConfigs = [
           {
             configId: 'configId1',
@@ -1215,7 +1215,7 @@ describe('RefreshSessionService ', () => {
   });
 
   describe('waitForRunningRefreshSessionIfRequired', () => {
-    it('uses a default timeout of 20 seconds when no silent renew timeout is configured', async () => {
+    it('should use a default timeout of 20 seconds when no silent renew timeout is configured', async () => {
       // Arrange
       const config = { configId: 'configId1' };
       const events$ = new ReplaySubject<any>(1);
@@ -1246,7 +1246,7 @@ describe('RefreshSessionService ', () => {
       );
     });
 
-    it('reports an empty config id in the timeout error when the config has no config id', async () => {
+    it('should report an empty config id in the timeout error when the config has no config id', async () => {
       // Arrange
       const config = { silentRenewTimeoutInSeconds: 1 };
       const events$ = new ReplaySubject<any>(1);
@@ -1273,7 +1273,7 @@ describe('RefreshSessionService ', () => {
       );
     });
 
-    it('wraps a non-error silent renew failure value into an error', async () => {
+    it('should wrap a non-error silent renew failure value into an error', async () => {
       // Arrange
       const config = { configId: 'configId1', silentRenewTimeoutInSeconds: 10 };
       const events$ = new ReplaySubject<any>(1);
@@ -1303,7 +1303,7 @@ describe('RefreshSessionService ', () => {
       expect((actualError as Error).message).toBe('iframe renew failed');
     });
 
-    it('fails with a default message when the silent renew failure carries no value', async () => {
+    it('should fail with a default message when the silent renew failure carries no value', async () => {
       // Arrange
       const config = { configId: 'configId1', silentRenewTimeoutInSeconds: 10 };
       const events$ = new ReplaySubject<any>(1);
@@ -1332,7 +1332,7 @@ describe('RefreshSessionService ', () => {
   });
 
   describe('startRefreshSession', () => {
-    it('returns null if silent renew Is running', async () => {
+    it('should return null if silent renew Is running', async () => {
       vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(true);
 
       const result = await firstValueFrom(
@@ -1342,7 +1342,7 @@ describe('RefreshSessionService ', () => {
       expect(result).toBe(null);
     });
 
-    it('sets the running flag before async discovery so periodic renew cannot race', async () => {
+    it('should set the running flag before async discovery so periodic renew cannot race', async () => {
       const callOrder: string[] = [];
       const setSilentRenewRunningSpy = vi
         .spyOn(flowsDataService, 'setSilentRenewRunning')
@@ -1388,7 +1388,7 @@ describe('RefreshSessionService ', () => {
       expect(fireEventSpy).toHaveBeenCalledWith(EventTypes.SilentRenewStarted);
     });
 
-    it('calls refreshSessionWithRefreshTokens when current flow is codeflow with refresh tokens', async () => {
+    it('should call refreshSessionWithRefreshTokens when current flow is codeflow with refresh tokens', async () => {
       vi.spyOn(flowsDataService, 'setSilentRenewRunning').mockReturnValue(
         undefined
       );
@@ -1426,7 +1426,7 @@ describe('RefreshSessionService ', () => {
       expect(refreshSessionWithRefreshTokensSpy).toHaveBeenCalled();
     });
 
-    it('calls refreshSessionWithIframe when current flow is NOT codeflow with refresh tokens', async () => {
+    it('should call refreshSessionWithIframe when current flow is NOT codeflow with refresh tokens', async () => {
       vi.spyOn(flowsDataService, 'setSilentRenewRunning').mockReturnValue(
         undefined
       );
@@ -1468,7 +1468,7 @@ describe('RefreshSessionService ', () => {
       expect(refreshSessionWithIframeSpy).toHaveBeenCalled();
     });
 
-    it('fires SilentRenewFailed, resets the running flag and rethrows when the refresh fails', async () => {
+    it('should fire SilentRenewFailed, resets the running flag and rethrows when the refresh fails', async () => {
       // Arrange
       const allConfigs = [
         {
@@ -1521,7 +1521,7 @@ describe('RefreshSessionService ', () => {
       );
     });
 
-    it('fires SilentRenewFailed, resets the running flag and rethrows when the well-known discovery fails', async () => {
+    it('should fire SilentRenewFailed, resets the running flag and rethrows when the well-known discovery fails', async () => {
       // Arrange
       const allConfigs = [
         {

@@ -38,7 +38,7 @@ describe('Data Service', () => {
   });
 
   describe('get', () => {
-    it('get call sets the accept header', () => {
+    it('should get call sets the accept header', () => {
       const url = 'testurl';
       let response: unknown;
 
@@ -58,7 +58,7 @@ describe('Data Service', () => {
       httpMock.verify();
     });
 
-    it('get call with token the accept header and the token', () => {
+    it('should get call with token the accept header and the token', () => {
       const url = 'testurl';
       const token = 'token';
       let response: unknown;
@@ -80,7 +80,7 @@ describe('Data Service', () => {
       httpMock.verify();
     });
 
-    it('call without ngsw-bypass param by default', () => {
+    it('should call without ngsw-bypass param by default', () => {
       const url = 'testurl';
       let response: unknown;
 
@@ -101,7 +101,7 @@ describe('Data Service', () => {
       httpMock.verify();
     });
 
-    it('call with ngsw-bypass param', () => {
+    it('should call with ngsw-bypass param', () => {
       const url = 'testurl';
       let response: unknown;
 
@@ -124,7 +124,7 @@ describe('Data Service', () => {
   });
 
   describe('post', () => {
-    it('call sets the accept header when no other params given', () => {
+    it('should call sets the accept header when no other params given', () => {
       const url = 'testurl';
 
       dataService
@@ -140,7 +140,7 @@ describe('Data Service', () => {
       httpMock.verify();
     });
 
-    it('call sets custom headers ONLY (No ACCEPT header) when custom headers are given', () => {
+    it('should call sets custom headers ONLY (No ACCEPT header) when custom headers are given', () => {
       const url = 'testurl';
       let headers = new HttpHeaders();
 
@@ -160,7 +160,7 @@ describe('Data Service', () => {
       httpMock.verify();
     });
 
-    it('call without ngsw-bypass param by default', () => {
+    it('should call without ngsw-bypass param by default', () => {
       const url = 'testurl';
 
       dataService
@@ -177,7 +177,7 @@ describe('Data Service', () => {
       httpMock.verify();
     });
 
-    it('call with ngsw-bypass param', () => {
+    it('should call with ngsw-bypass param', () => {
       const url = 'testurl';
 
       dataService
@@ -198,7 +198,7 @@ describe('Data Service', () => {
       httpMock.verify();
     });
 
-    it('falls back to an empty string url when url is null', () => {
+    it('should fall back to an empty string url when url is null', () => {
       dataService
         .post(null, { some: 'thing' }, { configId: 'configId1' })
         .subscribe();

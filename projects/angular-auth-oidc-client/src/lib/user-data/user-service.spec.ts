@@ -55,12 +55,12 @@ describe('User Service', () => {
     expect(userService).toBeTruthy();
   });
 
-  it('public userData$ is observable$', () => {
+  it('should expose userData$ as an observable', () => {
     expect(userService.userData$).toEqual(expect.any(Observable));
   });
 
   describe('getAndPersistUserDataInStore', () => {
-    it('decodes the stored id token when no id token and decoded token are passed', async () => {
+    it('should decode the stored id token when no id token and decoded token are passed', async () => {
       const config = {
         responseType: 'notcode',
         configId: 'configId1',
@@ -85,7 +85,7 @@ describe('User Service', () => {
       expect(result).toBe(decodedFromStorage);
     });
 
-    it('asks the server for user data even if data is stored when isRenewProcess is not passed', async () => {
+    it('should ask the server for user data even if data is stored when isRenewProcess is not passed', async () => {
       const config = {
         responseType: 'code',
         configId: 'configId1',
@@ -111,7 +111,7 @@ describe('User Service', () => {
       expect(result).toEqual(DUMMY_USER_DATA);
     });
 
-    it('if not currentFlow is NOT id Token or Code flow, return decoded ID Token - passed as argument', async () => {
+    it('should return the decoded id token passed as argument if the current flow is not id token or code flow', async () => {
       const isRenewProcess = false;
       const idToken = '';
       const decodedIdToken = 'decodedIdToken';
@@ -138,7 +138,7 @@ describe('User Service', () => {
       expect(decodedIdToken).toBe(token);
     });
 
-    it('if not currentFlow is NOT id Token or Code flow, "setUserDataToStore" is called with the decodedIdToken', async () => {
+    it('should store the decoded id token as user data if the current flow is not id token or code flow', async () => {
       const isRenewProcess = false;
       const idToken = '';
       const decodedIdToken = 'decodedIdToken';
@@ -167,7 +167,7 @@ describe('User Service', () => {
       expect(userService.setUserDataToStore).toHaveBeenCalled();
     });
 
-    it('if not currentFlow is id token or code flow with renewProcess going -> return existing data from storage', async () => {
+    it('should return existing user data from storage during a renew process', async () => {
       const isRenewProcess = true;
       const idToken = '';
       const decodedIdToken = 'decodedIdToken';
@@ -194,7 +194,7 @@ describe('User Service', () => {
       expect(userDataInstore).toBe(token);
     });
 
-    it('if not currentFlow is id token or code flow and not renewProcess --> ask server for data', async () => {
+    it('should request user data from the server when not in a renew process', async () => {
       const isRenewProcess = false;
       const idToken = '';
       const decodedIdToken = { sub: DUMMY_USER_DATA.sub };
@@ -225,9 +225,7 @@ describe('User Service', () => {
       expect(spy).toHaveBeenCalled();
     });
 
-    it(`if not currentFlow is id token or code flow and not renewprocess
-          --> ask server for data
-          --> logging if it has userdata`, async () => {
+    it(`should request user data from the server and log it when not in a renew process`, async () => {
       const isRenewProcess = false;
       const idToken = '';
       const decodedIdToken = { sub: DUMMY_USER_DATA.sub };
@@ -265,9 +263,7 @@ describe('User Service', () => {
       expect(loggerService.logDebug).toHaveBeenCalled();
     });
 
-    it(`if not currentFlow is id token or code flow and not renewprocess
-          --> ask server for data
-          --> throwing Error if it has no userdata `, async () => {
+    it(`should throw an error when the server returns no user data and not in a renew process`, async () => {
       const isRenewProcess = false;
       const idToken = '';
       const decodedIdToken = { sub: 'decodedIdToken' };
@@ -305,8 +301,7 @@ describe('User Service', () => {
       expect(spyGetIdentityUserData).toHaveBeenCalled();
     });
 
-    it(`if not currentFlow is id token or code flow and renewprocess and renewUserInfoAfterTokenRenew
-          --> ask server for data`, async () => {
+    it(`should request user data from the server during a renew process when renewUserInfoAfterTokenRenew is set`, async () => {
       const isRenewProcess = true;
       const idToken = '';
       const decodedIdToken = { sub: DUMMY_USER_DATA.sub };
@@ -340,7 +335,7 @@ describe('User Service', () => {
   });
 
   describe('getUserDataFromStore', () => {
-    it('returns null without reading storage when config is null', () => {
+    it('should return null without reading storage when config is null', () => {
       const readSpy = vi.spyOn(storagePersistenceService, 'read');
       const result = userService.getUserDataFromStore(null);
 
@@ -348,14 +343,14 @@ describe('User Service', () => {
       expect(readSpy).not.toHaveBeenCalled();
     });
 
-    it('returns null if there is not data', () => {
+    it('should return null if there is not data', () => {
       const config = { configId: 'configId1' };
       const result = userService.getUserDataFromStore(config);
 
       expect(result).toBeNull();
     });
 
-    it('returns value if there is data', () => {
+    it('should return value if there is data', () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(storagePersistenceService, 'read').mockImplementation(
@@ -374,7 +369,7 @@ describe('User Service', () => {
   });
 
   describe('setUserDataToStore', () => {
-    it('publishes an empty configId when the single config has no configId', () => {
+    it('should publish an empty configId when the single config has no configId', () => {
       const observableSpy = vi
         .spyOn((userService as any).userDataInternal$, 'next')
         .mockReturnValue(undefined);
@@ -387,7 +382,7 @@ describe('User Service', () => {
       });
     });
 
-    it('publishes null user data and an empty configId for other configs without stored data or configId', () => {
+    it('should publish null user data and an empty configId for other configs without stored data or configId', () => {
       const currentConfig = { configId: 'configId1' };
       const otherConfig = {};
       const observableSpy = vi
@@ -410,7 +405,7 @@ describe('User Service', () => {
       });
     });
 
-    it('sets userData in storagePersistenceService', () => {
+    it('should set userData in storagePersistenceService', () => {
       const config = { configId: 'configId1' };
       const spy = vi
         .spyOn(storagePersistenceService, 'write')
@@ -421,7 +416,7 @@ describe('User Service', () => {
       expect(spy).toHaveBeenCalledWith('userData', 'userDataForTest', config);
     });
 
-    it('userDataInternal$ is called when userData is set', () => {
+    it('should emit the user data when it is set', () => {
       const config = { configId: 'configId1' };
       const spy = vi
         .spyOn((userService as any).userDataInternal$, 'next')
@@ -437,7 +432,7 @@ describe('User Service', () => {
       });
     });
 
-    it('eventService.fireEvent is called when userData is set', () => {
+    it('should fire an event when user data is set', () => {
       const config = { configId: 'configId1' };
       const spy = vi
         .spyOn(eventsService, 'fireEvent')
@@ -455,7 +450,7 @@ describe('User Service', () => {
   });
 
   describe('resetUserDataInStore', () => {
-    it('resets userData sets null in storagePersistenceService', () => {
+    it('should reset userData sets null in storagePersistenceService', () => {
       const config = { configId: 'configId1' };
       const spy = vi
         .spyOn(storagePersistenceService, 'remove')
@@ -468,7 +463,7 @@ describe('User Service', () => {
       expect(spy).toHaveBeenCalledWith('userData', config);
     });
 
-    it('userDataInternal$ is called with null when userData is reset', () => {
+    it('should emit null when user data is reset', () => {
       const config = { configId: 'configId1' };
       const spy = vi
         .spyOn((userService as any).userDataInternal$, 'next')
@@ -484,7 +479,7 @@ describe('User Service', () => {
       });
     });
 
-    it('eventService.fireEvent is called with null when userData is reset', () => {
+    it('should fire an event with null when user data is reset', () => {
       const config = { configId: 'configId1' };
       const spy = vi
         .spyOn(eventsService, 'fireEvent')
@@ -502,7 +497,7 @@ describe('User Service', () => {
   });
 
   describe('publishUserDataIfExists', () => {
-    it('do nothing if no userData is stored', () => {
+    it('should do nothing if no userData is stored', () => {
       vi.spyOn(userService, 'getUserDataFromStore').mockReturnValue('');
       const observableSpy = vi
         .spyOn((userService as any).userDataInternal$, 'next')
@@ -518,7 +513,7 @@ describe('User Service', () => {
       expect(eventSpy).not.toHaveBeenCalled();
     });
 
-    it('userDataInternal is fired if userData exists with single config', () => {
+    it('should emit user data if it exists with a single config', () => {
       vi.spyOn(userService, 'getUserDataFromStore').mockReturnValue(
         'something'
       );
@@ -537,7 +532,7 @@ describe('User Service', () => {
       });
     });
 
-    it('userDataInternal is fired if userData exists with multiple configs', () => {
+    it('should emit user data if it exists with multiple configs', () => {
       const allConfigs = [{ configId: 'configId1' }, { configId: 'configId2' }];
       const observableSpy = vi
         .spyOn((userService as any).userDataInternal$, 'next')
@@ -570,7 +565,7 @@ describe('User Service', () => {
       });
     });
 
-    it('event service UserDataChanged is fired if userData exists', () => {
+    it('should fire UserDataChanged if user data exists', () => {
       const allConfigs = [{ configId: 'configId1' }, { configId: 'configId2' }];
 
       vi.spyOn(userService, 'getUserDataFromStore').mockReturnValue(
@@ -592,7 +587,7 @@ describe('User Service', () => {
   });
 
   describe('validateUserDataSubIdToken', () => {
-    it('with no idTokenSub returns false', () => {
+    it('should return false with no idTokenSub', () => {
       const serviceAsAny = userService as any;
       const config = { configId: 'configId1' };
       const result = serviceAsAny.validateUserDataSubIdToken(
@@ -604,7 +599,7 @@ describe('User Service', () => {
       expect(result).toBe(false);
     });
 
-    it('with no userDataSub returns false', () => {
+    it('should return false with no userDataSub', () => {
       const serviceAsAny = userService as any;
       const config = { configId: 'configId1' };
       const result = serviceAsAny.validateUserDataSubIdToken(
@@ -616,7 +611,7 @@ describe('User Service', () => {
       expect(result).toBe(false);
     });
 
-    it('with idTokenSub and userDataSub not match logs and returns false', () => {
+    it('should log and return false when idTokenSub and userDataSub do not match', () => {
       const serviceAsAny = userService as any;
       const loggerSpy = vi
         .spyOn(loggerService, 'logDebug')
@@ -640,7 +635,7 @@ describe('User Service', () => {
   });
 
   describe('getIdentityUserData', () => {
-    it('does nothing if no authWellKnownEndPoints are set', async () => {
+    it('should do nothing if no authWellKnownEndPoints are set', async () => {
       const config = { configId: 'configId1' };
       const serviceAsAny = userService as any;
 
@@ -661,7 +656,7 @@ describe('User Service', () => {
       ).rejects.toThrow('authWellKnownEndpoints is undefined');
     });
 
-    it('does nothing if no userInfoEndpoint is set', async () => {
+    it('should do nothing if no userInfoEndpoint is set', async () => {
       const config = { configId: 'configId1' };
       const serviceAsAny = userService as any;
 
@@ -684,7 +679,7 @@ describe('User Service', () => {
       );
     });
 
-    it('gets userData if authwell and userInfoEndpoint is set', async () => {
+    it('should get userData if authwell and userInfoEndpoint is set', async () => {
       const config = { configId: 'configId1' };
       const serviceAsAny = userService as any;
       const spy = vi.spyOn(dataService, 'get').mockReturnValue(of({}));

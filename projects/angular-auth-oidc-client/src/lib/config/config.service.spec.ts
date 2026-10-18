@@ -52,7 +52,7 @@ describe('Configuration Service', () => {
   });
 
   describe('hasManyConfigs', () => {
-    it('returns true if many configs are stored', () => {
+    it('should return true if many configs are stored', () => {
       (configService as any).configsInternal = {
         configId1: { configId: 'configId1' },
         configId2: { configId: 'configId2' },
@@ -63,7 +63,7 @@ describe('Configuration Service', () => {
       expect(result).toBe(true);
     });
 
-    it('returns false if only one config is stored', () => {
+    it('should return false if only one config is stored', () => {
       (configService as any).configsInternal = {
         configId1: { configId: 'configId1' },
       };
@@ -75,7 +75,7 @@ describe('Configuration Service', () => {
   });
 
   describe('getAllConfigurations', () => {
-    it('returns all configs as array', () => {
+    it('should return all configs as array', () => {
       (configService as any).configsInternal = {
         configId1: { configId: 'configId1' },
         configId2: { configId: 'configId2' },
@@ -89,7 +89,7 @@ describe('Configuration Service', () => {
   });
 
   describe('getOpenIDConfiguration', () => {
-    it(`if config is already saved 'loadConfigs' is not called`, async () => {
+    it(`should not call loadConfigs if the config is already saved`, async () => {
       (configService as any).configsInternal = {
         configId1: { configId: 'configId1' },
         configId2: { configId: 'configId2' },
@@ -105,7 +105,7 @@ describe('Configuration Service', () => {
       expect(spy).not.toHaveBeenCalled();
     });
 
-    it(`if config is NOT already saved 'loadConfigs' is called`, async () => {
+    it(`should call loadConfigs if the config is not already saved`, async () => {
       const configs = [{ configId: 'configId1' }, { configId: 'configId2' }];
       const spy = vi
         .spyOn(configService as any, 'loadConfigs')
@@ -121,7 +121,7 @@ describe('Configuration Service', () => {
       expect(spy).toHaveBeenCalled();
     });
 
-    it(`returns null if config is not valid`, async () => {
+    it(`should return null if config is not valid`, async () => {
       const configs = [{ configId: 'configId1' }];
 
       vi.spyOn(configService as any, 'loadConfigs').mockReturnValue(
@@ -142,7 +142,7 @@ describe('Configuration Service', () => {
       );
     });
 
-    it(`returns null if configs are stored but not existing ID is passed`, async () => {
+    it(`should return null if configs are stored but not existing ID is passed`, async () => {
       (configService as any).configsInternal = {
         configId1: { configId: 'configId1' },
         configId2: { configId: 'configId2' },
@@ -155,7 +155,7 @@ describe('Configuration Service', () => {
       expect(config).toBeNull();
     });
 
-    it(`sets authWellKnownEndPoints on config if authWellKnownEndPoints is stored`, async () => {
+    it(`should set authWellKnownEndPoints on config if authWellKnownEndPoints is stored`, async () => {
       const configs = [{ configId: 'configId1' }];
 
       vi.spyOn(configService as any, 'loadConfigs').mockReturnValue(
@@ -178,7 +178,7 @@ describe('Configuration Service', () => {
       expect(consoleSpy).not.toHaveBeenCalled();
     });
 
-    it(`fires ConfigLoaded if authWellKnownEndPoints is stored`, async () => {
+    it(`should fire ConfigLoaded if authWellKnownEndPoints is stored`, async () => {
       const configs = [{ configId: 'configId1' }];
 
       vi.spyOn(configService as any, 'loadConfigs').mockReturnValue(
@@ -202,7 +202,7 @@ describe('Configuration Service', () => {
       );
     });
 
-    it(`stores, uses and fires event when authwellknownendpoints are passed`, async () => {
+    it(`should store, use and fire an event when auth well-known endpoints are passed`, async () => {
       const configs = [
         {
           configId: 'configId1',
@@ -243,7 +243,7 @@ describe('Configuration Service', () => {
   });
 
   describe('getOpenIDConfigurations', () => {
-    it(`returns correct result`, async () => {
+    it(`should return correct result`, async () => {
       vi.spyOn(stsConfigLoader, 'loadConfigs').mockReturnValue(
         of([
           { configId: 'configId1' } as OpenIdConfiguration,
@@ -261,7 +261,7 @@ describe('Configuration Service', () => {
       expect(result.currentConfig).toBeTruthy();
     });
 
-    it(`created configId when configId is not set`, async () => {
+    it(`should create a configId when configId is not set`, async () => {
       vi.spyOn(stsConfigLoader, 'loadConfigs').mockReturnValue(
         of([
           { clientId: 'clientId1' } as OpenIdConfiguration,
@@ -284,7 +284,7 @@ describe('Configuration Service', () => {
       expect(result.currentConfig?.configId).toBeTruthy();
     });
 
-    it(`returns empty array if config is not valid`, async () => {
+    it(`should return empty array if config is not valid`, async () => {
       vi.spyOn(stsConfigLoader, 'loadConfigs').mockReturnValue(
         of([
           { configId: 'configId1' } as OpenIdConfiguration,

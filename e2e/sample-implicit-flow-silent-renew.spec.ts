@@ -55,7 +55,7 @@ async function login(page: Page): Promise<void> {
   await expectAuthenticated(page);
 }
 
-test('stays unauthenticated without an IdP session', async ({ page }) => {
+test('should stay unauthenticated without an IdP session', async ({ page }) => {
   const silentLogin = waitForSilentAuthorize(page);
 
   await page.goto('/');
@@ -65,13 +65,13 @@ test('stays unauthenticated without an IdP session', async ({ page }) => {
   await expectUnauthenticated(page);
 });
 
-test('logs in with the implicit flow', async ({ page }) => {
+test('should log in with the implicit flow', async ({ page }) => {
   await login(page);
 
   await expect(page).not.toHaveURL(/#|id_token|access_token/);
 });
 
-test('logs in silently in a new tab with the IdP session', async ({
+test('should log in silently in a new tab with the IdP session', async ({
   context,
   page,
 }) => {
@@ -96,7 +96,7 @@ test('logs in silently in a new tab with the IdP session', async ({
   expect(authorizeRedirects).toEqual([]);
 });
 
-test('renews the tokens silently in an iframe', async ({ page }) => {
+test('should renew the tokens silently in an iframe', async ({ page }) => {
   await login(page);
 
   const firstIdToken = await waitForSilentRenew(page);
@@ -106,7 +106,7 @@ test('renews the tokens silently in an iframe', async ({ page }) => {
   await expectAuthenticated(page);
 });
 
-test('refreshes the session on demand', async ({ page }) => {
+test('should refresh the session on demand', async ({ page }) => {
   await login(page);
 
   const renew = waitForSilentRenew(page);
@@ -117,7 +117,7 @@ test('refreshes the session on demand', async ({ page }) => {
   await expectAuthenticated(page);
 });
 
-test('logs out through the end session endpoint', async ({ page }) => {
+test('should log out through the end session endpoint', async ({ page }) => {
   await login(page);
 
   const logoutRequest = page.waitForRequest(isLogoutRequest());

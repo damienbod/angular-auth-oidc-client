@@ -54,7 +54,7 @@ describe('Signin Key Data Service', () => {
   });
 
   describe('getSigningKeys', () => {
-    it('throws error when no wellKnownEndpoints given', async () => {
+    it('should throw error when no wellKnownEndpoints given', async () => {
       vi.spyOn(storagePersistenceService, 'read').mockImplementation(
         (...args: any[]) => {
           if (args[0] === 'authWellKnownEndPoints') {
@@ -69,7 +69,7 @@ describe('Signin Key Data Service', () => {
       await expect(firstValueFrom(result)).rejects.toBeTruthy();
     });
 
-    it('throws error when no jwksUri given', async () => {
+    it('should throw error when no jwksUri given', async () => {
       vi.spyOn(storagePersistenceService, 'read').mockImplementation(
         (...args: any[]) => {
           if (args[0] === 'authWellKnownEndPoints') {
@@ -84,7 +84,7 @@ describe('Signin Key Data Service', () => {
       await expect(firstValueFrom(result)).rejects.toBeTruthy();
     });
 
-    it('calls dataservice if jwksurl is given', () => {
+    it('should call dataservice if jwksurl is given', () => {
       vi.spyOn(storagePersistenceService, 'read').mockImplementation(
         (...args: any[]) => {
           if (args[0] === 'authWellKnownEndPoints') {
@@ -188,7 +188,7 @@ describe('Signin Key Data Service', () => {
   });
 
   describe('handleErrorGetSigningKeys', () => {
-    it('keeps observable if error is catched', () => {
+    it('should keep observable if error is catched', () => {
       const result = (service as any).handleErrorGetSigningKeys(
         new HttpResponse()
       );
@@ -197,7 +197,7 @@ describe('Signin Key Data Service', () => {
       expect(hasTypeObservable).toBe(true);
     });
 
-    it('logs error if error is response', async () => {
+    it('should log error if error is response', async () => {
       const logSpy = vi
         .spyOn(loggerService, 'logError')
         .mockReturnValue(undefined);
@@ -217,7 +217,7 @@ describe('Signin Key Data Service', () => {
       );
     });
 
-    it('logs error if error is not a response', async () => {
+    it('should log error if error is not a response', async () => {
       const logSpy = vi
         .spyOn(loggerService, 'logError')
         .mockReturnValue(undefined);
@@ -236,7 +236,7 @@ describe('Signin Key Data Service', () => {
       );
     });
 
-    it('logs error if error with message property is not a response', async () => {
+    it('should log error if error with message property is not a response', async () => {
       const logSpy = vi
         .spyOn(loggerService, 'logError')
         .mockReturnValue(undefined);

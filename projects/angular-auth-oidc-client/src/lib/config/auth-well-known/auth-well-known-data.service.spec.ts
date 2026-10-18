@@ -185,7 +185,7 @@ describe('AuthWellKnownDataService', () => {
   });
 
   describe('getWellKnownEndPointsForConfig', () => {
-    it('calling internal getWellKnownDocument and maps', async () => {
+    it('should get the well-known document and map it', async () => {
       vi.spyOn(dataService, 'get').mockReturnValue(
         of({
           issuer: 'localhost',
@@ -207,7 +207,7 @@ describe('AuthWellKnownDataService', () => {
       expect(result.issuer).toBe('localhost');
     });
 
-    it('throws error and logs if no authwellknownUrl is given', async () => {
+    it('should throw error and logs if no authwellknownUrl is given', async () => {
       const loggerSpy = vi
         .spyOn(loggerService, 'logError')
         .mockReturnValue(undefined);
@@ -253,7 +253,7 @@ describe('AuthWellKnownDataService', () => {
       expect(result).toEqual(expect.objectContaining(expected));
     });
 
-    it('throws error and logs if well known issuer does not match authwellknownUrl', async () => {
+    it('should throw error and logs if well known issuer does not match authwellknownUrl', async () => {
       const loggerSpy = vi
         .spyOn(loggerService, 'logError')
         .mockReturnValue(undefined);
@@ -293,7 +293,7 @@ describe('AuthWellKnownDataService', () => {
       }
     });
 
-    it('throws no error if well known issuer does not match authwellknownUrl and validation is disabled', async () => {
+    it('should throw no error if well known issuer does not match authwellknownUrl and validation is disabled', async () => {
       const loggerSpy = vi
         .spyOn(loggerService, 'logError')
         .mockReturnValue(undefined);

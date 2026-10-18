@@ -52,7 +52,7 @@ describe('Config Validation Service', () => {
     expect(result).toBe(true);
   });
 
-  it('calls `logWarning` if one rule has warning level', () => {
+  it('should call `logWarning` if one rule has warning level', () => {
     const loggerWarningSpy = vi
       .spyOn(loggerService, 'logWarning')
       .mockReturnValue(undefined);
@@ -76,7 +76,7 @@ describe('Config Validation Service', () => {
   });
 
   describe('ensure-clientId.rule', () => {
-    it('return false when no clientId is set', () => {
+    it('should return false when no clientId is set', () => {
       const config = { ...VALID_CONFIG, clientId: '' } as OpenIdConfiguration;
       const result = configValidationService.validateConfig(config);
 
@@ -85,7 +85,7 @@ describe('Config Validation Service', () => {
   });
 
   describe('ensure-authority-server.rule', () => {
-    it('return false when no security token service is set', () => {
+    it('should return false when no security token service is set', () => {
       const config = {
         ...VALID_CONFIG,
         authority: '',
@@ -97,7 +97,7 @@ describe('Config Validation Service', () => {
   });
 
   describe('ensure-redirect-url.rule', () => {
-    it('return false for no redirect Url', () => {
+    it('should return false for no redirect Url', () => {
       const config = { ...VALID_CONFIG, redirectUrl: '' };
       const result = configValidationService.validateConfig(config);
 
@@ -106,7 +106,7 @@ describe('Config Validation Service', () => {
   });
 
   describe('ensureSilentRenewUrlWhenNoRefreshTokenUsed', () => {
-    it('return false when silent renew is used with no useRefreshToken and no silentrenewUrl', () => {
+    it('should return false when silent renew is used with no useRefreshToken and no silentrenewUrl', () => {
       const config = {
         ...VALID_CONFIG,
         silentRenew: true,
@@ -120,7 +120,7 @@ describe('Config Validation Service', () => {
   });
 
   describe('use-offline-scope-with-silent-renew.rule', () => {
-    it('return true but warning when silent renew is used with useRefreshToken but no offline_access scope is given', () => {
+    it('should return true but warning when silent renew is used with useRefreshToken but no offline_access scope is given', () => {
       const config = {
         ...VALID_CONFIG,
         silentRenew: true,
@@ -200,7 +200,7 @@ describe('Config Validation Service', () => {
   });
 
   describe('validateConfigs', () => {
-    it('calls internal method with empty array if something falsy is passed', () => {
+    it('should call internal method with empty array if something falsy is passed', () => {
       const spy = vi.spyOn(
         configValidationService as any,
         'validateConfigsInternal'
@@ -212,7 +212,7 @@ describe('Config Validation Service', () => {
       expect(spy).toHaveBeenCalledWith([], allMultipleConfigRules);
     });
 
-    it('falls back to an empty array when null is passed', () => {
+    it('should fall back to an empty array when null is passed', () => {
       const spy = vi.spyOn(
         configValidationService as any,
         'validateConfigsInternal'

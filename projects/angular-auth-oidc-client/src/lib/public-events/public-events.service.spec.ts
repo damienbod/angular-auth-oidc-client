@@ -22,7 +22,7 @@ describe('Events Service', () => {
     expect(eventsService).toBeTruthy();
   });
 
-  it('registering to single event with one event emit works', () => {
+  it('should notify a subscriber of a single emitted event', () => {
     let firedEvent: OidcClientNotification<any> | undefined;
 
     eventsService.registerForEvents().subscribe((event) => {
@@ -37,7 +37,7 @@ describe('Events Service', () => {
     });
   });
 
-  it('registering to single event with multiple same event emit works', () => {
+  it('should notify a subscriber of multiple emits of the same event', () => {
     const spy = vi.fn().mockName('spy');
 
     eventsService.registerForEvents().subscribe((firedEvent) => {
@@ -58,7 +58,7 @@ describe('Events Service', () => {
     });
   });
 
-  it('registering to single event with multiple emit works', () => {
+  it('should notify a subscriber of multiple emitted events', () => {
     const firedEvents: OidcClientNotification<any>[] = [];
 
     eventsService

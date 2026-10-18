@@ -96,7 +96,7 @@ describe('PeriodicallyTokenCheckService', () => {
   });
 
   describe('startTokenValidationPeriodically', () => {
-    it('interval calls resetSilentRenewRunning when current flow is CodeFlowWithRefreshTokens', async () => {
+    it('should reset silent renew on interval when the current flow is CodeFlowWithRefreshTokens', async () => {
       const configs = [
         { silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 },
       ];
@@ -133,7 +133,7 @@ describe('PeriodicallyTokenCheckService', () => {
       expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
     });
 
-    it('interval calls resetSilentRenewRunning in case of error when current flow is CodeFlowWithRefreshTokens', async () => {
+    it('should reset silent renew on interval in case of error when the current flow is CodeFlowWithRefreshTokens', async () => {
       const configs = [
         { silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 },
       ];
@@ -177,7 +177,7 @@ describe('PeriodicallyTokenCheckService', () => {
       expect(resetSilentRenewRunning).toHaveBeenCalledWith(configs[0]);
     });
 
-    it('interval throws silent renew failed event with data in case of an error', async () => {
+    it('should fire a silent renew failed event with data on interval in case of an error', async () => {
       const configs = [
         { silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 },
       ];
@@ -218,7 +218,7 @@ describe('PeriodicallyTokenCheckService', () => {
       ]);
     });
 
-    it('calls resetAuthorizationData and returns if no silent renew is configured', async () => {
+    it('should call resetAuthorizationData and returns if no silent renew is configured', async () => {
       const configs = [
         { silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 },
       ];
@@ -260,7 +260,7 @@ describe('PeriodicallyTokenCheckService', () => {
       );
     });
 
-    it('calls refreshSessionWithRefreshTokens if current flow is Code flow with refresh tokens', async () => {
+    it('should call refreshSessionWithRefreshTokens if current flow is Code flow with refresh tokens', async () => {
       vi.spyOn(
         flowHelper,
         'isCurrentFlowCodeFlowWithRefreshTokens'
@@ -298,7 +298,7 @@ describe('PeriodicallyTokenCheckService', () => {
   });
 
   describe('startTokenValidationPeriodically guards and refresh paths', () => {
-    it('does not start the periodic check when no config has silent renew enabled', () => {
+    it('should not start the periodic check when no config has silent renew enabled', () => {
       // Arrange
       const configs = [
         { silentRenew: false, configId: 'configId1', tokenRefreshInSeconds: 1 },
@@ -321,7 +321,7 @@ describe('PeriodicallyTokenCheckService', () => {
       expect(intervalService.runTokenValidationRunning).toBeFalsy();
     });
 
-    it('does not start a second periodic check when token validation is already running', () => {
+    it('should not start a second periodic check when token validation is already running', () => {
       // Arrange
       const configs = [
         { silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 },
@@ -342,7 +342,7 @@ describe('PeriodicallyTokenCheckService', () => {
       expect(intervalService.runTokenValidationRunning).toBeFalsy();
     });
 
-    it('starts the periodic check with the smallest refresh time, treating a missing refresh time as 0', () => {
+    it('should start the periodic check with the smallest refresh time, treating a missing refresh time as 0', () => {
       // Arrange
       const configs = [
         { silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 3 },
@@ -368,7 +368,7 @@ describe('PeriodicallyTokenCheckService', () => {
       expect(intervalService.startPeriodicTokenCheck).toHaveBeenCalledWith(0);
     });
 
-    it('starts the periodic check with the smallest configured refresh time', () => {
+    it('should start the periodic check with the smallest configured refresh time', () => {
       // Arrange
       const configs = [
         { silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 5 },
@@ -393,7 +393,7 @@ describe('PeriodicallyTokenCheckService', () => {
       expect(intervalService.startPeriodicTokenCheck).toHaveBeenCalledWith(2);
     });
 
-    it('does not refresh nor fire SilentRenewStarted when the config should not be checked', async () => {
+    it('should not refresh nor fire SilentRenewStarted when the config should not be checked', async () => {
       // Arrange
       const configs = [
         { silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 },
@@ -434,7 +434,7 @@ describe('PeriodicallyTokenCheckService', () => {
       expect(refreshSessionWithIframeSpy).not.toHaveBeenCalled();
     });
 
-    it('does not reset the running flag after the check when the current flow is not code flow with refresh tokens', async () => {
+    it('should not reset the running flag after the check when the current flow is not code flow with refresh tokens', async () => {
       // Arrange
       const configs = [
         { silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 },
@@ -472,7 +472,7 @@ describe('PeriodicallyTokenCheckService', () => {
       expect(resetSilentRenewRunningSpy).not.toHaveBeenCalled();
     });
 
-    it('refreshes with the iframe using the stored auth request custom params when not code flow with refresh tokens', async () => {
+    it('should refresh with the iframe using the stored auth request custom params when not code flow with refresh tokens', async () => {
       // Arrange
       const configs = [
         { silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 },
@@ -525,7 +525,7 @@ describe('PeriodicallyTokenCheckService', () => {
       expect(refreshSessionWithRefreshTokensSpy).not.toHaveBeenCalled();
     });
 
-    it('refreshes with the configured refresh token params when no custom refresh params are stored', async () => {
+    it('should refresh with the configured refresh token params when no custom refresh params are stored', async () => {
       // Arrange
       const configs = [
         {
@@ -576,7 +576,7 @@ describe('PeriodicallyTokenCheckService', () => {
       );
     });
 
-    it('merges stored custom refresh params over the configured refresh token params', async () => {
+    it('should merge stored custom refresh params over the configured refresh token params', async () => {
       // Arrange
       const configs = [
         {
@@ -623,7 +623,7 @@ describe('PeriodicallyTokenCheckService', () => {
       );
     });
 
-    it('resets the authorization data and does not refresh when the stored config cannot be found', async () => {
+    it('should reset the authorization data and not refresh when the stored config cannot be found', async () => {
       // Arrange
       const configs = [
         { silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 },
@@ -664,7 +664,7 @@ describe('PeriodicallyTokenCheckService', () => {
       expect(refreshSessionWithIframeSpy).not.toHaveBeenCalled();
     });
 
-    it('logs the failure against the current config and stops emitting when the periodic refresh fails', async () => {
+    it('should log the failure against the current config and stops emitting when the periodic refresh fails', async () => {
       // Arrange
       const configs = [
         { silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 },
@@ -712,7 +712,7 @@ describe('PeriodicallyTokenCheckService', () => {
   });
 
   describe('shouldStartPeriodicallyCheckForConfig', () => {
-    it('returns false when there is no IdToken', () => {
+    it('should return false when there is no IdToken', () => {
       vi.spyOn(authStateService, 'getIdToken').mockReturnValue('');
       vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(false);
       vi.spyOn(userService, 'getUserDataFromStore').mockReturnValue(
@@ -726,7 +726,7 @@ describe('PeriodicallyTokenCheckService', () => {
       expect(result).toBe(false);
     });
 
-    it('returns false when silent renew is running', () => {
+    it('should return false when silent renew is running', () => {
       vi.spyOn(authStateService, 'getIdToken').mockReturnValue('idToken');
       vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(true);
       vi.spyOn(userService, 'getUserDataFromStore').mockReturnValue(
@@ -740,7 +740,7 @@ describe('PeriodicallyTokenCheckService', () => {
       expect(result).toBe(false);
     });
 
-    it('returns false when code flow is in progress', () => {
+    it('should return false when code flow is in progress', () => {
       vi.spyOn(authStateService, 'getIdToken').mockReturnValue('idToken');
       vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(false);
       vi.spyOn(flowsDataService, 'isCodeFlowInProgress').mockReturnValue(true);
@@ -755,7 +755,7 @@ describe('PeriodicallyTokenCheckService', () => {
       expect(result).toBe(false);
     });
 
-    it('returns false when there is no userdata from the store', () => {
+    it('should return false when there is no userdata from the store', () => {
       vi.spyOn(authStateService, 'getIdToken').mockReturnValue('idToken');
       vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(false);
       vi.spyOn(userService, 'getUserDataFromStore').mockReturnValue(null);
@@ -767,7 +767,7 @@ describe('PeriodicallyTokenCheckService', () => {
       expect(result).toBe(false);
     });
 
-    it('returns true when there is userDataFromStore, silentrenew is not running and there is an idtoken', () => {
+    it('should return true when there is userDataFromStore, silentrenew is not running and there is an idtoken', () => {
       vi.spyOn(authStateService, 'getIdToken').mockReturnValue('idToken');
       vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(false);
       vi.spyOn(userService, 'getUserDataFromStore').mockReturnValue(
@@ -790,7 +790,7 @@ describe('PeriodicallyTokenCheckService', () => {
       expect(result).toBe(true);
     });
 
-    it('returns false if tokens are not expired', () => {
+    it('should return false if tokens are not expired', () => {
       vi.spyOn(authStateService, 'getIdToken').mockReturnValue('idToken');
       vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(false);
       vi.spyOn(userService, 'getUserDataFromStore').mockReturnValue(
@@ -812,7 +812,7 @@ describe('PeriodicallyTokenCheckService', () => {
       expect(result).toBe(false);
     });
 
-    it('returns true if only the access token is expired', () => {
+    it('should return true if only the access token is expired', () => {
       vi.spyOn(authStateService, 'getIdToken').mockReturnValue('idToken');
       vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(false);
       vi.spyOn(userService, 'getUserDataFromStore').mockReturnValue(

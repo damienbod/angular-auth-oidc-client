@@ -93,13 +93,13 @@ async function login(page: Page): Promise<void> {
   await expectAuthenticated(page);
 }
 
-test('is unauthenticated on first visit', async ({ page }) => {
+test('should be unauthenticated on first visit', async ({ page }) => {
   await page.goto('/');
 
   await expectUnauthenticated(page);
 });
 
-test('logs in with a pushed authorization request', async ({
+test('should log in with a pushed authorization request', async ({
   context,
   page,
 }) => {
@@ -121,7 +121,7 @@ test('logs in with a pushed authorization request', async ({
   await expect(page).not.toHaveURL(/[?&](code|state)=/);
 });
 
-test('logs in with a pushed authorization request in a popup', async ({
+test('should log in with a pushed authorization request in a popup', async ({
   context,
   page,
 }) => {
@@ -140,7 +140,7 @@ test('logs in with a pushed authorization request in a popup', async ({
   await expectAuthenticated(page);
 });
 
-test('refreshes the session with the refresh token', async ({ page }) => {
+test('should refresh the session with the refresh token', async ({ page }) => {
   await login(page);
 
   const refresh = waitForRefreshTokenRenew(page);
@@ -151,7 +151,7 @@ test('refreshes the session with the refresh token', async ({ page }) => {
   await expectAuthenticated(page);
 });
 
-test('logs out through the end session endpoint', async ({ page }) => {
+test('should log out through the end session endpoint', async ({ page }) => {
   await login(page);
 
   const logoutRequest = page.waitForRequest(isLogoutRequest());

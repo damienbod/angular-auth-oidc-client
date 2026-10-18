@@ -56,7 +56,9 @@ async function loginToBoth(page: Page): Promise<void> {
   );
 }
 
-test('is unauthenticated for both configs on first visit', async ({ page }) => {
+test('should be unauthenticated for both configs on first visit', async ({
+  page,
+}) => {
   await page.goto('/');
 
   await expect(
@@ -65,7 +67,7 @@ test('is unauthenticated for both configs on first visit', async ({ page }) => {
   await expectConfigsWithUserData(page, []);
 });
 
-test('logs in to both configs with their own scope', async ({ page }) => {
+test('should log in to both configs with their own scope', async ({ page }) => {
   await page.goto('/');
 
   for (const { configId, apiScope } of CONFIGS) {
@@ -86,7 +88,9 @@ test('logs in to both configs with their own scope', async ({ page }) => {
   await expect(page.locator('pre').first()).toContainText(USER_NAMES.idp1);
 });
 
-test('renews both configs silently with refresh tokens', async ({ page }) => {
+test('should renew both configs silently with refresh tokens', async ({
+  page,
+}) => {
   await loginToBoth(page);
 
   // Both configs renew at the same IdP, one refresh token grant each.
@@ -110,7 +114,7 @@ test('renews both configs silently with refresh tokens', async ({ page }) => {
   );
 });
 
-test('refreshes a config on demand', async ({ page }) => {
+test('should refresh a config on demand', async ({ page }) => {
   await loginToBoth(page);
 
   const refresh = page.waitForRequest(isTokenRequest('refresh_token'));
@@ -126,7 +130,7 @@ test('refreshes a config on demand', async ({ page }) => {
   );
 });
 
-test('logs out of one config while the other stays authenticated', async ({
+test('should log out of one config while the other stays authenticated', async ({
   page,
 }) => {
   await loginToBoth(page);

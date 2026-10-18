@@ -61,7 +61,7 @@ describe('ParLoginService', () => {
   });
 
   describe('loginPar', () => {
-    it('does nothing if it has an invalid response type', () => {
+    it('should do nothing if it has an invalid response type', () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -80,7 +80,7 @@ describe('ParLoginService', () => {
       expect(queryAndStoreAuthWellKnownEndPointsSpy).not.toHaveBeenCalled();
     });
 
-    it('calls parService.postParRequest without custom params when no custom params are passed', () => {
+    it('should call parService.postParRequest without custom params when no custom params are passed', () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -103,7 +103,7 @@ describe('ParLoginService', () => {
       expect(spy).toHaveBeenCalled();
     });
 
-    it('calls parService.postParRequest with custom params when custom params are passed', () => {
+    it('should call parService.postParRequest with custom params when custom params are passed', () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -133,7 +133,7 @@ describe('ParLoginService', () => {
       });
     });
 
-    it('returns undefined and logs error when no url could be created', () => {
+    it('should return undefined and logs error when no url could be created', () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -161,7 +161,7 @@ describe('ParLoginService', () => {
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
-    it('logs the error and does not redirect when the PAR request fails', () => {
+    it('should log the error and not redirect when the PAR request fails', () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -194,7 +194,7 @@ describe('ParLoginService', () => {
       expect(redirectSpy).not.toHaveBeenCalled();
     });
 
-    it('calls redirect service redirectTo when url could be created', () => {
+    it('should call redirect service redirectTo when url could be created', () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -227,7 +227,7 @@ describe('ParLoginService', () => {
       expect(spy).toHaveBeenCalledWith('some-par-url');
     });
 
-    it('calls urlHandler when URL is passed', () => {
+    it('should call urlHandler when URL is passed', () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -266,7 +266,7 @@ describe('ParLoginService', () => {
   });
 
   describe('loginWithPopUpPar', () => {
-    it('does nothing if it has an invalid response type', async () => {
+    it('should do nothing if it has an invalid response type', async () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -286,7 +286,7 @@ describe('ParLoginService', () => {
       }
     });
 
-    it('calls parService.postParRequest without custom params when no custom params are passed', async () => {
+    it('should call parService.postParRequest without custom params when no custom params are passed', async () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -317,7 +317,7 @@ describe('ParLoginService', () => {
       }
     });
 
-    it('calls parService.postParRequest with custom params when custom params are passed', async () => {
+    it('should call parService.postParRequest with custom params when custom params are passed', async () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -355,7 +355,7 @@ describe('ParLoginService', () => {
       }
     });
 
-    it('returns undefined and logs error when no URL could be created', async () => {
+    it('should return undefined and logs error when no URL could be created', async () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -394,7 +394,7 @@ describe('ParLoginService', () => {
       }
     });
 
-    it('calls popupService openPopUp when URL could be created', async () => {
+    it('should call popupService openPopUp when URL could be created', async () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -432,7 +432,7 @@ describe('ParLoginService', () => {
       expect(spy).toHaveBeenCalledWith('some-par-url', undefined, config);
     });
 
-    it('returns correct properties if URL is received', async () => {
+    it('should return correct properties if URL is received', async () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -490,7 +490,7 @@ describe('ParLoginService', () => {
       });
     });
 
-    it('returns correct properties if popup was closed by user', async () => {
+    it('should return correct properties if popup was closed by user', async () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'

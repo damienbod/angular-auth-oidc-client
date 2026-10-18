@@ -21,49 +21,49 @@ describe('EqualityService Tests', () => {
   });
 
   describe('areEqual', () => {
-    it('first arg is null returns false', () => {
+    it('should return false when the first arg is null', () => {
       const result = equalityHelperService.areEqual(null, 'somestring');
 
       expect(result).toBe(false);
     });
 
-    it('second arg is null returns false', () => {
+    it('should return false when the second arg is null', () => {
       const result = equalityHelperService.areEqual('somestring', null);
 
       expect(result).toBe(false);
     });
 
-    it('first arg is undefined returns false', () => {
+    it('should return false when the first arg is undefined', () => {
       const result = equalityHelperService.areEqual(undefined, 'somestring');
 
       expect(result).toBe(false);
     });
 
-    it('second arg is undefined returns false', () => {
+    it('should return false when the second arg is undefined', () => {
       const result = equalityHelperService.areEqual('somestring', undefined);
 
       expect(result).toBe(false);
     });
 
-    it('two empty strings return false', () => {
+    it('should return false for two empty strings', () => {
       const result = equalityHelperService.areEqual('', '');
 
       expect(result).toBe(false);
     });
 
-    it('two equal strings return true', () => {
+    it('should return true for two equal strings', () => {
       const result = equalityHelperService.areEqual('somestring', 'somestring');
 
       expect(result).toBe(true);
     });
 
-    it('two equal strings but different casing returns false', () => {
+    it('should return false for two equal strings with different casing', () => {
       const result = equalityHelperService.areEqual('somestring', 'Somestring');
 
       expect(result).toBe(false);
     });
 
-    it('two same arrays return true', () => {
+    it('should return true for two same arrays', () => {
       const array1 = ['somestring1', 'somestring2'];
       const array2 = ['somestring1', 'somestring2'];
       const result = equalityHelperService.areEqual(array1, array2);
@@ -71,7 +71,7 @@ describe('EqualityService Tests', () => {
       expect(result).toBe(true);
     });
 
-    it('two same arrays (bit not casing) return false', () => {
+    it('should return false for two same arrays with different casing', () => {
       const array1 = ['somestring1', 'SOMESTRING2'];
       const array2 = ['somestring1', 'somestring2'];
       const result = equalityHelperService.areEqual(array1, array2);
@@ -79,7 +79,7 @@ describe('EqualityService Tests', () => {
       expect(result).toBe(false);
     });
 
-    it('two different arrays return false', () => {
+    it('should return false for two different arrays', () => {
       const array1 = ['somestring1'];
       const array2 = ['somestring1', 'somestring2'];
       const result = equalityHelperService.areEqual(array1, array2);
@@ -87,7 +87,7 @@ describe('EqualityService Tests', () => {
       expect(result).toBe(false);
     });
 
-    it('two same objects return true', () => {
+    it('should return true for two same objects', () => {
       const object1 = { name: 'Phil', age: 67 };
       const object2 = { name: 'Phil', age: 67 };
       const result = equalityHelperService.areEqual(object1, object2);
@@ -95,7 +95,7 @@ describe('EqualityService Tests', () => {
       expect(result).toBe(true);
     });
 
-    it('two different objects return false', () => {
+    it('should return false for two different objects', () => {
       const object1 = { name: 'Phil', age: 67 };
       const object2 = { name: 'Mike', age: 67 };
       const result = equalityHelperService.areEqual(object1, object2);
@@ -103,7 +103,7 @@ describe('EqualityService Tests', () => {
       expect(result).toBe(false);
     });
 
-    it('string and array (same) return true', () => {
+    it('should return true for a string and an array with the same value', () => {
       const array1 = ['somestring1'];
       const string2 = 'somestring1';
       const result = equalityHelperService.areEqual(array1, string2);
@@ -111,7 +111,7 @@ describe('EqualityService Tests', () => {
       expect(result).toBe(true);
     });
 
-    it('array and string (same) return true', () => {
+    it('should return true for an array and a string with the same value', () => {
       const array1 = ['somestring1'];
       const string2 = 'somestring1';
       const result = equalityHelperService.areEqual(string2, array1);
@@ -119,7 +119,7 @@ describe('EqualityService Tests', () => {
       expect(result).toBe(true);
     });
 
-    it('string and array (different) return false', () => {
+    it('should return false for a string and an array with different values', () => {
       const array1 = ['somestring'];
       const string2 = 'somestring1';
       const result = equalityHelperService.areEqual(string2, array1);
@@ -127,7 +127,7 @@ describe('EqualityService Tests', () => {
       expect(result).toBe(false);
     });
 
-    it('array and string (different) return false', () => {
+    it('should return false for an array and a string with different values', () => {
       const array1 = ['somestring1'];
       const string2 = 'somestring';
       const result = equalityHelperService.areEqual(array1, string2);
@@ -135,13 +135,13 @@ describe('EqualityService Tests', () => {
       expect(result).toBe(false);
     });
 
-    it('boolean and boolean return false', () => {
+    it('should return false for two different booleans', () => {
       const result = equalityHelperService.areEqual(true, false);
 
       expect(result).toBe(false);
     });
 
-    it('boolean and boolean (same) return true', () => {
+    it('should return true for two same booleans', () => {
       const result = equalityHelperService.areEqual(true, true);
 
       expect(result).toBe(true);
@@ -234,7 +234,7 @@ describe('EqualityService Tests', () => {
     ];
 
     testCases.forEach(({ input1, input2, expected }) => {
-      it(`returns '${expected}' if '${input1}' and '${input2}' is given`, () => {
+      it(`should return '${expected}' if '${input1}' and '${input2}' is given`, () => {
         const result =
           equalityHelperService.isStringEqualOrNonOrderedArrayEqual(
             input1,

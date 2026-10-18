@@ -57,7 +57,7 @@ describe('PopUpService', () => {
   });
 
   describe('isCurrentlyInPopup', () => {
-    it('returns false if can not access Session Storage', () => {
+    it('should return false if can not access Session Storage', () => {
       // arrange
       vi.spyOn(popUpService as any, 'canAccessSessionStorage').mockReturnValue(
         false
@@ -76,7 +76,7 @@ describe('PopUpService', () => {
       expect(result).toBe(false);
     });
 
-    it('returns false if window has no opener', () => {
+    it('should return false if window has no opener', () => {
       // arrange
       vi.spyOn(popUpService as any, 'canAccessSessionStorage').mockReturnValue(
         true
@@ -92,7 +92,7 @@ describe('PopUpService', () => {
       expect(result).toBe(false);
     });
 
-    it('returns false if there is no window available', () => {
+    it('should return false if there is no window available', () => {
       // arrange
       vi.spyOn(popUpService as any, 'canAccessSessionStorage').mockReturnValue(
         true
@@ -111,7 +111,7 @@ describe('PopUpService', () => {
       expect(result).toBe(false);
     });
 
-    it('returns false if there is no popup flag in storage', () => {
+    it('should return false if there is no popup flag in storage', () => {
       // arrange
       vi.spyOn(popUpService as any, 'canAccessSessionStorage').mockReturnValue(
         true
@@ -128,7 +128,7 @@ describe('PopUpService', () => {
       expect(result).toBe(false);
     });
 
-    it('returns false if window is its own opener', () => {
+    it('should return false if window is its own opener', () => {
       // arrange
       const windowMock: any = { opener: null };
 
@@ -150,7 +150,7 @@ describe('PopUpService', () => {
       expect(result).toBe(false);
     });
 
-    it('returns true if isCurrentlyInPopup', () => {
+    it('should return true if isCurrentlyInPopup', () => {
       // arrange
       vi.spyOn(popUpService as any, 'canAccessSessionStorage').mockReturnValue(
         true
@@ -171,7 +171,7 @@ describe('PopUpService', () => {
   });
 
   describe('result$', () => {
-    it('emits when internal subject is called', () => {
+    it('should emit when internal subject is called', () => {
       // arrange
       const popupResult: PopupResult = {
         userClosed: false,
@@ -192,7 +192,7 @@ describe('PopUpService', () => {
   });
 
   describe('openPopup', () => {
-    it('popup opens with parameters and default options', () => {
+    it('should open the popup with parameters and default options', () => {
       // arrange
       const popupSpy = vi.spyOn(window, 'open').mockImplementation(
         () =>
@@ -216,7 +216,7 @@ describe('PopUpService', () => {
       );
     });
 
-    it('popup opens with parameters and passed options', () => {
+    it('should open the popup with parameters and passed options', () => {
       // arrange
       const popupSpy = vi.spyOn(window, 'open').mockImplementation(
         () =>
@@ -240,7 +240,7 @@ describe('PopUpService', () => {
       );
     });
 
-    it('logs error and return if popup could not be opened', () => {
+    it('should log error and return if popup could not be opened', () => {
       // arrange
       vi.spyOn(window, 'open').mockImplementation(() => null);
       const loggerSpy = vi
@@ -260,7 +260,7 @@ describe('PopUpService', () => {
       );
     });
 
-    it('logs error and does not open or write storage if url is empty', () => {
+    it('should log error and not open or write storage if url is empty', () => {
       // arrange
       const popupSpy = vi
         .spyOn(window, 'open')
@@ -287,7 +287,7 @@ describe('PopUpService', () => {
       expect(writeSpy).not.toHaveBeenCalled();
     });
 
-    it('does nothing if there is no window available', () => {
+    it('should do nothing if there is no window available', () => {
       // arrange
       vi.spyOn(popUpService as any, 'windowInternal', 'get').mockReturnValue(
         null
@@ -323,7 +323,7 @@ describe('PopUpService', () => {
         popUpService.result$.subscribe((result) => (popupResult = result));
       });
 
-      it('message received with data', async () => {
+      it('should handle a received message with data', async () => {
         // arrange
         let listener: (event: MessageEvent) => void = () => {
           return;
@@ -354,7 +354,7 @@ describe('PopUpService', () => {
         });
       });
 
-      it('message received without data does return but cleanup does not throw event', async () => {
+      it('should clean up without firing an event when a message without data is received', async () => {
         // arrange
         let listener: (event: MessageEvent) => void = () => {
           return;
@@ -383,7 +383,7 @@ describe('PopUpService', () => {
         expect(nextSpy).not.toHaveBeenCalled();
       });
 
-      it('message received without data does not clean up when disableCleaningPopupOnInvalidMessage is true', async () => {
+      it('should not clean up when a message without data is received and disableCleaningPopupOnInvalidMessage is true', async () => {
         // arrange
         let listener: (event: MessageEvent) => void = () => {
           return;
@@ -417,7 +417,7 @@ describe('PopUpService', () => {
         await vi.advanceTimersByTimeAsync(200);
       });
 
-      it('user closed', async () => {
+      it('should emit when the user closes the popup', async () => {
         // arrange & act
         popUpService.openPopUp('url', undefined, { configId: 'configId1' });
 
@@ -439,7 +439,7 @@ describe('PopUpService', () => {
   });
 
   describe('sendMessageToMainWindow', () => {
-    it('does nothing if there is no window available', () => {
+    it('should do nothing if there is no window available', () => {
       // arrange
       vi.spyOn(popUpService as any, 'windowInternal', 'get').mockReturnValue(
         null
@@ -457,7 +457,7 @@ describe('PopUpService', () => {
       expect(sendMessageSpy).not.toHaveBeenCalled();
     });
 
-    it('does nothing if window.opener is null', () => {
+    it('should do nothing if window.opener is null', () => {
       // arrange
       vi.stubGlobal('opener', null);
 
@@ -472,7 +472,7 @@ describe('PopUpService', () => {
       expect(sendMessageSpy).not.toHaveBeenCalled();
     });
 
-    it('calls postMessage when window opener is given', () => {
+    it('should call postMessage when window opener is given', () => {
       // arrange
       vi.stubGlobal('opener', {
         postMessage: () => undefined,
@@ -494,7 +494,7 @@ describe('PopUpService', () => {
       );
     });
 
-    it('does not postMessage and logs debug when url is empty', () => {
+    it('should not postMessage and logs debug when url is empty', () => {
       // arrange
       vi.stubGlobal('opener', {
         postMessage: () => undefined,
@@ -516,7 +516,7 @@ describe('PopUpService', () => {
   });
 
   describe('cleanUp', () => {
-    it('does nothing if there is no window available', () => {
+    it('should do nothing if there is no window available', () => {
       // arrange
       vi.spyOn(popUpService as any, 'windowInternal', 'get').mockReturnValue(
         null
@@ -536,7 +536,7 @@ describe('PopUpService', () => {
       expect(removeItemSpy).not.toHaveBeenCalled();
     });
 
-    it('calls removeEventListener on window with correct params', () => {
+    it('should call removeEventListener on window with correct params', () => {
       // arrange
       const spy = vi
         .spyOn(window, 'removeEventListener')
@@ -552,7 +552,7 @@ describe('PopUpService', () => {
       expect(spy).toHaveBeenCalledWith('message', listener, false);
     });
 
-    it('removes popup from sessionstorage, closes and nulls when popup is opened', () => {
+    it('should remove popup from sessionstorage, closes and nulls when popup is opened', () => {
       // arrange
       const popupMock = {
         anyThing: 'truthy',
@@ -581,7 +581,7 @@ describe('PopUpService', () => {
   });
 
   describe('sendMessage', () => {
-    it('does nothing if there is no window available', () => {
+    it('should do nothing if there is no window available', () => {
       // arrange
       vi.spyOn(popUpService as any, 'windowInternal', 'get').mockReturnValue(
         null
@@ -601,7 +601,7 @@ describe('PopUpService', () => {
   });
 
   describe('getOptions', () => {
-    it('returns an empty string if there is no window available', () => {
+    it('should return an empty string if there is no window available', () => {
       // arrange
       vi.spyOn(popUpService as any, 'windowInternal', 'get').mockReturnValue(
         null
@@ -614,7 +614,7 @@ describe('PopUpService', () => {
       expect(result).toBe('');
     });
 
-    it('falls back to default width and height when passed values are falsy', () => {
+    it('should fall back to default width and height when passed values are falsy', () => {
       // arrange
       const popupOptions = { width: 0, height: 0 };
       // act
@@ -631,7 +631,7 @@ describe('PopUpService', () => {
       expect(result).not.toContain('width=0');
     });
 
-    it('returns a comma separated, url-encoded options string', () => {
+    it('should return a comma separated, url-encoded options string', () => {
       // arrange
       const popupOptions = { width: 100, height: 200 };
       // act
@@ -645,7 +645,7 @@ describe('PopUpService', () => {
   });
 
   describe('canAccessSessionStorage', () => {
-    it('returns a boolean based on navigator, cookies and Storage availability', () => {
+    it('should return a boolean based on navigator, cookies and Storage availability', () => {
       // act
       const result = (popUpService as any).canAccessSessionStorage();
 
