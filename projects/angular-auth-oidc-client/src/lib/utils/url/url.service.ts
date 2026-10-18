@@ -422,18 +422,13 @@ export class UrlService {
           params = params.append('hd', hdParam);
         }
 
-        if (customParamsAuthRequest) {
-          params = this.appendCustomParams(
-            { ...customParamsAuthRequest },
-            params
-          );
-        }
+        const mergedParams = {
+          ...customParamsAuthRequest,
+          ...authOptions?.customParams,
+        };
 
-        if (authOptions?.customParams) {
-          params = this.appendCustomParams(
-            { ...authOptions.customParams },
-            params
-          );
+        if (Object.keys(mergedParams).length > 0) {
+          params = this.appendCustomParams(mergedParams, params);
         }
 
         return params.toString();
@@ -889,7 +884,14 @@ export class UrlService {
     // format: https://YOUR_DOMAIN/v2/logout?client_id=YOUR_CLIENT_ID&returnTo=LOGOUT_URL
     const { authority, clientId } = configuration;
     const postLogoutRedirectUrl = this.getPostLogoutRedirectUrl(configuration);
+    let params = this.createHttpParams();
 
-    return `${authority}/v2/logout?client_id=${clientId}&returnTo=${postLogoutRedirectUrl}`;
+    params = params.set('client_id', clientId ?? '');
+
+    if (postLogoutRedirectUrl) {
+      params = params.set('returnTo', postLogoutRedirectUrl);
+    }
+
+    return `${authority}/v2/logout?${params}`;
   }
 }

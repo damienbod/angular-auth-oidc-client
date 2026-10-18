@@ -213,6 +213,18 @@ describe('EqualityService Tests', () => {
         input2: ['y', 'z', 'x'] as any[],
         expected: true,
       },
+      // old [x,y], new [x,z] invalid (only partial overlap)
+      {
+        input1: ['x', 'y'] as any[],
+        input2: ['x', 'z'] as any[],
+        expected: false,
+      },
+      // old [x,y], new [x,x] invalid (duplicates)
+      {
+        input1: ['x', 'y'] as any[],
+        input2: ['x', 'x'] as any[],
+        expected: false,
+      },
     ];
 
     testCases.forEach(({ input1, input2, expected }) => {

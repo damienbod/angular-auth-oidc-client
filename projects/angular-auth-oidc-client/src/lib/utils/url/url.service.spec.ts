@@ -1554,7 +1554,7 @@ describe('UrlService Tests', () => {
       const result = await firstValueFrom(resultObs$);
 
       expect(result).toBe(
-        `client_id=testClientId&redirect_uri=testRedirectUrl&response_type=testResponseType&scope=testScope&nonce=testNonce&state=testState&code_challenge=testCodeChallenge&code_challenge_method=S256&hd=testHdParam&any=thing&any=otherThing`
+        `client_id=testClientId&redirect_uri=testRedirectUrl&response_type=testResponseType&scope=testScope&nonce=testNonce&state=testState&code_challenge=testCodeChallenge&code_challenge_method=S256&hd=testHdParam&any=otherThing`
       );
     });
 
@@ -2263,9 +2263,24 @@ describe('UrlService Tests', () => {
       // Act
       const value = service.getEndSessionUrl(config);
       // Assert
-      const expectValue = `something.auth0.com/v2/logout?client_id=someClientId&returnTo=https://localhost:1234/unauthorized`;
+      const expectValue = `something.auth0.com/v2/logout?client_id=someClientId&returnTo=https%3A%2F%2Flocalhost%3A1234%2Funauthorized`;
 
       expect(value).toEqual(expectValue);
+    });
+
+    it('returns auth0 format URL without returnTo if no postLogoutRedirectUri is configured', () => {
+      // Arrange
+      const config = {
+        authority: 'something.auth0.com',
+        clientId: 'someClientId',
+      };
+      // Act
+      const value = service.getEndSessionUrl(config);
+
+      // Assert
+      expect(value).toEqual(
+        'something.auth0.com/v2/logout?client_id=someClientId'
+      );
     });
   });
 
