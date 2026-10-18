@@ -1,6 +1,14 @@
 import { LogLevel } from '../logging/types/logging.types';
 import { OpenIdConfiguration } from './openid-configuration';
 
+export const DEFAULT_SILENT_RENEW_TIMEOUT_IN_SECONDS = 20;
+
+export const getSilentRenewTimeoutInMilliseconds = ({
+  silentRenewTimeoutInSeconds,
+}: OpenIdConfiguration): number =>
+  (silentRenewTimeoutInSeconds ?? DEFAULT_SILENT_RENEW_TIMEOUT_IN_SECONDS) *
+  1000;
+
 export const DEFAULT_CONFIG: OpenIdConfiguration = {
   authority: 'https://please_set',
   authWellknownEndpointUrl: '',
@@ -15,7 +23,7 @@ export const DEFAULT_CONFIG: OpenIdConfiguration = {
   startCheckSession: false,
   silentRenew: false,
   silentRenewUrl: 'https://please_set',
-  silentRenewTimeoutInSeconds: 20,
+  silentRenewTimeoutInSeconds: DEFAULT_SILENT_RENEW_TIMEOUT_IN_SECONDS,
   renewTimeBeforeTokenExpiresInSeconds: 0,
   useRefreshToken: false,
   useRefreshTokenLock: false,

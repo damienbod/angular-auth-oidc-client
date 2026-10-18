@@ -33,6 +33,7 @@ import { StoragePersistenceService } from '../storage/storage-persistence.servic
 import { UserService } from '../user-data/user.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
+import { getSilentRenewTimeoutInMilliseconds } from '../config/default-config';
 
 export const MAX_RETRY_ATTEMPTS = 3;
 
@@ -143,12 +144,11 @@ export class RefreshSessionService {
             configId,
           };
         }),
-        timeout((config.silentRenewTimeoutInSeconds ?? 20) * 1000)
+        timeout(getSilentRenewTimeoutInMilliseconds(config))
       );
     }
 
-    const { silentRenewTimeoutInSeconds } = config;
-    const timeOutTime = (silentRenewTimeoutInSeconds ?? 0) * 1000;
+    const timeOutTime = getSilentRenewTimeoutInMilliseconds(config);
 
     return forkJoin([
       this.startRefreshSession(config, allConfigs, extraCustomParams),
@@ -306,7 +306,7 @@ export class RefreshSessionService {
       return of(false);
     }
 
-    const timeOutTime = (config.silentRenewTimeoutInSeconds ?? 20) * 1000;
+    const timeOutTime = getSilentRenewTimeoutInMilliseconds(config);
 
     return this.publicEventsService.registerForEvents().pipe(
       filter((notification) => {
