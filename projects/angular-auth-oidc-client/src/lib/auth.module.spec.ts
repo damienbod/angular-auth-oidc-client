@@ -53,7 +53,7 @@ describe('AuthModule', () => {
       }).compileComponents();
     });
 
-    it('should create StsConfigStaticLoader if config is passed', () => {
+    it('should use the passed StsConfigHttpLoader if a loader is passed', () => {
       const configLoader = TestBed.inject(StsConfigLoader);
 
       expect(configLoader instanceof StsConfigHttpLoader).toBe(true);

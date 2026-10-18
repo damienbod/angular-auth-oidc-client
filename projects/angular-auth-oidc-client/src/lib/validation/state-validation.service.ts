@@ -27,8 +27,8 @@ export class StateValidationService {
     callbackContext: CallbackContext,
     configuration: OpenIdConfiguration
   ): Observable<StateValidationResult> {
-    const hasError = Boolean(callbackContext.authResult?.error);
     const hasCallbackContext = Boolean(callbackContext);
+    const hasError = Boolean(callbackContext?.authResult?.error);
 
     if (!hasCallbackContext || hasError) {
       return of(new StateValidationResult('', '', false, {}));
@@ -385,7 +385,6 @@ export class StateValidationService {
       toReturn.authResponseIsValid = true;
       toReturn.state = ValidationResult.Ok;
       this.handleSuccessfulValidation(configuration, isInRefreshTokenFlow);
-      this.handleUnsuccessfulValidation(configuration, isInRefreshTokenFlow);
 
       return of(toReturn);
     }

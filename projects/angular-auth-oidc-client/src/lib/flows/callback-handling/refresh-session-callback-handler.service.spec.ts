@@ -59,14 +59,11 @@ describe('RefreshSessionCallbackHandlerService', () => {
       vi.spyOn(authStateService, 'getRefreshToken').mockReturnValue('');
       vi.spyOn(authStateService, 'getIdToken').mockReturnValue('henlo-legger');
 
-      try {
-        await firstValueFrom(
+      await expect(
+        firstValueFrom(
           service.refreshSessionWithRefreshTokens({ configId: 'configId1' })
-        );
-        expect.fail('expected an error');
-      } catch (err: any) {
-        expect(err).toBeTruthy();
-      }
+        )
+      ).rejects.toThrow('no refresh token found, please login');
     });
   });
 });

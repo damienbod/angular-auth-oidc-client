@@ -66,12 +66,22 @@ describe('StandardLoginService', () => {
       const loggerSpy = vi
         .spyOn(loggerService, 'logError')
         .mockReturnValue(undefined);
+      const setCodeFlowInProgressSpy = vi.spyOn(
+        flowsDataService,
+        'setCodeFlowInProgress'
+      );
+      const queryAndStoreAuthWellKnownEndPointsSpy = vi.spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      );
 
       standardLoginService.loginStandard({
         configId: 'configId1',
       });
 
       expect(loggerSpy).toHaveBeenCalled();
+      expect(setCodeFlowInProgressSpy).not.toHaveBeenCalled();
+      expect(queryAndStoreAuthWellKnownEndPointsSpy).not.toHaveBeenCalled();
     });
 
     it('calls flowsDataService.setCodeFlowInProgress() if everything fits', () => {

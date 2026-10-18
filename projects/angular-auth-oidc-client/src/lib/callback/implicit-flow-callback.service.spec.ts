@@ -151,20 +151,17 @@ describe('ImplicitFlowCallbackService ', () => {
         postLoginRoute: 'postLoginRoute',
       };
 
-      try {
-        await firstValueFrom(
+      await expect(
+        firstValueFrom(
           implicitFlowCallbackService.authenticatedImplicitFlowCallback(
             config,
             [config],
             'some-hash'
           )
-        );
-        expect.fail('expected an error');
-      } catch (err: any) {
-        expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
-        expect(stopPeriodicallyTokenCheckSpy).toHaveBeenCalled();
-        expect(err).toBeTruthy();
-      }
+        )
+      ).rejects.toThrow('error');
+      expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
+      expect(stopPeriodicallyTokenCheckSpy).toHaveBeenCalled();
     });
 
     it(`navigates to unauthorizedRoute in case of error and  in case of error and
@@ -188,22 +185,19 @@ describe('ImplicitFlowCallbackService ', () => {
         unauthorizedRoute: 'unauthorizedRoute',
       };
 
-      try {
-        await firstValueFrom(
+      await expect(
+        firstValueFrom(
           implicitFlowCallbackService.authenticatedImplicitFlowCallback(
             config,
             [config],
             'some-hash'
           )
-        );
-        expect.fail('expected an error');
-      } catch (err: any) {
-        expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
-        expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
-        expect(err).toBeTruthy();
-        expect(routerSpy).toHaveBeenCalledTimes(1);
-        expect(routerSpy).toHaveBeenCalledWith('unauthorizedRoute');
-      }
+        )
+      ).rejects.toThrow('error');
+      expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
+      expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
+      expect(routerSpy).toHaveBeenCalledTimes(1);
+      expect(routerSpy).toHaveBeenCalledWith('unauthorizedRoute');
     });
   });
 });

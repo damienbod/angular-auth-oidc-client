@@ -13,7 +13,7 @@
   { "name": "sample-code-flow-multi-iframe", "port": 4312 },
   { "name": "sample-code-flow-par", "port": 4313 },
   { "name": "sample-code-flow-popup", "port": 4314 },
-  { "name": "sample-code-flow-refresh-tokens", "port": 4204 },
+  { "name": "sample-code-flow-refresh-tokens", "port": 4318 },
   { "name": "sample-code-flow-standalone", "port": 4315 },
   { "name": "sample-implicit-flow-google", "port": 4316 },
   { "name": "sample-implicit-flow-silent-renew", "port": 4317 }

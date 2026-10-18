@@ -306,7 +306,7 @@ describe('Configuration Service', () => {
   });
 
   describe('setSpecialCases', () => {
-    it(`should set special cases when current platform is browser`, () => {
+    it(`should set special cases when current platform is NOT browser`, () => {
       vi.spyOn(platformProvider, 'isBrowser').mockReturnValue(false);
 
       const config = { configId: 'configId1' } as OpenIdConfiguration;

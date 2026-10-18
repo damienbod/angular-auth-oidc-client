@@ -55,30 +55,43 @@ export class ParLoginService {
           this.parService.postParRequest(configuration, authOptions)
         )
       )
-      .subscribe((response) => {
-        this.loggerService.logDebug(configuration, 'par response: ', response);
-
-        const url = this.urlService.getAuthorizeParUrl(
-          response.requestUri,
-          configuration
-        );
-
-        this.loggerService.logDebug(configuration, 'par request url: ', url);
-
-        if (!url) {
-          this.loggerService.logError(
+      .subscribe({
+        next: (response) => {
+          this.loggerService.logDebug(
             configuration,
-            `Could not create URL with param ${response.requestUri}: '${url}'`
+            'par response: ',
+            response
           );
 
-          return;
-        }
+          const url = this.urlService.getAuthorizeParUrl(
+            response.requestUri,
+            configuration
+          );
 
-        if (authOptions?.urlHandler) {
-          authOptions.urlHandler(url);
-        } else {
-          this.redirectService.redirectTo(url);
-        }
+          this.loggerService.logDebug(configuration, 'par request url: ', url);
+
+          if (!url) {
+            this.loggerService.logError(
+              configuration,
+              `Could not create URL with param ${response.requestUri}: '${url}'`
+            );
+
+            return;
+          }
+
+          if (authOptions?.urlHandler) {
+            authOptions.urlHandler(url);
+          } else {
+            this.redirectService.redirectTo(url);
+          }
+        },
+        error: (error) => {
+          this.loggerService.logError(
+            configuration,
+            'PAR login failed: ',
+            error
+          );
+        },
       });
   }
 
@@ -127,7 +140,7 @@ export class ParLoginService {
           this.loggerService.logDebug(configuration, 'par request url: ', url);
 
           if (!url) {
-            const errorMessage = `Could not create URL with param ${response.requestUri}: 'url'`;
+            const errorMessage = `Could not create URL with param ${response.requestUri}: '${url}'`;
 
             this.loggerService.logError(configuration, errorMessage);
 

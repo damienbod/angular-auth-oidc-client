@@ -99,22 +99,22 @@ describe('StateValidationCallbackHandlerService', () => {
         .mockReturnValue(undefined);
       const allConfigs = [{ configId: 'configId1' }];
 
-      try {
-        await firstValueFrom(
+      await expect(
+        firstValueFrom(
           service.callbackStateValidation(
             {} as CallbackContext,
             allConfigs[0],
             allConfigs
           )
-        );
-        expect.fail('expected an error');
-      } catch {
-        expect(loggerSpy).toHaveBeenCalledTimes(1);
-        expect(loggerSpy).toHaveBeenCalledWith(
-          allConfigs[0],
-          'authorizedCallback, token(s) validation failed, resetting. Hash: &anyFakeHash'
-        );
-      }
+        )
+      ).rejects.toThrow(
+        'authorizedCallback, token(s) validation failed, resetting. Hash: &anyFakeHash'
+      );
+      expect(loggerSpy).toHaveBeenCalledTimes(1);
+      expect(loggerSpy).toHaveBeenCalledWith(
+        allConfigs[0],
+        'authorizedCallback, token(s) validation failed, resetting. Hash: &anyFakeHash'
+      );
     });
 
     it('calls resetAuthDataService.resetAuthorizationData and authStateService.updateAndPublishAuthState in case of an error', async () => {
@@ -136,25 +136,25 @@ describe('StateValidationCallbackHandlerService', () => {
         .mockReturnValue(undefined);
       const allConfigs = [{ configId: 'configId1' }];
 
-      try {
-        await firstValueFrom(
+      await expect(
+        firstValueFrom(
           service.callbackStateValidation(
             { isRenewProcess: true } as CallbackContext,
             allConfigs[0],
             allConfigs
           )
-        );
-        expect.fail('expected an error');
-      } catch {
-        expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
-        expect(updateAndPublishAuthStateSpy).toHaveBeenCalledTimes(1);
-        expect(updateAndPublishAuthStateSpy).toHaveBeenCalledWith({
-          isAuthenticated: false,
-          validationResult: ValidationResult.LoginRequired,
-          isRenewProcess: true,
-          configId: 'configId1',
-        });
-      }
+        )
+      ).rejects.toThrow(
+        'authorizedCallback, token(s) validation failed, resetting. Hash: &anyFakeHash'
+      );
+      expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
+      expect(updateAndPublishAuthStateSpy).toHaveBeenCalledTimes(1);
+      expect(updateAndPublishAuthStateSpy).toHaveBeenCalledWith({
+        isAuthenticated: false,
+        validationResult: ValidationResult.LoginRequired,
+        isRenewProcess: true,
+        configId: 'configId1',
+      });
     });
   });
 });

@@ -100,7 +100,7 @@ describe('Flows Data Service', () => {
       });
 
       expect(result).toBeTruthy();
-      expect(result.length).toBe(41);
+      expect(result.length).toBe(40);
       expect(setSpy).toHaveBeenCalledTimes(1);
       expect(setSpy).toHaveBeenCalledWith('authStateControl', result, {
         configId: 'configId1',

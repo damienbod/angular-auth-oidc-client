@@ -82,8 +82,9 @@ describe(`AutoLoginAllRoutesGuard`, () => {
             url: 'some-url1',
           } as RouterStateSnapshot
         ) as Observable<boolean>;
+        const result = await firstValueFrom(canActivate$);
 
-        await firstValueFrom(canActivate$);
+        expect(result).toBe(false);
 
         expect(saveRedirectRouteSpy).toHaveBeenCalledTimes(1);
         expect(saveRedirectRouteSpy).toHaveBeenCalledWith(
@@ -114,38 +115,9 @@ describe(`AutoLoginAllRoutesGuard`, () => {
             url: 'some-url1',
           } as RouterStateSnapshot
         ) as Observable<boolean>;
+        const result = await firstValueFrom(canActivate$);
 
-        await firstValueFrom(canActivate$);
-
-        expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
-        expect(loginSpy).not.toHaveBeenCalled();
-        expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledTimes(1);
-        expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledWith({
-          configId: 'configId1',
-        });
-      });
-
-      it('should call `checkSavedRedirectRouteAndNavigate` if authenticated already', async () => {
-        vi.spyOn(checkAuthService, 'checkAuth').mockReturnValue(
-          of({ isAuthenticated: true } as LoginResponse)
-        );
-        const checkSavedRedirectRouteAndNavigateSpy = vi
-          .spyOn(autoLoginService, 'checkSavedRedirectRouteAndNavigate')
-          .mockReturnValue(undefined);
-        const saveRedirectRouteSpy = vi
-          .spyOn(autoLoginService, 'saveRedirectRoute')
-          .mockReturnValue(undefined);
-        const loginSpy = vi
-          .spyOn(loginService, 'login')
-          .mockReturnValue(undefined);
-        const canActivate$ = guard.canActivate(
-          {} as ActivatedRouteSnapshot,
-          {
-            url: 'some-url1',
-          } as RouterStateSnapshot
-        ) as Observable<boolean>;
-
-        await firstValueFrom(canActivate$);
+        expect(result).toBe(true);
 
         expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
         expect(loginSpy).not.toHaveBeenCalled();
@@ -176,8 +148,9 @@ describe(`AutoLoginAllRoutesGuard`, () => {
             url: 'some-url1',
           } as RouterStateSnapshot
         ) as Observable<boolean>;
+        const result = await firstValueFrom(canActivateChild$);
 
-        await firstValueFrom(canActivateChild$);
+        expect(result).toBe(false);
 
         expect(saveRedirectRouteSpy).toHaveBeenCalledTimes(1);
         expect(saveRedirectRouteSpy).toHaveBeenCalledWith(
@@ -208,38 +181,9 @@ describe(`AutoLoginAllRoutesGuard`, () => {
             url: 'some-url1',
           } as RouterStateSnapshot
         ) as Observable<boolean>;
+        const result = await firstValueFrom(canActivateChild$);
 
-        await firstValueFrom(canActivateChild$);
-
-        expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
-        expect(loginSpy).not.toHaveBeenCalled();
-        expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledTimes(1);
-        expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledWith({
-          configId: 'configId1',
-        });
-      });
-
-      it('should call `checkSavedRedirectRouteAndNavigate` if authenticated already', async () => {
-        vi.spyOn(checkAuthService, 'checkAuth').mockReturnValue(
-          of({ isAuthenticated: true } as LoginResponse)
-        );
-        const checkSavedRedirectRouteAndNavigateSpy = vi
-          .spyOn(autoLoginService, 'checkSavedRedirectRouteAndNavigate')
-          .mockReturnValue(undefined);
-        const saveRedirectRouteSpy = vi
-          .spyOn(autoLoginService, 'saveRedirectRoute')
-          .mockReturnValue(undefined);
-        const loginSpy = vi
-          .spyOn(loginService, 'login')
-          .mockReturnValue(undefined);
-        const canActivateChild$ = guard.canActivateChild(
-          {} as ActivatedRouteSnapshot,
-          {
-            url: 'some-url1',
-          } as RouterStateSnapshot
-        ) as Observable<boolean>;
-
-        await firstValueFrom(canActivateChild$);
+        expect(result).toBe(true);
 
         expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
         expect(loginSpy).not.toHaveBeenCalled();
@@ -265,8 +209,9 @@ describe(`AutoLoginAllRoutesGuard`, () => {
           .spyOn(loginService, 'login')
           .mockReturnValue(undefined);
         const canLoad$ = guard.canLoad();
+        const result = await firstValueFrom(canLoad$);
 
-        await firstValueFrom(canLoad$);
+        expect(result).toBe(false);
 
         expect(saveRedirectRouteSpy).toHaveBeenCalledTimes(1);
         expect(saveRedirectRouteSpy).toHaveBeenCalledWith(
@@ -305,8 +250,9 @@ describe(`AutoLoginAllRoutesGuard`, () => {
         });
 
         const canLoad$ = guard.canLoad();
+        const result = await firstValueFrom(canLoad$);
 
-        await firstValueFrom(canLoad$);
+        expect(result).toBe(false);
 
         expect(saveRedirectRouteSpy).toHaveBeenCalledTimes(1);
         expect(saveRedirectRouteSpy).toHaveBeenCalledWith(
@@ -332,33 +278,9 @@ describe(`AutoLoginAllRoutesGuard`, () => {
           .spyOn(loginService, 'login')
           .mockReturnValue(undefined);
         const canLoad$ = guard.canLoad() as Observable<boolean>;
+        const result = await firstValueFrom(canLoad$);
 
-        await firstValueFrom(canLoad$);
-
-        expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
-        expect(loginSpy).not.toHaveBeenCalled();
-        expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledTimes(1);
-        expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledWith({
-          configId: 'configId1',
-        });
-      });
-
-      it('should call `checkSavedRedirectRouteAndNavigate` if authenticated already', async () => {
-        vi.spyOn(checkAuthService, 'checkAuth').mockReturnValue(
-          of({ isAuthenticated: true } as LoginResponse)
-        );
-        const checkSavedRedirectRouteAndNavigateSpy = vi
-          .spyOn(autoLoginService, 'checkSavedRedirectRouteAndNavigate')
-          .mockReturnValue(undefined);
-        const saveRedirectRouteSpy = vi
-          .spyOn(autoLoginService, 'saveRedirectRoute')
-          .mockReturnValue(undefined);
-        const loginSpy = vi
-          .spyOn(loginService, 'login')
-          .mockReturnValue(undefined);
-        const canLoad$ = guard.canLoad() as Observable<boolean>;
-
-        await firstValueFrom(canLoad$);
+        expect(result).toBe(true);
 
         expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
         expect(loginSpy).not.toHaveBeenCalled();

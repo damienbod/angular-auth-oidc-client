@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { DOCUMENT } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { mockProvider } from '../../../test/auto-mock';
@@ -23,10 +23,17 @@ describe('Token Helper Service', () => {
   });
 
   describe('getTokenExpirationDate', () => {
-    it('returns not null if param has no property exp', () => {
-      const result = tokenHelperService.getTokenExpirationDate({});
+    it('returns the current date (second precision) if param has no property exp', () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2026-01-01T12:34:56.789Z'));
 
-      expect(result).toBeDefined();
+      try {
+        const result = tokenHelperService.getTokenExpirationDate({});
+
+        expect(result).toEqual(new Date('2026-01-01T12:34:56.000Z'));
+      } finally {
+        vi.useRealTimers();
+      }
     });
 
     it('returns correct date if param has property exp', () => {
@@ -135,16 +142,6 @@ describe('Token Helper Service', () => {
     });
 
     it('returns payload if token is correct, encode is true 2', () => {
-      const token = 'abc.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.ghi';
-      const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
-      const result = tokenHelperService.getPayloadFromToken(token, true, {
-        configId: 'configId1',
-      });
-
-      expect(expected).toEqual(result);
-    });
-
-    it('returns payload if token is correct, encode is true 3', () => {
       const token = 'abc.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.ghi';
       const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
       const result = tokenHelperService.getPayloadFromToken(token, true, {

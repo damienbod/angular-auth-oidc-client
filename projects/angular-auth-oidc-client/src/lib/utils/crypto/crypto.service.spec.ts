@@ -60,7 +60,7 @@ describe('CryptoService: msCrypto', () => {
     expect(cryptoService).toBeTruthy();
   });
 
-  it('should return crypto if crypto is present', () => {
+  it('should return msCrypto if crypto is not present', () => {
     // arrange
 
     // act

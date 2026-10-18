@@ -4,6 +4,7 @@ import {
   expect,
   isAuthorizeRequest,
   isLogoutRequest,
+  isTokenRequest,
   test,
   waitForRefreshTokenRenew,
 } from './helpers';
@@ -22,7 +23,16 @@ async function openLazyModule(page: Page): Promise<void> {
 async function login(page: Page): Promise<void> {
   await page.goto('/');
   await openLazyModule(page);
+
+  // The root shell (with the "Free stuff" heading and the lazy link) is also
+  // on the page before the redirect, so wait for the code exchange to be on
+  // the app again before opening the lazy module.
+  const tokenRequest = page.waitForRequest(
+    isTokenRequest('authorization_code')
+  );
+
   await page.getByRole('button', { name: 'Click here to login' }).click();
+  expect((await (await tokenRequest).response())?.status()).toBe(200);
   await expect(
     page.getByText('Free stuff where the user does not have to authenticate')
   ).toBeVisible();
@@ -75,7 +85,10 @@ test('renews the tokens silently with refresh tokens', async ({ page }) => {
   await expect(page.getByText('user is authenticated: true')).toBeVisible();
 });
 
-test('logs out from inside the lazy loaded module', async ({ page }) => {
+test('logs out from inside the lazy loaded module', async ({
+  page,
+  baseURL,
+}) => {
   await login(page);
 
   const logoutRequest = page.waitForRequest(isLogoutRequest());
@@ -87,6 +100,9 @@ test('logs out from inside the lazy loaded module', async ({ page }) => {
   expect(logoutUrl.searchParams.get('post_logout_redirect_uri')).toBe(
     'http://localhost:4307'
   );
+  // The IdP redirects back to the root; the lazy route stays on screen until
+  // then, so wait for the new document before opening the lazy module again.
+  await page.waitForURL(`${baseURL}/`);
   await expect(
     page.getByText('Free stuff where the user does not have to authenticate')
   ).toBeVisible();

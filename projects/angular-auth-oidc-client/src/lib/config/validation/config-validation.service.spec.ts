@@ -125,7 +125,7 @@ describe('Config Validation Service', () => {
         ...VALID_CONFIG,
         silentRenew: true,
         useRefreshToken: true,
-        scopes: 'scope1 scope2 but_no_offline_access',
+        scope: 'scope1 scope2 but_no_offline_access',
       };
       const loggerSpy = vi
         .spyOn(loggerService, 'logError')
@@ -147,13 +147,13 @@ describe('Config Validation Service', () => {
         ...VALID_CONFIG,
         silentRenew: true,
         useRefreshToken: true,
-        scopes: 'scope1 scope2 but_no_offline_access',
+        scope: 'scope1 scope2 but_no_offline_access',
       };
       const config2 = {
         ...VALID_CONFIG,
         silentRenew: true,
         useRefreshToken: true,
-        scopes: 'scope1 scope2 but_no_offline_access',
+        scope: 'scope1 scope2 but_no_offline_access',
       };
       const loggerErrorSpy = vi
         .spyOn(loggerService, 'logError')
@@ -179,12 +179,22 @@ describe('Config Validation Service', () => {
     });
 
     it('should return false and a better error message when config is not passed as object with config property', () => {
+      const loggerErrorSpy = vi
+        .spyOn(loggerService, 'logError')
+        .mockReturnValue(undefined);
       const loggerWarningSpy = vi
         .spyOn(loggerService, 'logWarning')
         .mockReturnValue(undefined);
-      const result = configValidationService.validateConfigs([]);
+      const result = configValidationService.validateConfigs([
+        null as unknown as OpenIdConfiguration,
+      ]);
 
       expect(result).toBe(false);
+      expect(loggerErrorSpy).toHaveBeenCalledTimes(1);
+      expect(loggerErrorSpy).toHaveBeenCalledWith(
+        null,
+        `Please make sure you add an object with a 'config' property: ....({ config }) instead of ...(config)`
+      );
       expect(loggerWarningSpy).not.toHaveBeenCalled();
     });
   });

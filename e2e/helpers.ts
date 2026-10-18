@@ -88,12 +88,18 @@ export async function waitForIframeRenew(
   page: Page,
   realm: Realm = 'idp1'
 ): Promise<void> {
-  await page.waitForRequest(isSilentRenewRequest(realm), { timeout: 30_000 });
-  const tokenRequest = await page.waitForRequest(
-    isTokenRequest('authorization_code', realm)
+  // Both listeners are attached up front, so the code exchange cannot slip
+  // through between the authorize request and the second listener.
+  const silentRenewRequest = page.waitForRequest(isSilentRenewRequest(realm), {
+    timeout: 30_000,
+  });
+  const tokenRequest = page.waitForRequest(
+    isTokenRequest('authorization_code', realm),
+    { timeout: 30_000 }
   );
 
-  expect((await tokenRequest.response())?.status()).toBe(200);
+  await silentRenewRequest;
+  expect((await (await tokenRequest).response())?.status()).toBe(200);
 }
 
 // The block of a multi-config sample that belongs to one config: its <h3>

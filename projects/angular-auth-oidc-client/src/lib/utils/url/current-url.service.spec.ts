@@ -80,7 +80,9 @@ describe('CurrentUrlService with existing Url', () => {
     });
 
     it('returns the state param for the URL if one is passed as null', () => {
-      const stateParam = service.getStateParamFromCurrentUrl(undefined);
+      const stateParam = service.getStateParamFromCurrentUrl(
+        null as unknown as string
+      );
 
       expect(stateParam).toBe('my-state');
     });

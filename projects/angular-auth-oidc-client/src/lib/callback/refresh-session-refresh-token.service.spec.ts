@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { firstValueFrom, NEVER, of, throwError } from 'rxjs';
+import { firstValueFrom, NEVER, of, throwError, TimeoutError } from 'rxjs';
 import { mockProvider } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { CallbackContext } from '../flows/callback-context';
@@ -82,18 +82,15 @@ describe('RefreshSessionRefreshTokenService', () => {
         .spyOn(resetAuthDataService, 'resetAuthorizationData')
         .mockReturnValue(undefined);
 
-      try {
-        await firstValueFrom(
+      await expect(
+        firstValueFrom(
           refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(
             { configId: 'configId1' },
             [{ configId: 'configId1' }]
           )
-        );
-        expect.fail('expected an error');
-      } catch (err: any) {
-        expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
-        expect(err).toBeTruthy();
-      }
+        )
+      ).rejects.toThrow('error');
+      expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
     });
 
     it('preserves authorization data and the original error for network failures', async () => {
@@ -148,9 +145,10 @@ describe('RefreshSessionRefreshTokenService', () => {
         )
       );
 
+      result.catch(() => undefined);
       await vi.advanceTimersByTimeAsync(10);
 
-      await expect(result).rejects.toBeInstanceOf(Error);
+      await expect(result).rejects.toBeInstanceOf(TimeoutError);
       expect(resetAuthorizationDataSpy).not.toHaveBeenCalled();
       expect(stopPeriodicTokenCheckSpy).not.toHaveBeenCalled();
     });
@@ -430,19 +428,21 @@ describe('RefreshSessionRefreshTokenService', () => {
         const resetAuthorizationDataSpy = vi
           .spyOn(resetAuthDataService, 'resetAuthorizationData')
           .mockReturnValue(undefined);
-
-        await expect(
-          firstValueFrom(
-            refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(
-              {
-                configId: 'configId1',
-                useRefreshTokenLock: true,
-                silentRenewTimeoutInSeconds: 0.01,
-              },
-              [{ configId: 'configId1' }]
-            )
+        const result = firstValueFrom(
+          refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(
+            {
+              configId: 'configId1',
+              useRefreshTokenLock: true,
+              silentRenewTimeoutInSeconds: 0.01,
+            },
+            [{ configId: 'configId1' }]
           )
-        ).rejects.toThrow();
+        );
+
+        result.catch(() => undefined);
+        await vi.advanceTimersByTimeAsync(10);
+
+        await expect(result).rejects.toBeInstanceOf(TimeoutError);
 
         expect(resetAuthorizationDataSpy).not.toHaveBeenCalled();
       });

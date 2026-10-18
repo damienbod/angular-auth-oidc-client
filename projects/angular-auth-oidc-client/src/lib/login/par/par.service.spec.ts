@@ -257,12 +257,9 @@ describe('ParService', () => {
         )
       );
 
-      try {
-        await firstValueFrom(service.postParRequest({ configId: 'configId1' }));
-        expect.fail('expected an error');
-      } catch (err: any) {
-        expect(err).toBeTruthy();
-      }
+      await expect(
+        firstValueFrom(service.postParRequest({ configId: 'configId1' }))
+      ).rejects.toThrow('There was an error on ParService postParRequest');
     });
   });
 });

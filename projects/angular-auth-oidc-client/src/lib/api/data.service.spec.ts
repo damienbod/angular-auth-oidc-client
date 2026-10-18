@@ -153,7 +153,7 @@ describe('Data Service', () => {
 
       expect(req.request.method).toBe('POST');
       expect(req.request.headers.get('X-MyHeader')).toEqual('Genesis');
-      expect(req.request.headers.get('X-MyHeader')).not.toEqual('Genesis333');
+      expect(req.request.headers.has('Accept')).toBe(false);
 
       req.flush('bodyData');
 
