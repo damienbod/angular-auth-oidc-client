@@ -10,7 +10,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { ConfigurationService } from '../config/config.service';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { flattenArray } from '../utils/collections/collections.helper';
 import { ClosestMatchingRouteService } from './closest-matching-route.service';
 

@@ -1,6 +1,6 @@
 import { inject, Injectable, DOCUMENT } from '@angular/core';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
-import { LoggerService } from '../../logging/logger.service';
+import { LoggerService } from '../../logging/services/logger.service';
 
 const PARTS_OF_TOKEN = 3;
 

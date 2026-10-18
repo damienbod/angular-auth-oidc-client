@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { AbstractLoggerService } from './abstract-logger.service';
 import { ConsoleLoggerService } from './console-logger.service';
-import { LogLevel } from './log-level';
+import { LogLevel } from '../types/logging.types';
 import { LoggerService } from './logger.service';
 
 describe('Logger Service', () => {

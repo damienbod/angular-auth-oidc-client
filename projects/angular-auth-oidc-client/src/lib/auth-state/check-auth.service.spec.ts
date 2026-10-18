@@ -15,7 +15,7 @@ import { OpenIdConfiguration } from '../config/openid-configuration';
 import { CallbackContext } from '../flows/callback-context';
 import { CheckSessionService } from '../iframe/check-session.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { LoginResponse } from '../login/login-response';
 import { PopUpService } from '../login/popup/popup.service';
 import { EventTypes } from '../public-events/event-types';
