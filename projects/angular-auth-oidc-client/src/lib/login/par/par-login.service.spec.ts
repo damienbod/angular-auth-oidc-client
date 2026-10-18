@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
-import { firstValueFrom, of } from 'rxjs';
+import { firstValueFrom, of, throwError } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
 import { CheckAuthService } from '../../auth-state/check-auth.service';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
-import { LoggerService } from '../../logging/logger.service';
+import { LoggerService } from '../../logging/services/logger.service';
 import { RedirectService } from '../../utils/redirect/redirect.service';
 import { UrlService } from '../../utils/url/url.service';
 import { LoginResponse } from '../login-response';
@@ -69,10 +69,15 @@ describe('ParLoginService', () => {
       const loggerSpy = vi
         .spyOn(loggerService, 'logError')
         .mockReturnValue(undefined);
+      const queryAndStoreAuthWellKnownEndPointsSpy = vi.spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      );
 
       service.loginPar({});
 
       expect(loggerSpy).toHaveBeenCalled();
+      expect(queryAndStoreAuthWellKnownEndPointsSpy).not.toHaveBeenCalled();
     });
 
     it('calls parService.postParRequest without custom params when no custom params are passed', () => {
@@ -154,6 +159,39 @@ describe('ParLoginService', () => {
       service.loginPar(config);
 
       expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('logs the error and does not redirect when the PAR request fails', () => {
+      vi.spyOn(
+        responseTypeValidationService,
+        'hasConfigValidResponseType'
+      ).mockReturnValue(true);
+      const config = {
+        authWellknownEndpointUrl: 'authWellknownEndpoint',
+        responseType: 'stubValue',
+      };
+      const error = new Error('par failed');
+
+      vi.spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      ).mockReturnValue(of({}));
+      vi.spyOn(parService, 'postParRequest').mockReturnValue(
+        throwError(() => error)
+      );
+      const logErrorSpy = vi
+        .spyOn(loggerService, 'logError')
+        .mockReturnValue(undefined);
+      const redirectSpy = vi.spyOn(redirectService, 'redirectTo');
+
+      expect(() => service.loginPar(config)).not.toThrow();
+
+      expect(logErrorSpy).toHaveBeenCalledExactlyOnceWith(
+        config,
+        'PAR login failed: ',
+        error
+      );
+      expect(redirectSpy).not.toHaveBeenCalled();
     });
 
     it('calls redirect service redirectTo when url could be created', () => {
@@ -274,7 +312,7 @@ describe('ParLoginService', () => {
       } catch (err: any) {
         expect(spy).toHaveBeenCalled();
         expect(err.message).toBe(
-          "Could not create URL with param requestUri: 'url'"
+          "Could not create URL with param requestUri: 'undefined'"
         );
       }
     });
@@ -312,7 +350,7 @@ describe('ParLoginService', () => {
           customParams: { some: 'thing' },
         });
         expect(err.message).toBe(
-          "Could not create URL with param requestUri: 'url'"
+          "Could not create URL with param requestUri: 'undefined'"
         );
       }
     });
@@ -350,7 +388,7 @@ describe('ParLoginService', () => {
         expect.fail('expected an error');
       } catch (err: any) {
         expect(err.message).toBe(
-          "Could not create URL with param requestUri: 'url'"
+          "Could not create URL with param requestUri: ''"
         );
         expect(spy).toHaveBeenCalledTimes(1);
       }

@@ -1,4 +1,4 @@
-import { LogLevel } from '../logging/log-level';
+import { LogLevel } from '../logging/types/logging.types';
 import { AuthWellKnownEndpoints } from './auth-well-known/auth-well-known-endpoints';
 
 export interface OpenIdConfiguration {
@@ -191,8 +191,8 @@ export interface OpenIdConfiguration {
    */
   triggerRefreshWhenIdTokenExpired?: boolean;
 
-  /** Controls the periodic check time interval in sections.
-   * Default value is 3.
+  /** Controls the periodic check time interval in seconds.
+   * Default value is 4.
    */
   tokenRefreshInSeconds?: number;
   /**

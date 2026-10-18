@@ -25,7 +25,7 @@ import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { LoginResponse } from '../login/login-response';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
@@ -89,13 +89,27 @@ export class RefreshSessionService {
     };
 
     if (this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(config)) {
-      return this.waitForRunningRefreshSessionIfRequired(config).pipe(
+      // With the lock the running flag in the storage may have been set by
+      // another tab, whose events never reach this tab. The lock serialises
+      // the refreshes instead, and reuses the tokens of a refresh in another tab.
+      const usesRefreshTokenLock =
+        this.refreshSessionRefreshTokenService.usesRefreshTokenLock(config);
+      const waitForRunningRenew$ = usesRefreshTokenLock
+        ? of(false)
+        : this.waitForRunningRefreshSessionIfRequired(config);
+
+      return waitForRunningRenew$.pipe(
         switchMap((shouldWaitForRunningRenew) => {
           if (shouldWaitForRunningRenew) {
             return of(null);
           }
 
-          return this.startRefreshSession(config, allConfigs, mergedParams);
+          return this.startRefreshSession(
+            config,
+            allConfigs,
+            mergedParams,
+            usesRefreshTokenLock
+          );
         }),
         map((refreshSessionResult) => {
           const isAuthenticated =
@@ -194,7 +208,7 @@ export class RefreshSessionService {
           isAuthenticated: false,
           errorMessage: refreshCompleted.success
             ? ''
-            : refreshCompleted.errorMessage ?? '',
+            : (refreshCompleted.errorMessage ?? ''),
           // left off the response when the provider did not send a description
           ...(errorDescription === undefined ? {} : { errorDescription }),
           userData: null,
@@ -232,7 +246,8 @@ export class RefreshSessionService {
   private startRefreshSession(
     config: OpenIdConfiguration,
     allConfigs: OpenIdConfiguration[],
-    extraCustomParams?: { [key: string]: string | number | boolean }
+    extraCustomParams?: { [key: string]: string | number | boolean },
+    ignoreRunningSilentRenew = false
   ): Observable<boolean | CallbackContext | null> {
     const isSilentRenewRunning =
       this.flowsDataService.isSilentRenewRunning(config);
@@ -241,7 +256,7 @@ export class RefreshSessionService {
       config,
       `Checking: silentRenewRunning: ${isSilentRenewRunning}`
     );
-    const shouldBeExecuted = !isSilentRenewRunning;
+    const shouldBeExecuted = ignoreRunningSilentRenew || !isSilentRenewRunning;
 
     if (!shouldBeExecuted) {
       return of(null);

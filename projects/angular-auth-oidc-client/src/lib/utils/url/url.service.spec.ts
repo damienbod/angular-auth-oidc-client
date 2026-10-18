@@ -4,7 +4,7 @@ import { firstValueFrom, of } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { FlowsDataService } from '../../flows/flows-data.service';
-import { LoggerService } from '../../logging/logger.service';
+import { LoggerService } from '../../logging/services/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { JwtWindowCryptoService } from '../../validation/jwt-window-crypto.service';
 import { FlowHelper } from '../flowHelper/flow-helper.service';
@@ -105,21 +105,21 @@ describe('UrlService Tests', () => {
     it(`should return false if config says to check redirect URI, and it doesn't match`, () => {
       const nonMatchingUrls = [
         {
-          url: 'https://the-redirect.url',
+          url: 'https://the-redirect.url?code=anycode',
           config: {
             redirectUrl: 'https://the-redirect.url?with=parameter',
             checkRedirectUrlWhenCheckingIfIsCallback: true,
           },
         },
         {
-          url: 'https://the-redirect.url?wrong=parameter',
+          url: 'https://the-redirect.url?wrong=parameter&code=anycode',
           config: {
             redirectUrl: 'https://the-redirect.url?with=parameter',
             checkRedirectUrlWhenCheckingIfIsCallback: true,
           },
         },
         {
-          url: 'https://not-the-redirect.url',
+          url: 'https://not-the-redirect.url?code=anycode',
           config: {
             redirectUrl: 'https://the-redirect.url',
             checkRedirectUrlWhenCheckingIfIsCallback: true,
@@ -128,6 +128,8 @@ describe('UrlService Tests', () => {
       ];
 
       nonMatchingUrls.forEach((nmu) => {
+        // sanity check: without the redirect check the url is a callback
+        expect(service.isCallbackFromSts(nmu.url)).toBe(true);
         expect(service.isCallbackFromSts(nmu.url, nmu.config)).toBe(false);
       });
     });
@@ -148,6 +150,18 @@ describe('UrlService Tests', () => {
 
         expect(result).toBe(isCallbackFromSts);
       });
+    });
+
+    it('should return true for an implicit flow callback with the tokens in the fragment', () => {
+      const result = service.isCallbackFromSts(
+        'https://the-redirect.url/#id_token=anyvalue&access_token=anyvalue&state=anystate',
+        {
+          redirectUrl: 'https://the-redirect.url',
+          checkRedirectUrlWhenCheckingIfIsCallback: true,
+        }
+      );
+
+      expect(result).toBe(true);
     });
   });
 
@@ -1134,7 +1148,7 @@ describe('UrlService Tests', () => {
       expect(result).toBe('');
     });
 
-    it('returns url if current flow is code flow, config disabled pkce, there is a redirecturl and awkep are given', async () => {
+    it('returns url if current flow is code flow, pkce enabled, there is a redirecturl and awkep are given', async () => {
       vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
       const config = {
         configId: 'configId1',
@@ -1241,7 +1255,7 @@ describe('UrlService Tests', () => {
       vi.spyOn(flowsDataService, 'getCodeVerifier').mockReturnValue(null);
       const result = service.createBodyForCodeFlowCodeRequest(
         'notRelevantParam',
-        { configId: 'configId1' }
+        { configId: 'configId1', clientId: 'clientId' }
       );
 
       expect(result).toBeNull();
@@ -1343,7 +1357,7 @@ describe('UrlService Tests', () => {
       expect(result).toBe(expected);
     });
 
-    it('returns null if pkce is disabled and no code verifier is given', () => {
+    it('returns null if pkce is enabled and no code verifier is given', () => {
       const code = 'code';
       const customTokenParams = { foo: 'bar' };
       const config = {
@@ -1542,7 +1556,7 @@ describe('UrlService Tests', () => {
       const result = await firstValueFrom(resultObs$);
 
       expect(result).toBe(
-        `client_id=testClientId&redirect_uri=testRedirectUrl&response_type=testResponseType&scope=testScope&nonce=testNonce&state=testState&code_challenge=testCodeChallenge&code_challenge_method=S256&hd=testHdParam&any=thing&any=otherThing`
+        `client_id=testClientId&redirect_uri=testRedirectUrl&response_type=testResponseType&scope=testScope&nonce=testNonce&state=testState&code_challenge=testCodeChallenge&code_challenge_method=S256&hd=testHdParam&any=otherThing`
       );
     });
 
@@ -1643,7 +1657,7 @@ describe('UrlService Tests', () => {
       );
     });
 
-    it('returns correct url if wellknownendpoints are not given', () => {
+    it('returns null if wellknownendpoints are not given', () => {
       const state = 'testState';
       const nonce = 'testNonce';
       const silentRenewUrl = 'http://any-url.com';
@@ -2251,9 +2265,24 @@ describe('UrlService Tests', () => {
       // Act
       const value = service.getEndSessionUrl(config);
       // Assert
-      const expectValue = `something.auth0.com/v2/logout?client_id=someClientId&returnTo=https://localhost:1234/unauthorized`;
+      const expectValue = `something.auth0.com/v2/logout?client_id=someClientId&returnTo=https%3A%2F%2Flocalhost%3A1234%2Funauthorized`;
 
       expect(value).toEqual(expectValue);
+    });
+
+    it('returns auth0 format URL without returnTo if no postLogoutRedirectUri is configured', () => {
+      // Arrange
+      const config = {
+        authority: 'something.auth0.com',
+        clientId: 'someClientId',
+      };
+      // Act
+      const value = service.getEndSessionUrl(config);
+
+      // Assert
+      expect(value).toEqual(
+        'something.auth0.com/v2/logout?client_id=someClientId'
+      );
     });
   });
 

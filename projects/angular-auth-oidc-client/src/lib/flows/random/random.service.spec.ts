@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { mockProvider } from '../../../test/auto-mock';
-import { LoggerService } from '../../logging/logger.service';
+import { LoggerService } from '../../logging/services/logger.service';
 import { CryptoService } from '../../utils/crypto/crypto.service';
 import { RandomService } from './random.service';
 
@@ -62,4 +62,15 @@ describe('RandomService Tests', () => {
       expect(r1.length).toBeGreaterThanOrEqual(fallbackLength);
     });
   }
+
+  it.each([7, 8, 10, 40, 43, 67, 128])(
+    'returns exactly the required length for %i',
+    (requiredLength) => {
+      const r1 = randomService.createRandom(requiredLength, {
+        configId: 'configId1',
+      });
+
+      expect(r1.length).toBe(requiredLength);
+    }
+  );
 });

@@ -81,13 +81,14 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         const loginSpy = vi
           .spyOn(loginService, 'login')
           .mockReturnValue(undefined);
-
-        await firstValueFrom(
+        const result = await firstValueFrom(
           guard.canActivate(
             {} as ActivatedRouteSnapshot,
             { url: 'some-url1' } as RouterStateSnapshot
           )
         );
+
+        expect(result).toBe(false);
 
         expect(saveRedirectRouteSpy).toHaveBeenCalledTimes(1);
         expect(saveRedirectRouteSpy).toHaveBeenCalledWith(
@@ -114,13 +115,14 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         const loginSpy = vi
           .spyOn(loginService, 'login')
           .mockReturnValue(undefined);
-
-        await firstValueFrom(
+        const result = await firstValueFrom(
           guard.canActivate(
             { data: { custom: 'param' } } as unknown as ActivatedRouteSnapshot,
             { url: 'some-url1' } as RouterStateSnapshot
           )
         );
+
+        expect(result).toBe(false);
 
         expect(saveRedirectRouteSpy).toHaveBeenCalledTimes(1);
         expect(saveRedirectRouteSpy).toHaveBeenCalledWith(
@@ -148,13 +150,14 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         const loginSpy = vi
           .spyOn(loginService, 'login')
           .mockReturnValue(undefined);
-
-        await firstValueFrom(
+        const result = await firstValueFrom(
           guard.canActivate(
             {} as ActivatedRouteSnapshot,
             { url: 'some-url1' } as RouterStateSnapshot
           )
         );
+
+        expect(result).toBe(true);
 
         expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
         expect(loginSpy).not.toHaveBeenCalled();
@@ -179,13 +182,14 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         const loginSpy = vi
           .spyOn(loginService, 'login')
           .mockReturnValue(undefined);
-
-        await firstValueFrom(
+        const result = await firstValueFrom(
           guard.canActivateChild(
             {} as ActivatedRouteSnapshot,
             { url: 'some-url1' } as RouterStateSnapshot
           )
         );
+
+        expect(result).toBe(false);
 
         expect(saveRedirectRouteSpy).toHaveBeenCalledTimes(1);
         expect(saveRedirectRouteSpy).toHaveBeenCalledWith(
@@ -212,13 +216,14 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         const loginSpy = vi
           .spyOn(loginService, 'login')
           .mockReturnValue(undefined);
-
-        await firstValueFrom(
+        const result = await firstValueFrom(
           guard.canActivateChild(
             { data: { custom: 'param' } } as unknown as ActivatedRouteSnapshot,
             { url: 'some-url1' } as RouterStateSnapshot
           )
         );
+
+        expect(result).toBe(false);
 
         expect(saveRedirectRouteSpy).toHaveBeenCalledTimes(1);
         expect(saveRedirectRouteSpy).toHaveBeenCalledWith(
@@ -246,13 +251,14 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         const loginSpy = vi
           .spyOn(loginService, 'login')
           .mockReturnValue(undefined);
-
-        await firstValueFrom(
+        const result = await firstValueFrom(
           guard.canActivateChild(
             {} as ActivatedRouteSnapshot,
             { url: 'some-url1' } as RouterStateSnapshot
           )
         );
+
+        expect(result).toBe(true);
 
         expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
         expect(loginSpy).not.toHaveBeenCalled();
@@ -277,8 +283,9 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         const loginSpy = vi
           .spyOn(loginService, 'login')
           .mockReturnValue(undefined);
+        const result = await firstValueFrom(guard.canLoad());
 
-        await firstValueFrom(guard.canLoad());
+        expect(result).toBe(false);
 
         expect(saveRedirectRouteSpy).toHaveBeenCalledTimes(1);
         expect(saveRedirectRouteSpy).toHaveBeenCalledWith(
@@ -316,7 +323,9 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
           abort: () => void 0,
         });
 
-        await firstValueFrom(guard.canLoad());
+        const result = await firstValueFrom(guard.canLoad());
+
+        expect(result).toBe(false);
 
         expect(saveRedirectRouteSpy).toHaveBeenCalledTimes(1);
         expect(saveRedirectRouteSpy).toHaveBeenCalledWith(
@@ -341,8 +350,9 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         const loginSpy = vi
           .spyOn(loginService, 'login')
           .mockReturnValue(undefined);
+        const result = await firstValueFrom(guard.canLoad());
 
-        await firstValueFrom(guard.canLoad());
+        expect(result).toBe(true);
 
         expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
         expect(loginSpy).not.toHaveBeenCalled();
@@ -398,8 +408,9 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         const guard$ = TestBed.runInInjectionContext(
           autoLoginPartialRoutesGuard
         );
+        const result = await firstValueFrom(guard$);
 
-        await firstValueFrom(guard$);
+        expect(result).toBe(false);
 
         expect(saveRedirectRouteSpy).toHaveBeenCalledTimes(1);
         expect(saveRedirectRouteSpy).toHaveBeenCalledWith(
@@ -439,8 +450,9 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         const guard$ = TestBed.runInInjectionContext(
           autoLoginPartialRoutesGuard
         );
+        const result = await firstValueFrom(guard$);
 
-        await firstValueFrom(guard$);
+        expect(result).toBe(false);
 
         expect(saveRedirectRouteSpy).toHaveBeenCalledTimes(1);
         expect(saveRedirectRouteSpy).toHaveBeenCalledWith(
@@ -470,8 +482,9 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
             data: { custom: 'param' },
           } as unknown as ActivatedRouteSnapshot)
         );
+        const result = await firstValueFrom(guard$);
 
-        await firstValueFrom(guard$);
+        expect(result).toBe(false);
 
         expect(saveRedirectRouteSpy).toHaveBeenCalledTimes(1);
         expect(saveRedirectRouteSpy).toHaveBeenCalledWith(
@@ -502,8 +515,9 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         const guard$ = TestBed.runInInjectionContext(
           autoLoginPartialRoutesGuard
         );
+        const result = await firstValueFrom(guard$);
 
-        await firstValueFrom(guard$);
+        expect(result).toBe(true);
 
         expect(saveRedirectRouteSpy).not.toHaveBeenCalled();
         expect(loginSpy).not.toHaveBeenCalled();
@@ -511,6 +525,34 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         expect(checkSavedRedirectRouteAndNavigateSpy).toHaveBeenCalledWith({
           configId: 'configId1',
         });
+      });
+
+      it('should ignore the third argument Angular passes when used as `canMatch`', async () => {
+        const getOpenIDConfigurationSpy = vi.spyOn(
+          configurationService,
+          'getOpenIDConfiguration'
+        );
+
+        vi.spyOn(authStateService, 'areAuthStorageTokensValid').mockReturnValue(
+          true
+        );
+        vi.spyOn(
+          autoLoginService,
+          'checkSavedRedirectRouteAndNavigate'
+        ).mockReturnValue(undefined);
+
+        // A CanMatchFn is called with (route, segments, currentSnapshot).
+        const canMatchGuard = autoLoginPartialRoutesGuard as unknown as (
+          ...args: unknown[]
+        ) => ReturnType<typeof autoLoginPartialRoutesGuard>;
+        const guard$ = TestBed.runInInjectionContext(() =>
+          canMatchGuard({ path: 'customers' }, [], { routeConfig: null })
+        );
+        const result = await firstValueFrom(guard$);
+
+        expect(result).toBe(true);
+
+        expect(getOpenIDConfigurationSpy).toHaveBeenCalledWith(undefined);
       });
     });
 
@@ -555,8 +597,9 @@ describe(`AutoLoginPartialRoutesGuard`, () => {
         const guard$ = TestBed.runInInjectionContext(
           autoLoginPartialRoutesGuardWithConfig('configId1')
         );
+        const result = await firstValueFrom(guard$);
 
-        await firstValueFrom(guard$);
+        expect(result).toBe(false);
 
         expect(saveRedirectRouteSpy).toHaveBeenCalledTimes(1);
         expect(saveRedirectRouteSpy).toHaveBeenCalledWith(

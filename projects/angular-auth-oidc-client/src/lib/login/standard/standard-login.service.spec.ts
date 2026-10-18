@@ -4,7 +4,7 @@ import { of } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
 import { FlowsDataService } from '../../flows/flows-data.service';
-import { LoggerService } from '../../logging/logger.service';
+import { LoggerService } from '../../logging/services/logger.service';
 import { RedirectService } from '../../utils/redirect/redirect.service';
 import { UrlService } from '../../utils/url/url.service';
 import { ResponseTypeValidationService } from '../response-type-validation/response-type-validation.service';
@@ -66,12 +66,22 @@ describe('StandardLoginService', () => {
       const loggerSpy = vi
         .spyOn(loggerService, 'logError')
         .mockReturnValue(undefined);
+      const setCodeFlowInProgressSpy = vi.spyOn(
+        flowsDataService,
+        'setCodeFlowInProgress'
+      );
+      const queryAndStoreAuthWellKnownEndPointsSpy = vi.spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      );
 
       standardLoginService.loginStandard({
         configId: 'configId1',
       });
 
       expect(loggerSpy).toHaveBeenCalled();
+      expect(setCodeFlowInProgressSpy).not.toHaveBeenCalled();
+      expect(queryAndStoreAuthWellKnownEndPointsSpy).not.toHaveBeenCalled();
     });
 
     it('calls flowsDataService.setCodeFlowInProgress() if everything fits', () => {

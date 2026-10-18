@@ -14,7 +14,7 @@ import { TestBed } from '@angular/core/testing';
 import { mockProvider } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { ConfigurationService } from '../config/config.service';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { AuthInterceptor, authInterceptor } from './auth.interceptor';
 import { ClosestMatchingRouteService } from './closest-matching-route.service';
 
@@ -110,7 +110,9 @@ describe(`AuthHttpInterceptor`, () => {
 
       const httpRequest = httpTestingController.expectOne(actionUrl);
 
-      expect(httpRequest.request.headers.has('Authorization')).toEqual(true);
+      expect(httpRequest.request.headers.get('Authorization')).toBe(
+        'Bearer thisIsAToken'
+      );
 
       httpRequest.flush('something');
 
@@ -164,35 +166,6 @@ describe(`AuthHttpInterceptor`, () => {
       );
       vi.spyOn(authStateService, 'getAccessToken').mockReturnValue(
         'thisIsAToken'
-      );
-
-      httpClient.get(actionUrl).subscribe((data) => {
-        response = data;
-      });
-
-      const httpRequest = httpTestingController.expectOne(actionUrl);
-
-      expect(httpRequest.request.headers.has('Authorization')).toEqual(false);
-
-      httpRequest.flush('something');
-
-      expect(response).toBeTruthy();
-      httpTestingController.verify();
-    });
-
-    it('should not add an Authorization header when no routes configured', () => {
-      const actionUrl = `https://jsonplaceholder.typicode.com/`;
-      let response: unknown;
-
-      vi.spyOn(configurationService, 'getAllConfigurations').mockReturnValue([
-        {
-          secureRoutes: [],
-          configId: 'configId1',
-        },
-      ]);
-
-      vi.spyOn(configurationService, 'hasAtLeastOneConfig').mockReturnValue(
-        true
       );
 
       httpClient.get(actionUrl).subscribe((data) => {

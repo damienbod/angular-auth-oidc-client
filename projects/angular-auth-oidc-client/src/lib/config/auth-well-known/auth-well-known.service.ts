@@ -49,7 +49,7 @@ export class AuthWellKnownService {
           null
         );
 
-        return throwError(() => new Error(error));
+        return throwError(() => error);
       })
     );
   }

@@ -204,7 +204,7 @@ describe('LoginService', () => {
       expect(loginWithPopUpStandardSpy).not.toHaveBeenCalled();
     });
 
-    it('returns error if there is already a popup open', () => {
+    it('returns error if there is already a popup open', async () => {
       // arrange
       const config = { usePushedAuthorisationRequests: false };
       const authOptions = { customParams: { custom: 'params' } };
@@ -218,16 +218,16 @@ describe('LoginService', () => {
       vi.spyOn(popUpService, 'isCurrentlyInPopup').mockReturnValue(true);
 
       // act
-      service
-        .loginWithPopUp(config, [config], authOptions)
-        .subscribe((result) => {
-          // assert
-          expect(result).toEqual({
-            errorMessage: 'There is already a popup open.',
-          } as LoginResponse);
-          expect(loginWithPopUpPar).not.toHaveBeenCalled();
-          expect(loginWithPopUpStandardSpy).not.toHaveBeenCalled();
-        });
+      const result = await firstValueFrom(
+        service.loginWithPopUp(config, [config], authOptions)
+      );
+
+      // assert
+      expect(result).toEqual({
+        errorMessage: 'There is already a popup open.',
+      } as LoginResponse);
+      expect(loginWithPopUpPar).not.toHaveBeenCalled();
+      expect(loginWithPopUpStandardSpy).not.toHaveBeenCalled();
     });
   });
 });

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { Observable } from 'rxjs';
 import { mockProvider } from '../../test/auto-mock';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
@@ -497,7 +497,7 @@ describe('Auth State Service', () => {
       expect(result).toBe(false);
     });
 
-    it('isAuthorized is true and id_token is expired returns true', () => {
+    it('isAuthorized is true and id_token is expired returns false', () => {
       vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue(
         'HenloLegger'
       );
@@ -520,7 +520,7 @@ describe('Auth State Service', () => {
       expect(result).toBe(false);
     });
 
-    it('isAuthorized is true  and access_token is expired returns true', () => {
+    it('isAuthorized is true  and access_token is expired returns false', () => {
       vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue(
         'HenloLegger'
       );
@@ -566,27 +566,31 @@ describe('Auth State Service', () => {
       expect(result).toBe(true);
     });
 
-    it('authState is AuthorizedState.Authorized and id_token is not expired fires event', () => {
+    it('authState is AuthorizedState.Authorized and id_token is not expired does not fire any expired event', () => {
       vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue(
         'HenloLegger'
       );
       vi.spyOn(storagePersistenceService, 'getIdToken').mockReturnValue(
         'HenloFuriend'
       );
-
+      vi.spyOn(tokenValidationService, 'hasIdTokenExpired').mockReturnValue(
+        false
+      );
       vi.spyOn(
-        authStateService as any,
-        'hasIdTokenExpiredAndRenewCheckIsEnabled'
-      ).mockReturnValue(false);
-      vi.spyOn(
-        authStateService as any,
-        'hasAccessTokenExpiredIfExpiryExists'
-      ).mockReturnValue(false);
+        tokenValidationService,
+        'validateAccessTokenNotExpired'
+      ).mockReturnValue(true);
+      const fireEventSpy = vi
+        .spyOn(eventsService, 'fireEvent')
+        .mockReturnValue(undefined);
       const result = authStateService.areAuthStorageTokensValid({
         configId: 'configId1',
+        triggerRefreshWhenIdTokenExpired: true,
       });
 
       expect(result).toBe(true);
+      expect(tokenValidationService.hasIdTokenExpired).toHaveBeenCalledTimes(1);
+      expect(fireEventSpy).not.toHaveBeenCalled();
     });
   });
 
@@ -661,6 +665,7 @@ describe('Auth State Service', () => {
       const config = {
         configId: 'configId1',
         renewTimeBeforeTokenExpiresInSeconds: 30,
+        triggerRefreshWhenIdTokenExpired: true,
       };
 
       vi.spyOn(storagePersistenceService, 'read').mockImplementation(
@@ -676,6 +681,7 @@ describe('Auth State Service', () => {
         authStateService.hasIdTokenExpiredAndRenewCheckIsEnabled(config);
 
       expect(result).toBe(false);
+      expect(tokenValidationService.hasIdTokenExpired).toHaveBeenCalledTimes(1);
       expect(spy).not.toHaveBeenCalled();
     });
   });

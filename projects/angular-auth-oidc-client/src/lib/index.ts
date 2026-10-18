@@ -13,8 +13,8 @@ export * from './config/loader/config-loader';
 export * from './config/openid-configuration';
 export { AuthResult } from './flows/callback-context';
 export * from './interceptor/auth.interceptor';
-export * from './logging/abstract-logger.service';
-export * from './logging/log-level';
+export * from './logging/services/abstract-logger.service';
+export { LogLevel } from './logging/types/logging.types';
 export * from './login/login-response';
 export * from './login/popup/popup-options';
 export * from './login/popup/popup-result';
@@ -31,4 +31,3 @@ export * from './user-data/userdata-result';
 export * from './validation/jwtkeys';
 export * from './validation/state-validation-result';
 export * from './validation/validation-result';
-

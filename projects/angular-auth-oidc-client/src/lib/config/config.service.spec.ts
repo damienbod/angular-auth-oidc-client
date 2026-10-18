@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, of } from 'rxjs';
 import { mockAbstractProvider, mockProvider } from '../../test/auto-mock';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
@@ -306,7 +306,7 @@ describe('Configuration Service', () => {
   });
 
   describe('setSpecialCases', () => {
-    it(`should set special cases when current platform is browser`, () => {
+    it(`should set special cases when current platform is NOT browser`, () => {
       vi.spyOn(platformProvider, 'isBrowser').mockReturnValue(false);
 
       const config = { configId: 'configId1' } as OpenIdConfiguration;

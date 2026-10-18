@@ -1,6 +1,6 @@
 # Angular Lib for OpenID Connect & OAuth2
 
-![Build Status](https://github.com/damienbod/angular-auth-oidc-client/actions/workflows/build.yml/badge.svg?branch=main) [![npm](https://img.shields.io/npm/v/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/dm/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/l/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier) [![Coverage Status](https://coveralls.io/repos/github/damienbod/angular-auth-oidc-client/badge.svg?branch=main)](https://coveralls.io/github/damienbod/angular-auth-oidc-client?branch=main)
+![Build Status](https://github.com/damienbod/angular-auth-oidc-client/actions/workflows/build.yml/badge.svg?branch=main) [![npm](https://img.shields.io/npm/v/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/dm/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client) [![npm](https://img.shields.io/npm/l/angular-auth-oidc-client.svg)](https://www.npmjs.com/package/angular-auth-oidc-client) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier) [![Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/damienbod/angular-auth-oidc-client/badges/coverage.json)](https://github.com/damienbod/angular-auth-oidc-client/actions/workflows/build.yml?query=branch%3Amain)
 
 <p align="center">
   <a href="https://angular-auth-oidc-client.com/"><img src="https://raw.githubusercontent.com/damienbod/angular-auth-oidc-client/main/.github/angular-auth-logo.png" alt="" width="350" /></a>
@@ -132,7 +132,7 @@ And call the method `checkAuth()` from your `app.component.ts`. The method `chec
 
 ```ts
 import { Component, OnInit, inject } from '@angular/core';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { LoginResponse, OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
   /*...*/
@@ -163,7 +163,9 @@ export class AppComponent implements OnInit {
 You can get the access token by calling the method `getAccessToken()` on the `OidcSecurityService`
 
 ```ts
-const token = this.oidcSecurityService.getAccessToken().subscribe(...);
+this.oidcSecurityService.getAccessToken().subscribe((token) => {
+  /* ... */
+});
 ```
 
 And then you can use it in the HttpHeaders
@@ -171,7 +173,7 @@ And then you can use it in the HttpHeaders
 ```ts
 import { HttpHeaders } from '@angular/common/http';
 
-const token = this.oidcSecurityServices.getAccessToken().subscribe((token) => {
+this.oidcSecurityService.getAccessToken().subscribe((token) => {
   const httpOptions = {
     headers: new HttpHeaders({
       Authorization: 'Bearer ' + token,

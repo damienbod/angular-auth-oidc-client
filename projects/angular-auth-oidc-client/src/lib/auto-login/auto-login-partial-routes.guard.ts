@@ -10,6 +10,7 @@ import { AuthOptions } from '../auth-options';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { ConfigurationService } from '../config/config.service';
 import { LoginService } from '../login/login.service';
+import { isString } from '../utils/string/string.utils';
 import { AutoLoginService } from './auto-login.service';
 
 @Injectable({ providedIn: 'root' })
@@ -22,10 +23,8 @@ export class AutoLoginPartialRoutesGuard {
 
   canLoad(): Observable<boolean> {
     const url =
-      this.router
-        .currentNavigation()
-        ?.extractedUrl.toString()
-        .substring(1) ?? '';
+      this.router.currentNavigation()?.extractedUrl.toString().substring(1) ??
+      '';
 
     return checkAuth(
       url,
@@ -96,7 +95,9 @@ export function autoLoginPartialRoutesGuard(
     autoLoginService,
     loginService,
     authOptions,
-    configId
+    // Used as `canMatch`, Angular passes a `currentSnapshot` object as the
+    // third argument, which must not be taken as the config id.
+    isString(configId) ? configId : undefined
   );
 }
 

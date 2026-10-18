@@ -1,12 +1,32 @@
 export function getVerifyAlg(
   alg: string
-): RsaHashedImportParams | EcdsaParams | Algorithm | null {
+): RsaHashedImportParams | RsaPssParams | EcdsaParams | Algorithm | null {
   switch (alg.charAt(0)) {
     case 'R':
       return {
         name: 'RSASSA-PKCS1-v1_5',
         hash: 'SHA-256',
       };
+    case 'P':
+      // RFC 7518 3.5: the salt length equals the size of the hash output
+      if (alg.includes('256')) {
+        return {
+          name: 'RSA-PSS',
+          saltLength: 32,
+        };
+      } else if (alg.includes('384')) {
+        return {
+          name: 'RSA-PSS',
+          saltLength: 48,
+        };
+      } else if (alg.includes('512')) {
+        return {
+          name: 'RSA-PSS',
+          saltLength: 64,
+        };
+      } else {
+        return null;
+      }
     case 'E':
       if (isEd25519Alg(alg)) {
         return { name: 'Ed25519' };
@@ -32,6 +52,7 @@ export function getVerifyAlg(
 export function alg2kty(alg: string): string {
   switch (alg.charAt(0)) {
     case 'R':
+    case 'P':
       return 'RSA';
 
     case 'E':
@@ -64,6 +85,25 @@ export function getImportAlg(
       } else if (alg.includes('512')) {
         return {
           name: 'RSASSA-PKCS1-v1_5',
+          hash: 'SHA-512',
+        };
+      } else {
+        return null;
+      }
+    case 'P':
+      if (alg.includes('256')) {
+        return {
+          name: 'RSA-PSS',
+          hash: 'SHA-256',
+        };
+      } else if (alg.includes('384')) {
+        return {
+          name: 'RSA-PSS',
+          hash: 'SHA-384',
+        };
+      } else if (alg.includes('512')) {
+        return {
+          name: 'RSA-PSS',
           hash: 'SHA-512',
         };
       } else {

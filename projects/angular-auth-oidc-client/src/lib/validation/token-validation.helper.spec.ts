@@ -55,7 +55,28 @@ describe('getVerifyAlg', () => {
   });
 });
 
+describe('getVerifyAlg for RSA-PSS', () => {
+  it.each([
+    ['PS256', 32],
+    ['PS384', 48],
+    ['PS512', 64],
+  ])(
+    'returns RSA-PSS with the hash size as salt length for %s',
+    (alg, saltLength) => {
+      expect(getVerifyAlg(alg)).toEqual({ name: 'RSA-PSS', saltLength });
+    }
+  );
+
+  it('returns null if algorithm is only P', () => {
+    expect(getVerifyAlg('P')).toBe(null);
+  });
+});
+
 describe('alg2kty', () => {
+  it('returns RSA if algorithm is P', () => {
+    expect(alg2kty('PS256')).toEqual('RSA');
+  });
+
   it('returns correct result if algorithm is R', () => {
     const algorithm = 'R';
     const result = alg2kty(algorithm);
@@ -79,7 +100,7 @@ describe('alg2kty', () => {
     expect(alg2kty('ES384')).toEqual('EC');
   });
 
-  it('returns correct result if algorithm is E', () => {
+  it('throws if algorithm is neither R nor E', () => {
     const algorithm = 'SOMETHING_ELSE';
 
     expect(() => alg2kty(algorithm)).toThrow(
@@ -169,5 +190,15 @@ describe('getImportAlg', () => {
       name: 'ECDSA',
       namedCurve: 'P-256',
     });
+  });
+});
+
+describe('getImportAlg for RSA-PSS', () => {
+  it.each([
+    ['PS256', 'SHA-256'],
+    ['PS384', 'SHA-384'],
+    ['PS512', 'SHA-512'],
+  ])('returns RSA-PSS with %s hash', (alg, hash) => {
+    expect(getImportAlg(alg)).toEqual({ name: 'RSA-PSS', hash });
   });
 });

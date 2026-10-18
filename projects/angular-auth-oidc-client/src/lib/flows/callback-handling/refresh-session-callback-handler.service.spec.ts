@@ -3,14 +3,12 @@ import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
 import { AuthStateService } from '../../auth-state/auth-state.service';
-import { LoggerService } from '../../logging/logger.service';
+import { LoggerService } from '../../logging/services/logger.service';
 import { CallbackContext } from '../callback-context';
-import { FlowsDataService } from '../flows-data.service';
 import { RefreshSessionCallbackHandlerService } from './refresh-session-callback-handler.service';
 
 describe('RefreshSessionCallbackHandlerService', () => {
   let service: RefreshSessionCallbackHandlerService;
-  let flowsDataService: FlowsDataService;
   let authStateService: AuthStateService;
 
   beforeEach(() => {
@@ -19,14 +17,12 @@ describe('RefreshSessionCallbackHandlerService', () => {
         RefreshSessionCallbackHandlerService,
         mockProvider(AuthStateService),
         mockProvider(LoggerService),
-        mockProvider(FlowsDataService),
       ],
     });
   });
 
   beforeEach(() => {
     service = TestBed.inject(RefreshSessionCallbackHandlerService);
-    flowsDataService = TestBed.inject(FlowsDataService);
     authStateService = TestBed.inject(AuthStateService);
   });
 
@@ -36,10 +32,6 @@ describe('RefreshSessionCallbackHandlerService', () => {
 
   describe('refreshSessionWithRefreshTokens', () => {
     it('returns callbackContext if all params are good', async () => {
-      vi.spyOn(
-        flowsDataService,
-        'getExistingOrCreateAuthStateControl'
-      ).mockReturnValue('state-data');
       vi.spyOn(authStateService, 'getRefreshToken').mockReturnValue(
         'henlo-furiend'
       );
@@ -48,7 +40,7 @@ describe('RefreshSessionCallbackHandlerService', () => {
       const expectedCallbackContext = {
         code: '',
         refreshToken: 'henlo-furiend',
-        state: 'state-data',
+        state: '',
         sessionState: null,
         authResult: null,
         isRenewProcess: true,
@@ -64,21 +56,14 @@ describe('RefreshSessionCallbackHandlerService', () => {
     });
 
     it('throws error if no refresh token is given', async () => {
-      vi.spyOn(
-        flowsDataService,
-        'getExistingOrCreateAuthStateControl'
-      ).mockReturnValue('state-data');
       vi.spyOn(authStateService, 'getRefreshToken').mockReturnValue('');
       vi.spyOn(authStateService, 'getIdToken').mockReturnValue('henlo-legger');
 
-      try {
-        await firstValueFrom(
+      await expect(
+        firstValueFrom(
           service.refreshSessionWithRefreshTokens({ configId: 'configId1' })
-        );
-        expect.fail('expected an error');
-      } catch (err: any) {
-        expect(err).toBeTruthy();
-      }
+        )
+      ).rejects.toThrow('no refresh token found, please login');
     });
   });
 });

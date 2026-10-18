@@ -1,13 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { firstValueFrom, NEVER, of, throwError } from 'rxjs';
+import { firstValueFrom, NEVER, of, throwError, TimeoutError } from 'rxjs';
 import { mockProvider } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { CallbackContext } from '../flows/callback-context';
 import { FlowsService } from '../flows/flows.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { ValidationResult } from '../validation/validation-result';
 import { IntervalService } from './interval.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
@@ -82,18 +82,15 @@ describe('RefreshSessionRefreshTokenService', () => {
         .spyOn(resetAuthDataService, 'resetAuthorizationData')
         .mockReturnValue(undefined);
 
-      try {
-        await firstValueFrom(
+      await expect(
+        firstValueFrom(
           refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(
             { configId: 'configId1' },
             [{ configId: 'configId1' }]
           )
-        );
-        expect.fail('expected an error');
-      } catch (err: any) {
-        expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
-        expect(err).toBeTruthy();
-      }
+        )
+      ).rejects.toThrow('error');
+      expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
     });
 
     it('preserves authorization data and the original error for network failures', async () => {
@@ -148,9 +145,10 @@ describe('RefreshSessionRefreshTokenService', () => {
         )
       );
 
+      result.catch(() => undefined);
       await vi.advanceTimersByTimeAsync(10);
 
-      await expect(result).rejects.toBeInstanceOf(Error);
+      await expect(result).rejects.toBeInstanceOf(TimeoutError);
       expect(resetAuthorizationDataSpy).not.toHaveBeenCalled();
       expect(stopPeriodicTokenCheckSpy).not.toHaveBeenCalled();
     });
@@ -430,22 +428,76 @@ describe('RefreshSessionRefreshTokenService', () => {
         const resetAuthorizationDataSpy = vi
           .spyOn(resetAuthDataService, 'resetAuthorizationData')
           .mockReturnValue(undefined);
-
-        await expect(
-          firstValueFrom(
-            refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(
-              {
-                configId: 'configId1',
-                useRefreshTokenLock: true,
-                silentRenewTimeoutInSeconds: 0.01,
-              },
-              [{ configId: 'configId1' }]
-            )
+        const result = firstValueFrom(
+          refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(
+            {
+              configId: 'configId1',
+              useRefreshTokenLock: true,
+              silentRenewTimeoutInSeconds: 0.01,
+            },
+            [{ configId: 'configId1' }]
           )
-        ).rejects.toThrow();
+        );
+
+        result.catch(() => undefined);
+        await vi.advanceTimersByTimeAsync(10);
+
+        await expect(result).rejects.toBeInstanceOf(TimeoutError);
 
         expect(resetAuthorizationDataSpy).not.toHaveBeenCalled();
       });
+    });
+  });
+
+  describe('usesRefreshTokenLock', () => {
+    it('returns true when useRefreshTokenLock is enabled and the Web Locks API is available', () => {
+      // Arrange
+      Object.defineProperty(navigator, 'locks', {
+        value: { request: vi.fn() },
+        configurable: true,
+      });
+
+      // Act
+      const result = refreshSessionRefreshTokenService.usesRefreshTokenLock({
+        configId: 'configId1',
+        useRefreshTokenLock: true,
+      });
+
+      // Assert
+      expect(result).toBe(true);
+    });
+
+    it('returns false when useRefreshTokenLock is disabled', () => {
+      // Arrange
+      Object.defineProperty(navigator, 'locks', {
+        value: { request: vi.fn() },
+        configurable: true,
+      });
+
+      // Act
+      const result = refreshSessionRefreshTokenService.usesRefreshTokenLock({
+        configId: 'configId1',
+      });
+
+      // Assert
+      expect(result).toBe(false);
+    });
+
+    it('returns false when the Web Locks API is unavailable', () => {
+      // Arrange
+      Object.defineProperty(navigator, 'locks', {
+        value: undefined,
+        configurable: true,
+      });
+
+      // Act
+      const result = refreshSessionRefreshTokenService.usesRefreshTokenLock({
+        configId: 'configId1',
+        useRefreshTokenLock: true,
+      });
+
+      // Assert
+      expect(result).toBe(false);
     });
   });
 });

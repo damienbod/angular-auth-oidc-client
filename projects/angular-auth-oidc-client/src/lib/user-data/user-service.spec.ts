@@ -5,7 +5,7 @@ import { mockProvider } from '../../test/auto-mock';
 import { createRetriableStream } from '../../test/create-retriable-stream.helper';
 import { DataService } from '../api/data.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
@@ -53,7 +53,7 @@ describe('User Service', () => {
     expect(userService).toBeTruthy();
   });
 
-  it('public authorize$ is observable$', () => {
+  it('public userData$ is observable$', () => {
     expect(userService.userData$).toEqual(expect.any(Observable));
   });
 
@@ -144,9 +144,9 @@ describe('User Service', () => {
     it('if not currentFlow is id token or code flow and not renewProcess --> ask server for data', async () => {
       const isRenewProcess = false;
       const idToken = '';
-      const decodedIdToken = 'decodedIdToken';
+      const decodedIdToken = { sub: DUMMY_USER_DATA.sub };
       const userDataInstore = '';
-      const userDataFromSts = 'userDataFromSts';
+      const userDataFromSts = DUMMY_USER_DATA;
       const config = {
         responseType: 'code',
         configId: 'configId1',
@@ -177,9 +177,9 @@ describe('User Service', () => {
           --> logging if it has userdata`, async () => {
       const isRenewProcess = false;
       const idToken = '';
-      const decodedIdToken = 'decodedIdToken';
+      const decodedIdToken = { sub: DUMMY_USER_DATA.sub };
       const userDataInstore = '';
-      const userDataFromSts = 'userDataFromSts';
+      const userDataFromSts = DUMMY_USER_DATA;
       const config = {
         responseType: 'code',
         configId: 'configId1',
@@ -256,9 +256,9 @@ describe('User Service', () => {
           --> ask server for data`, async () => {
       const isRenewProcess = true;
       const idToken = '';
-      const decodedIdToken = 'decodedIdToken';
+      const decodedIdToken = { sub: DUMMY_USER_DATA.sub };
       const userDataInstore = 'userDataInStore';
-      const userDataFromSts = 'userDataFromSts';
+      const userDataFromSts = DUMMY_USER_DATA;
       const config = {
         responseType: 'code',
         renewUserInfoAfterTokenRenew: true,
@@ -561,7 +561,7 @@ describe('User Service', () => {
       );
       await expect(
         firstValueFrom(serviceAsAny.getIdentityUserData(config))
-      ).rejects.toBeTruthy();
+      ).rejects.toThrow('authWellKnownEndpoints is undefined');
     });
 
     it('does nothing if no userInfoEndpoint is set', async () => {
@@ -582,7 +582,9 @@ describe('User Service', () => {
       );
       await expect(
         firstValueFrom(serviceAsAny.getIdentityUserData(config))
-      ).rejects.toBeTruthy();
+      ).rejects.toThrow(
+        'authWellKnownEndpoints.userinfo_endpoint is undefined'
+      );
     });
 
     it('gets userData if authwell and userInfoEndpoint is set', async () => {
@@ -700,6 +702,6 @@ describe('User Service', () => {
 
     await expect(
       firstValueFrom((userService as any).getIdentityUserData(config))
-    ).rejects.toBeTruthy();
+    ).rejects.toThrow('Error');
   });
 });

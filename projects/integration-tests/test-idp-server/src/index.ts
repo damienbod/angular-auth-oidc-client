@@ -5,7 +5,8 @@ if (require.main === module) {
   const port = parseInt(process.env.PORT || '8080', 10);
   const server = new TestIdpServer({
     port,
-    realms: ['idp1', 'idp2', 'idp3']
+    realms: ['idp1', 'idp2', 'idp3'],
+    promptNoneRequiresSession: process.env.PROMPT_NONE_REQUIRES_SESSION === 'true'
   });
   
   server.start().then(() => {

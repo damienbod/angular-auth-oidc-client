@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, of, throwError } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
@@ -101,8 +102,13 @@ describe('AuthWellKnownService', () => {
     });
 
     it('throws `ConfigLoadingFailed` event when error happens from http', async () => {
+      const httpError = new HttpErrorResponse({
+        status: 404,
+        statusText: 'Not Found',
+      });
+
       vi.spyOn(dataService, 'getWellKnownEndPointsForConfig').mockReturnValue(
-        throwError(() => new Error('error'))
+        throwError(() => httpError)
       );
       const publicEventsServiceSpy = vi
         .spyOn(publicEventsService, 'fireEvent')
@@ -114,7 +120,8 @@ describe('AuthWellKnownService', () => {
         );
         expect.fail('expected an error');
       } catch (err: any) {
-        expect(err).toBeTruthy();
+        expect(err).toBe(httpError);
+        expect(err.status).toBe(404);
         expect(publicEventsServiceSpy).toHaveBeenCalledTimes(1);
         expect(publicEventsServiceSpy).toHaveBeenCalledTimes(1);
         expect(publicEventsServiceSpy).toHaveBeenCalledWith(

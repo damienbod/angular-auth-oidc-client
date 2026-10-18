@@ -8,6 +8,9 @@ import { exportJWK, importPKCS8, KeyLike, SignJWT } from 'jose';
 export interface TestIdpServerOptions {
   port?: number;
   realms?: string[];
+  // When true, prompt=none without an SSO session answers login_required.
+  // Off by default: the integration tests log in silently without a session.
+  promptNoneRequiresSession?: boolean;
 }
 
 interface KeyPair {
@@ -32,14 +35,20 @@ export class TestIdpServer {
   private server: Server | null = null;
   private port: number;
   private realms: string[];
+  private promptNoneRequiresSession: boolean;
   private keyPairs: Record<string, KeyPair> = {};
   private activeSessions: Map<string, Session> = new Map();
   private refreshTokenSessions: Map<string, Session> = new Map();
   private loggedOutSessions: Set<string> = new Set();
+  private pushedAuthorizationRequests: Map<
+    string,
+    { realm: string; params: Record<string, string> }
+  > = new Map();
 
   constructor(options: TestIdpServerOptions = {}) {
     this.port = options.port || 8080;
     this.realms = options.realms || ['idp1', 'idp2', 'idp3'];
+    this.promptNoneRequiresSession = options.promptNoneRequiresSession ?? false;
     this.app = express();
     this.setupMiddleware();
     this.setupRoutes();
@@ -82,9 +91,11 @@ export class TestIdpServer {
           token_endpoint: `http://localhost:${this.port}${realmPath}/token`,
           userinfo_endpoint: `http://localhost:${this.port}${realmPath}/userinfo`,
           end_session_endpoint: `http://localhost:${this.port}${realmPath}/logout`,
+          revocation_endpoint: `http://localhost:${this.port}${realmPath}/revoke`,
+          pushed_authorization_request_endpoint: `http://localhost:${this.port}${realmPath}/par`,
           jwks_uri: `http://localhost:${this.port}${realmPath}/jwks`,
           scopes_supported: this.getSupportedScopes(realm),
-          response_types_supported: ['code'],
+          response_types_supported: ['code', 'id_token token', 'id_token'],
           grant_types_supported: ['authorization_code', 'refresh_token'],
           subject_types_supported: ['public'],
           id_token_signing_alg_values_supported: ['RS256'],
@@ -93,8 +104,40 @@ export class TestIdpServer {
       }
     );
 
+    // Pushed authorization request endpoint (RFC 9126)
+    this.app.post(`${realmPath}/par`, (req: Request, res: Response) => {
+      const requestUri = `urn:ietf:params:oauth:request_uri:${crypto
+        .randomBytes(16)
+        .toString('hex')}`;
+
+      console.log(`Test IDP: ${realm} PAR request:`, {
+        client_id: req.body.client_id,
+        request_uri: requestUri,
+      });
+
+      this.pushedAuthorizationRequests.set(requestUri, {
+        realm,
+        params: req.body,
+      });
+
+      res.status(201).json({ request_uri: requestUri, expires_in: 60 });
+    });
+
     // Authorization endpoint
-    this.app.get(`${realmPath}/authorize`, (req: Request, res: Response) => {
+    this.app.get(`${realmPath}/authorize`, async (req: Request, res: Response) => {
+      const pushedRequest = this.pushedAuthorizationRequests.get(
+        req.query.request_uri as string
+      );
+
+      if (req.query.request_uri) {
+        this.pushedAuthorizationRequests.delete(req.query.request_uri as string);
+
+        if (!pushedRequest || pushedRequest.realm !== realm) {
+          return res.status(400).json({ error: 'invalid_request_uri' });
+        }
+      }
+
+      const params = { ...req.query, ...pushedRequest?.params };
       const {
         response_type,
         client_id,
@@ -105,30 +148,84 @@ export class TestIdpServer {
         code_challenge,
         code_challenge_method,
         test_response_mode,
-      } = req.query;
+      } = params;
 
       console.log(`Test IDP: ${realm} authorize request:`, {
         response_type,
         client_id,
         redirect_uri,
         prompt,
+        par: pushedRequest ? 'yes' : 'no',
         code_challenge: code_challenge ? 'present' : 'missing',
         code_challenge_method,
         cookies: req.cookies
       });
+
+      const hasSsoSession = req.cookies?.SSO_SESSION === 'active';
+
+      // With promptNoneRequiresSession, silent authentication (prompt=none)
+      // only succeeds with an SSO session, like a real IdP
+      if (
+        this.promptNoneRequiresSession &&
+        prompt === 'none' &&
+        !hasSsoSession
+      ) {
+        const errorParams = new URLSearchParams({
+          error: 'login_required',
+          state: state as string,
+        });
+
+        return res.redirect(
+          response_type === 'code'
+            ? `${redirect_uri}?${errorParams}`
+            : `${redirect_uri}#${errorParams}`
+        );
+      }
+
+      // Implicit flow: the tokens are returned in the URL fragment
+      if (response_type === 'id_token token' || response_type === 'id_token') {
+        const session: Session = {
+          realm,
+          state: state as string,
+          nonce: params.nonce as string,
+          clientId: client_id as string,
+          scope: scope as string,
+        };
+        const accessToken = `${realm}-access-token-${Date.now()}`;
+        const fragment = new URLSearchParams({
+          id_token: await this.getTokenForRealm(realm, session, true, {
+            at_hash: this.getAtHash(accessToken),
+          }),
+          state: state as string,
+          token_type: 'Bearer',
+          expires_in: '300',
+          scope: (scope as string) || this.getScopeString(realm),
+        });
+
+        if (response_type === 'id_token token') {
+          fragment.set('access_token', accessToken);
+        }
+
+        this.setSsoCookie(res);
+
+        return res.redirect(`${redirect_uri}#${fragment}`);
+      }
 
       if (response_type !== 'code') {
         return res.status(400).json({ error: 'unsupported_response_type' });
       }
 
       // Generate authorization code
-      const code = `${realm}-auth-code-${Date.now()}`;
+      // Unique even when several clients authorize in the same millisecond
+      const code = `${realm}-auth-code-${Date.now()}-${crypto
+        .randomBytes(8)
+        .toString('hex')}`;
 
       // Store session for this authorization including all parameters
       this.activeSessions.set(code, {
         realm,
         state: state as string,
-        nonce: req.query.nonce as string,
+        nonce: params.nonce as string,
         clientId: client_id as string,
         scope: scope as string,
         codeChallenge: code_challenge as string,
@@ -137,7 +234,7 @@ export class TestIdpServer {
 
       // For silent authentication (prompt=none) or SSO scenario
       // We simulate that the user has an active session
-      if (prompt === 'none' || req.cookies?.SSO_SESSION === 'active') {
+      if (prompt === 'none' || hasSsoSession) {
         // Redirect back with authorization code
         const redirectUrl = new URL(redirect_uri as string);
         redirectUrl.searchParams.set('code', code);
@@ -162,11 +259,7 @@ export class TestIdpServer {
       redirectUrl.searchParams.set('state', state as string);
 
       // Set SSO cookie for subsequent requests
-      res.cookie('SSO_SESSION', 'active', {
-        httpOnly: true,
-        sameSite: 'lax',
-        maxAge: 3600000, // 1 hour
-      });
+      this.setSsoCookie(res);
 
       if (test_response_mode === 'json') {
         return res.json({ redirect_to: redirectUrl.toString() });
@@ -287,6 +380,20 @@ export class TestIdpServer {
       return;
     });
 
+    // Token revocation endpoint (RFC 7009)
+    this.app.post(`${realmPath}/revoke`, (req: Request, res: Response) => {
+      const { token, token_type_hint } = req.body;
+
+      console.log(`Test IDP: ${realm} revocation request:`, {
+        token_type_hint,
+        known_refresh_token: this.refreshTokenSessions.has(token),
+      });
+
+      this.refreshTokenSessions.delete(token);
+
+      res.status(200).send();
+    });
+
     // JWKS endpoint
     this.app.get(`${realmPath}/jwks`, (req: Request, res: Response) => {
       const keyPair = this.getKeyPairForRealm(realm);
@@ -384,13 +491,32 @@ export class TestIdpServer {
     return this.getSupportedScopes(realm).join(' ');
   }
 
+  private setSsoCookie(res: Response): void {
+    res.cookie('SSO_SESSION', 'active', {
+      httpOnly: true,
+      sameSite: 'lax',
+      maxAge: 3600000, // 1 hour
+    });
+  }
+
+  // at_hash: base64url of the left half of the SHA-256 hash of the access token
+  private getAtHash(accessToken: string): string {
+    const hash = crypto.createHash('sha256').update(accessToken).digest();
+
+    return hash.subarray(0, hash.length / 2).toString('base64url');
+  }
+
   private async getTokenForRealm(
     realm: string,
     session?: Session,
-    includeNonce = true
+    includeNonce = true,
+    extraClaims: Record<string, unknown> = {}
   ): Promise<string> {
     const keyPair = this.getKeyPairForRealm(realm);
-    const claims = this.getClaimsForRealm(realm, session, includeNonce);
+    const claims = {
+      ...this.getClaimsForRealm(realm, session, includeNonce),
+      ...extraClaims,
+    };
 
     // Add a unique timestamp with millisecond precision to ensure different IATs
     // Add light jitter (0-10ms) based on realm to ensure different IATs

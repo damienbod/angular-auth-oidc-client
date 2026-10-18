@@ -9,7 +9,7 @@ import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
@@ -37,6 +37,7 @@ describe('PeriodicallyTokenCheckService', () => {
   let resetAuthDataService: ResetAuthDataService;
   let configurationService: ConfigurationService;
   let publicEventsService: PublicEventsService;
+  let loggerService: LoggerService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -73,6 +74,7 @@ describe('PeriodicallyTokenCheckService', () => {
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
     resetAuthDataService = TestBed.inject(ResetAuthDataService);
     publicEventsService = TestBed.inject(PublicEventsService);
+    loggerService = TestBed.inject(LoggerService);
     configurationService = TestBed.inject(ConfigurationService);
 
     vi.spyOn(intervalService, 'startPeriodicTokenCheck').mockReturnValue(
@@ -141,6 +143,9 @@ describe('PeriodicallyTokenCheckService', () => {
       const resetSilentRenewRunning = vi
         .spyOn(flowsDataService, 'resetSilentRenewRunning')
         .mockReturnValue(undefined);
+      const logErrorSpy = vi
+        .spyOn(loggerService, 'logError')
+        .mockReturnValue(undefined);
 
       vi.spyOn(
         flowHelper,
@@ -161,9 +166,11 @@ describe('PeriodicallyTokenCheckService', () => {
 
       await vi.advanceTimersByTimeAsync(1000);
 
-      expect(
-        periodicallyTokenCheckService.startTokenValidationPeriodically
-      ).toThrowError();
+      expect(logErrorSpy).toHaveBeenCalledWith(
+        configs[0],
+        'silent renew failed!',
+        expect.any(Error)
+      );
       expect(resetSilentRenewRunning).toHaveBeenCalledTimes(1);
       expect(resetSilentRenewRunning).toHaveBeenCalledWith(configs[0]);
     });
@@ -203,9 +210,6 @@ describe('PeriodicallyTokenCheckService', () => {
 
       await vi.advanceTimersByTimeAsync(1000);
 
-      expect(
-        periodicallyTokenCheckService.startTokenValidationPeriodically
-      ).toThrowError();
       expect(vi.mocked(publicEventsServiceSpy).mock.calls).toEqual([
         [EventTypes.SilentRenewStarted],
         [EventTypes.SilentRenewFailed, new Error('error')],
@@ -337,7 +341,7 @@ describe('PeriodicallyTokenCheckService', () => {
 
     it('returns false when there is no userdata from the store', () => {
       vi.spyOn(authStateService, 'getIdToken').mockReturnValue('idToken');
-      vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(true);
+      vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(false);
       vi.spyOn(userService, 'getUserDataFromStore').mockReturnValue(null);
 
       const result = (
@@ -392,7 +396,7 @@ describe('PeriodicallyTokenCheckService', () => {
       expect(result).toBe(false);
     });
 
-    it('returns true if tokens are  expired', () => {
+    it('returns true if only the access token is expired', () => {
       vi.spyOn(authStateService, 'getIdToken').mockReturnValue('idToken');
       vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(false);
       vi.spyOn(userService, 'getUserDataFromStore').mockReturnValue(
@@ -402,7 +406,7 @@ describe('PeriodicallyTokenCheckService', () => {
       vi.spyOn(
         authStateService,
         'hasIdTokenExpiredAndRenewCheckIsEnabled'
-      ).mockReturnValue(true);
+      ).mockReturnValue(false);
       vi.spyOn(
         authStateService,
         'hasAccessTokenExpiredIfExpiryExists'

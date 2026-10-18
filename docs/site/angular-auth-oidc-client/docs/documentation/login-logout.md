@@ -50,9 +50,9 @@ login() {
     redirectUrl: "/assets/login-popup-page.html"
   };
 
-  const configIdOrNull = // ...
+  const configIdOrUndefined = // ...
 
-  this.oidcSecurityService.authorize(configIdOrNull, authOptions);
+  this.oidcSecurityService.authorize(configIdOrUndefined, authOptions);
 }
 
 ```
@@ -82,7 +82,7 @@ You can pass options to control the dimension of the popup with the `PopupOption
 loginWithPopup() {
   const somePopupOptions = { width: 500, height: 500, left: 50, top: 50 };
 
-  const authOptionsOrNull = /* ... */
+  const authOptions = /* ... */
 
   this.oidcSecurityService.authorizeWithPopUp(authOptions, somePopupOptions)
     .subscribe(({ isAuthenticated, userData, accessToken, errorMessage }) => {
@@ -97,9 +97,9 @@ In case you have multiple configs you can pass the `configId` parameter as the l
 
 ```ts
 loginWithPopup() {
-  const somePopupOptionsOrNull = /* ... */;
+  const somePopupOptions = /* ... */;
 
-  const authOptionsOrNull = /* ... */
+  const authOptions = /* ... */
 
   this.oidcSecurityService.authorizeWithPopUp(authOptions, somePopupOptions, 'configId')
     .subscribe(({ isAuthenticated, userData, accessToken, errorMessage }) => {
@@ -155,9 +155,7 @@ logout() {
 ```ts
 logout() {
   this.oidcSecurityService.logoff('configId')
-    .subscribe(({ isAuthenticated, userData, idToken, accessToken, errorMessage }) => {
-      /* ... */
-    });
+    .subscribe((result) => console.log(result));
 }
 ```
 
@@ -182,10 +180,10 @@ logout() {
     }
   };
 
-  // Use an empty string for the configId if this is not a multiple client
-  // subscribe to the result if you expect the function to return.
-  // => .subscribe((result) => console.log(result));
-  this.oidcSecurityService.logoff('configId', logoutAuthOptions);
+  // Use an empty string for the configId if this is not a multiple client.
+  // The returned observable is lazy: nothing happens until you subscribe.
+  this.oidcSecurityService.logoff('configId', logoutAuthOptions)
+    .subscribe((result) => console.log(result));
 }
 ```
 

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { mockProvider } from '../../test/auto-mock';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { CryptoService } from '../utils/crypto/crypto.service';
 import { FlowsDataService } from './flows-data.service';
@@ -100,7 +100,7 @@ describe('Flows Data Service', () => {
       });
 
       expect(result).toBeTruthy();
-      expect(result.length).toBe(41);
+      expect(result.length).toBe(40);
       expect(setSpy).toHaveBeenCalledTimes(1);
       expect(setSpy).toHaveBeenCalledWith('authStateControl', result, {
         configId: 'configId1',

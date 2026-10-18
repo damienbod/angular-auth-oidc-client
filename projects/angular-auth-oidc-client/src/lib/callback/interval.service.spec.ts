@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { DOCUMENT } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Subscription } from 'rxjs';
 import { IntervalService } from './interval.service';
@@ -16,7 +17,7 @@ describe('IntervalService', () => {
     TestBed.configureTestingModule({
       providers: [
         {
-          provide: Document,
+          provide: DOCUMENT,
           useValue: {
             defaultView: {
               setInterval: window.setInterval,
@@ -83,7 +84,10 @@ describe('IntervalService', () => {
         spy();
       });
 
-      await vi.advanceTimersByTimeAsync(500);
+      await vi.advanceTimersByTimeAsync(490);
+      expect(spy).not.toHaveBeenCalled();
+
+      await vi.advanceTimersByTimeAsync(10);
       expect(spy).toHaveBeenCalledTimes(1);
 
       await vi.advanceTimersByTimeAsync(500);

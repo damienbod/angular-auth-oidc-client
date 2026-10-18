@@ -3,7 +3,7 @@ import { Observable, of } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { CallbackContext } from '../flows/callback-context';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { EqualityService } from '../utils/equality/equality.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
@@ -27,8 +27,8 @@ export class StateValidationService {
     callbackContext: CallbackContext,
     configuration: OpenIdConfiguration
   ): Observable<StateValidationResult> {
-    const hasError = Boolean(callbackContext.authResult?.error);
     const hasCallbackContext = Boolean(callbackContext);
+    const hasError = Boolean(callbackContext?.authResult?.error);
 
     if (!hasCallbackContext || hasError) {
       return of(new StateValidationResult('', '', false, {}));
@@ -42,15 +42,17 @@ export class StateValidationService {
     configuration: OpenIdConfiguration
   ): Observable<StateValidationResult> {
     const toReturn = new StateValidationResult();
-    const authStateControl = this.storagePersistenceService.read(
-      'authStateControl',
-      configuration
-    );
+    const isInRefreshTokenFlow =
+      callbackContext.isRenewProcess && !!callbackContext.refreshToken;
 
+    // A refresh token request has no front-channel redirect to protect with a
+    // state. Comparing against the stored state would only fail when another
+    // tab changed it, as the storage is shared by all tabs.
     if (
+      !isInRefreshTokenFlow &&
       !this.tokenValidationService.validateStateFromHashCallback(
         callbackContext.authResult?.state,
-        authStateControl,
+        this.storagePersistenceService.read('authStateControl', configuration),
         configuration
       )
     ) {
@@ -59,7 +61,7 @@ export class StateValidationService {
         'authCallback incorrect state'
       );
       toReturn.state = ValidationResult.StatesDoNotMatch;
-      this.handleUnsuccessfulValidation(configuration);
+      this.handleUnsuccessfulValidation(configuration, isInRefreshTokenFlow);
 
       return of(toReturn);
     }
@@ -82,8 +84,6 @@ export class StateValidationService {
       return of(toReturn);
     }
 
-    const isInRefreshTokenFlow =
-      callbackContext.isRenewProcess && !!callbackContext.refreshToken;
     const hasIdToken = Boolean(callbackContext.authResult?.id_token);
 
     if (isInRefreshTokenFlow && !hasIdToken) {
@@ -124,15 +124,20 @@ export class StateValidationService {
                 'authCallback Signature validation failed id_token'
               );
               toReturn.state = ValidationResult.SignatureFailed;
-              this.handleUnsuccessfulValidation(configuration);
+              this.handleUnsuccessfulValidation(
+                configuration,
+                isInRefreshTokenFlow
+              );
 
               return of(toReturn);
             }
 
-            const authNonce = this.storagePersistenceService.read(
-              'authNonce',
-              configuration
-            );
+            // Nonce is not used with refresh tokens; but Key cloak may send it
+            // anyway. The placeholder is not read from the storage, as another
+            // tab could have stored the nonce of its own login there.
+            const authNonce = isInRefreshTokenFlow
+              ? TokenValidationService.refreshTokenNoncePlaceholder
+              : this.storagePersistenceService.read('authNonce', configuration);
 
             if (
               !this.tokenValidationService.validateIdTokenNonce(
@@ -147,7 +152,10 @@ export class StateValidationService {
                 'authCallback incorrect nonce, did you call the checkAuth() method multiple times?'
               );
               toReturn.state = ValidationResult.IncorrectNonce;
-              this.handleUnsuccessfulValidation(configuration);
+              this.handleUnsuccessfulValidation(
+                configuration,
+                isInRefreshTokenFlow
+              );
 
               return of(toReturn);
             }
@@ -163,7 +171,10 @@ export class StateValidationService {
                 'authCallback Validation, one of the REQUIRED properties missing from id_token'
               );
               toReturn.state = ValidationResult.RequiredPropertyMissing;
-              this.handleUnsuccessfulValidation(configuration);
+              this.handleUnsuccessfulValidation(
+                configuration,
+                isInRefreshTokenFlow
+              );
 
               return of(toReturn);
             }
@@ -182,7 +193,10 @@ export class StateValidationService {
                 'authCallback Validation, iat rejected id_token was issued too far away from the current time'
               );
               toReturn.state = ValidationResult.MaxOffsetExpired;
-              this.handleUnsuccessfulValidation(configuration);
+              this.handleUnsuccessfulValidation(
+                configuration,
+                isInRefreshTokenFlow
+              );
 
               return of(toReturn);
             }
@@ -211,7 +225,10 @@ export class StateValidationService {
                   'authCallback incorrect iss does not match authWellKnownEndpoints issuer'
                 );
                 toReturn.state = ValidationResult.IssDoesNotMatchIssuer;
-                this.handleUnsuccessfulValidation(configuration);
+                this.handleUnsuccessfulValidation(
+                  configuration,
+                  isInRefreshTokenFlow
+                );
 
                 return of(toReturn);
               }
@@ -221,7 +238,10 @@ export class StateValidationService {
                 'authWellKnownEndpoints is undefined'
               );
               toReturn.state = ValidationResult.NoAuthWellKnownEndPoints;
-              this.handleUnsuccessfulValidation(configuration);
+              this.handleUnsuccessfulValidation(
+                configuration,
+                isInRefreshTokenFlow
+              );
 
               return of(toReturn);
             }
@@ -238,7 +258,10 @@ export class StateValidationService {
                 'authCallback incorrect aud'
               );
               toReturn.state = ValidationResult.IncorrectAud;
-              this.handleUnsuccessfulValidation(configuration);
+              this.handleUnsuccessfulValidation(
+                configuration,
+                isInRefreshTokenFlow
+              );
 
               return of(toReturn);
             }
@@ -253,7 +276,10 @@ export class StateValidationService {
                 'authCallback missing azp'
               );
               toReturn.state = ValidationResult.IncorrectAzp;
-              this.handleUnsuccessfulValidation(configuration);
+              this.handleUnsuccessfulValidation(
+                configuration,
+                isInRefreshTokenFlow
+              );
 
               return of(toReturn);
             }
@@ -269,7 +295,10 @@ export class StateValidationService {
                 'authCallback incorrect azp'
               );
               toReturn.state = ValidationResult.IncorrectAzp;
-              this.handleUnsuccessfulValidation(configuration);
+              this.handleUnsuccessfulValidation(
+                configuration,
+                isInRefreshTokenFlow
+              );
 
               return of(toReturn);
             }
@@ -287,7 +316,10 @@ export class StateValidationService {
               );
               toReturn.state =
                 ValidationResult.IncorrectIdTokenClaimsAfterRefresh;
-              this.handleUnsuccessfulValidation(configuration);
+              this.handleUnsuccessfulValidation(
+                configuration,
+                isInRefreshTokenFlow
+              );
 
               return of(toReturn);
             }
@@ -305,7 +337,10 @@ export class StateValidationService {
                 'authCallback id token expired'
               );
               toReturn.state = ValidationResult.TokenExpired;
-              this.handleUnsuccessfulValidation(configuration);
+              this.handleUnsuccessfulValidation(
+                configuration,
+                isInRefreshTokenFlow
+              );
 
               return of(toReturn);
             }
@@ -342,12 +377,14 @@ export class StateValidationService {
     configuration: OpenIdConfiguration,
     callbackContext: CallbackContext
   ): Observable<StateValidationResult> {
+    const isInRefreshTokenFlow =
+      callbackContext.isRenewProcess && !!callbackContext.refreshToken;
+
     // flow id_token
     if (!isCurrentFlowImplicitFlowWithAccessToken && !isCurrentFlowCodeFlow) {
       toReturn.authResponseIsValid = true;
       toReturn.state = ValidationResult.Ok;
-      this.handleSuccessfulValidation(configuration);
-      this.handleUnsuccessfulValidation(configuration);
+      this.handleSuccessfulValidation(configuration, isInRefreshTokenFlow);
 
       return of(toReturn);
     }
@@ -384,13 +421,19 @@ export class StateValidationService {
                   'authCallback incorrect at_hash'
                 );
                 toReturn.state = ValidationResult.IncorrectAtHash;
-                this.handleUnsuccessfulValidation(configuration);
+                this.handleUnsuccessfulValidation(
+                  configuration,
+                  isInRefreshTokenFlow
+                );
 
                 return toReturn;
               } else {
                 toReturn.authResponseIsValid = true;
                 toReturn.state = ValidationResult.Ok;
-                this.handleSuccessfulValidation(configuration);
+                this.handleSuccessfulValidation(
+                  configuration,
+                  isInRefreshTokenFlow
+                );
 
                 return toReturn;
               }
@@ -401,7 +444,7 @@ export class StateValidationService {
 
     toReturn.authResponseIsValid = true;
     toReturn.state = ValidationResult.Ok;
-    this.handleSuccessfulValidation(configuration);
+    this.handleSuccessfulValidation(configuration, isInRefreshTokenFlow);
 
     return of(toReturn);
   }
@@ -497,8 +540,17 @@ export class StateValidationService {
     return true;
   }
 
-  private handleSuccessfulValidation(configuration: OpenIdConfiguration): void {
+  private handleSuccessfulValidation(
+    configuration: OpenIdConfiguration,
+    isInRefreshTokenFlow: boolean
+  ): void {
     const { autoCleanStateAfterAuthentication } = configuration;
+
+    // the refresh token flow uses no stored nonce or state, and the stored ones
+    // might belong to a login running in another tab
+    if (isInRefreshTokenFlow) {
+      return;
+    }
 
     this.storagePersistenceService.write('authNonce', null, configuration);
 
@@ -516,9 +568,16 @@ export class StateValidationService {
   }
 
   private handleUnsuccessfulValidation(
-    configuration: OpenIdConfiguration
+    configuration: OpenIdConfiguration,
+    isInRefreshTokenFlow: boolean
   ): void {
     const { autoCleanStateAfterAuthentication } = configuration;
+
+    // the refresh token flow uses no stored nonce or state, and the stored ones
+    // might belong to a login running in another tab
+    if (isInRefreshTokenFlow) {
+      return;
+    }
 
     this.storagePersistenceService.write('authNonce', null, configuration);
 

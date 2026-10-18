@@ -3,7 +3,7 @@ import type { Mock } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { mockProvider } from '../../../test/auto-mock';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
-import { LoggerService } from '../../logging/logger.service';
+import { LoggerService } from '../../logging/services/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { PopupResult } from './popup-result';
 import { PopUpService } from './popup.service';
@@ -199,7 +199,7 @@ describe('PopUpService', () => {
           ({
             closed: true,
             close: () => undefined,
-          } as Window)
+          }) as Window
       );
 
       // act
@@ -223,7 +223,7 @@ describe('PopUpService', () => {
           ({
             closed: true,
             close: () => undefined,
-          } as Window)
+          }) as Window
       );
 
       // act
@@ -236,7 +236,7 @@ describe('PopUpService', () => {
       expect(popupSpy).toHaveBeenCalledWith(
         'url',
         '_blank',
-        expect.any(String)
+        expect.stringContaining('width=100')
       );
     });
 
@@ -619,11 +619,16 @@ describe('PopUpService', () => {
       const popupOptions = { width: 0, height: 0 };
       // act
       const result = (popUpService as any).getOptions(popupOptions);
-
       // assert
-      expect(result).toContain('left=');
-      expect(result).toContain('top=');
-      expect(typeof result).toBe('string');
+      // the default width/height (500) is used to center the popup
+      const expectedLeft = window.screenLeft + (window.outerWidth - 500) / 2;
+      const expectedTop = window.screenTop + (window.outerHeight - 500) / 2;
+
+      expect(result).toContain(`left=${expectedLeft}`);
+      expect(result).toContain(`top=${expectedTop}`);
+      expect(result).toContain('width=500');
+      expect(result).toContain('height=500');
+      expect(result).not.toContain('width=0');
     });
 
     it('returns a comma separated, url-encoded options string', () => {

@@ -4,7 +4,7 @@ import { from, Observable, of, throwError } from 'rxjs';
 import { catchError, map, mergeMap, tap } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { JwkExtractor } from '../extractors/jwk.extractor';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
 import { JwkWindowCryptoService } from './jwk-window-crypto.service';
 import { JwtWindowCryptoService } from './jwt-window-crypto.service';
@@ -63,10 +63,9 @@ import {
 export class TokenValidationService {
   static refreshTokenNoncePlaceholder = '--RefreshToken--';
 
+  // HS* is not listed: verifying an HMAC signature needs the client secret,
+  // which a browser client must not have.
   keyAlgorithms: string[] = [
-    'HS256',
-    'HS384',
-    'HS512',
     'RS256',
     'RS384',
     'RS512',

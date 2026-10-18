@@ -5,8 +5,8 @@ import { mockProvider } from '../../test/auto-mock';
 import { AuthWellKnownEndpoints } from '../config/auth-well-known/auth-well-known-endpoints';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { CallbackContext } from '../flows/callback-context';
-import { LogLevel } from '../logging/log-level';
-import { LoggerService } from '../logging/logger.service';
+import { LogLevel } from '../logging/types/logging.types';
+import { LoggerService } from '../logging/services/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { EqualityService } from '../utils/equality/equality.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
@@ -578,7 +578,7 @@ describe('State Validation Service', () => {
         aud: 'bad',
         nonce: '007c4153b6a0517c0e497476fb249948ec5clOvQQ',
         iat: 1589206486,
-        auth_time: 1589206488,
+        auth_time: 1589206486,
         name: 'damienbod',
         emails: ['damien@damienbod.onmicrosoft.com'],
         tfp: 'B2C_1_b2cpolicydamien',
@@ -651,7 +651,7 @@ describe('State Validation Service', () => {
         aud: 'f1934a6e-958d-4198-9f36-6127cfc4cdb3',
         nonce: '007c4153b6a0517c0e497476fb249948ec5clOvQQ',
         iat: 1589206486,
-        auth_time: 1589206488,
+        auth_time: 1589206486,
         name: 'damienbod',
         emails: ['damien@damienbod.onmicrosoft.com'],
         tfp: 'B2C_1_b2cpolicydamien',
@@ -671,10 +671,21 @@ describe('State Validation Service', () => {
   });
 
   describe('getValidatedStateResult', () => {
-    it('should return authResponseIsValid false when null is passed', async () => {
+    it('should return authResponseIsValid false when an empty callback context is passed', async () => {
       const isValid = await firstValueFrom(
         stateValidationService.getValidatedStateResult(
           {} as CallbackContext,
+          config
+        )
+      );
+
+      expect(isValid.authResponseIsValid).toBe(false);
+    });
+
+    it('should return authResponseIsValid false when null is passed', async () => {
+      const isValid = await firstValueFrom(
+        stateValidationService.getValidatedStateResult(
+          null as unknown as CallbackContext,
           config
         )
       );
@@ -1840,7 +1851,7 @@ describe('State Validation Service', () => {
         config,
         'authCallback token(s) validated, continue'
       );
-      expect(logDebugSpy).toHaveBeenCalledWith(
+      expect(logDebugSpy).not.toHaveBeenCalledWith(
         config,
         'authCallback token(s) invalid'
       );
@@ -2170,40 +2181,6 @@ describe('State Validation Service', () => {
       expect(isValid.authResponseIsValid).toBe(true);
     });
 
-    it('should return OK if disableIdTokenValidation is true', async () => {
-      vi.spyOn(
-        tokenValidationService,
-        'validateStateFromHashCallback'
-      ).mockReturnValue(true);
-      vi.spyOn(
-        flowHelper,
-        'isCurrentFlowImplicitFlowWithAccessToken'
-      ).mockReturnValue(false);
-      vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(false);
-
-      config.responseType = 'id_token token';
-      config.maxIdTokenIatOffsetAllowedInSeconds = 0;
-      config.disableIdTokenValidation = true;
-
-      const callbackContext: CallbackContext = {
-        code: 'fdffsdfsdf',
-        refreshToken: '',
-        state: 'fdffsggggggdfsdf',
-        sessionState: 'fdffsggggggdfsdf',
-        existingIdToken: '',
-        authResult: {},
-        isRenewProcess: false,
-        jwtKeys: null,
-        validationResult: null,
-      };
-      const isValid = await firstValueFrom(
-        stateValidationService.getValidatedStateResult(callbackContext, config)
-      );
-
-      expect(isValid.state).toBe(ValidationResult.Ok);
-      expect(isValid.authResponseIsValid).toBe(true);
-    });
-
     it('should return OK if disableIdTokenValidation is false but inrefreshtokenflow and no id token is returned', async () => {
       vi.spyOn(
         tokenValidationService,
@@ -2236,6 +2213,191 @@ describe('State Validation Service', () => {
 
       expect(isValid.state).toBe(ValidationResult.Ok);
       expect(isValid.authResponseIsValid).toBe(true);
+    });
+  });
+  describe('getValidatedStateResult in the refresh token flow', () => {
+    // the storage is shared by all tabs, so another tab may have stored the
+    // state and the nonce of its own login there
+    beforeEach(() => {
+      config.responseType = 'code';
+      config.autoCleanStateAfterAuthentication = true;
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          switch (args[0]) {
+            case 'authWellKnownEndPoints':
+              return authWellKnownEndpoints;
+            case 'authStateControl':
+              return 'state-of-login-in-other-tab';
+            case 'authNonce':
+              return 'nonce-of-login-in-other-tab';
+            default:
+              return undefined;
+          }
+        }
+      );
+      vi.spyOn(tokenHelperService, 'getPayloadFromToken').mockReturnValue({});
+      vi.spyOn(tokenHelperService, 'getHeaderFromToken').mockReturnValue({});
+      vi.spyOn(
+        tokenValidationService,
+        'validateSignatureIdToken'
+      ).mockReturnValue(of(true));
+      vi.spyOn(
+        tokenValidationService,
+        'validateRequiredIdToken'
+      ).mockReturnValue(true);
+      vi.spyOn(tokenValidationService, 'validateIdTokenIss').mockReturnValue(
+        true
+      );
+      vi.spyOn(tokenValidationService, 'validateIdTokenAud').mockReturnValue(
+        true
+      );
+      vi.spyOn(
+        tokenValidationService,
+        'validateIdTokenAzpExistsIfMoreThanOneAud'
+      ).mockReturnValue(true);
+      vi.spyOn(
+        tokenValidationService,
+        'validateIdTokenAzpValid'
+      ).mockReturnValue(true);
+    });
+
+    function createRefreshCallbackContext(): CallbackContext {
+      return {
+        code: '',
+        refreshToken: 'refresh-token',
+        state: '',
+        sessionState: null,
+        authResult: {
+          access_token: 'access-token',
+          id_token: 'id-token',
+          state: '',
+        },
+        isRenewProcess: true,
+        jwtKeys: null,
+        validationResult: null,
+        existingIdToken: null,
+      };
+    }
+
+    it('does not compare the state with the stored one', async () => {
+      // Arrange
+      const validateStateSpy = vi.spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      );
+
+      vi.spyOn(tokenValidationService, 'validateIdTokenNonce').mockReturnValue(
+        true
+      );
+
+      // Act
+      const result = await firstValueFrom(
+        stateValidationService.getValidatedStateResult(
+          createRefreshCallbackContext(),
+          config
+        )
+      );
+
+      // Assert
+      expect(validateStateSpy).not.toHaveBeenCalled();
+      expect(result.authResponseIsValid).toBe(true);
+      expect(result.state).toBe(ValidationResult.Ok);
+    });
+
+    it('validates the nonce against the refresh token placeholder instead of the stored nonce', async () => {
+      // Arrange
+      const validateNonceSpy = vi
+        .spyOn(tokenValidationService, 'validateIdTokenNonce')
+        .mockReturnValue(true);
+
+      // Act
+      await firstValueFrom(
+        stateValidationService.getValidatedStateResult(
+          createRefreshCallbackContext(),
+          config
+        )
+      );
+
+      // Assert
+      expect(validateNonceSpy).toHaveBeenCalledExactlyOnceWith(
+        {},
+        TokenValidationService.refreshTokenNoncePlaceholder,
+        false,
+        config
+      );
+    });
+
+    it('does not clear the stored state and nonce after a valid refresh', async () => {
+      // Arrange
+      vi.spyOn(tokenValidationService, 'validateIdTokenNonce').mockReturnValue(
+        true
+      );
+      const writeSpy = vi.spyOn(storagePersistenceService, 'write');
+
+      // Act
+      await firstValueFrom(
+        stateValidationService.getValidatedStateResult(
+          createRefreshCallbackContext(),
+          config
+        )
+      );
+
+      // Assert
+      expect(writeSpy).not.toHaveBeenCalled();
+    });
+
+    it('does not clear the stored state and nonce after an invalid refresh', async () => {
+      // Arrange
+      vi.spyOn(tokenValidationService, 'validateIdTokenNonce').mockReturnValue(
+        false
+      );
+      const writeSpy = vi.spyOn(storagePersistenceService, 'write');
+      // Act
+      const result = await firstValueFrom(
+        stateValidationService.getValidatedStateResult(
+          createRefreshCallbackContext(),
+          config
+        )
+      );
+
+      // Assert
+      expect(result.state).toBe(ValidationResult.IncorrectNonce);
+      expect(writeSpy).not.toHaveBeenCalled();
+    });
+
+    it('still clears the stored state and nonce after a valid code flow callback', async () => {
+      // Arrange
+      vi.spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).mockReturnValue(true);
+      vi.spyOn(tokenValidationService, 'validateIdTokenNonce').mockReturnValue(
+        true
+      );
+      vi.spyOn(
+        tokenValidationService,
+        'validateIdTokenIatMaxOffset'
+      ).mockReturnValue(true);
+      vi.spyOn(
+        tokenValidationService,
+        'validateIdTokenExpNotExpired'
+      ).mockReturnValue(true);
+      const writeSpy = vi.spyOn(storagePersistenceService, 'write');
+      const callbackContext = {
+        ...createRefreshCallbackContext(),
+        refreshToken: '',
+        isRenewProcess: false,
+      };
+      // Act
+      const result = await firstValueFrom(
+        stateValidationService.getValidatedStateResult(callbackContext, config)
+      );
+
+      // Assert
+      expect(result.authResponseIsValid).toBe(true);
+      expect(result.state).toBe(ValidationResult.Ok);
+      expect(writeSpy).toHaveBeenCalledWith('authNonce', null, config);
+      expect(writeSpy).toHaveBeenCalledWith('authStateControl', '', config);
     });
   });
 });

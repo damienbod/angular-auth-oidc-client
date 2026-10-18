@@ -5,7 +5,7 @@ import { firstValueFrom, of, throwError } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
 import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
 import { DataService } from '../../api/data.service';
-import { LoggerService } from '../../logging/logger.service';
+import { LoggerService } from '../../logging/services/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { UrlService } from '../../utils/url/url.service';
 import { ParService } from './par.service';
@@ -257,12 +257,9 @@ describe('ParService', () => {
         )
       );
 
-      try {
-        await firstValueFrom(service.postParRequest({ configId: 'configId1' }));
-        expect.fail('expected an error');
-      } catch (err: any) {
-        expect(err).toBeTruthy();
-      }
+      await expect(
+        firstValueFrom(service.postParRequest({ configId: 'configId1' }))
+      ).rejects.toThrow('There was an error on ParService postParRequest');
     });
   });
 });

@@ -104,7 +104,7 @@ export class EqualityService {
       return false;
     }
 
-    for (let i = arr1.length; i--; ) {
+    for (let i = arr1.length; i--;) {
       if (arr1[i] !== arr2[i]) {
         return false;
       }
@@ -121,7 +121,10 @@ export class EqualityService {
       return false;
     }
 
-    return arr1.some((v) => arr2.includes(v));
+    const sorted1 = [...arr1].sort();
+    const sorted2 = [...arr2].sort();
+
+    return this.arraysStrictEqual(sorted1, sorted2);
   }
 
   private isNullOrUndefined(val: any): boolean {

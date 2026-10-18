@@ -16,7 +16,7 @@ import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { LoginResponse } from '../login/login-response';
 import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
@@ -300,11 +300,17 @@ describe('RefreshSessionService ', () => {
         'startRefreshSession'
       ).mockReturnValue(NEVER);
       const allConfigs = [{ configId: 'configId1' }];
+      let settled = false;
       const result = firstValueFrom(
         refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs)
-      );
+      ).finally(() => (settled = true));
 
-      await vi.advanceTimersByTimeAsync(20_000);
+      result.catch(() => undefined);
+
+      await vi.advanceTimersByTimeAsync(19_900);
+      expect(settled).toBe(false);
+
+      await vi.advanceTimersByTimeAsync(100);
 
       await expect(result).rejects.toBeInstanceOf(TimeoutError);
     });
@@ -525,6 +531,67 @@ describe('RefreshSessionService ', () => {
       });
     });
 
+    it('refreshes through the refresh token lock instead of waiting for a silent renew that may run in another tab', async () => {
+      // Arrange
+      const allConfigs = [
+        {
+          configId: 'configId1',
+          silentRenewTimeoutInSeconds: 10,
+        },
+      ];
+
+      vi.spyOn(
+        flowHelper,
+        'isCurrentFlowCodeFlowWithRefreshTokens'
+      ).mockReturnValue(true);
+      vi.spyOn(
+        refreshSessionRefreshTokenService,
+        'usesRefreshTokenLock'
+      ).mockReturnValue(true);
+      vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(true);
+      vi.spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      ).mockReturnValue(of({}));
+      const registerForEventsSpy = vi.spyOn(
+        publicEventsService,
+        'registerForEvents'
+      );
+      const refreshSessionWithRefreshTokensSpy = vi
+        .spyOn(
+          refreshSessionRefreshTokenService,
+          'refreshSessionWithRefreshTokens'
+        )
+        .mockReturnValue(
+          of({
+            authResult: {
+              id_token: 'refreshed-id-token',
+              access_token: 'refreshed-access-token',
+            },
+          } as CallbackContext)
+        );
+
+      vi.spyOn(authStateService, 'areAuthStorageTokensValid').mockReturnValue(
+        true
+      );
+
+      // Act
+      const result = await firstValueFrom(
+        refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs)
+      );
+
+      // Assert
+      expect(registerForEventsSpy).not.toHaveBeenCalled();
+      expect(refreshSessionWithRefreshTokensSpy).toHaveBeenCalledTimes(1);
+      expect(result).toEqual({
+        idToken: 'refreshed-id-token',
+        accessToken: 'refreshed-access-token',
+        userData: undefined,
+        isAuthenticated: true,
+        configId: 'configId1',
+      });
+    });
+
     it('propagates a failure from the running periodic silent renew', async () => {
       const allConfigs = [
         {
@@ -640,8 +707,8 @@ describe('RefreshSessionService ', () => {
         refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs)
       );
 
-      expect(result.idToken).toBeDefined();
-      expect(result.accessToken).toBeDefined();
+      expect(result.idToken).toBe('some-id_token');
+      expect(result.accessToken).toBe('some-access_token');
     });
 
     it('calls start refresh session and waits for completed, returns LoginResponse if auth is false', async () => {
@@ -840,23 +907,28 @@ describe('RefreshSessionService ', () => {
         .spyOn(flowsDataService, 'resetSilentRenewRunning')
         .mockReturnValue(undefined);
       const expectedInvokeCount = MAX_RETRY_ATTEMPTS;
+      const nextSpy = vi.fn();
+      let actualError: unknown;
 
       refreshSessionService
         .forceRefreshSession(allConfigs[0], allConfigs)
         .subscribe({
-          next: () => {
-            throw new Error('It should not return any result.');
-          },
+          next: nextSpy,
           error: (error) => {
-            expect(error).toBeInstanceOf(Error);
-            expect(resetSilentRenewRunningSpy).toHaveBeenCalledTimes(
-              expectedInvokeCount
-            );
+            actualError = error;
           },
         });
 
-      await vi.advanceTimersByTimeAsync(
-        allConfigs[0].silentRenewTimeoutInSeconds * 10000
+      // 4 attempts timing out after 10s each, plus retry delays of 1s, 2s and 3s => 46s
+      await vi.advanceTimersByTimeAsync(45_900);
+      expect(actualError).toBeUndefined();
+
+      await vi.advanceTimersByTimeAsync(1_000);
+
+      expect(actualError).toBeInstanceOf(Error);
+      expect(nextSpy).not.toHaveBeenCalled();
+      expect(resetSilentRenewRunningSpy).toHaveBeenCalledTimes(
+        expectedInvokeCount
       );
     });
 
@@ -890,18 +962,12 @@ describe('RefreshSessionService ', () => {
         .spyOn(flowsDataService, 'resetSilentRenewRunning')
         .mockReturnValue(undefined);
 
-      refreshSessionService
-        .forceRefreshSession(allConfigs[0], allConfigs)
-        .subscribe({
-          next: () => {
-            throw new Error('It should not return any result.');
-          },
-          error: (error) => {
-            expect(error).toBeInstanceOf(Error);
-            expect(error.message).toEqual(`Error: ${expectedErrorMessage}`);
-            expect(resetSilentRenewRunningSpy).not.toHaveBeenCalled();
-          },
-        });
+      await expect(
+        firstValueFrom(
+          refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs)
+        )
+      ).rejects.toThrow(`Error: ${expectedErrorMessage}`);
+      expect(resetSilentRenewRunningSpy).not.toHaveBeenCalled();
     });
 
     describe('NOT isCurrentFlowCodeFlowWithRefreshTokens', () => {
@@ -994,16 +1060,6 @@ describe('RefreshSessionService ', () => {
   });
 
   describe('startRefreshSession', () => {
-    it('returns null if no auth well known endpoint defined', async () => {
-      vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(true);
-
-      const result = await firstValueFrom(
-        (refreshSessionService as any).startRefreshSession()
-      );
-
-      expect(result).toBe(null);
-    });
-
     it('returns null if silent renew Is running', async () => {
       vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(true);
 

@@ -162,21 +162,18 @@ describe('CodeFlowCallbackService ', () => {
         postLoginRoute: 'postLoginRoute',
       };
 
-      try {
-        await firstValueFrom(
+      await expect(
+        firstValueFrom(
           codeFlowCallbackService.authenticatedCallbackWithCode(
             'some-url4',
             config,
             [config]
           )
-        );
-        expect.fail('expected an error');
-      } catch (err: any) {
-        expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
-        expect(resetCodeFlowInProgressSpy).toHaveBeenCalled();
-        expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
-        expect(err).toBeTruthy();
-      }
+        )
+      ).rejects.toThrow('error');
+      expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
+      expect(resetCodeFlowInProgressSpy).toHaveBeenCalled();
+      expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
     });
 
     it(`navigates to unauthorizedRoute in case of error and  in case of error and
@@ -200,22 +197,19 @@ describe('CodeFlowCallbackService ', () => {
         unauthorizedRoute: 'unauthorizedRoute',
       };
 
-      try {
-        await firstValueFrom(
+      await expect(
+        firstValueFrom(
           codeFlowCallbackService.authenticatedCallbackWithCode(
             'some-url5',
             config,
             [config]
           )
-        );
-        expect.fail('expected an error');
-      } catch (err: any) {
-        expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
-        expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
-        expect(err).toBeTruthy();
-        expect(routerSpy).toHaveBeenCalledTimes(1);
-        expect(routerSpy).toHaveBeenCalledWith('unauthorizedRoute');
-      }
+        )
+      ).rejects.toThrow('error');
+      expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
+      expect(stopPeriodicallTokenCheckSpy).toHaveBeenCalled();
+      expect(routerSpy).toHaveBeenCalledTimes(1);
+      expect(routerSpy).toHaveBeenCalledWith('unauthorizedRoute');
     });
   });
 });

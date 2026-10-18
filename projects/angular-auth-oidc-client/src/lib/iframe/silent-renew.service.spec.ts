@@ -9,7 +9,7 @@ import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { ValidationResult } from '../validation/validation-result';
 import { IFrameService } from './existing-iframe.service';
@@ -314,10 +314,14 @@ describe('SilentRenewService  ', () => {
       );
     });
 
-    it('calls authorizedImplicitFlowCallback if current flow is not code flow', async () => {
+    it('does not call authenticatedImplicitFlowCallback if current flow is code flow', async () => {
       vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
-      const codeFlowCallbackSilentRenewIframe = vi
-        .spyOn(silentRenewService, 'codeFlowCallbackSilentRenewIframe')
+      vi.spyOn(
+        silentRenewService,
+        'codeFlowCallbackSilentRenewIframe'
+      ).mockReturnValue(of({} as CallbackContext));
+      const authenticatedImplicitFlowCallbackSpy = vi
+        .spyOn(implicitFlowCallbackService, 'authenticatedImplicitFlowCallback')
         .mockReturnValue(of({} as CallbackContext));
       const eventData = { detail: 'detail?detail2' } as CustomEvent;
       const allConfigs = [{ configId: 'configId1' }];
@@ -328,12 +332,7 @@ describe('SilentRenewService  ', () => {
         allConfigs
       );
       await vi.advanceTimersByTimeAsync(1000);
-      expect(codeFlowCallbackSilentRenewIframe).toHaveBeenCalledTimes(1);
-      expect(codeFlowCallbackSilentRenewIframe).toHaveBeenCalledWith(
-        ['detail', 'detail2'],
-        allConfigs[0],
-        allConfigs
-      );
+      expect(authenticatedImplicitFlowCallbackSpy).not.toHaveBeenCalled();
     });
 
     it('calls next on refreshSessionWithIFrameCompleted with callbackcontext', async () => {
@@ -348,15 +347,10 @@ describe('SilentRenewService  ', () => {
       );
       const eventData = { detail: 'detail?detail2' } as CustomEvent;
       const allConfigs = [{ configId: 'configId1' }];
+      let result: unknown;
 
       silentRenewService.refreshSessionWithIFrameCompleted$.subscribe(
-        (result) => {
-          expect(result).toEqual({
-            success: true,
-            authResult: { id_token: 'test-token', access_token: 'test-access' },
-            configId: 'configId1',
-          });
-        }
+        (completed) => (result = completed)
       );
 
       silentRenewService.silentRenewEventHandler(
@@ -365,6 +359,12 @@ describe('SilentRenewService  ', () => {
         allConfigs
       );
       await vi.advanceTimersByTimeAsync(1000);
+
+      expect(result).toEqual({
+        success: true,
+        authResult: { id_token: 'test-token', access_token: 'test-access' },
+        configId: 'configId1',
+      });
     });
 
     it('loggs and calls flowsDataService.resetSilentRenewRunning in case of an error', async () => {

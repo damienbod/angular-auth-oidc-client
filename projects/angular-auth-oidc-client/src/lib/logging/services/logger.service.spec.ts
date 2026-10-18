@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { AbstractLoggerService } from './abstract-logger.service';
 import { ConsoleLoggerService } from './console-logger.service';
-import { LogLevel } from './log-level';
+import { LogLevel } from '../types/logging.types';
 import { LoggerService } from './logger.service';
 
 describe('Logger Service', () => {
@@ -77,7 +77,7 @@ describe('Logger Service', () => {
       const spy = vi.spyOn(console, 'warn').mockReturnValue(undefined);
 
       loggerService.logWarning(
-        { configId: 'configId1', logLevel: undefined },
+        { configId: 'configId1', logLevel: null as any },
         'some message'
       );
       expect(spy).not.toHaveBeenCalled();
@@ -174,7 +174,7 @@ describe('Logger Service', () => {
       const spy = vi.spyOn(console, 'debug').mockReturnValue(undefined);
 
       loggerService.logDebug(
-        { configId: 'configId1', logLevel: undefined },
+        { configId: 'configId1', logLevel: null as any },
         'some message'
       );
       expect(spy).not.toHaveBeenCalled();
@@ -267,47 +267,111 @@ describe('Logger Service', () => {
     });
   });
 
-  describe('currentLogLevelIsEqualOrSmallerThan', () => {
-    it('returns false when no log level is configured', () => {
-      const result = (loggerService as any).currentLogLevelIsEqualOrSmallerThan(
-        null,
-        LogLevel.Debug
+  describe('configuration edge cases', () => {
+    it('should log an error without configuration and without configId', () => {
+      const spy = vi.spyOn(console, 'error').mockReturnValue(undefined);
+
+      loggerService.logError(null, 'some message');
+
+      expect(spy).toHaveBeenCalledExactlyOnceWith('[ERROR] - some message');
+    });
+
+    it('should log an error when log level is explicitly null', () => {
+      const spy = vi.spyOn(console, 'error').mockReturnValue(undefined);
+
+      loggerService.logError(
+        { configId: 'configId1', logLevel: null as unknown as LogLevel },
+        'some message'
       );
 
-      expect(result).toBe(false);
+      expect(spy).toHaveBeenCalledExactlyOnceWith(
+        '[ERROR] configId1 - some message'
+      );
+    });
+
+    it('should not log a warning when log level is explicitly null', () => {
+      const spy = vi.spyOn(console, 'warn').mockReturnValue(undefined);
+
+      loggerService.logWarning(
+        { configId: 'configId1', logLevel: null as unknown as LogLevel },
+        'some message'
+      );
+
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should not log a warning without configuration', () => {
+      const spy = vi.spyOn(console, 'warn').mockReturnValue(undefined);
+
+      expect(() =>
+        loggerService.logWarning(null, 'some message')
+      ).not.toThrow();
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should log errors when log level is Error', () => {
+      const spy = vi.spyOn(console, 'error').mockReturnValue(undefined);
+
+      loggerService.logError(
+        { configId: 'configId1', logLevel: LogLevel.Error },
+        'some message'
+      );
+
+      expect(spy).toHaveBeenCalledExactlyOnceWith(
+        '[ERROR] configId1 - some message'
+      );
     });
   });
 
-  describe('logLevelIsSet', () => {
-    it('returns false when log level is explicitly null', () => {
-      const result = (loggerService as any).logLevelIsSet({
-        configId: 'configId1',
-        logLevel: null,
-      });
+  describe('message formatting', () => {
+    const config = { configId: 'configId1', logLevel: LogLevel.Debug };
 
-      expect(result).toBe(false);
+    it('should log arrays as JSON', () => {
+      const spy = vi.spyOn(console, 'debug').mockReturnValue(undefined);
+
+      loggerService.logDebug(config, ['a', 'b']);
+
+      expect(spy).toHaveBeenCalledExactlyOnceWith(
+        '[DEBUG] configId1 - ["a","b"]'
+      );
     });
 
-    it('returns false when log level is undefined', () => {
-      const result = (loggerService as any).logLevelIsSet({
-        configId: 'configId1',
-      });
+    it('should pass an Error on so its stack stays visible', () => {
+      const spy = vi.spyOn(console, 'error').mockReturnValue(undefined);
+      const error = new Error('boom');
 
-      expect(result).toBe(false);
+      loggerService.logError(config, error, 'arg1');
+
+      expect(spy).toHaveBeenCalledExactlyOnceWith(
+        '[ERROR] configId1 - Error: boom',
+        error,
+        'arg1'
+      );
     });
 
-    it('returns false when configuration is null', () => {
-      const result = (loggerService as any).logLevelIsSet(null);
+    it('should pass a DOM element on as it is', () => {
+      const spy = vi.spyOn(console, 'debug').mockReturnValue(undefined);
+      const iframe = document.createElement('iframe');
 
-      expect(result).toBe(false);
+      loggerService.logDebug(config, iframe);
+
+      expect(spy).toHaveBeenCalledExactlyOnceWith(
+        '[DEBUG] configId1 - [object HTMLIFrameElement]',
+        iframe
+      );
     });
-  });
 
-  describe('loggingIsTurnedOff', () => {
-    it('does not throw and returns false when configuration is null', () => {
-      const result = (loggerService as any).loggingIsTurnedOff(null);
+    it('should not throw for an object that cannot be serialized', () => {
+      const spy = vi.spyOn(console, 'error').mockReturnValue(undefined);
+      const circular: Record<string, unknown> = { some: 'message' };
 
-      expect(result).toBe(false);
+      circular['self'] = circular;
+
+      expect(() => loggerService.logError(config, circular)).not.toThrow();
+      expect(spy).toHaveBeenCalledExactlyOnceWith(
+        '[ERROR] configId1 - [object Object]',
+        circular
+      );
     });
   });
 });

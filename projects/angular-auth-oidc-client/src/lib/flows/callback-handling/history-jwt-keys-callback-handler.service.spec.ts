@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, of, throwError } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
 import { AuthStateService } from '../../auth-state/auth-state.service';
-import { LoggerService } from '../../logging/logger.service';
+import { LoggerService } from '../../logging/services/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { JwtKey, JwtKeys } from '../../validation/jwtkeys';
 import { ValidationResult } from '../../validation/validation-result';
@@ -364,26 +364,24 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         .spyOn(authStateService, 'updateAndPublishAuthState')
         .mockReturnValue(undefined);
 
-      try {
-        await firstValueFrom(
+      await expect(
+        firstValueFrom(
           service.callbackHistoryAndResetJwtKeys(
             callbackContext,
             allconfigs[0],
             allconfigs
           )
-        );
-        expect.fail('expected an error');
-      } catch {
-        expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
-        expect(setNonceSpy).toHaveBeenCalledTimes(1);
-        expect(updateAndPublishAuthStateSpy).toHaveBeenCalledTimes(1);
-        expect(updateAndPublishAuthStateSpy).toHaveBeenCalledWith({
-          isAuthenticated: false,
-          validationResult: ValidationResult.SecureTokenServerError,
-          isRenewProcess: false,
-          configId: 'configId1',
-        });
-      }
+        )
+      ).rejects.toThrow('AuthCallback AuthResult came with error: someError');
+      expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
+      expect(setNonceSpy).toHaveBeenCalledTimes(1);
+      expect(updateAndPublishAuthStateSpy).toHaveBeenCalledTimes(1);
+      expect(updateAndPublishAuthStateSpy).toHaveBeenCalledWith({
+        isAuthenticated: false,
+        validationResult: ValidationResult.SecureTokenServerError,
+        isRenewProcess: false,
+        configId: 'configId1',
+      });
     });
 
     it('calls authStateService.updateAndPublishAuthState with login required if the error is `login_required`', async () => {
@@ -407,26 +405,26 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         .spyOn(authStateService, 'updateAndPublishAuthState')
         .mockReturnValue(undefined);
 
-      try {
-        await firstValueFrom(
+      await expect(
+        firstValueFrom(
           service.callbackHistoryAndResetJwtKeys(
             callbackContext,
             allconfigs[0],
             allconfigs
           )
-        );
-        expect.fail('expected an error');
-      } catch {
-        expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
-        expect(setNonceSpy).toHaveBeenCalledTimes(1);
-        expect(updateAndPublishAuthStateSpy).toHaveBeenCalledTimes(1);
-        expect(updateAndPublishAuthStateSpy).toHaveBeenCalledWith({
-          isAuthenticated: false,
-          validationResult: ValidationResult.LoginRequired,
-          isRenewProcess: false,
-          configId: 'configId1',
-        });
-      }
+        )
+      ).rejects.toThrow(
+        'AuthCallback AuthResult came with error: login_required'
+      );
+      expect(resetAuthorizationDataSpy).toHaveBeenCalledTimes(1);
+      expect(setNonceSpy).toHaveBeenCalledTimes(1);
+      expect(updateAndPublishAuthStateSpy).toHaveBeenCalledTimes(1);
+      expect(updateAndPublishAuthStateSpy).toHaveBeenCalledWith({
+        isAuthenticated: false,
+        validationResult: ValidationResult.LoginRequired,
+        isRenewProcess: false,
+        configId: 'configId1',
+      });
     });
 
     it('should store jwtKeys', async () => {
@@ -489,28 +487,26 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         throwError(() => new Error('Error'))
       );
 
-      try {
-        await firstValueFrom(
+      await expect(
+        firstValueFrom(
           service.callbackHistoryAndResetJwtKeys(
             initialCallbackContext,
             allconfigs[0],
             allconfigs
           )
-        );
-        expect.fail('expected an error');
-      } catch (err) {
-        expect(err).toBeTruthy();
+        )
+      ).rejects.toThrow(
+        'Failed to retrieve signing key with error: Error: Error: Error'
+      );
+      // storagePersistenceService.write() should not have been called with jwtKeys
+      expect(storagePersistenceServiceSpy).toHaveBeenCalledTimes(1);
 
-        // storagePersistenceService.write() should not have been called with jwtKeys
-        expect(storagePersistenceServiceSpy).toHaveBeenCalledTimes(1);
-
-        // storagePersistenceService.write() should not have been called with jwtKeys
-        expect(storagePersistenceServiceSpy).toHaveBeenCalledWith(
-          'authnResult',
-          authResult,
-          allconfigs[0]
-        );
-      }
+      // storagePersistenceService.write() should not have been called with jwtKeys
+      expect(storagePersistenceServiceSpy).toHaveBeenCalledWith(
+        'authnResult',
+        authResult,
+        allconfigs[0]
+      );
     });
 
     it('should fallback to stored jwtKeys on error', async () => {

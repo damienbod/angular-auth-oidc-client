@@ -2,7 +2,7 @@
   "name": "angular-auth-oidc-client",
   "version": "0.0.0",
   "engines": {
-    "node": "^18.0.0"
+    "node": ">=22.0.0"
   },
   "private": true,
   "scripts": {

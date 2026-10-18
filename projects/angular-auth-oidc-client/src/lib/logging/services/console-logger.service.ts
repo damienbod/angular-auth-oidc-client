@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AbstractLoggerService } from './abstract-logger.service';
+import type { AbstractLoggerService } from './abstract-logger.service';
 
 @Injectable({ providedIn: 'root' })
 export class ConsoleLoggerService implements AbstractLoggerService {

@@ -4,7 +4,6 @@ import {
   withInterceptorsFromDi,
 } from '@angular/common/http';
 import { ApplicationConfig } from '@angular/core';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
 import {
   authInterceptor,
@@ -18,7 +17,6 @@ import { routes } from './app.routes';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
-    provideAnimationsAsync(),
     provideAuth(
       {
         config: {
@@ -27,6 +25,7 @@ export const appConfig: ApplicationConfig = {
           authWellknownEndpointUrl:
             'https://login.microsoftonline.com/common/v2.0',
           redirectUrl: window.location.origin,
+          postLogoutRedirectUri: window.location.origin,
           clientId: 'e38ea64a-2962-4cde-bfe7-dd2822fdab32',
           scope:
             'openid profile offline_access email api://e38ea64a-2962-4cde-bfe7-dd2822fdab32/access_as_user',

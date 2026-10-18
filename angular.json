@@ -29,7 +29,12 @@
           "options": {
             "tsConfig": "projects/angular-auth-oidc-client/tsconfig.spec.json",
             "coverageExclude": ["/**/*mock*.ts", "**/*.md"],
-            "coverageReporters": ["text-summary", "html", "lcov"],
+            "coverageReporters": [
+              "text-summary",
+              "json-summary",
+              "html",
+              "lcov"
+            ],
             "runnerConfig": "vitest-base.config.ts"
           }
         },
@@ -102,6 +107,18 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "e2e": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/sample-code-flow-multi-iframe/src/app/auth-config.module.ts",
+                  "with": "projects/sample-code-flow-multi-iframe/src/app/auth-config.module.e2e.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           },
           "defaultConfiguration": "production"
@@ -120,6 +137,9 @@
             },
             "development": {
               "buildTarget": "sample-code-flow-multi-iframe:build:development"
+            },
+            "e2e": {
+              "buildTarget": "sample-code-flow-multi-iframe:build:e2e"
             }
           },
           "defaultConfiguration": "development"
@@ -205,6 +225,18 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "e2e": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/sample-code-flow-auto-login/src/app/auth-config.module.ts",
+                  "with": "projects/sample-code-flow-auto-login/src/app/auth-config.module.e2e.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -222,6 +254,9 @@
             },
             "development": {
               "buildTarget": "sample-code-flow-auto-login:build:development"
+            },
+            "e2e": {
+              "buildTarget": "sample-code-flow-auto-login:build:e2e"
             }
           },
           "defaultConfiguration": "development"
@@ -307,6 +342,12 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "e2e": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -324,6 +365,9 @@
             },
             "development": {
               "buildTarget": "sample-code-flow-http-config:build:development"
+            },
+            "e2e": {
+              "buildTarget": "sample-code-flow-http-config:build:e2e"
             }
           },
           "defaultConfiguration": "development"
@@ -408,6 +452,18 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "e2e": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/sample-implicit-flow-google/src/app/auth-config.module.ts",
+                  "with": "projects/sample-implicit-flow-google/src/app/auth-config.module.e2e.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -425,6 +481,9 @@
             },
             "development": {
               "buildTarget": "sample-implicit-flow-google:build:development"
+            },
+            "e2e": {
+              "buildTarget": "sample-implicit-flow-google:build:e2e"
             }
           },
           "defaultConfiguration": "development"
@@ -510,6 +569,18 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "e2e": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/sample-code-flow-azuread/src/app/app.config.ts",
+                  "with": "projects/sample-code-flow-azuread/src/app/app.config.e2e.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -527,6 +598,9 @@
             },
             "development": {
               "buildTarget": "sample-code-flow-azuread:build:development"
+            },
+            "e2e": {
+              "buildTarget": "sample-code-flow-azuread:build:e2e"
             }
           },
           "defaultConfiguration": "development"
@@ -612,6 +686,18 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "e2e": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/sample-code-flow-azure-b2c/src/app/auth-config.module.ts",
+                  "with": "projects/sample-code-flow-azure-b2c/src/app/auth-config.module.e2e.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -629,6 +715,9 @@
             },
             "development": {
               "buildTarget": "sample-code-flow-azure-b2c:build:development"
+            },
+            "e2e": {
+              "buildTarget": "sample-code-flow-azure-b2c:build:e2e"
             }
           },
           "defaultConfiguration": "development"
@@ -716,6 +805,18 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "e2e": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/sample-implicit-flow-silent-renew/src/app/auth-config.module.ts",
+                  "with": "projects/sample-implicit-flow-silent-renew/src/app/auth-config.module.e2e.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -733,6 +834,9 @@
             },
             "development": {
               "buildTarget": "sample-implicit-flow-silent-renew:build:development"
+            },
+            "e2e": {
+              "buildTarget": "sample-implicit-flow-silent-renew:build:e2e"
             }
           },
           "defaultConfiguration": "development"
@@ -817,6 +921,18 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "e2e": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/sample-code-flow-auth0/src/app/auth-config.module.ts",
+                  "with": "projects/sample-code-flow-auth0/src/app/auth-config.module.e2e.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -834,6 +950,9 @@
             },
             "development": {
               "buildTarget": "sample-code-flow-auth0:build:development"
+            },
+            "e2e": {
+              "buildTarget": "sample-code-flow-auth0:build:e2e"
             }
           },
           "defaultConfiguration": "development"
@@ -920,6 +1039,18 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "e2e": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/sample-code-flow-refresh-tokens/src/app/auth-config.module.ts",
+                  "with": "projects/sample-code-flow-refresh-tokens/src/app/auth-config.module.e2e.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -937,6 +1068,9 @@
             },
             "development": {
               "buildTarget": "sample-code-flow-refresh-tokens:build:development"
+            },
+            "e2e": {
+              "buildTarget": "sample-code-flow-refresh-tokens:build:e2e"
             }
           },
           "defaultConfiguration": "development"
@@ -1017,6 +1151,18 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "e2e": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/sample-code-flow-standalone/src/app/app.config.ts",
+                  "with": "projects/sample-code-flow-standalone/src/app/app.config.e2e.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -1034,6 +1180,9 @@
             },
             "development": {
               "buildTarget": "sample-code-flow-standalone:build:development"
+            },
+            "e2e": {
+              "buildTarget": "sample-code-flow-standalone:build:e2e"
             }
           },
           "defaultConfiguration": "development"
@@ -1120,6 +1269,18 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "e2e": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/sample-code-flow-multi-Azure-B2C/src/app/auth-config.module.ts",
+                  "with": "projects/sample-code-flow-multi-Azure-B2C/src/app/auth-config.module.e2e.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -1137,6 +1298,9 @@
             },
             "development": {
               "buildTarget": "sample-code-flow-multi-Azure-B2C:build:development"
+            },
+            "e2e": {
+              "buildTarget": "sample-code-flow-multi-Azure-B2C:build:e2e"
             }
           },
           "defaultConfiguration": "development"
@@ -1221,6 +1385,18 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "e2e": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/sample-code-flow-multi-AAD/src/app/auth-config.module.ts",
+                  "with": "projects/sample-code-flow-multi-AAD/src/app/auth-config.module.e2e.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -1238,6 +1414,9 @@
             },
             "development": {
               "buildTarget": "sample-code-flow-multi-AAD:build:development"
+            },
+            "e2e": {
+              "buildTarget": "sample-code-flow-multi-AAD:build:e2e"
             }
           },
           "defaultConfiguration": "development"
@@ -1324,6 +1503,18 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "e2e": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/sample-code-flow-multi-Auth0-ID4-popup/src/app/auth-config.module.ts",
+                  "with": "projects/sample-code-flow-multi-Auth0-ID4-popup/src/app/auth-config.module.e2e.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -1341,6 +1532,9 @@
             },
             "development": {
               "buildTarget": "sample-code-flow-multi-Auth0-ID4-popup:build:development"
+            },
+            "e2e": {
+              "buildTarget": "sample-code-flow-multi-Auth0-ID4-popup:build:e2e"
             }
           },
           "defaultConfiguration": "development"
@@ -1427,6 +1621,18 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "e2e": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/sample-code-flow-multi-Auth0-ID4/src/app/auth-config.module.ts",
+                  "with": "projects/sample-code-flow-multi-Auth0-ID4/src/app/auth-config.module.e2e.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -1444,6 +1650,9 @@
             },
             "development": {
               "buildTarget": "sample-code-flow-multi-Auth0-ID4:build:development"
+            },
+            "e2e": {
+              "buildTarget": "sample-code-flow-multi-Auth0-ID4:build:e2e"
             }
           },
           "defaultConfiguration": "development"
@@ -1528,6 +1737,18 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "e2e": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/sample-code-flow-lazy-loaded/src/app/auth-config.module.ts",
+                  "with": "projects/sample-code-flow-lazy-loaded/src/app/auth-config.module.e2e.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -1544,6 +1765,9 @@
             },
             "development": {
               "buildTarget": "sample-code-flow-lazy-loaded:build:development"
+            },
+            "e2e": {
+              "buildTarget": "sample-code-flow-lazy-loaded:build:e2e"
             }
           },
           "defaultConfiguration": "development"
@@ -1628,6 +1852,18 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "e2e": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/sample-code-flow-popup/src/app/auth-config.module.ts",
+                  "with": "projects/sample-code-flow-popup/src/app/auth-config.module.e2e.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -1645,6 +1881,9 @@
             },
             "development": {
               "buildTarget": "sample-code-flow-popup:build:development"
+            },
+            "e2e": {
+              "buildTarget": "sample-code-flow-popup:build:e2e"
             }
           },
           "defaultConfiguration": "development"
@@ -1720,6 +1959,18 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "e2e": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/sample-code-flow-par/src/app/auth-config.module.ts",
+                  "with": "projects/sample-code-flow-par/src/app/auth-config.module.e2e.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -1737,6 +1988,9 @@
             },
             "development": {
               "buildTarget": "sample-code-flow-par:build:development"
+            },
+            "e2e": {
+              "buildTarget": "sample-code-flow-par:build:e2e"
             }
           },
           "defaultConfiguration": "development"
@@ -1813,6 +2067,18 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "e2e": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/sample-code-flow-auto-login-all-routes/src/app/auth-config.module.ts",
+                  "with": "projects/sample-code-flow-auto-login-all-routes/src/app/auth-config.module.e2e.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           },
           "defaultConfiguration": "production"
@@ -1831,6 +2097,9 @@
             },
             "development": {
               "buildTarget": "sample-code-flow-auto-login-all-routes:build:development"
+            },
+            "e2e": {
+              "buildTarget": "sample-code-flow-auto-login-all-routes:build:e2e"
             }
           },
           "defaultConfiguration": "development"

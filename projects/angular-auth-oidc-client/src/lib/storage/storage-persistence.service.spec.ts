@@ -160,6 +160,7 @@ describe('Storage Persistence Service', () => {
 
       service.resetAuthStateInStorage(config);
 
+      expect(spy).toHaveBeenCalledTimes(3);
       expect(vi.mocked(spy).mock.calls[0]).toEqual(['authzData', config]);
       expect(vi.mocked(spy).mock.calls[1]).toEqual([
         'reusable_refresh_token',

@@ -5,7 +5,7 @@ import { firstValueFrom, of, throwError } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
 import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
 import { DataService } from '../../api/data.service';
-import { LoggerService } from '../../logging/logger.service';
+import { LoggerService } from '../../logging/services/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { UrlService } from '../../utils/url/url.service';
 import { TokenValidationService } from '../../validation/token-validation.service';
@@ -62,7 +62,7 @@ describe('CodeFlowCallbackHandlerService', () => {
         firstValueFrom(
           service.codeFlowCallback('test-url', { configId: 'configId1' })
         )
-      ).rejects.toBeTruthy();
+      ).rejects.toThrow('no state in url');
     });
 
     it('throws error if no code is given', async () => {
@@ -80,7 +80,7 @@ describe('CodeFlowCallbackHandlerService', () => {
         firstValueFrom(
           service.codeFlowCallback('test-url', { configId: 'configId1' })
         )
-      ).rejects.toBeTruthy();
+      ).rejects.toThrow('no code in url');
     });
 
     it('returns callbackContext if all params are good', async () => {
@@ -126,7 +126,7 @@ describe('CodeFlowCallbackHandlerService', () => {
             configId: 'configId1',
           })
         )
-      ).rejects.toBeTruthy();
+      ).rejects.toThrow('codeFlowCodeRequest incorrect state');
     });
 
     it('throws error if authWellknownEndpoints is null is given', async () => {
@@ -150,7 +150,7 @@ describe('CodeFlowCallbackHandlerService', () => {
             configId: 'configId1',
           })
         )
-      ).rejects.toBeTruthy();
+      ).rejects.toThrow('Token Endpoint not defined');
     });
 
     it('throws error if tokenendpoint is null is given', async () => {
@@ -174,7 +174,7 @@ describe('CodeFlowCallbackHandlerService', () => {
             configId: 'configId1',
           })
         )
-      ).rejects.toBeTruthy();
+      ).rejects.toThrow('Token Endpoint not defined');
     });
 
     it('calls dataService if all params are good', async () => {
@@ -301,11 +301,16 @@ describe('CodeFlowCallbackHandlerService', () => {
         }
       );
 
+      vi.spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).mockReturnValue(true);
+
       await expect(
         firstValueFrom(
           service.codeFlowCodeRequest({} as CallbackContext, config)
         )
-      ).rejects.toBeTruthy();
+      ).rejects.toThrow('OidcService code request authority');
     });
 
     it('retries request in case of no connection http error and succeeds', async () => {
@@ -376,7 +381,7 @@ describe('CodeFlowCallbackHandlerService', () => {
         firstValueFrom(
           service.codeFlowCodeRequest({} as CallbackContext, config)
         )
-      ).rejects.toBeTruthy();
+      ).rejects.toThrow('OidcService code request authority');
       expect(postSpy).toHaveBeenCalledTimes(1);
     });
   });

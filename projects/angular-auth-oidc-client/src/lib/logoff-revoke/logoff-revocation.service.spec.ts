@@ -7,7 +7,7 @@ import { createRetriableStream } from '../../test/create-retriable-stream.helper
 import { DataService } from '../api/data.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { CheckSessionService } from '../iframe/check-session.service';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { RedirectService } from '../utils/redirect/redirect.service';
 import { UrlService } from '../utils/url/url.service';
@@ -159,13 +159,10 @@ describe('Logout and Revoke Service', () => {
       );
 
       // Act
-      try {
-        await firstValueFrom(service.revokeAccessToken(config));
-        expect.fail('expected an error');
-      } catch (err) {
-        expect(loggerSpy).toHaveBeenCalled();
-        expect(err).toBeTruthy();
-      }
+      await expect(
+        firstValueFrom(service.revokeAccessToken(config))
+      ).rejects.toThrow('Revocation request failed');
+      expect(loggerSpy).toHaveBeenCalled();
     });
 
     it('should retry once', async () => {
@@ -256,13 +253,10 @@ describe('Logout and Revoke Service', () => {
         )
       );
 
-      try {
-        await firstValueFrom(service.revokeAccessToken(config));
-        expect.fail('expected an error');
-      } catch (err) {
-        expect(err).toBeTruthy();
-        expect(loggerSpy).toHaveBeenCalled();
-      }
+      await expect(
+        firstValueFrom(service.revokeAccessToken(config))
+      ).rejects.toThrow('Revocation request failed');
+      expect(loggerSpy).toHaveBeenCalled();
     });
   });
 
@@ -315,7 +309,7 @@ describe('Logout and Revoke Service', () => {
       );
       vi.spyOn(
         urlService,
-        'createRevocationEndpointBodyAccessToken'
+        'createRevocationEndpointBodyRefreshToken'
       ).mockReturnValue(undefined as any);
       vi.spyOn(dataService, 'post').mockReturnValue(of(null));
       const config = { configId: 'configId1' };
@@ -335,7 +329,7 @@ describe('Logout and Revoke Service', () => {
       );
       vi.spyOn(
         urlService,
-        'createRevocationEndpointBodyAccessToken'
+        'createRevocationEndpointBodyRefreshToken'
       ).mockReturnValue(undefined as any);
       const loggerSpy = vi
         .spyOn(loggerService, 'logDebug')
@@ -360,7 +354,7 @@ describe('Logout and Revoke Service', () => {
       );
       vi.spyOn(
         urlService,
-        'createRevocationEndpointBodyAccessToken'
+        'createRevocationEndpointBodyRefreshToken'
       ).mockReturnValue(undefined as any);
       const loggerSpy = vi
         .spyOn(loggerService, 'logError')
@@ -372,13 +366,10 @@ describe('Logout and Revoke Service', () => {
       );
 
       // Act
-      try {
-        await firstValueFrom(service.revokeRefreshToken(config));
-        expect.fail('expected an error');
-      } catch (err) {
-        expect(loggerSpy).toHaveBeenCalled();
-        expect(err).toBeTruthy();
-      }
+      await expect(
+        firstValueFrom(service.revokeRefreshToken(config))
+      ).rejects.toThrow('Revocation request failed');
+      expect(loggerSpy).toHaveBeenCalled();
     });
 
     it('should retry once', async () => {
@@ -390,7 +381,7 @@ describe('Logout and Revoke Service', () => {
       );
       vi.spyOn(
         urlService,
-        'createRevocationEndpointBodyAccessToken'
+        'createRevocationEndpointBodyRefreshToken'
       ).mockReturnValue(undefined as any);
       const loggerSpy = vi
         .spyOn(loggerService, 'logDebug')
@@ -421,7 +412,7 @@ describe('Logout and Revoke Service', () => {
       );
       vi.spyOn(
         urlService,
-        'createRevocationEndpointBodyAccessToken'
+        'createRevocationEndpointBodyRefreshToken'
       ).mockReturnValue(undefined as any);
       const loggerSpy = vi
         .spyOn(loggerService, 'logDebug')
@@ -453,7 +444,7 @@ describe('Logout and Revoke Service', () => {
       );
       vi.spyOn(
         urlService,
-        'createRevocationEndpointBodyAccessToken'
+        'createRevocationEndpointBodyRefreshToken'
       ).mockReturnValue(undefined as any);
       const loggerSpy = vi
         .spyOn(loggerService, 'logError')
@@ -469,13 +460,10 @@ describe('Logout and Revoke Service', () => {
         )
       );
 
-      try {
-        await firstValueFrom(service.revokeRefreshToken(config));
-        expect.fail('expected an error');
-      } catch (err) {
-        expect(err).toBeTruthy();
-        expect(loggerSpy).toHaveBeenCalled();
-      }
+      await expect(
+        firstValueFrom(service.revokeRefreshToken(config))
+      ).rejects.toThrow('Revocation request failed');
+      expect(loggerSpy).toHaveBeenCalled();
     });
   });
 
@@ -780,28 +768,34 @@ describe('Logout and Revoke Service', () => {
       );
 
       // Act
-      try {
-        await firstValueFrom(service.logoffAndRevokeTokens(config, [config]));
-        expect.fail('expected an error');
-      } catch (err) {
-        expect(loggerSpy).toHaveBeenCalled();
-        expect(err).toBeTruthy();
-      }
+      await expect(
+        firstValueFrom(service.logoffAndRevokeTokens(config, [config]))
+      ).rejects.toThrow('revoke token failed');
+      expect(loggerSpy).toHaveBeenCalled();
     });
 
     it('calls logoff in case of success', async () => {
       // Arrange
       const paramToken = 'damien';
 
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { revocationEndpoint: 'revocationEndpoint' };
+          }
+
+          return undefined;
+        }
+      );
       vi.spyOn(storagePersistenceService, 'getRefreshToken').mockReturnValue(
         paramToken
       );
-      vi.spyOn(service, 'revokeRefreshToken').mockReturnValue(
-        of({ any: 'thing' })
-      );
-      vi.spyOn(service, 'revokeAccessToken').mockReturnValue(
-        of({ any: 'thing' })
-      );
+      const revokeRefreshTokenSpy = vi
+        .spyOn(service, 'revokeRefreshToken')
+        .mockReturnValue(of({ any: 'thing' }));
+      const revokeAccessTokenSpy = vi
+        .spyOn(service, 'revokeAccessToken')
+        .mockReturnValue(of({ any: 'thing' }));
       const logoffSpy = vi.spyOn(service, 'logoff').mockReturnValue(of(null));
       const config = { configId: 'configId1' };
 
@@ -809,6 +803,8 @@ describe('Logout and Revoke Service', () => {
       await firstValueFrom(service.logoffAndRevokeTokens(config, [config]));
 
       // Assert
+      expect(revokeRefreshTokenSpy).toHaveBeenCalledTimes(1);
+      expect(revokeAccessTokenSpy).toHaveBeenCalledTimes(1);
       expect(logoffSpy).toHaveBeenCalled();
     });
 
@@ -816,15 +812,24 @@ describe('Logout and Revoke Service', () => {
       // Arrange
       const paramToken = 'damien';
 
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { revocationEndpoint: 'revocationEndpoint' };
+          }
+
+          return undefined;
+        }
+      );
       vi.spyOn(storagePersistenceService, 'getRefreshToken').mockReturnValue(
         paramToken
       );
-      vi.spyOn(service, 'revokeRefreshToken').mockReturnValue(
-        of({ any: 'thing' })
-      );
-      vi.spyOn(service, 'revokeAccessToken').mockReturnValue(
-        of({ any: 'thing' })
-      );
+      const revokeRefreshTokenSpy = vi
+        .spyOn(service, 'revokeRefreshToken')
+        .mockReturnValue(of({ any: 'thing' }));
+      const revokeAccessTokenSpy = vi
+        .spyOn(service, 'revokeAccessToken')
+        .mockReturnValue(of({ any: 'thing' }));
       const logoffSpy = vi.spyOn(service, 'logoff').mockReturnValue(of(null));
       const urlHandler = (_url: string): void => undefined;
       const config = { configId: 'configId1' };
@@ -835,6 +840,8 @@ describe('Logout and Revoke Service', () => {
       );
 
       // Assert
+      expect(revokeRefreshTokenSpy).toHaveBeenCalledTimes(1);
+      expect(revokeAccessTokenSpy).toHaveBeenCalledTimes(1);
       expect(logoffSpy).toHaveBeenCalledTimes(1);
       // Assert
       expect(logoffSpy).toHaveBeenCalledWith(config, [config], { urlHandler });
@@ -897,13 +904,10 @@ describe('Logout and Revoke Service', () => {
       );
 
       // Act
-      try {
-        await firstValueFrom(service.logoffAndRevokeTokens(config, [config]));
-        expect.fail('expected an error');
-      } catch (err) {
-        expect(loggerSpy).toHaveBeenCalled();
-        expect(err).toBeTruthy();
-      }
+      await expect(
+        firstValueFrom(service.logoffAndRevokeTokens(config, [config]))
+      ).rejects.toThrow('revoke accessToken failed');
+      expect(loggerSpy).toHaveBeenCalled();
     });
   });
 

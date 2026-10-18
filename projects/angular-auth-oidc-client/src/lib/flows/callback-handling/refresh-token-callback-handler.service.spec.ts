@@ -5,7 +5,7 @@ import { firstValueFrom, of, throwError } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
 import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
 import { DataService } from '../../api/data.service';
-import { LoggerService } from '../../logging/logger.service';
+import { LoggerService } from '../../logging/services/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { UrlService } from '../../utils/url/url.service';
 import { CallbackContext } from '../callback-context';
@@ -48,14 +48,11 @@ describe('RefreshTokenCallbackHandlerService', () => {
     });
 
     it('throws error if no tokenEndpoint is given', async () => {
-      try {
-        await firstValueFrom(
+      await expect(
+        firstValueFrom(
           (service as any).refreshTokensRequestTokens({} as CallbackContext)
-        );
-        expect.fail('expected an error');
-      } catch (err: unknown) {
-        expect(err).toBeTruthy();
-      }
+        )
+      ).rejects.toThrow('Token Endpoint not defined');
     });
 
     it('calls data service if all params are good', async () => {
@@ -135,14 +132,11 @@ describe('RefreshTokenCallbackHandlerService', () => {
         }
       );
 
-      try {
-        await firstValueFrom(
+      await expect(
+        firstValueFrom(
           service.refreshTokensRequestTokens({} as CallbackContext, config)
-        );
-        expect.fail('expected an error');
-      } catch (err: unknown) {
-        expect(err).toBeTruthy();
-      }
+        )
+      ).rejects.toThrow('OidcService code request authority');
     });
 
     it('retries request in case of no connection http error and succeeds', async () => {
@@ -191,15 +185,12 @@ describe('RefreshTokenCallbackHandlerService', () => {
         }
       );
 
-      try {
-        await firstValueFrom(
+      await expect(
+        firstValueFrom(
           service.refreshTokensRequestTokens({} as CallbackContext, config)
-        );
-        expect.fail('expected an error');
-      } catch (err: unknown) {
-        expect(err).toBeTruthy();
-        expect(postSpy).toHaveBeenCalledTimes(1);
-      }
+        )
+      ).rejects.toThrow('OidcService code request authority');
+      expect(postSpy).toHaveBeenCalledTimes(1);
     });
   });
 });

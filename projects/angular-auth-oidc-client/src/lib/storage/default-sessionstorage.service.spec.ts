@@ -28,6 +28,7 @@ describe('DefaultSessionStorageService', () => {
       service.read('henlo');
 
       expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy.mock.contexts[0]).toBe(sessionStorage);
 
       expect(spy).toHaveBeenCalledWith('henlo');
     });
@@ -42,6 +43,7 @@ describe('DefaultSessionStorageService', () => {
       service.write('henlo', 'furiend');
 
       expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy.mock.contexts[0]).toBe(sessionStorage);
 
       expect(spy).toHaveBeenCalledWith('henlo', 'furiend');
     });
@@ -56,6 +58,7 @@ describe('DefaultSessionStorageService', () => {
       service.remove('henlo');
 
       expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy.mock.contexts[0]).toBe(sessionStorage);
 
       expect(spy).toHaveBeenCalledWith('henlo');
     });
@@ -70,6 +73,7 @@ describe('DefaultSessionStorageService', () => {
       service.clear();
 
       expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy.mock.contexts[0]).toBe(sessionStorage);
     });
   });
 });

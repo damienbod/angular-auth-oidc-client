@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
-import { LoggerService } from '../../logging/logger.service';
+import { LoggerService } from '../../logging/services/logger.service';
 import { CryptoService } from '../../utils/crypto/crypto.service';
 
 @Injectable({ providedIn: 'root' })
@@ -24,15 +24,18 @@ export class RandomService {
       requiredLength = 10;
     }
 
-    const length = requiredLength - 6;
-    const arr = new Uint8Array(Math.floor(length / 2));
+    // each byte becomes two hex chars, the rest (at least 7) is a random string
+    const arr = new Uint8Array(Math.floor((requiredLength - 7) / 2));
     const crypto = this.cryptoService.getCrypto();
 
     if (crypto) {
       crypto.getRandomValues(arr);
     }
 
-    return Array.from(arr, this.toHex).join('') + this.randomString(7);
+    return (
+      Array.from(arr, this.toHex).join('') +
+      this.randomString(requiredLength - arr.length * 2)
+    );
   }
 
   private toHex(dec: number): string {
