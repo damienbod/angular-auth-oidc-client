@@ -121,7 +121,7 @@ export class EqualityService {
       return false;
     }
 
-    return arr1.some((v) => arr2.includes(v));
+    return arr1.every((v) => arr2.includes(v));
   }
 
   private isNullOrUndefined(val: any): boolean {

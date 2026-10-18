@@ -682,6 +682,17 @@ describe('State Validation Service', () => {
       expect(isValid.authResponseIsValid).toBe(false);
     });
 
+    it('should return authResponseIsValid false when null is passed', async () => {
+      const isValid = await firstValueFrom(
+        stateValidationService.getValidatedStateResult(
+          null as unknown as CallbackContext,
+          config
+        )
+      );
+
+      expect(isValid.authResponseIsValid).toBe(false);
+    });
+
     it('should return invalid context error', async () => {
       vi.spyOn(
         tokenValidationService,
@@ -1840,7 +1851,7 @@ describe('State Validation Service', () => {
         config,
         'authCallback token(s) validated, continue'
       );
-      expect(logDebugSpy).toHaveBeenCalledWith(
+      expect(logDebugSpy).not.toHaveBeenCalledWith(
         config,
         'authCallback token(s) invalid'
       );

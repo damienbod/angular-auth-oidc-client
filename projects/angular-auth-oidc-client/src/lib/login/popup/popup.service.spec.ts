@@ -626,6 +626,9 @@ describe('PopUpService', () => {
 
       expect(result).toContain(`left=${expectedLeft}`);
       expect(result).toContain(`top=${expectedTop}`);
+      expect(result).toContain('width=500');
+      expect(result).toContain('height=500');
+      expect(result).not.toContain('width=0');
     });
 
     it('returns a comma separated, url-encoded options string', () => {

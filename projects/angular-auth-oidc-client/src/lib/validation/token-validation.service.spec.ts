@@ -619,6 +619,112 @@ describe('TokenValidationService', () => {
 
       expect(valueTrue).toEqual(true);
     });
+
+    it('returns false and does not throw if alg is HS256', async () => {
+      vi.spyOn(tokenHelperService, 'getHeaderFromToken').mockReturnValue({
+        alg: 'HS256',
+      });
+
+      const valueFalse = await firstValueFrom(
+        tokenValidationService.validateSignatureIdToken(
+          'some-id-token',
+          { keys: [{ kty: 'oct', k: 'secret' }] },
+          { configId: 'configId1' }
+        )
+      );
+
+      expect(valueFalse).toEqual(false);
+    });
+
+    async function createRsaPssSignedToken(
+      alg: string,
+      hash: string,
+      saltLength: number
+    ): Promise<{ idToken: string; jwtKeys: { keys: object[] } }> {
+      const keyPair = await crypto.subtle.generateKey(
+        {
+          name: 'RSA-PSS',
+          modulusLength: 2048,
+          publicExponent: new Uint8Array([1, 0, 1]),
+          hash,
+        },
+        true,
+        ['sign', 'verify']
+      );
+      const encode = (value: object | Uint8Array): string => {
+        const bytes =
+          value instanceof Uint8Array
+            ? value
+            : new TextEncoder().encode(JSON.stringify(value));
+
+        return btoa(String.fromCharCode(...bytes))
+          .replace(/\+/g, '-')
+          .replace(/\//g, '_')
+          .replace(/=/g, '');
+      };
+      const signingInput = `${encode({ alg, typ: 'JWT', kid: 'pss' })}.${encode({ sub: '123456' })}`;
+      const signature = await crypto.subtle.sign(
+        { name: 'RSA-PSS', saltLength },
+        keyPair.privateKey,
+        new TextEncoder().encode(signingInput)
+      );
+      const publicKey = await crypto.subtle.exportKey('jwk', keyPair.publicKey);
+
+      vi.spyOn(tokenHelperService, 'getHeaderFromToken').mockReturnValue({
+        alg,
+        typ: 'JWT',
+        kid: 'pss',
+      });
+      vi.spyOn(
+        tokenHelperService,
+        'getSigningInputFromToken'
+      ).mockImplementation((token) => token!.split('.').slice(0, 2).join('.'));
+      vi.spyOn(tokenHelperService, 'getSignatureFromToken').mockImplementation(
+        (token) => token!.split('.')[2]
+      );
+
+      return {
+        idToken: `${signingInput}.${encode(new Uint8Array(signature))}`,
+        jwtKeys: { keys: [{ ...publicKey, kid: 'pss', use: 'sig' }] },
+      };
+    }
+
+    it('returns true for a valid PS256 signed token', async () => {
+      const { idToken, jwtKeys } = await createRsaPssSignedToken(
+        'PS256',
+        'SHA-256',
+        32
+      );
+      const valueTrue = await firstValueFrom(
+        tokenValidationService.validateSignatureIdToken(idToken, jwtKeys, {
+          configId: 'configId1',
+        })
+      );
+
+      expect(valueTrue).toEqual(true);
+    });
+
+    it('returns false for a PS384 signed token with a tampered payload', async () => {
+      const { idToken, jwtKeys } = await createRsaPssSignedToken(
+        'PS384',
+        'SHA-384',
+        48
+      );
+      const [header, , signature] = idToken.split('.');
+      const tamperedPayload = btoa(JSON.stringify({ sub: 'attacker' }))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=/g, '');
+      const valueFalse = await firstValueFrom(
+        tokenValidationService.validateSignatureIdToken(
+          `${header}.${tamperedPayload}.${signature}`,
+          jwtKeys,
+          { configId: 'configId1' }
+        )
+      );
+
+      expect(valueFalse).toEqual(false);
+    });
   });
 
   describe('validateIdTokenAtHash', () => {

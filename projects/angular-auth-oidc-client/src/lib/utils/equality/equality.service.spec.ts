@@ -172,6 +172,12 @@ describe('EqualityService Tests', () => {
         input2: 'value2',
         expected: false,
       },
+      // same length arrays sharing only some values are not equal
+      {
+        input1: ['value1', 'value2'],
+        input2: ['value1', 'value3'],
+        expected: false,
+      },
       // old "x" (string) , [x] new invalid
       {
         input1: 'value1',

@@ -192,6 +192,10 @@ export class PopUpService {
 
     const width = options.width || popupDefaultOptions.width;
     const height = options.height || popupDefaultOptions.height;
+
+    options.width = width;
+    options.height = height;
+
     const left: number =
       windowIdentifier.screenLeft + (windowIdentifier.outerWidth - width) / 2;
     const top: number =
