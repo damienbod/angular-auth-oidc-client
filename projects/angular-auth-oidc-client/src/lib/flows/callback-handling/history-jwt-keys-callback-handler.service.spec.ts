@@ -578,25 +578,35 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     });
   });
 
-  describe('historyCleanUpTurnedOn ', () => {
-    it('should check for false if historyCleanUpTurnedOn is on', () => {
-      const config = {
-        configId: 'configId1',
-        historyCleanupOff: true,
-      };
-      const value = (service as any).historyCleanUpTurnedOn(config);
+  describe('history clean up', () => {
+    it('should not reset the browser history if historyCleanupOff is true', async () => {
+      const callbackContext = {
+        isRenewProcess: false,
+        authResult: { id_token: 'some-id-token' },
+      } as CallbackContext;
+      const allconfigs = [
+        {
+          configId: 'configId1',
+          historyCleanupOff: true,
+        },
+      ];
+      const windowSpy = vi
+        .spyOn(window.history, 'replaceState')
+        .mockReturnValue(undefined);
 
-      expect(value).toEqual(false);
-    });
+      vi.spyOn(signInKeyDataService, 'getSigningKeys').mockReturnValue(
+        of({ keys: [] } as JwtKeys)
+      );
 
-    it('should check for true if historyCleanUpTurnedOn is off', () => {
-      const config = {
-        configId: 'configId1',
-        historyCleanupOff: false,
-      };
-      const value = (service as any).historyCleanUpTurnedOn(config);
+      await firstValueFrom(
+        service.callbackHistoryAndResetJwtKeys(
+          callbackContext,
+          allconfigs[0],
+          allconfigs
+        )
+      );
 
-      expect(value).toEqual(true);
+      expect(windowSpy).not.toHaveBeenCalled();
     });
   });
 });

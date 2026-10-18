@@ -50,7 +50,9 @@ describe('RefreshTokenCallbackHandlerService', () => {
     it('should throw error if no tokenEndpoint is given', async () => {
       await expect(
         firstValueFrom(
-          (service as any).refreshTokensRequestTokens({} as CallbackContext)
+          service.refreshTokensRequestTokens({} as CallbackContext, {
+            configId: 'configId1',
+          })
         )
       ).rejects.toThrow('Token Endpoint not defined');
     });

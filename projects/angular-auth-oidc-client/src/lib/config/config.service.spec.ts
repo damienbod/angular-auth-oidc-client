@@ -47,26 +47,31 @@ describe('Configuration Service', () => {
     configValidationService = TestBed.inject(ConfigValidationService);
   });
 
+  async function storeConfigs(configs: OpenIdConfiguration[]): Promise<void> {
+    vi.spyOn(stsConfigLoader, 'loadConfigs').mockReturnValue(of(configs));
+    vi.spyOn(configValidationService, 'validateConfig').mockReturnValue(true);
+
+    await firstValueFrom(configService.getOpenIDConfigurations());
+  }
+
   it('should create', () => {
     expect(configService).toBeTruthy();
   });
 
   describe('hasManyConfigs', () => {
-    it('should return true if many configs are stored', () => {
-      (configService as any).configsInternal = {
-        configId1: { configId: 'configId1' },
-        configId2: { configId: 'configId2' },
-      };
+    it('should return true if many configs are stored', async () => {
+      await storeConfigs([
+        { configId: 'configId1' },
+        { configId: 'configId2' },
+      ]);
 
       const result = configService.hasManyConfigs();
 
       expect(result).toBe(true);
     });
 
-    it('should return false if only one config is stored', () => {
-      (configService as any).configsInternal = {
-        configId1: { configId: 'configId1' },
-      };
+    it('should return false if only one config is stored', async () => {
+      await storeConfigs([{ configId: 'configId1' }]);
 
       const result = configService.hasManyConfigs();
 
@@ -75,11 +80,11 @@ describe('Configuration Service', () => {
   });
 
   describe('getAllConfigurations', () => {
-    it('should return all configs as array', () => {
-      (configService as any).configsInternal = {
-        configId1: { configId: 'configId1' },
-        configId2: { configId: 'configId2' },
-      };
+    it('should return all configs as array', async () => {
+      await storeConfigs([
+        { configId: 'configId1' },
+        { configId: 'configId2' },
+      ]);
 
       const result = configService.getAllConfigurations();
 
@@ -90,13 +95,13 @@ describe('Configuration Service', () => {
 
   describe('getOpenIDConfiguration', () => {
     it(`should not call loadConfigs if the config is already saved`, async () => {
-      (configService as any).configsInternal = {
-        configId1: { configId: 'configId1' },
-        configId2: { configId: 'configId2' },
-      };
-      const spy = vi
-        .spyOn(configService as any, 'loadConfigs')
-        .mockReturnValue(undefined);
+      await storeConfigs([
+        { configId: 'configId1' },
+        { configId: 'configId2' },
+      ]);
+      const spy = vi.spyOn(stsConfigLoader, 'loadConfigs');
+
+      spy.mockClear();
       const config = await firstValueFrom(
         configService.getOpenIDConfiguration('configId1')
       );
@@ -108,7 +113,7 @@ describe('Configuration Service', () => {
     it(`should call loadConfigs if the config is not already saved`, async () => {
       const configs = [{ configId: 'configId1' }, { configId: 'configId2' }];
       const spy = vi
-        .spyOn(configService as any, 'loadConfigs')
+        .spyOn(stsConfigLoader, 'loadConfigs')
         .mockReturnValue(of(configs));
 
       vi.spyOn(configValidationService, 'validateConfig').mockReturnValue(true);
@@ -124,9 +129,7 @@ describe('Configuration Service', () => {
     it(`should return null if config is not valid`, async () => {
       const configs = [{ configId: 'configId1' }];
 
-      vi.spyOn(configService as any, 'loadConfigs').mockReturnValue(
-        of(configs)
-      );
+      vi.spyOn(stsConfigLoader, 'loadConfigs').mockReturnValue(of(configs));
       vi.spyOn(configValidationService, 'validateConfig').mockReturnValue(
         false
       );
@@ -143,10 +146,10 @@ describe('Configuration Service', () => {
     });
 
     it(`should return null if configs are stored but not existing ID is passed`, async () => {
-      (configService as any).configsInternal = {
-        configId1: { configId: 'configId1' },
-        configId2: { configId: 'configId2' },
-      };
+      await storeConfigs([
+        { configId: 'configId1' },
+        { configId: 'configId2' },
+      ]);
 
       const config = await firstValueFrom(
         configService.getOpenIDConfiguration('notExisting')
@@ -158,9 +161,7 @@ describe('Configuration Service', () => {
     it(`should set authWellKnownEndPoints on config if authWellKnownEndPoints is stored`, async () => {
       const configs = [{ configId: 'configId1' }];
 
-      vi.spyOn(configService as any, 'loadConfigs').mockReturnValue(
-        of(configs)
-      );
+      vi.spyOn(stsConfigLoader, 'loadConfigs').mockReturnValue(of(configs));
       vi.spyOn(configValidationService, 'validateConfig').mockReturnValue(true);
       const consoleSpy = vi.spyOn(console, 'warn').mockReturnValue(undefined);
 
@@ -181,9 +182,7 @@ describe('Configuration Service', () => {
     it(`should fire ConfigLoaded if authWellKnownEndPoints is stored`, async () => {
       const configs = [{ configId: 'configId1' }];
 
-      vi.spyOn(configService as any, 'loadConfigs').mockReturnValue(
-        of(configs)
-      );
+      vi.spyOn(stsConfigLoader, 'loadConfigs').mockReturnValue(of(configs));
       vi.spyOn(configValidationService, 'validateConfig').mockReturnValue(true);
       vi.spyOn(storagePersistenceService, 'read').mockReturnValue({
         issuer: 'auth-well-known',
@@ -210,9 +209,7 @@ describe('Configuration Service', () => {
         },
       ];
 
-      vi.spyOn(configService as any, 'loadConfigs').mockReturnValue(
-        of(configs)
-      );
+      vi.spyOn(stsConfigLoader, 'loadConfigs').mockReturnValue(of(configs));
       vi.spyOn(configValidationService, 'validateConfig').mockReturnValue(true);
       vi.spyOn(storagePersistenceService, 'read').mockReturnValue(null);
 
@@ -305,21 +302,64 @@ describe('Configuration Service', () => {
     });
   });
 
-  describe('setSpecialCases', () => {
-    it(`should set special cases when current platform is NOT browser`, () => {
+  describe('platform special cases', () => {
+    it(`should disable browser-only features when current platform is NOT browser`, async () => {
       vi.spyOn(platformProvider, 'isBrowser').mockReturnValue(false);
+      vi.spyOn(stsConfigLoader, 'loadConfigs').mockReturnValue(
+        of([
+          {
+            configId: 'configId1',
+            startCheckSession: true,
+            silentRenew: true,
+            useRefreshToken: true,
+            usePushedAuthorisationRequests: true,
+          },
+        ])
+      );
+      vi.spyOn(configValidationService, 'validateConfig').mockReturnValue(true);
 
-      const config = { configId: 'configId1' } as OpenIdConfiguration;
+      const config = await firstValueFrom(
+        configService.getOpenIDConfiguration('configId1')
+      );
 
-      (configService as any).setSpecialCases(config);
+      expect(config).toEqual(
+        expect.objectContaining({
+          configId: 'configId1',
+          startCheckSession: false,
+          silentRenew: false,
+          useRefreshToken: false,
+          usePushedAuthorisationRequests: false,
+        })
+      );
+    });
 
-      expect(config).toEqual({
-        configId: 'configId1',
-        startCheckSession: false,
-        silentRenew: false,
-        useRefreshToken: false,
-        usePushedAuthorisationRequests: false,
-      });
+    it(`should keep browser-only features when current platform is browser`, async () => {
+      vi.spyOn(platformProvider, 'isBrowser').mockReturnValue(true);
+      vi.spyOn(stsConfigLoader, 'loadConfigs').mockReturnValue(
+        of([
+          {
+            configId: 'configId1',
+            startCheckSession: true,
+            silentRenew: true,
+            useRefreshToken: true,
+            usePushedAuthorisationRequests: true,
+          },
+        ])
+      );
+      vi.spyOn(configValidationService, 'validateConfig').mockReturnValue(true);
+
+      const config = await firstValueFrom(
+        configService.getOpenIDConfiguration('configId1')
+      );
+
+      expect(config).toEqual(
+        expect.objectContaining({
+          startCheckSession: true,
+          silentRenew: true,
+          useRefreshToken: true,
+          usePushedAuthorisationRequests: true,
+        })
+      );
     });
   });
 });

@@ -135,10 +135,10 @@ describe('CallbackService ', () => {
       );
     });
 
-    it('should emit callbackinternal no matter which flow it is', async () => {
-      const callbackSpy = vi
-        .spyOn((callbackService as any).stsCallbackInternal$, 'next')
-        .mockReturnValue(undefined);
+    it('should emit on stsCallback$ no matter which flow it is', async () => {
+      const callbackSpy = vi.fn();
+
+      callbackService.stsCallback$.subscribe(callbackSpy);
 
       vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
       const authenticatedCallbackWithCodeSpy = vi
@@ -159,7 +159,7 @@ describe('CallbackService ', () => {
         { configId: 'configId1' },
         [{ configId: 'configId1' }]
       );
-      expect(callbackSpy).toHaveBeenCalled();
+      expect(callbackSpy).toHaveBeenCalledTimes(1);
     });
   });
 });

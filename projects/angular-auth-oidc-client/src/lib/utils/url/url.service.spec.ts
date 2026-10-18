@@ -276,61 +276,55 @@ describe('UrlService Tests', () => {
     });
   });
 
-  describe('createAuthorizeUrl', () => {
-    it('should return empty string when no authoizationendpoint given -> wellKnownEndpoints null', () => {
-      const value = (service as any).createAuthorizeUrl(
-        '', // Implicit Flow
-        'https://localhost:44386',
-        'nonce',
-        'state'
+  describe('getAuthorizeUrl url composition', async () => {
+    beforeEach(() => {
+      vi.spyOn(
+        flowsDataService,
+        'getExistingOrCreateAuthStateControl'
+      ).mockReturnValue('state');
+      vi.spyOn(flowsDataService, 'createNonce').mockReturnValue('nonce');
+      vi.spyOn(flowsDataService, 'createCodeVerifier').mockReturnValue(
+        'codeVerifier'
       );
-
-      expect(value).toEqual('');
+      vi.spyOn(jwtWindowCryptoService, 'generateCodeChallenge').mockReturnValue(
+        of('codeChallenge')
+      );
     });
 
-    it('should return empty string when no authoizationendpoint given -> configurationProvider null', () => {
-      (service as any).configurationProvider = null;
-
-      const value = (service as any).createAuthorizeUrl(
-        '', // Implicit Flow
-        'https://localhost:44386',
-        'nonce',
-        'state'
-      );
-
-      expect(value).toEqual('');
-    });
-
-    it('should return empty string when clientId is null', () => {
-      const config = { configId: 'configId1', clientId: '' };
-      const authorizationEndpoint = 'authorizationEndpoint';
+    it('should return empty string and log an error when the well-known endpoints have no authorizationEndpoint', async () => {
+      const config = {
+        configId: 'configId1',
+        clientId: 'something',
+        responseType: 'id_token token',
+        scope: 'openid',
+        redirectUrl: 'https://localhost:44386',
+      };
 
       vi.spyOn(storagePersistenceService, 'read').mockImplementation(
         (...args: any[]) => {
           if (args[0] === 'authWellKnownEndPoints') {
-            return { authorizationEndpoint };
+            return {};
           }
 
           return undefined;
         }
       );
 
-      const value = (service as any).createAuthorizeUrl(
-        '', // Implicit Flow
-        'https://localhost:44386',
-        'nonce',
-        'state',
-        config
-      );
+      const logErrorSpy = vi.spyOn(loggerService, 'logError');
+      const value = await firstValueFrom(service.getAuthorizeUrl(config));
 
       expect(value).toEqual('');
+      expect(logErrorSpy).toHaveBeenCalledWith(
+        config,
+        `Can not create an authorize URL when authorizationEndpoint is 'undefined'`
+      );
     });
 
-    it('should return empty string when responseType is null', () => {
+    it('should return empty string when clientId is null', async () => {
       const config = {
         configId: 'configId1',
-        clientId: 'something',
-        responseType: undefined,
+        clientId: '',
+        redirectUrl: 'https://localhost:44386',
       };
       const authorizationEndpoint = 'authorizationEndpoint';
 
@@ -344,23 +338,54 @@ describe('UrlService Tests', () => {
         }
       );
 
-      const value = (service as any).createAuthorizeUrl(
-        '', // Implicit Flow
-        'https://localhost:44386',
-        'nonce',
-        'state',
-        config
-      );
+      const logErrorSpy = vi.spyOn(loggerService, 'logError');
+      const value = await firstValueFrom(service.getAuthorizeUrl(config));
 
       expect(value).toEqual('');
+      expect(logErrorSpy).toHaveBeenCalledWith(
+        config,
+        `createAuthorizeUrl could not add clientId because it was: `,
+        ''
+      );
     });
 
-    it('should return empty string when scope is null', () => {
+    it('should return empty string when responseType is null', async () => {
+      const config = {
+        configId: 'configId1',
+        clientId: 'something',
+        responseType: undefined,
+        redirectUrl: 'https://localhost:44386',
+      };
+      const authorizationEndpoint = 'authorizationEndpoint';
+
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { authorizationEndpoint };
+          }
+
+          return undefined;
+        }
+      );
+
+      const logErrorSpy = vi.spyOn(loggerService, 'logError');
+      const value = await firstValueFrom(service.getAuthorizeUrl(config));
+
+      expect(value).toEqual('');
+      expect(logErrorSpy).toHaveBeenCalledWith(
+        config,
+        `createAuthorizeUrl could not add responseType because it was: `,
+        undefined
+      );
+    });
+
+    it('should return empty string when scope is null', async () => {
       const config = {
         configId: 'configId1',
         clientId: 'something',
         responseType: 'responsetype',
         scope: undefined,
+        redirectUrl: 'https://localhost:44386',
       };
       const authorizationEndpoint = 'authorizationEndpoint';
 
@@ -374,18 +399,18 @@ describe('UrlService Tests', () => {
         }
       );
 
-      const value = (service as any).createAuthorizeUrl(
-        '', // Implicit Flow
-        'https://localhost:44386',
-        'nonce',
-        'state',
-        config
-      );
+      const logErrorSpy = vi.spyOn(loggerService, 'logError');
+      const value = await firstValueFrom(service.getAuthorizeUrl(config));
 
       expect(value).toEqual('');
+      expect(logErrorSpy).toHaveBeenCalledWith(
+        config,
+        `createAuthorizeUrl could not add scope because it was: `,
+        undefined
+      );
     });
 
-    it('should add code_challenge and code_challenge_method params to the authorize url for code flow', () => {
+    it('should add code_challenge and code_challenge_method params to the authorize url for code flow', async () => {
       const config = {
         authority: 'https://localhost:5001',
       } as OpenIdConfiguration;
@@ -409,13 +434,7 @@ describe('UrlService Tests', () => {
         }
       );
 
-      const value = (service as any).createAuthorizeUrl(
-        'codeChallenge', // Code Flow
-        config.redirectUrl,
-        'nonce',
-        'state',
-        config
-      );
+      const value = await firstValueFrom(service.getAuthorizeUrl(config));
       const expectValue =
         'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
         '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
@@ -429,12 +448,12 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('should add the prompt value to the authorize url', () => {
+    it('should add prompt=none to the silent renew url', async () => {
       const config = {
         authority: 'https://localhost:5001',
       } as OpenIdConfiguration;
 
-      config.redirectUrl = 'https://localhost:44386';
+      config.silentRenewUrl = 'https://localhost:44386';
       config.clientId =
         '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'id_token token';
@@ -453,13 +472,8 @@ describe('UrlService Tests', () => {
         }
       );
 
-      const value = (service as any).createAuthorizeUrl(
-        '', // Implicit Flow
-        config.redirectUrl,
-        'nonce',
-        'state',
-        config,
-        'myprompt'
+      const value = await firstValueFrom(
+        service.getRefreshSessionSilentRenewUrl(config)
       );
       const expectValue =
         'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
@@ -468,17 +482,17 @@ describe('UrlService Tests', () => {
         '&scope=openid%20email%20profile' +
         '&nonce=nonce' +
         '&state=state' +
-        '&prompt=myprompt';
+        '&prompt=none';
 
       expect(value).toEqual(expectValue);
     });
 
-    it('should add the prompt value and custom values to the authorize url', () => {
+    it('should add prompt=none and custom values to the silent renew url', async () => {
       const config = {
         authority: 'https://localhost:5001',
       } as OpenIdConfiguration;
 
-      config.redirectUrl = 'https://localhost:44386';
+      config.silentRenewUrl = 'https://localhost:44386';
       config.clientId =
         '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'id_token token';
@@ -497,14 +511,11 @@ describe('UrlService Tests', () => {
         }
       );
 
-      const value = (service as any).createAuthorizeUrl(
-        '', // Implicit Flow
-        config.redirectUrl,
-        'nonce',
-        'state',
-        config,
-        'myprompt',
-        { to: 'add', as: 'well' }
+      const value = await firstValueFrom(
+        service.getRefreshSessionSilentRenewUrl(config, {
+          to: 'add',
+          as: 'well',
+        })
       );
       const expectValue =
         'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
@@ -514,12 +525,12 @@ describe('UrlService Tests', () => {
         '&nonce=nonce' +
         '&state=state' +
         '&to=add&as=well' +
-        '&prompt=myprompt';
+        '&prompt=none';
 
       expect(value).toEqual(expectValue);
     });
 
-    it('should add the hd_param value to the authorize url', () => {
+    it('should add the hd_param value to the authorize url', async () => {
       const config = {
         authority: 'https://localhost:5001',
       } as OpenIdConfiguration;
@@ -544,13 +555,7 @@ describe('UrlService Tests', () => {
         }
       );
 
-      const value = (service as any).createAuthorizeUrl(
-        '', // Implicit Flow
-        config.redirectUrl,
-        'nonce',
-        'state',
-        config
-      );
+      const value = await firstValueFrom(service.getAuthorizeUrl(config));
       const expectValue =
         'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
         '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
@@ -563,7 +568,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('should add a custom value to the authorize url', () => {
+    it('should add a custom value to the authorize url', async () => {
       const config = {
         authority: 'https://localhost:5001',
       } as OpenIdConfiguration;
@@ -591,13 +596,7 @@ describe('UrlService Tests', () => {
         }
       );
 
-      const value = (service as any).createAuthorizeUrl(
-        '', // Implicit Flow
-        config.redirectUrl,
-        'nonce',
-        'state',
-        config
-      );
+      const value = await firstValueFrom(service.getAuthorizeUrl(config));
       const expectValue =
         'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
         '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
@@ -610,7 +609,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('should add custom values to the authorize url', () => {
+    it('should add custom values to the authorize url', async () => {
       const config = {
         authority: 'https://localhost:5001',
       } as OpenIdConfiguration;
@@ -641,13 +640,7 @@ describe('UrlService Tests', () => {
         }
       );
 
-      const value = (service as any).createAuthorizeUrl(
-        '', // Implicit Flow
-        config.redirectUrl,
-        'nonce',
-        'state',
-        config
-      );
+      const value = await firstValueFrom(service.getAuthorizeUrl(config));
       const expectValue =
         'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
         '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
@@ -659,7 +652,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('should create an authorize url with custom values and dynamic custom values', () => {
+    it('should create an authorize url with custom values and dynamic custom values', async () => {
       const config = {
         authority: 'https://localhost:5001',
         redirectUrl: 'https://localhost:44386',
@@ -688,14 +681,10 @@ describe('UrlService Tests', () => {
         }
       );
 
-      const value = (service as any).createAuthorizeUrl(
-        '', // Implicit Flow
-        config.redirectUrl,
-        'nonce',
-        'state',
-        config,
-        null,
-        { to: 'add', as: 'well' }
+      const value = await firstValueFrom(
+        service.getAuthorizeUrl(config, {
+          customParams: { to: 'add', as: 'well' },
+        })
       );
       const expectValue =
         'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
@@ -710,7 +699,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('should create an authorize url with null custom values and dynamic custom values', () => {
+    it('should create an authorize url with null custom values and dynamic custom values', async () => {
       const config = {
         authority: 'https://localhost:5001',
         redirectUrl: 'https://localhost:44386',
@@ -734,14 +723,10 @@ describe('UrlService Tests', () => {
         }
       );
 
-      const value = (service as any).createAuthorizeUrl(
-        '', // Implicit Flow
-        config.redirectUrl,
-        'nonce',
-        'state',
-        config,
-        null,
-        { to: 'add', as: 'well' }
+      const value = await firstValueFrom(
+        service.getAuthorizeUrl(config, {
+          customParams: { to: 'add', as: 'well' },
+        })
       );
       const expectValue =
         'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
@@ -755,7 +740,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('should create an authorize url without custom values but with dynamic custom values', () => {
+    it('should create an authorize url without custom values but with dynamic custom values', async () => {
       const config = {
         authority: 'https://localhost:5001',
         redirectUrl: 'https://localhost:44386',
@@ -778,14 +763,10 @@ describe('UrlService Tests', () => {
         }
       );
 
-      const value = (service as any).createAuthorizeUrl(
-        '', // Implicit Flow
-        config.redirectUrl,
-        'nonce',
-        'state',
-        config,
-        null,
-        { to: 'add', as: 'well' }
+      const value = await firstValueFrom(
+        service.getAuthorizeUrl(config, {
+          customParams: { to: 'add', as: 'well' },
+        })
       );
       const expectValue =
         'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
@@ -800,7 +781,7 @@ describe('UrlService Tests', () => {
     });
 
     // https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-reference-oidc
-    it('should create an authorize url for a custom url like active-directory-b2c', () => {
+    it('should create an authorize url for a custom url like active-directory-b2c', async () => {
       const config = {
         authority: 'https://localhost:5001',
       } as OpenIdConfiguration;
@@ -823,13 +804,7 @@ describe('UrlService Tests', () => {
         }
       );
 
-      const value = (service as any).createAuthorizeUrl(
-        '', // Implicit Flow
-        config.redirectUrl,
-        'nonce',
-        'state',
-        config
-      );
+      const value = await firstValueFrom(service.getAuthorizeUrl(config));
       const expectValue =
         'https://login.microsoftonline.com/fabrikamb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=b2c_1_sign_in' +
         '&client_id=myid' +
@@ -842,7 +817,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('should create a default authorize url', () => {
+    it('should create a default authorize url', async () => {
       const config = {
         authority: 'https://localhost:5001',
       } as OpenIdConfiguration;
@@ -866,13 +841,7 @@ describe('UrlService Tests', () => {
         }
       );
 
-      const value = (service as any).createAuthorizeUrl(
-        '', // Implicit Flow
-        config.redirectUrl,
-        'nonce',
-        'state',
-        config
-      );
+      const value = await firstValueFrom(service.getAuthorizeUrl(config));
       const expectValue =
         'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
         '&redirect_uri=https%3A%2F%2Flocalhost%3A44386' +
@@ -884,7 +853,7 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(expectValue);
     });
 
-    it('should add the prompt only once even if it is configured AND passed with `none` in silent renew case, taking the passed one', () => {
+    it('should add the prompt only once even if it is configured AND passed with `none` in silent renew case, taking the passed one', async () => {
       const config = {
         authority: 'https://localhost:5001',
       } as OpenIdConfiguration;
@@ -893,7 +862,7 @@ describe('UrlService Tests', () => {
         '188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com';
       config.responseType = 'code';
       config.scope = 'openid email profile';
-      config.redirectUrl = 'https://localhost:44386';
+      config.silentRenewUrl = 'https://localhost:44386';
 
       config.customParamsAuthRequest = {
         prompt: 'select_account',
@@ -909,13 +878,8 @@ describe('UrlService Tests', () => {
         }
       );
 
-      const value = (service as any).createAuthorizeUrl(
-        '', // Implicit Flow
-        config.redirectUrl,
-        'nonce',
-        'state',
-        config,
-        'somePrompt'
+      const value = await firstValueFrom(
+        service.getRefreshSessionSilentRenewUrl(config)
       );
       const expectValue =
         'http://example?client_id=188968487735-b1hh7k87nkkh6vv84548sinju2kpr7gn.apps.googleusercontent.com' +
@@ -924,9 +888,9 @@ describe('UrlService Tests', () => {
         '&scope=openid%20email%20profile' +
         '&nonce=nonce' +
         '&state=state' +
-        '&code_challenge=' +
+        '&code_challenge=codeChallenge' +
         '&code_challenge_method=S256' +
-        '&prompt=somePrompt';
+        '&prompt=none';
 
       expect(value).toEqual(expectValue);
     });
@@ -1123,21 +1087,39 @@ describe('UrlService Tests', () => {
     });
   });
 
-  describe('getRedirectUrl', () => {
-    it('should return configured redirectUrl', () => {
-      const config = { configId: 'configId1', redirectUrl: 'one-url' };
-      const url = (service as any).getRedirectUrl(config);
+  describe('getAuthorizeUrl redirect url', () => {
+    const config = {
+      configId: 'configId1',
+      redirectUrl: 'one-url',
+      clientId: 'clientId',
+      responseType: 'id_token token',
+      scope: 'openid',
+    };
 
-      expect(url).toEqual('one-url');
+    beforeEach(() => {
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { authorizationEndpoint: 'http://example' };
+          }
+
+          return undefined;
+        }
+      );
     });
 
-    it('should return redefined redirectUrl in AuthOptions', () => {
-      const config = { configId: 'configId1', redirectUrl: 'one-url' };
-      const url = (service as any).getRedirectUrl(config, {
-        redirectUrl: 'other-url',
-      });
+    it('should use the configured redirectUrl', async () => {
+      const url = await firstValueFrom(service.getAuthorizeUrl(config));
 
-      expect(url).toEqual('other-url');
+      expect(url).toContain('redirect_uri=one-url&');
+    });
+
+    it('should use the redirectUrl redefined in AuthOptions', async () => {
+      const url = await firstValueFrom(
+        service.getAuthorizeUrl(config, { redirectUrl: 'other-url' })
+      );
+
+      expect(url).toContain('redirect_uri=other-url&');
     });
   });
 
@@ -1204,71 +1186,108 @@ describe('UrlService Tests', () => {
       );
     });
 
-    it('should call createUrlImplicitFlowAuthorize if current flow is NOT code flow', async () => {
+    it('should create an implicit flow url without code challenge if current flow is NOT code flow', async () => {
       vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(false);
-      const spyCreateUrlCodeFlowAuthorize = vi
-        .spyOn(service as any, 'createUrlCodeFlowAuthorize')
-        .mockReturnValue(undefined);
-      const spyCreateUrlImplicitFlowAuthorize = vi
-        .spyOn(service as any, 'createUrlImplicitFlowAuthorize')
-        .mockReturnValue(undefined);
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { authorizationEndpoint: 'authorizationEndpoint' };
+          }
 
-      await firstValueFrom(service.getAuthorizeUrl({ configId: 'configId1' }));
+          return undefined;
+        }
+      );
+      const generateCodeChallengeSpy = vi.spyOn(
+        jwtWindowCryptoService,
+        'generateCodeChallenge'
+      );
 
-      expect(spyCreateUrlCodeFlowAuthorize).not.toHaveBeenCalled();
-      expect(spyCreateUrlImplicitFlowAuthorize).toHaveBeenCalled();
+      const result = await firstValueFrom(
+        service.getAuthorizeUrl({
+          configId: 'configId1',
+          redirectUrl: 'some-redirectUrl',
+          clientId: 'some-clientId',
+          responseType: 'id_token token',
+          scope: 'testScope',
+        })
+      );
+
+      expect(generateCodeChallengeSpy).not.toHaveBeenCalled();
+      expect(result).toBe(
+        'authorizationEndpoint?client_id=some-clientId&redirect_uri=some-redirectUrl&response_type=id_token%20token&scope=testScope&nonce=undefined&state=undefined'
+      );
     });
 
-    it('should return empty string if flow is not code flow and createUrlImplicitFlowAuthorize returns falsy', async () => {
+    it('should return empty string if flow is not code flow and no redirect url is defined', async () => {
       vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(false);
-      const spy = vi
-        .spyOn(service as any, 'createUrlImplicitFlowAuthorize')
-        .mockReturnValue('');
       const resultObs$ = service.getAuthorizeUrl({ configId: 'configId1' });
       const result = await firstValueFrom(resultObs$);
 
-      expect(spy).toHaveBeenCalled();
       expect(result).toBe('');
     });
   });
 
   describe('getRefreshSessionSilentRenewUrl', () => {
-    it('should call createUrlCodeFlowWithSilentRenew if current flow is code flow', () => {
+    const silentRenewConfig = {
+      configId: 'configId1',
+      silentRenewUrl: 'http://any-url.com',
+      clientId: 'clientId',
+      responseType: 'responseType',
+      scope: 'testScope',
+    };
+
+    beforeEach(() => {
+      vi.spyOn(
+        flowsDataService,
+        'getExistingOrCreateAuthStateControl'
+      ).mockReturnValue('testState');
+      vi.spyOn(flowsDataService, 'createNonce').mockReturnValue('testNonce');
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { authorizationEndpoint: 'authorizationEndpoint' };
+          }
+
+          return undefined;
+        }
+      );
+    });
+
+    it('should create a silent renew url with code challenge if current flow is code flow', async () => {
       vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
-      const spy = vi
-        .spyOn(service as any, 'createUrlCodeFlowWithSilentRenew')
-        .mockReturnValue(undefined);
+      const createCodeVerifierSpy = vi
+        .spyOn(flowsDataService, 'createCodeVerifier')
+        .mockReturnValue('codeVerifier');
+      const generateCodeChallengeSpy = vi
+        .spyOn(jwtWindowCryptoService, 'generateCodeChallenge')
+        .mockReturnValue(of('codeChallenge'));
 
-      service.getRefreshSessionSilentRenewUrl({ configId: 'configId1' });
-      expect(spy).toHaveBeenCalled();
+      const result = await firstValueFrom(
+        service.getRefreshSessionSilentRenewUrl(silentRenewConfig)
+      );
+
+      expect(createCodeVerifierSpy).toHaveBeenCalledWith(silentRenewConfig);
+      expect(generateCodeChallengeSpy).toHaveBeenCalledWith('codeVerifier');
+      expect(result).toBe(
+        'authorizationEndpoint?client_id=clientId&redirect_uri=http%3A%2F%2Fany-url.com&response_type=responseType&scope=testScope&nonce=testNonce&state=testState&code_challenge=codeChallenge&code_challenge_method=S256&prompt=none'
+      );
     });
 
-    it('should call createUrlImplicitFlowWithSilentRenew if current flow is NOT code flow', () => {
+    it('should create a silent renew url without code challenge if current flow is NOT code flow', async () => {
       vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(false);
-      const spyCreateUrlCodeFlowWithSilentRenew = vi
-        .spyOn(service as any, 'createUrlCodeFlowWithSilentRenew')
-        .mockReturnValue(undefined);
-      const spyCreateUrlImplicitFlowWithSilentRenew = vi
-        .spyOn(service as any, 'createUrlImplicitFlowWithSilentRenew')
-        .mockReturnValue(undefined);
+      const generateCodeChallengeSpy = vi.spyOn(
+        jwtWindowCryptoService,
+        'generateCodeChallenge'
+      );
 
-      service.getRefreshSessionSilentRenewUrl({ configId: 'configId1' });
-      expect(spyCreateUrlCodeFlowWithSilentRenew).not.toHaveBeenCalled();
-      expect(spyCreateUrlImplicitFlowWithSilentRenew).toHaveBeenCalled();
-    });
+      const result = await firstValueFrom(
+        service.getRefreshSessionSilentRenewUrl(silentRenewConfig)
+      );
 
-    it('should return empty string if flow is not code flow and createUrlImplicitFlowWithSilentRenew returns falsy', async () => {
-      vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(false);
-      const spy = vi
-        .spyOn(service as any, 'createUrlImplicitFlowWithSilentRenew')
-        .mockReturnValue('');
-      const resultObs$ = service.getRefreshSessionSilentRenewUrl({
-        configId: 'configId1',
-      });
-      const result = await firstValueFrom(resultObs$);
-
-      expect(spy).toHaveBeenCalled();
-      expect(result).toBe('');
+      expect(generateCodeChallengeSpy).not.toHaveBeenCalled();
+      expect(result).toBe(
+        'authorizationEndpoint?client_id=clientId&redirect_uri=http%3A%2F%2Fany-url.com&response_type=responseType&scope=testScope&nonce=testNonce&state=testState&prompt=none'
+      );
     });
   });
 
@@ -1664,11 +1683,11 @@ describe('UrlService Tests', () => {
     });
   });
 
-  describe('createUrlImplicitFlowWithSilentRenew', () => {
-    it('should return null if silentrenewUrl is falsy', () => {
+  describe('getRefreshSessionSilentRenewUrl for implicit flow', () => {
+    it('should return null if silentrenewUrl is falsy', async () => {
       const state = 'testState';
       const nonce = 'testNonce';
-      const silentRenewUrl = null;
+      const silentRenewUrl = undefined;
 
       vi.spyOn(
         flowsDataService,
@@ -1679,13 +1698,14 @@ describe('UrlService Tests', () => {
       const config = {
         silentRenewUrl,
       };
-      const serviceAsAny = service as any;
-      const result = serviceAsAny.createUrlImplicitFlowWithSilentRenew(config);
+      const result = await firstValueFrom(
+        service.getRefreshSessionSilentRenewUrl(config)
+      );
 
       expect(result).toBeNull();
     });
 
-    it('should return correct URL if wellknownendpoints are given', () => {
+    it('should return correct URL if wellknownendpoints are given', async () => {
       const state = 'testState';
       const nonce = 'testNonce';
       const silentRenewUrl = 'http://any-url.com';
@@ -1718,15 +1738,16 @@ describe('UrlService Tests', () => {
         }
       );
 
-      const serviceAsAny = service as any;
-      const result = serviceAsAny.createUrlImplicitFlowWithSilentRenew(config);
+      const result = await firstValueFrom(
+        service.getRefreshSessionSilentRenewUrl(config)
+      );
 
       expect(result).toBe(
         `authorizationEndpoint?client_id=${clientId}&redirect_uri=http%3A%2F%2Fany-url.com&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}&prompt=none`
       );
     });
 
-    it('should return null if wellknownendpoints are not given', () => {
+    it('should return null if wellknownendpoints are not given', async () => {
       const state = 'testState';
       const nonce = 'testNonce';
       const silentRenewUrl = 'http://any-url.com';
@@ -1754,20 +1775,21 @@ describe('UrlService Tests', () => {
         }
       );
 
-      const serviceAsAny = service as any;
-      const result = serviceAsAny.createUrlImplicitFlowWithSilentRenew(config);
+      const result = await firstValueFrom(
+        service.getRefreshSessionSilentRenewUrl(config)
+      );
 
       expect(result).toBe(null);
     });
   });
 
-  describe('createUrlCodeFlowWithSilentRenew', () => {
+  describe('getRefreshSessionSilentRenewUrl for code flow', () => {
     it('should return empty string if silentrenewUrl is falsy', async () => {
       const state = 'testState';
       const nonce = 'testNonce';
-      const silentRenewUrl = null;
+      const silentRenewUrl = undefined;
       const codeVerifier = 'codeVerifier';
-      const codeChallenge = 'codeChallenge ';
+      const codeChallenge = 'codeChallenge';
 
       vi.spyOn(
         flowsDataService,
@@ -1784,8 +1806,8 @@ describe('UrlService Tests', () => {
       const config = {
         silentRenewUrl,
       };
-      const serviceAsAny = service as any;
-      const resultObs$ = serviceAsAny.createUrlCodeFlowWithSilentRenew(config);
+      vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
+      const resultObs$ = service.getRefreshSessionSilentRenewUrl(config);
       const result = await firstValueFrom(resultObs$);
 
       expect(result).toBe('');
@@ -1799,7 +1821,7 @@ describe('UrlService Tests', () => {
       const clientId = 'clientId';
       const responseType = 'responseType';
       const codeVerifier = 'codeVerifier';
-      const codeChallenge = 'codeChallenge ';
+      const codeChallenge = 'codeChallenge';
       const scope = 'testScope';
       const config = {
         silentRenewUrl,
@@ -1830,12 +1852,12 @@ describe('UrlService Tests', () => {
         }
       );
 
-      const serviceAsAny = service as any;
-      const resultObs$ = serviceAsAny.createUrlCodeFlowWithSilentRenew(config);
+      vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
+      const resultObs$ = service.getRefreshSessionSilentRenewUrl(config);
       const result = await firstValueFrom(resultObs$);
 
       expect(result).toBe(
-        `authorizationEndpoint?client_id=${clientId}&redirect_uri=http%3A%2F%2Fany-url.com&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}&prompt=none`
+        `authorizationEndpoint?client_id=${clientId}&redirect_uri=http%3A%2F%2Fany-url.com&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}&code_challenge=${codeChallenge}&code_challenge_method=S256&prompt=none`
       );
     });
 
@@ -1846,7 +1868,7 @@ describe('UrlService Tests', () => {
       const clientId = 'clientId';
       const responseType = 'responseType';
       const codeVerifier = 'codeVerifier';
-      const codeChallenge = 'codeChallenge ';
+      const codeChallenge = 'codeChallenge';
       const config = {
         silentRenewUrl,
         clientId,
@@ -1874,16 +1896,16 @@ describe('UrlService Tests', () => {
         }
       );
 
-      const serviceAsAny = service as any;
-      const resultObs$ = serviceAsAny.createUrlCodeFlowWithSilentRenew(config);
+      vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
+      const resultObs$ = service.getRefreshSessionSilentRenewUrl(config);
       const result = await firstValueFrom(resultObs$);
 
       expect(result).toBe('');
     });
   });
 
-  describe('createUrlImplicitFlowAuthorize', () => {
-    it('should return correct URL if wellknownendpoints are given', () => {
+  describe('getAuthorizeUrl for implicit flow', () => {
+    it('should return correct URL if wellknownendpoints are given', async () => {
       const state = 'testState';
       const nonce = 'testNonce';
       const redirectUrl = 'http://any-url.com';
@@ -1914,15 +1936,14 @@ describe('UrlService Tests', () => {
         }
       );
 
-      const serviceAsAny = service as any;
-      const result = serviceAsAny.createUrlImplicitFlowAuthorize(config);
+      const result = await firstValueFrom(service.getAuthorizeUrl(config));
 
       expect(result).toBe(
         `authorizationEndpoint?client_id=clientId&redirect_uri=http%3A%2F%2Fany-url.com&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}`
       );
     });
 
-    it('should return empty string if no wellknownendpoints are given', () => {
+    it('should return empty string and log an error if no wellknownendpoints are given', async () => {
       const state = 'testState';
       const nonce = 'testNonce';
       const redirectUrl = 'http://any-url.com';
@@ -1946,13 +1967,17 @@ describe('UrlService Tests', () => {
         }
       );
 
-      const serviceAsAny = service as any;
-      const result = serviceAsAny.createUrlImplicitFlowAuthorize(config);
+      const logErrorSpy = vi.spyOn(loggerService, 'logError');
+      const result = await firstValueFrom(service.getAuthorizeUrl(config));
 
-      expect(result).toBe(null);
+      expect(result).toBe('');
+      expect(logErrorSpy).toHaveBeenCalledWith(
+        config,
+        'authWellKnownEndpoints is undefined'
+      );
     });
 
-    it('should return null if there is nor redirecturl', () => {
+    it('should return empty string and log an error if there is no redirecturl', async () => {
       const state = 'testState';
       const nonce = 'testNonce';
       const redirectUrl = '';
@@ -1975,35 +2000,19 @@ describe('UrlService Tests', () => {
         }
       );
 
-      const serviceAsAny = service as any;
-      const result = serviceAsAny.createUrlImplicitFlowAuthorize(config);
+      const logErrorSpy = vi.spyOn(loggerService, 'logError');
+      const result = await firstValueFrom(service.getAuthorizeUrl(config));
 
-      expect(result).toBe(null);
+      expect(result).toBe('');
+      expect(logErrorSpy).toHaveBeenCalledWith(
+        config,
+        `could not get redirectUrl, was: `,
+        ''
+      );
     });
   });
 
-  describe('createUrlCodeFlowAuthorize', () => {
-    it('should return null if redirectUrl is falsy', async () => {
-      const state = 'testState';
-      const nonce = 'testNonce';
-      const redirectUrl = null;
-      const config = {
-        redirectUrl,
-      };
-
-      vi.spyOn(
-        flowsDataService,
-        'getExistingOrCreateAuthStateControl'
-      ).mockReturnValue(state);
-      vi.spyOn(flowsDataService, 'createNonce').mockReturnValue(nonce);
-
-      const serviceAsAny = service as any;
-      const resultObs$ = serviceAsAny.createUrlCodeFlowAuthorize(config);
-      const result = await firstValueFrom(resultObs$);
-
-      expect(result).toBeNull();
-    });
-
+  describe('getAuthorizeUrl for code flow', () => {
     it('should return correct URL if wellknownendpoints are given', async () => {
       const state = 'testState';
       const nonce = 'testNonce';
@@ -2013,7 +2022,7 @@ describe('UrlService Tests', () => {
       const clientId = 'clientId';
       const responseType = 'responseType';
       const codeVerifier = 'codeVerifier';
-      const codeChallenge = 'codeChallenge ';
+      const codeChallenge = 'codeChallenge';
       const config = {
         redirectUrl,
         clientId,
@@ -2042,12 +2051,13 @@ describe('UrlService Tests', () => {
         }
       );
 
-      const serviceAsAny = service as any;
-      const resultObs$ = serviceAsAny.createUrlCodeFlowAuthorize(config);
+      vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
+      const resultObs$ = service.getAuthorizeUrl(config);
       const result = await firstValueFrom(resultObs$);
 
       expect(result).toBe(
-        `authorizationEndpoint?client_id=clientId&redirect_uri=http%3A%2F%2Fany-url.com&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}`
+        `authorizationEndpoint?client_id=clientId&redirect_uri=http%3A%2F%2Fany-url.com&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}` +
+          `&code_challenge=${codeChallenge}&code_challenge_method=S256`
       );
     });
 
@@ -2092,15 +2102,16 @@ describe('UrlService Tests', () => {
         }
       );
 
-      const serviceAsAny = service as any;
-      const resultObs$ = serviceAsAny.createUrlCodeFlowAuthorize(config, {
+      vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
+      const resultObs$ = service.getAuthorizeUrl(config, {
         customParams: { to: 'add', as: 'well' },
       });
       const result = await firstValueFrom(resultObs$);
 
       expect(result).toBe(
         `authorizationEndpoint?client_id=clientId&redirect_uri=http%3A%2F%2Fany-url.com` +
-          `&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}&to=add&as=well`
+          `&response_type=${responseType}&scope=${scope}&nonce=${nonce}&state=${state}` +
+          `&code_challenge=${codeChallenge}&code_challenge_method=S256&to=add&as=well`
       );
     });
 
@@ -2111,7 +2122,7 @@ describe('UrlService Tests', () => {
       const clientId = 'clientId';
       const responseType = 'responseType';
       const codeVerifier = 'codeVerifier';
-      const codeChallenge = 'codeChallenge ';
+      const codeChallenge = 'codeChallenge';
       const config = { redirectUrl, clientId, responseType };
 
       vi.spyOn(
@@ -2135,8 +2146,8 @@ describe('UrlService Tests', () => {
         }
       );
 
-      const serviceAsAny = service as any;
-      const resultObs$ = serviceAsAny.createUrlCodeFlowAuthorize(config);
+      vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
+      const resultObs$ = service.getAuthorizeUrl(config);
       const result = await firstValueFrom(resultObs$);
 
       expect(result).toBe('');
