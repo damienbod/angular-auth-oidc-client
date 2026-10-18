@@ -23,9 +23,11 @@ export interface ConfigUserDataResult {
 }
 ```
 
-In case you are running with one configuration, the `ConfigUserDataResult` contains the user data in the `userData` property and the `ConfigUserData[]` returns the same user data with the `configId` filled in case you need it.
+In case you are running with one configuration, `UserDataResult.userData` contains the user data, and `allUserData` (a `ConfigUserDataResult[]`) contains the same user data together with its `configId`, in case you need it.
 
-In case you are running with multiple configs, the `userData` property of `ConfigUserDataResult` is set to `null` and you find your user data per config in the `ConfigUserData[]`.
+In case you are running with multiple configs, `UserDataResult.userData` is `null` and you find the user data per config in `allUserData`.
+
+Before any user data is known, the observable emits `{ userData: null, allUserData: [] }`.
 
 ### Example
 
@@ -179,7 +181,7 @@ console.log(authenticated().allConfigsAuthenticated);
 
 ## checkSessionChanged$
 
-The `checkSessionChanged$` observable emits values every time the server comes back with a check session and the value `changed`. If you want to get information about when the `CheckSession` Event has been received, please take a look at the [public events](public-events.md).
+The `checkSessionChanged$` observable starts with `false` and emits `true` when the check session iframe reports `changed`, or when the session cannot be checked because `session_state` or the `check_session_iframe` endpoint is missing. To get every check session answer (`changed` and `unchanged`), use the `CheckSessionReceived` [public event](public-events.md).
 
 ```ts
 this.checkSessionChanged$ = this.oidcSecurityService.checkSessionChanged$;
@@ -188,6 +190,8 @@ this.checkSessionChanged$ = this.oidcSecurityService.checkSessionChanged$;
 ## stsCallback$
 
 The `stsCallback$` observable emits _after_ the library has handled the possible Security Token Service callback. You can perform initial setups and custom workflows inside your application when the Security Token Service redirects you back to your app.
+
+It is a plain `Subject`: it does not replay, so subscribe before `checkAuth()` runs. It does not emit when handling the callback fails.
 
 ```ts
 this.stsCallback$ = this.oidcSecurityService.stsCallback$;
@@ -250,6 +254,8 @@ Specifically, `checkAuth()` does three things:
 2. **Restores an existing session** from storage if one is present, so a page refresh keeps the user signed in.
 3. **Starts silent token renewal** and the periodic token-validity check, if configured.
 
+Step 3 only happens when the user is authenticated afterwards. If no configuration matches the passed `configId`, or the `state` in the URL, the returned observable errors (`Please provide a configuration before setting up the module` / `could not find matching config for state ...`). Failures while processing the callback do not error: they resolve with `isAuthenticated: false` and the reason in `errorMessage`.
+
 It returns an `Observable<LoginResponse>` describing the result:
 
 ```ts
@@ -258,8 +264,9 @@ It returns an `Observable<LoginResponse>` describing the result:
   userData: any;
   accessToken: string;
   idToken: string;
-  configId: string;
+  configId?: string;
   errorMessage?: string;
+  errorDescription?: string;
 }
 ```
 
@@ -292,7 +299,7 @@ The multi-config equivalent of [`checkAuth()`](#checkauthurl-string-configid-str
 
 It does the same three things as `checkAuth()` (processes the callback, restores stored sessions, starts silent renewal), applied to every registered config.
 
-It returns an `Observable<LoginResponse[]>` — one `LoginResponse` per config, in registration order — so you can see the status of each.
+It returns an `Observable<LoginResponse[]>` with one `LoginResponse` per config, so you can see the status of each. Normally they come in registration order. When the URL is a callback (it contains a `state`), the config matching that state comes first, followed by the others.
 
 ```ts
 [
@@ -301,8 +308,9 @@ It returns an `Observable<LoginResponse[]>` — one `LoginResponse` per config, 
     userData: any;
     accessToken: string;
     idToken: string;
-    configId: string;
+    configId?: string;
     errorMessage?: string;
+    errorDescription?: string;
   }
 ]
 ```
@@ -313,7 +321,7 @@ this.oidcSecurityService.checkAuthMultiple().subscribe((responses: LoginResponse
 });
 ```
 
-You can also pass a `configId` to check for as well as a URL in case you want to overwrite the one in the address bar from the browser. This is useful for mobile or desktop cases like Electron or Cordova/Ionic.
+You can also pass a URL in case you want to override the one in the browser's address bar. This is useful for mobile or desktop cases like Electron or Cordova/Ionic.
 
 ```ts
 const url = '...';
@@ -327,6 +335,8 @@ this.oidcSecurityService.checkAuthMultiple(url).subscribe((responses: LoginRespo
 
 This method provides information if a config is authenticated or not as an `Observable<boolean>` return value.
 If you are running with multiple configs and pass the `configId` the authentication for this config is checked. If you are running with multiple configs and do not pass the `configId` the authentication for the first config is checked. If you are running with a single config this configuration is checked if you are authenticated.
+
+The value only tells whether an access token and an id token are stored. It does not check whether they have expired. If no configuration is found for the `configId`, it emits `false`.
 
 ```ts
 this.oidcSecurityService.isAuthenticated().subscribe((isAuthenticated)=> ... );
@@ -352,12 +362,15 @@ Returns an `Observable<LoginResponse>`.
   userData: any;
   accessToken: string;
   idToken: string;
-  configId: string;
+  configId?: string;
   errorMessage?: string;
+  errorDescription?: string;
 }
 ```
 
 If you are running with multiple configs and pass the `configId` the authentication for this config is checked. If you are running with multiple configs and do not pass the `configId` the authentication for the first config is checked. If you are running with a single config this configuration is checked if you are authenticated.
+
+If no configuration is found for the `configId`, the observable errors.
 
 ```ts
 this.oidcSecurityService.checkAuthIncludingServer().subscribe(/*...*/);
@@ -370,7 +383,9 @@ this.oidcSecurityService.checkAuthIncludingServer('configId').subscribe(/*...*/)
 ## getAccessToken(configId?: string):
 
 Returns the access token for your login scenario as an `Observable<string>`.
-If you are running with multiple configs and pass the `configId` the access token for this config is returned. If you are running with multiple configs and do not pass the `configId` the access token for the first config is returned. If you are running with a single config the access token for this config returned.
+If you are running with multiple configs and pass the `configId` the access token for this config is returned. If you are running with multiple configs and do not pass the `configId` the access token for the first config is returned. If you are running with a single config the access token for this config is returned.
+
+Emits an empty string if no configuration is found or the user is not authenticated.
 
 ```ts
 this.oidcSecurityService.getAccessToken().subscribe(/*...*/);
@@ -383,7 +398,9 @@ this.oidcSecurityService.getAccessToken('configId').subscribe(/*...*/);
 ## getIdToken(configId?: string):
 
 Returns the id token for your login scenario as an `Observable<string>`.
-If you are running with multiple configs and pass the `configId` the id token for this config is returned. If you are running with multiple configs and do not pass the `configId` the id token for the first config is returned. If you are running with a single config the id token for this config returned.
+If you are running with multiple configs and pass the `configId` the id token for this config is returned. If you are running with multiple configs and do not pass the `configId` the id token for the first config is returned. If you are running with a single config the id token for this config is returned.
+
+Emits an empty string if no configuration is found or the user is not authenticated.
 
 ```ts
 this.oidcSecurityService.getIdToken().subscribe(/*...*/);
@@ -398,6 +415,8 @@ this.oidcSecurityService.getIdToken('configId').subscribe(/*...*/);
 Returns the refresh token as an `Observable<string>` for your login scenario if there is one.
 If you are running with multiple configs and pass a `configId`, the refresh token for this config is returned. If you are running with multiple configs and do not pass the `configId`, the refresh token for the first config is returned. If you are running with a single config, the refresh token for this config is returned.
 
+Emits an empty string if no configuration is found or the user is not authenticated.
+
 ```ts
 this.oidcSecurityService.getRefreshToken().subscribe(/*...*/);
 ```
@@ -408,7 +427,9 @@ this.oidcSecurityService.getRefreshToken('configId').subscribe(/*...*/);
 
 ## getAuthenticationResult(configId?: string)
 
-Returns the authentication result as an `Observable`, if present, for the sign-in. The `configId` parameter is used to define which configuration to use. This is only required when using multiple configurations. If not passed, the first config will be taken. An object with the authentication result is returned.
+Returns the authentication result as an `Observable`, if present, for the sign-in. The `configId` parameter is used to define which configuration to use. This is only required when using multiple configurations. If not passed, the first config will be taken.
+
+Returns an `Observable<AuthResult | null>`. It emits `null` if no configuration is found or the user is not authenticated.
 
 ```ts
 this.oidcSecurityService.getAuthenticationResult().subscribe(/*...*/);
@@ -423,7 +444,7 @@ this.oidcSecurityService.getAuthenticationResult('configId').subscribe(/*...*/);
 Returns the payload from the id_token as an `Observable`. This can be used to get claims from the token.
 If you are running with multiple configs and pass a `configId`, the payload for this config is returned. If you are running with multiple configs and do not pass a `configId`, the payload for the first config is returned. If you are running with a single config, the payload for this config returned.
 
-The `encode` param has to be set to `true` if the payload is base64 encoded.
+By default (`encode = false`) the payload is decoded and returned as an object. Set `encode` to `true` to get the raw, base64url-encoded payload part of the token as a string instead. If there is no valid token, or no configuration is found, `{}` is emitted.
 
 ```ts
 this.oidcSecurityService.getPayloadFromIdToken().subscribe(/*...*/);
@@ -438,7 +459,7 @@ this.oidcSecurityService.getPayloadFromIdToken(true, 'configId').subscribe(/*...
 Returns the payload from the access token as an `Observable`. This can be used to get claims from the token.
 If you are running with multiple configs and pass a `configId`, the payload for this config is returned. If you are running with multiple configs and do not pass a `configId`, the payload for the first config is returned. If you are running with a single config, the payload for this config returned.
 
-The `encode` param has to be set to `true` if the payload is base64 encoded.
+By default (`encode = false`) the payload is decoded and returned as an object. Set `encode` to `true` to get the raw, base64url-encoded payload part of the token as a string instead. If there is no valid token, or no configuration is found, `{}` is emitted.
 
 ```ts
 this.oidcSecurityService.getPayloadFromAccessToken().subscribe(/*...*/);
@@ -453,6 +474,8 @@ this.oidcSecurityService.getPayloadFromAccessToken(true, 'configId').subscribe(/
 You can set the state value used for the authorize request, if you have `autoCleanStateAfterAuthentication` in the configuration set to `false`. This can be used for custom state logic handling, the state is not automatically reset when set to `false`.
 If you are running with multiple configs and pass a `configId`, the passed config is taken. If you are running with multiple configs and do not pass a `configId`, the first config is taken. If you are running with a single config, then this config is taken.
 
+Returns an `Observable<boolean>` that tells whether the state was written. It is `false` if no configuration is found.
+
 ```ts
 this.oidcSecurityService.setState('some-state').subscribe(/*...*/);
 ```
@@ -465,6 +488,8 @@ this.oidcSecurityService.setState('some-state', 'configId').subscribe(/*...*/);
 
 Returns the state value used for the authorize request as an `Observable`.
 If you are running with multiple configs and pass a `configId`, the passed config is taken. If you are running with multiple configs and do not pass a `configId`, the first config is taken. If you are running with a single config, then this config is taken.
+
+Emits an empty string if no configuration is found.
 
 ```ts
 this.oidcSecurityService.getState().subscribe(/*...*/);
@@ -482,12 +507,14 @@ this.oidcSecurityService.getState('configId').subscribe(/*...*/);
 
 This method takes a `configId` if you want to target a specific config and an `authOptions` object with `customParams` or `redirectUrl` for per-call customization. It also accepts a `urlHandler` that is called instead of the redirect (useful if you need to construct the navigation yourself).
 
+If no configuration is found for the `configId`, an error is thrown and reported as an unhandled error.
+
 See also: [Custom parameters](custom-parameters.md).
 
 ```ts
 export interface AuthOptions {
   customParams?: { [key: string]: string | number | boolean };
-  urlHandler?(url: string): any;
+  urlHandler?(url: string): void;
   redirectUrl?: string;
 }
 ```
@@ -521,10 +548,13 @@ The method returns an `Observable<LoginResponse>` containing
   userData: any;
   accessToken: string;
   idToken: string;
-  configId: string;
+  configId?: string;
   errorMessage?: string;
+  errorDescription?: string;
 }
 ```
+
+If the user closes the popup, the observable emits a `LoginResponse` with `isAuthenticated: false` and `errorMessage: 'User closed popup'`. If no configuration is found for the `configId`, the observable errors.
 
 ```ts
 export interface PopupOptions {
@@ -538,7 +568,7 @@ export interface PopupOptions {
 ```ts
 export interface AuthOptions {
   customParams?: { [key: string]: string | number | boolean };
-  urlHandler?(url: string): any;
+  urlHandler?(url: string): void;
   redirectUrl?: string;
 }
 ```
@@ -563,7 +593,7 @@ const authOptions = {
 };
 
 this.oidcSecurityService
-  .authorizeWithPopUp(authOptions, null, 'configId')
+  .authorizeWithPopUp(authOptions, undefined, 'configId')
   .subscribe(({ isAuthenticated, userData, accessToken, idToken, configId }) => {
     // ...use data
   });
@@ -571,7 +601,7 @@ this.oidcSecurityService
 
 ## forceRefreshSession(customParams?: { ... }, configId?: string)
 
-This method provides the functionality to manually refresh the session at any time you require. If a current process is running this method will do nothing. After the run is finished the method forces to refresh again.
+This method manually refreshes the session at any time you require. If a refresh for this config is already running, no second refresh is started: the method waits for the running one to finish and returns its result. If the refresh fails with an error, or times out (`silentRenewTimeoutInSeconds`), the returned observable errors. If no configuration is found, the observable errors.
 
 This method takes `customParams` for this request as well as a `configId` as parameter if you want to use a specific config. If you are running with multiple configs and pass a `configId`, the passed config is taken. If you are running with multiple configs and do not pass a `configId`, the first config is taken. If you are running with a single config, then this config is taken.
 
@@ -587,7 +617,7 @@ The method returns an `Observable<LoginResponse>` containing
   userData: any;
   accessToken: string;
   idToken: string;
-  configId: string;
+  configId?: string;
   errorMessage?: string;
   errorDescription?: string;
 }
@@ -602,13 +632,15 @@ this.oidcSecurityService.forceRefreshSession().subscribe(({ isAuthenticated, use
 ```
 
 ```ts
-const customParams: {
+const customParams = {
   some: 'params',
-}
+};
 
 this.oidcSecurityService
   .forceRefreshSession(customParams, 'configId')
   .subscribe(({ isAuthenticated, userData, accessToken, idToken, configId }) => {
+    // ...use data
+  });
 ```
 
 ## logoffAndRevokeTokens(configId?: string, logoutAuthOptions?: LogoutAuthOptions)
@@ -616,6 +648,8 @@ this.oidcSecurityService
 With this method the user is being logged out and the refresh token and the access token are revoked on the server. If the refresh token does not exist only the access token is revoked. Then the logout runs normally.
 
 This method takes a `configId` and `logoutAuthOptions` as parameter and returns an observable. If you are running with multiple configs and pass the `configId` the passed config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
+
+If the identity provider has no revocation endpoint, only `logoff()` runs. If revocation fails, the observable errors and no logout happens.
 
 ```ts
 this.oidcSecurityService.logoffAndRevokeTokens().subscribe(/* ... */);
@@ -636,7 +670,17 @@ this.oidcSecurityService.logoffAndRevokeTokens('configId', logoutAuthOptions).su
 
 ## logoff(configId?: string, logoutAuthOptions?: LogoutAuthOptions)
 
-This method logs out on the server and the local client. If the server state has changed, check session, then only a local logout. The method takes a `configId` and `logoutAuthOptions` as parameter. If you are running with multiple configs and pass the `configId` the passed config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
+This method logs out on the server and the local client. Nothing happens until you subscribe. If no end session endpoint is available, or the check session reported that the server state changed, no server logout happens and the observable emits `null`. Note that the local session is **not** cleared in that case; call [`logoffLocal()`](#logofflocalconfigid-string) if you need it cleared. In all other cases the local auth data is cleared before the redirect or POST. The method takes a `configId` and `logoutAuthOptions` as parameter. If you are running with multiple configs and pass the `configId` the passed config is taken. If you are running with multiple configs and do not pass the `configId` the first config is taken. If you are running with a single config this config is taken.
+
+`LogoutAuthOptions` accepts `customParams`, `urlHandler` and `logoffMethod`. With `logoffMethod: 'GET'` (Default = _'GET'_) the browser is redirected to the end session endpoint. With `'POST'` the end session request is sent with HTTP and the observable emits the response.
+
+```ts
+export interface LogoutAuthOptions {
+  customParams?: { [key: string]: string | number | boolean };
+  urlHandler?(url: string): void;
+  logoffMethod?: 'GET' | 'POST';
+}
+```
 
 The method returns an `Observable<unknown>`.
 
@@ -693,6 +737,8 @@ this.oidcSecurityService.revokeAccessToken().subscribe(/* ... */);
 this.oidcSecurityService.revokeAccessToken('accessToken', 'configId').subscribe(/* ... */);
 ```
 
+The request is retried twice. If it still fails, or no configuration is found, the observable errors.
+
 More info: [https://tools.ietf.org/html/rfc7009](https://tools.ietf.org/html/rfc7009)
 
 ## revokeRefreshToken(refreshToken?: any, configId?: string)
@@ -709,11 +755,15 @@ this.oidcSecurityService.revokeRefreshToken().subscribe(/* ... */);
 this.oidcSecurityService.revokeRefreshToken('refreshToken', 'configId').subscribe(/* ... */);
 ```
 
+The request is retried twice. If it still fails, or no configuration is found, the observable errors.
+
 More info: [https://tools.ietf.org/html/rfc7009](https://tools.ietf.org/html/rfc7009)
 
 ## getEndSessionUrl(customParams?: { ... }, configId?: string)
 
 Creates the end session URL which can be used to implement your own custom server logout. You can pass custom params directly into the method. This method also takes a `configId`. If you are running with multiple configs and pass a `configId`, the passed config is taken. If you are running with multiple configs and do not pass a `configId`, the first config is taken. If you are running with a single config, then this config is taken.
+
+Returns an `Observable<string | null>`. It emits `null` if no configuration or no end session endpoint is found.
 
 ```ts
 this.oidcSecurityService.getEndSessionUrl().subscribe(/* ... */);
@@ -731,7 +781,7 @@ this.oidcSecurityService.getEndSessionUrl(customParams, 'configId').subscribe(/*
 
 Creates the authorize URL which can be used to get the URL for the authentication the lib uses internally. You can pass custom params directly into the method. This method also takes a `configId`. If you are running with multiple configs and pass a `configId`, the passed config is taken. If you are running with multiple configs and do not pass a `configId`, the first config is taken. If you are running with a single config this config is taken.
 
-The method returns an `Observable<string | null>`.
+The method returns an `Observable<string | null>`. It emits `null` if no configuration or redirect URL is found, and an empty string if the well-known endpoints are not loaded yet (call `preloadAuthWellKnownDocument()` first). Calling it creates and stores a new nonce and PKCE code verifier, just as a login does.
 
 ```ts
 this.oidcSecurityService.getAuthorizeUrl().subscribe((authorizeUrl) => {
