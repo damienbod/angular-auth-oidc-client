@@ -127,7 +127,7 @@ describe('EqualityService Tests', () => {
       expect(result).toBe(false);
     });
 
-    it('array and string (same) return true', () => {
+    it('array and string (different) return false', () => {
       const array1 = ['somestring1'];
       const string2 = 'somestring';
       const result = equalityHelperService.areEqual(array1, string2);
@@ -141,7 +141,7 @@ describe('EqualityService Tests', () => {
       expect(result).toBe(false);
     });
 
-    it('boolean and boolean return false', () => {
+    it('boolean and boolean (same) return true', () => {
       const result = equalityHelperService.areEqual(true, true);
 
       expect(result).toBe(true);

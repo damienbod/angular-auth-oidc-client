@@ -105,6 +105,9 @@ test('logs out through the end session endpoint', async ({ page }) => {
   await expectAuthenticated(page);
 
   const logoutRequest = page.waitForRequest(isLogoutRequest());
+  // Back on the app, the guard on /home starts a new login right away. The
+  // test IdP keeps its SSO session after logout, so the user is logged in again.
+  const reLogin = page.waitForRequest(isTokenRequest('authorization_code'));
 
   await navLink(page, 'Logout').click();
 
@@ -115,8 +118,6 @@ test('logs out through the end session endpoint', async ({ page }) => {
     new URL(page.url()).origin
   );
 
-  // Back on the app, the guard on /home starts a new login right away. The
-  // test IdP keeps its SSO session after logout, so the user is logged in again.
-  await page.waitForRequest(isTokenRequest('authorization_code'));
+  await reLogin;
   await expectAuthenticated(page);
 });

@@ -105,21 +105,21 @@ describe('UrlService Tests', () => {
     it(`should return false if config says to check redirect URI, and it doesn't match`, () => {
       const nonMatchingUrls = [
         {
-          url: 'https://the-redirect.url',
+          url: 'https://the-redirect.url?code=anycode',
           config: {
             redirectUrl: 'https://the-redirect.url?with=parameter',
             checkRedirectUrlWhenCheckingIfIsCallback: true,
           },
         },
         {
-          url: 'https://the-redirect.url?wrong=parameter',
+          url: 'https://the-redirect.url?wrong=parameter&code=anycode',
           config: {
             redirectUrl: 'https://the-redirect.url?with=parameter',
             checkRedirectUrlWhenCheckingIfIsCallback: true,
           },
         },
         {
-          url: 'https://not-the-redirect.url',
+          url: 'https://not-the-redirect.url?code=anycode',
           config: {
             redirectUrl: 'https://the-redirect.url',
             checkRedirectUrlWhenCheckingIfIsCallback: true,
@@ -128,6 +128,8 @@ describe('UrlService Tests', () => {
       ];
 
       nonMatchingUrls.forEach((nmu) => {
+        // sanity check: without the redirect check the url is a callback
+        expect(service.isCallbackFromSts(nmu.url)).toBe(true);
         expect(service.isCallbackFromSts(nmu.url, nmu.config)).toBe(false);
       });
     });
@@ -1146,7 +1148,7 @@ describe('UrlService Tests', () => {
       expect(result).toBe('');
     });
 
-    it('returns url if current flow is code flow, config disabled pkce, there is a redirecturl and awkep are given', async () => {
+    it('returns url if current flow is code flow, pkce enabled, there is a redirecturl and awkep are given', async () => {
       vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
       const config = {
         configId: 'configId1',
@@ -1253,7 +1255,7 @@ describe('UrlService Tests', () => {
       vi.spyOn(flowsDataService, 'getCodeVerifier').mockReturnValue(null);
       const result = service.createBodyForCodeFlowCodeRequest(
         'notRelevantParam',
-        { configId: 'configId1' }
+        { configId: 'configId1', clientId: 'clientId' }
       );
 
       expect(result).toBeNull();
@@ -1355,7 +1357,7 @@ describe('UrlService Tests', () => {
       expect(result).toBe(expected);
     });
 
-    it('returns null if pkce is disabled and no code verifier is given', () => {
+    it('returns null if pkce is enabled and no code verifier is given', () => {
       const code = 'code';
       const customTokenParams = { foo: 'bar' };
       const config = {
@@ -1655,7 +1657,7 @@ describe('UrlService Tests', () => {
       );
     });
 
-    it('returns correct url if wellknownendpoints are not given', () => {
+    it('returns null if wellknownendpoints are not given', () => {
       const state = 'testState';
       const nonce = 'testNonce';
       const silentRenewUrl = 'http://any-url.com';

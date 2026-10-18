@@ -51,7 +51,7 @@ describe('Flow Helper Service', () => {
     );
   });
 
-  it('currentFlowIs returns true if current flow is code flow', () => {
+  it('currentFlowIs returns false if current flow is not code flow', () => {
     const config = { responseType: 'id_token token' };
 
     expect(flowHelper.currentFlowIs('code', config)).toBe(false);
@@ -103,7 +103,7 @@ describe('Flow Helper Service', () => {
   });
 
   it('isCurrentFlowCodeFlowWithRefreshTokens return false if useRefreshToken is set to false', () => {
-    const config = { responseType: 'not code', useRefreshToken: false };
+    const config = { responseType: 'code', useRefreshToken: false };
     const result = flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(config);
 
     expect(result).toBe(false);

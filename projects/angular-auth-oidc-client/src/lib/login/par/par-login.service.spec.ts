@@ -69,10 +69,15 @@ describe('ParLoginService', () => {
       const loggerSpy = vi
         .spyOn(loggerService, 'logError')
         .mockReturnValue(undefined);
+      const queryAndStoreAuthWellKnownEndPointsSpy = vi.spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      );
 
       service.loginPar({});
 
       expect(loggerSpy).toHaveBeenCalled();
+      expect(queryAndStoreAuthWellKnownEndPointsSpy).not.toHaveBeenCalled();
     });
 
     it('calls parService.postParRequest without custom params when no custom params are passed', () => {

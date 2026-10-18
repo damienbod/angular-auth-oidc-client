@@ -167,7 +167,7 @@ test('logs out through the end session endpoint', async ({ page }) => {
   expect(logoutUrl.origin + logoutUrl.pathname).toBe(`${idp()}/logout`);
   expect(logoutUrl.searchParams.get('id_token_hint')).toBeTruthy();
   expect(logoutUrl.searchParams.get('post_logout_redirect_uri')).toBe(
-    'http://localhost:4204'
+    'http://localhost:4318'
   );
 
   await expectUnauthenticated(page);

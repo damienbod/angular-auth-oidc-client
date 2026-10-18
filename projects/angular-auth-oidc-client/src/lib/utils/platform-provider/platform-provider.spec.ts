@@ -30,7 +30,7 @@ describe('PlatformProvider Tests', () => {
     expect(service.isBrowser()).toBe(true);
   });
 
-  it('isBrowser equals true if "isPlatformBrowser" is true', () => {
+  it('isBrowser equals false if "isPlatformBrowser" is false', () => {
     TestBed.configureTestingModule({
       providers: [
         PlatformProvider,

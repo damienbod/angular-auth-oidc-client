@@ -77,7 +77,7 @@ describe('Logger Service', () => {
       const spy = vi.spyOn(console, 'warn').mockReturnValue(undefined);
 
       loggerService.logWarning(
-        { configId: 'configId1', logLevel: undefined },
+        { configId: 'configId1', logLevel: null as any },
         'some message'
       );
       expect(spy).not.toHaveBeenCalled();
@@ -174,7 +174,7 @@ describe('Logger Service', () => {
       const spy = vi.spyOn(console, 'debug').mockReturnValue(undefined);
 
       loggerService.logDebug(
-        { configId: 'configId1', logLevel: undefined },
+        { configId: 'configId1', logLevel: null as any },
         'some message'
       );
       expect(spy).not.toHaveBeenCalled();

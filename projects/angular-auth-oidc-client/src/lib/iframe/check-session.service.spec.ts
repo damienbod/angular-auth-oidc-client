@@ -79,13 +79,17 @@ describe('CheckSessionService', () => {
   });
 
   it('getOrCreateIframe returns true if document found on window.document', () => {
-    iFrameService.addIFrameToWindowBody('myiFrameForCheckSession', {
-      configId: 'configId1',
-    });
-
+    const existingIframe = iFrameService.addIFrameToWindowBody(
+      'myiFrameForCheckSession',
+      {
+        configId: 'configId1',
+      }
+    );
+    const addIFrameSpy = vi.spyOn(iFrameService, 'addIFrameToWindowBody');
     const result = (checkSessionService as any).getOrCreateIframe();
 
-    expect(result).toBeDefined();
+    expect(result).toBe(existingIframe);
+    expect(addIFrameSpy).not.toHaveBeenCalled();
   });
 
   it('init appends iframe on body with correct values', () => {
@@ -104,7 +108,7 @@ describe('CheckSessionService', () => {
     expect(iframe.style.display).toBe('none');
     const iFrame = document.getElementById('myiFrameForCheckSession');
 
-    expect(iFrame).toBeDefined();
+    expect(iFrame).toBe(iframe);
   });
 
   it('log warning if authWellKnownEndpoints.check_session_iframe is not existing', () => {
@@ -173,8 +177,7 @@ describe('CheckSessionService', () => {
       .mockReturnValue(undefined);
 
     checkSessionService.stop();
-    expect(spy).not.toHaveBeenCalledTimes(1);
-    expect(spy).not.toHaveBeenCalledWith();
+    expect(spy).not.toHaveBeenCalled();
   });
 
   describe('serverStateChanged', () => {
@@ -561,7 +564,7 @@ describe('CheckSessionService', () => {
       expect(result).toBe(true);
     });
 
-    it('returns true if startCheckSession on config is true', () => {
+    it('returns false if startCheckSession on config is false', () => {
       const config = { configId: 'configId1', startCheckSession: false };
       const result = checkSessionService.isCheckSessionConfigured(config);
 

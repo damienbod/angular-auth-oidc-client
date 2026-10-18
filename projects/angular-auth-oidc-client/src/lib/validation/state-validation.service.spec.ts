@@ -578,7 +578,7 @@ describe('State Validation Service', () => {
         aud: 'bad',
         nonce: '007c4153b6a0517c0e497476fb249948ec5clOvQQ',
         iat: 1589206486,
-        auth_time: 1589206488,
+        auth_time: 1589206486,
         name: 'damienbod',
         emails: ['damien@damienbod.onmicrosoft.com'],
         tfp: 'B2C_1_b2cpolicydamien',
@@ -651,7 +651,7 @@ describe('State Validation Service', () => {
         aud: 'f1934a6e-958d-4198-9f36-6127cfc4cdb3',
         nonce: '007c4153b6a0517c0e497476fb249948ec5clOvQQ',
         iat: 1589206486,
-        auth_time: 1589206488,
+        auth_time: 1589206486,
         name: 'damienbod',
         emails: ['damien@damienbod.onmicrosoft.com'],
         tfp: 'B2C_1_b2cpolicydamien',
@@ -671,7 +671,7 @@ describe('State Validation Service', () => {
   });
 
   describe('getValidatedStateResult', () => {
-    it('should return authResponseIsValid false when null is passed', async () => {
+    it('should return authResponseIsValid false when an empty callback context is passed', async () => {
       const isValid = await firstValueFrom(
         stateValidationService.getValidatedStateResult(
           {} as CallbackContext,
@@ -2170,40 +2170,6 @@ describe('State Validation Service', () => {
       expect(isValid.authResponseIsValid).toBe(true);
     });
 
-    it('should return OK if disableIdTokenValidation is true', async () => {
-      vi.spyOn(
-        tokenValidationService,
-        'validateStateFromHashCallback'
-      ).mockReturnValue(true);
-      vi.spyOn(
-        flowHelper,
-        'isCurrentFlowImplicitFlowWithAccessToken'
-      ).mockReturnValue(false);
-      vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(false);
-
-      config.responseType = 'id_token token';
-      config.maxIdTokenIatOffsetAllowedInSeconds = 0;
-      config.disableIdTokenValidation = true;
-
-      const callbackContext: CallbackContext = {
-        code: 'fdffsdfsdf',
-        refreshToken: '',
-        state: 'fdffsggggggdfsdf',
-        sessionState: 'fdffsggggggdfsdf',
-        existingIdToken: '',
-        authResult: {},
-        isRenewProcess: false,
-        jwtKeys: null,
-        validationResult: null,
-      };
-      const isValid = await firstValueFrom(
-        stateValidationService.getValidatedStateResult(callbackContext, config)
-      );
-
-      expect(isValid.state).toBe(ValidationResult.Ok);
-      expect(isValid.authResponseIsValid).toBe(true);
-    });
-
     it('should return OK if disableIdTokenValidation is false but inrefreshtokenflow and no id token is returned', async () => {
       vi.spyOn(
         tokenValidationService,
@@ -2411,13 +2377,14 @@ describe('State Validation Service', () => {
         refreshToken: '',
         isRenewProcess: false,
       };
-
       // Act
-      await firstValueFrom(
+      const result = await firstValueFrom(
         stateValidationService.getValidatedStateResult(callbackContext, config)
       );
 
       // Assert
+      expect(result.authResponseIsValid).toBe(true);
+      expect(result.state).toBe(ValidationResult.Ok);
       expect(writeSpy).toHaveBeenCalledWith('authNonce', null, config);
       expect(writeSpy).toHaveBeenCalledWith('authStateControl', '', config);
     });

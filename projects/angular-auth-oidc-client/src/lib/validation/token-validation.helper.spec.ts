@@ -62,7 +62,7 @@ describe('alg2kty', () => {
     expect(result).toEqual('EC');
   });
 
-  it('returns correct result if algorithm is E', () => {
+  it('throws if algorithm is neither R nor E', () => {
     const algorithm = 'SOMETHING_ELSE';
 
     expect(() => alg2kty(algorithm)).toThrow(

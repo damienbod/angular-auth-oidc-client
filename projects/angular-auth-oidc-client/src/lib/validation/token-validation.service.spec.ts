@@ -181,7 +181,7 @@ describe('TokenValidationService', () => {
       expect(result).toBe(false);
     });
 
-    it('returns false if aud is array, ength is bigger than 1 and has no azp property', () => {
+    it('returns false if dataIdToken is null', () => {
       const result =
         tokenValidationService.validateIdTokenAzpExistsIfMoreThanOneAud(null);
 
@@ -438,9 +438,9 @@ describe('TokenValidationService', () => {
       expect(result).toBe(false);
     });
 
-    it('returns true if time is Mon Jan 19 1970 10:26:46 GMT+0100, and the offset is big like 500000000000 seconds', () => {
+    it('returns true if iat is in the past (May 2020), and the offset is big like 500000000000 seconds', () => {
       const decodedIdToken = {
-        iat: 1589206486, // Mon Jan 19 1970 10:26:46 GMT+0100 (Central European Standard Time)
+        iat: 1589206486, // Mon May 11 2020 14:14:46 GMT+0000 (in the past)
       };
       const valueTrue = tokenValidationService.validateIdTokenIatMaxOffset(
         decodedIdToken,
@@ -452,9 +452,9 @@ describe('TokenValidationService', () => {
       expect(valueTrue).toEqual(true);
     });
 
-    it('returns false if time is Sat Nov 09 1985 02:47:57 GMT+0100, and the offset is 0 seconds', () => {
+    it('returns false if iat is far in the future, and the offset is 0 seconds', () => {
       const decodedIdTokenNegIat = {
-        iat: 500348877430, // Sat Nov 09 1985 02:47:57 GMT+0100 (Central European Standard Time)
+        iat: 500348877430, // seconds since epoch -> far in the future
       };
       const valueFalseNeg = tokenValidationService.validateIdTokenIatMaxOffset(
         decodedIdTokenNegIat,
@@ -466,9 +466,9 @@ describe('TokenValidationService', () => {
       expect(valueFalseNeg).toEqual(false);
     });
 
-    it('returns true if time is Mon Jan 19 1970 10:26:46 GMT+0100, and the offset is small like 5 seconds', () => {
+    it('returns false if iat is in the past (May 2020), and the offset is small like 5 seconds', () => {
       const decodedIdToken = {
-        iat: 1589206486, // Mon Jan 19 1970 10:26:46 GMT+0100 (Central European Standard Time)
+        iat: 1589206486, // Mon May 11 2020 14:14:46 GMT+0000 (in the past)
       };
       const valueFalse = tokenValidationService.validateIdTokenIatMaxOffset(
         decodedIdToken,
@@ -578,10 +578,9 @@ describe('TokenValidationService', () => {
         jwtKeys,
         { configId: 'configId1' }
       );
+      const valueFalse = await firstValueFrom(valueFalse$);
 
-      valueFalse$.subscribe((valueFalse) => {
-        expect(valueFalse).toEqual(false);
-      });
+      expect(valueFalse).toEqual(false);
     });
 
     it('should return true if valid input is provided', async () => {
@@ -616,10 +615,9 @@ describe('TokenValidationService', () => {
         jwtKeys,
         { configId: 'configId1' }
       );
+      const valueTrue = await firstValueFrom(valueTrue$);
 
-      valueTrue$.subscribe((valueTrue) => {
-        expect(valueTrue).toEqual(true);
-      });
+      expect(valueTrue).toEqual(true);
     });
   });
 
@@ -633,10 +631,9 @@ describe('TokenValidationService', () => {
         '256',
         { configId: 'configId1' }
       );
+      const result = await firstValueFrom(result$);
 
-      result$.subscribe((result) => {
-        expect(result).toEqual(true);
-      });
+      expect(result).toEqual(true);
     });
 
     it('returns false if sha is sha256 and generated hash does not equal atHash param', async () => {
@@ -649,10 +646,9 @@ describe('TokenValidationService', () => {
         '256',
         { configId: 'configId1' }
       );
+      const result = await firstValueFrom(result$);
 
-      result$.subscribe((result) => {
-        expect(result).toEqual(false);
-      });
+      expect(result).toEqual(false);
     });
 
     it('returns true if sha is sha256 and generated hash does equal atHash param', async () => {
@@ -670,10 +666,9 @@ describe('TokenValidationService', () => {
         '256',
         { configId: 'configId1' }
       );
+      const result = await firstValueFrom(result$);
 
-      result$.subscribe((result) => {
-        expect(result).toEqual(true);
-      });
+      expect(result).toEqual(true);
     });
 
     it('returns false if sha is sha384 and generated hash does not equal atHash param', async () => {
@@ -686,10 +681,9 @@ describe('TokenValidationService', () => {
         '384',
         { configId: 'configId1' }
       );
+      const result = await firstValueFrom(result$);
 
-      result$.subscribe((result) => {
-        expect(result).toEqual(false);
-      });
+      expect(result).toEqual(false);
     });
 
     it('returns false if sha is sha512 and generated hash does not equal atHash param', async () => {
@@ -702,10 +696,9 @@ describe('TokenValidationService', () => {
         '512',
         { configId: 'configId1' }
       );
+      const result = await firstValueFrom(result$);
 
-      result$.subscribe((result) => {
-        expect(result).toEqual(false);
-      });
+      expect(result).toEqual(false);
     });
   });
 
@@ -745,7 +738,11 @@ describe('TokenValidationService', () => {
       expect(notExpired).toEqual(false);
     });
 
-    it('returns false if token is not expired', () => {
+    it('returns false if token is expired', () => {
+      // exp: 1589210086 -> Mon May 11 2020 15:14:46 GMT+0000
+      vi.spyOn(tokenHelperService, 'getTokenExpirationDate').mockReturnValue(
+        new Date(1589210086 * 1000)
+      );
       const idToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
       const notExpired = tokenValidationService.validateIdTokenExpNotExpired(
@@ -794,6 +791,10 @@ describe('TokenValidationService', () => {
 
   describe('hasIdTokenExpired', () => {
     it('returns true if token has expired', () => {
+      // exp: 1589210086 -> Mon May 11 2020 15:14:46 GMT+0000
+      vi.spyOn(tokenHelperService, 'getTokenExpirationDate').mockReturnValue(
+        new Date(1589210086 * 1000)
+      );
       const idToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
       const result = tokenValidationService.hasIdTokenExpired(idToken, {
@@ -804,20 +805,51 @@ describe('TokenValidationService', () => {
     });
 
     it('returns false if token has not expired using offset', () => {
-      // expires 2050-02-12T08:02:30.823Z
-      const tokenExpires = new Date('2050-02-12T08:02:30.823Z');
-      const idToken =
-        'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2MTMxMTY5NTAsImV4cCI6MjUyODI2NTc1MCwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIkdpdmVuTmFtZSI6IkpvaG5ueSIsIlN1cm5hbWUiOiJSb2NrZXQiLCJFbWFpbCI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJSb2xlIjpbIk1hbmFnZXIiLCJQcm9qZWN0IEFkbWluaXN0cmF0b3IiXX0.GHxRo23NghUTTeZx6VIzTSf05JEeEn7z9YYyFLxWv6M';
+      vi.useFakeTimers({ toFake: ['Date'] });
+      vi.setSystemTime(new Date('2050-02-12T08:00:00.000Z'));
 
-      vi.spyOn(tokenHelperService, 'getTokenExpirationDate').mockReturnValue(
-        tokenExpires
-      );
+      try {
+        // expires 60 seconds after "now"; an offset of 30 seconds keeps it valid
+        const tokenExpires = new Date('2050-02-12T08:01:00.000Z');
 
-      const result = tokenValidationService.hasIdTokenExpired(idToken, {
-        configId: 'configId1',
-      });
+        vi.spyOn(tokenHelperService, 'getTokenExpirationDate').mockReturnValue(
+          tokenExpires
+        );
 
-      expect(result).toBe(false);
+        const result = tokenValidationService.hasIdTokenExpired(
+          'idToken',
+          { configId: 'configId1' },
+          30
+        );
+
+        expect(result).toBe(false);
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it('returns true if token has not expired yet but expires within the offset', () => {
+      vi.useFakeTimers({ toFake: ['Date'] });
+      vi.setSystemTime(new Date('2050-02-12T08:00:00.000Z'));
+
+      try {
+        // expires 60 seconds after "now"; an offset of 90 seconds treats it as expired
+        const tokenExpires = new Date('2050-02-12T08:01:00.000Z');
+
+        vi.spyOn(tokenHelperService, 'getTokenExpirationDate').mockReturnValue(
+          tokenExpires
+        );
+
+        const result = tokenValidationService.hasIdTokenExpired(
+          'idToken',
+          { configId: 'configId1' },
+          90
+        );
+
+        expect(result).toBe(true);
+      } finally {
+        vi.useRealTimers();
+      }
     });
   });
 });

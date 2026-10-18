@@ -74,9 +74,8 @@ test('logs in to both configs with their own scope', async ({ page }) => {
     expect(authorizeUrl.searchParams.get('scope')).toBe(
       `openid profile offline_access ${apiScope}`
     );
-    await expect(
-      page.getByRole('heading', { name: configId, exact: true })
-    ).toBeVisible();
+    // Wait until the app is back from the IdP before the next login.
+    await expect.poll(() => configsWithUserData(page)).toContain(configId);
   }
 
   await expectConfigsWithUserData(

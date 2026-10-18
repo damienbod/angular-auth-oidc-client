@@ -121,6 +121,9 @@ test('logs out through the end session endpoint', async ({ page }) => {
   await login(page);
 
   const logoutRequest = page.waitForRequest(isLogoutRequest());
+  // The app is shown authenticated until the IdP redirects back to the same
+  // URL, so wait for that new document before checking the state.
+  const backOnApp = page.waitForEvent('load');
 
   await page.getByRole('button', { name: 'Logout', exact: true }).click();
 
@@ -133,5 +136,6 @@ test('logs out through the end session endpoint', async ({ page }) => {
 
   // After the logout the IdP session (SSO cookie) still exists, so the
   // silent login of checkAuthIncludingServer() signs the user in again.
+  await backOnApp;
   await expectAuthenticated(page);
 });

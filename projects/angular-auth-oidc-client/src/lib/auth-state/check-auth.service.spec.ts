@@ -138,15 +138,12 @@ describe('CheckAuthService', () => {
       );
       const spy = vi.spyOn(checkAuthService as any, 'checkAuthWithConfig');
 
-      try {
-        await firstValueFrom(
-          checkAuthService.checkAuth(allConfigs[0], allConfigs)
-        );
-        expect.fail('expected an error');
-      } catch (err) {
-        expect(err).toBeTruthy();
-        expect(spy).not.toHaveBeenCalled();
-      }
+      await expect(
+        firstValueFrom(checkAuthService.checkAuth(allConfigs[0], allConfigs))
+      ).rejects.toThrow(
+        'could not find matching config for state the-state-param'
+      );
+      expect(spy).not.toHaveBeenCalled();
     });
 
     it('uses first/default config when no param is passed', async () => {
@@ -268,7 +265,12 @@ describe('CheckAuthService', () => {
         configId: 'configId1',
         idToken: 'idt',
       });
-      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(
+        'http://localhost:4200',
+        allConfigs[0],
+        allConfigs
+      );
     });
 
     it('does NOT call handleCallbackAndFireEvents with current url when callback is false', async () => {
@@ -589,6 +591,9 @@ describe('CheckAuthService', () => {
       vi.spyOn(callBackService, 'handleCallbackAndFireEvents').mockReturnValue(
         of({} as CallbackContext)
       );
+      vi.spyOn(currentUrlService, 'getCurrentUrl').mockReturnValue(
+        'http://localhost:4200'
+      );
       vi.spyOn(authStateService, 'areAuthStorageTokensValid').mockReturnValue(
         false
       );
@@ -694,9 +699,12 @@ describe('CheckAuthService', () => {
       vi.spyOn(authStateService, 'areAuthStorageTokensValid').mockReturnValue(
         true
       );
-      vi.spyOn(refreshSessionService, 'forceRefreshSession').mockReturnValue(
-        of({ isAuthenticated: true } as LoginResponse)
+      vi.spyOn(currentUrlService, 'getCurrentUrl').mockReturnValue(
+        'http://localhost:4200'
       );
+      const forceRefreshSessionSpy = vi
+        .spyOn(refreshSessionService, 'forceRefreshSession')
+        .mockReturnValue(of({ isAuthenticated: true } as LoginResponse));
 
       vi.spyOn(silentRenewService, 'isSilentRenewConfigured').mockReturnValue(
         true
@@ -709,7 +717,9 @@ describe('CheckAuthService', () => {
         checkAuthService.checkAuthIncludingServer(allConfigs[0], allConfigs)
       );
 
-      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(allConfigs[0]);
+      expect(forceRefreshSessionSpy).not.toHaveBeenCalled();
     });
 
     it('does forceRefreshSession get called and is NOT authenticated', async () => {
@@ -725,21 +735,36 @@ describe('CheckAuthService', () => {
         of({} as CallbackContext)
       );
 
-      vi.spyOn(refreshSessionService, 'forceRefreshSession').mockReturnValue(
-        of({
-          idToken: 'idToken',
-          accessToken: 'access_token',
-          isAuthenticated: false,
-          userData: null,
-          configId: 'configId1',
-        })
+      vi.spyOn(currentUrlService, 'getCurrentUrl').mockReturnValue(
+        'http://localhost:4200'
       );
-
+      vi.spyOn(checkSessionService, 'isCheckSessionConfigured').mockReturnValue(
+        true
+      );
+      const checkSessionServiceStartSpy = vi
+        .spyOn(checkSessionService, 'start')
+        .mockReturnValue(undefined);
+      const forcedLoginResponse = {
+        idToken: 'idToken',
+        accessToken: 'access_token',
+        isAuthenticated: false,
+        userData: null,
+        configId: 'configId1',
+      };
+      const forceRefreshSessionSpy = vi
+        .spyOn(refreshSessionService, 'forceRefreshSession')
+        .mockReturnValue(of(forcedLoginResponse));
       const result = await firstValueFrom(
         checkAuthService.checkAuthIncludingServer(allConfigs[0], allConfigs)
       );
 
-      expect(result).toBeTruthy();
+      expect(forceRefreshSessionSpy).toHaveBeenCalledTimes(1);
+      expect(forceRefreshSessionSpy).toHaveBeenCalledWith(
+        allConfigs[0],
+        allConfigs
+      );
+      expect(result).toEqual(forcedLoginResponse);
+      expect(checkSessionServiceStartSpy).not.toHaveBeenCalled();
     });
 
     it('should start check session and validation after forceRefreshSession has been called and is authenticated after forcing with silentrenew', async () => {
@@ -887,33 +912,39 @@ describe('CheckAuthService', () => {
       ]);
     });
 
-    it('uses config from passed configId if configId was passed and returns all results', async () => {
+    it('checks the config matching the url state first and all other configs with their redirectUrl and returns all results', async () => {
       vi.spyOn(
         currentUrlService,
         'getStateParamFromCurrentUrl'
-      ).mockReturnValue(null);
+      ).mockReturnValue('the-state-param');
 
       const allConfigs = [
-        { configId: 'configId1', authority: 'some-authority1' },
+        {
+          configId: 'configId1',
+          authority: 'some-authority1',
+          redirectUrl: 'https://redirect-url-1',
+        },
         { configId: 'configId2', authority: 'some-authority2' },
       ];
+
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authStateControl' && args[1] === allConfigs[1]) {
+            return 'the-state-param';
+          }
+
+          return undefined;
+        }
+      );
       const spy = vi.spyOn(checkAuthService as any, 'checkAuthWithConfig');
       const result = await firstValueFrom(
-        checkAuthService.checkAuthMultiple(allConfigs)
+        checkAuthService.checkAuthMultiple(allConfigs, 'https://current-url')
       );
 
-      expect(Array.isArray(result)).toBe(true);
+      expect(result.length).toBe(2);
       expect(vi.mocked(spy).mock.calls).toEqual([
-        [
-          { configId: 'configId1', authority: 'some-authority1' },
-          allConfigs,
-          undefined,
-        ],
-        [
-          { configId: 'configId2', authority: 'some-authority2' },
-          allConfigs,
-          undefined,
-        ],
+        [allConfigs[1], allConfigs, 'https://current-url'],
+        [allConfigs[0], allConfigs, 'https://redirect-url-1'],
       ]);
     });
 

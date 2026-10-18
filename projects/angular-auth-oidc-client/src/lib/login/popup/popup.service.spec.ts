@@ -236,7 +236,7 @@ describe('PopUpService', () => {
       expect(popupSpy).toHaveBeenCalledWith(
         'url',
         '_blank',
-        expect.any(String)
+        expect.stringContaining('width=100')
       );
     });
 
@@ -619,11 +619,13 @@ describe('PopUpService', () => {
       const popupOptions = { width: 0, height: 0 };
       // act
       const result = (popUpService as any).getOptions(popupOptions);
-
       // assert
-      expect(result).toContain('left=');
-      expect(result).toContain('top=');
-      expect(typeof result).toBe('string');
+      // the default width/height (500) is used to center the popup
+      const expectedLeft = window.screenLeft + (window.outerWidth - 500) / 2;
+      const expectedTop = window.screenTop + (window.outerHeight - 500) / 2;
+
+      expect(result).toContain(`left=${expectedLeft}`);
+      expect(result).toContain(`top=${expectedTop}`);
     });
 
     it('returns a comma separated, url-encoded options string', () => {

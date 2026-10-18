@@ -41,9 +41,9 @@ async function login(page: Page, configId: string): Promise<void> {
   await section(page, configId)
     .getByRole('button', { name: `Login with ${configId}` })
     .click();
-  await expect(
-    page.getByRole('heading', { name: configId, exact: true })
-  ).toBeVisible();
+  // The heading is on the page before the redirect as well, so wait until the
+  // app is back and reports the config as authenticated.
+  await expect.poll(() => authenticatedConfigs(page)).toContain(configId);
 }
 
 async function loginToBoth(page: Page): Promise<void> {
