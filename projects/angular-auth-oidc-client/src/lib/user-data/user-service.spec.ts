@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, MockInstance, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, Observable, of, throwError } from 'rxjs';
 import { skip } from 'rxjs/operators';
@@ -75,7 +75,9 @@ describe('User Service', () => {
     );
   }
 
-  function mockUserInfoResponse(response: Observable<any>) {
+  function mockUserInfoResponse(
+    response: Observable<any>
+  ): MockInstance<DataService['get']> {
     mockAuthWellKnownEndPoints({ userInfoEndpoint: 'userInfoEndpoint' });
 
     return vi.spyOn(dataService, 'get').mockReturnValue(response);
@@ -668,7 +670,6 @@ describe('User Service', () => {
     it('should store user data from the server when the subs match', async () => {
       mockUserInfoResponse(of(DUMMY_USER_DATA));
       const writeSpy = vi.spyOn(storagePersistenceService, 'write');
-
       const result = await getUserDataFromServer();
 
       expect(result).toEqual(DUMMY_USER_DATA);

@@ -192,7 +192,6 @@ describe('AuthWellKnownDataService', () => {
           jwks_uri: 'jwks_uri',
         })
       );
-
       const result = await firstValueFrom(
         service.getWellKnownEndPointsForConfig({
           configId: 'configId1',

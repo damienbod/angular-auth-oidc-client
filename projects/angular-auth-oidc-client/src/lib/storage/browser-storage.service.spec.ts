@@ -56,7 +56,6 @@ describe('BrowserStorageService', () => {
 
     it('should return null if getItem returns null', () => {
       const config = { configId: 'configId1' };
-
       const result = service.read('anything', config);
 
       expect(result).toBeNull();
@@ -64,7 +63,6 @@ describe('BrowserStorageService', () => {
 
     it('should return the item if getItem returns an item', () => {
       const config = { configId: 'configId1' };
-
       const returnValue = `{ "name":"John", "age":30, "city":"New York"}`;
 
       vi.spyOn(abstractSecurityStorage, 'read').mockReturnValue(returnValue);
@@ -91,7 +89,6 @@ describe('BrowserStorageService', () => {
 
     it('should write object correctly with configId', () => {
       const config = { configId: 'configId1' };
-
       const writeSpy = vi.spyOn(abstractSecurityStorage, 'write');
       const result = service.write({ anyKey: 'anyvalue' }, config);
 
@@ -105,7 +102,6 @@ describe('BrowserStorageService', () => {
 
     it('should write null if item is falsy', () => {
       const config = { configId: 'configId1' };
-
       const writeSpy = vi.spyOn(abstractSecurityStorage, 'write');
       const somethingFalsy = '';
       const result = service.write(somethingFalsy, config);

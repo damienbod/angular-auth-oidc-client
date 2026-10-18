@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { FlowHelper } from './flow-helper.service';
 
@@ -71,24 +71,6 @@ describe('Flow Helper Service', () => {
     expect(result).toBe(false);
   });
 
-  it('should return true from isCurrentFlowImplicitFlowWithoutAccessToken if the flow is "id_token"', () => {
-    const config = { responseType: 'id_token' };
-    const result = (
-      flowHelper as any
-    ).isCurrentFlowImplicitFlowWithoutAccessToken(config);
-
-    expect(result).toBe(true);
-  });
-
-  it('should return false from isCurrentFlowImplicitFlowWithoutAccessToken if the flow is not "id_token"', () => {
-    const config = { responseType: 'id_token2' };
-    const result = (
-      flowHelper as any
-    ).isCurrentFlowImplicitFlowWithoutAccessToken(config);
-
-    expect(result).toBe(false);
-  });
-
   it('should return false from isCurrentFlowCodeFlowWithRefreshTokens if the configuration is null', () => {
     const result = flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(null);
 
@@ -117,52 +99,37 @@ describe('Flow Helper Service', () => {
   });
 
   describe('isCurrentFlowAnyImplicitFlow', () => {
-    it('should return true if currentFlowIsImplicitFlowWithAccessToken is true', () => {
-      vi.spyOn(
-        flowHelper,
-        'isCurrentFlowImplicitFlowWithAccessToken'
-      ).mockReturnValue(true);
-      vi.spyOn(
-        flowHelper as any,
-        'isCurrentFlowImplicitFlowWithoutAccessToken'
-      ).mockReturnValue(false);
-
+    it('should return true if the flow is "id_token token"', () => {
       const result = flowHelper.isCurrentFlowAnyImplicitFlow({
         configId: 'configId1',
+        responseType: 'id_token token',
       });
 
       expect(result).toBe(true);
     });
 
-    it('should return true if isCurrentFlowImplicitFlowWithoutAccessToken is true', () => {
-      vi.spyOn(
-        flowHelper,
-        'isCurrentFlowImplicitFlowWithAccessToken'
-      ).mockReturnValue(false);
-      vi.spyOn(
-        flowHelper as any,
-        'isCurrentFlowImplicitFlowWithoutAccessToken'
-      ).mockReturnValue(true);
-
+    it('should return true if the flow is "id_token"', () => {
       const result = flowHelper.isCurrentFlowAnyImplicitFlow({
         configId: 'configId1',
+        responseType: 'id_token',
       });
 
       expect(result).toBe(true);
     });
 
-    it('should return false it is not any implicit flow', () => {
-      vi.spyOn(
-        flowHelper,
-        'isCurrentFlowImplicitFlowWithAccessToken'
-      ).mockReturnValue(false);
-      vi.spyOn(
-        flowHelper as any,
-        'isCurrentFlowImplicitFlowWithoutAccessToken'
-      ).mockReturnValue(false);
-
+    it('should return false if the flow is code flow', () => {
       const result = flowHelper.isCurrentFlowAnyImplicitFlow({
         configId: 'configId1',
+        responseType: 'code',
+      });
+
+      expect(result).toBe(false);
+    });
+
+    it('should return false if the flow is neither "id_token token" nor "id_token"', () => {
+      const result = flowHelper.isCurrentFlowAnyImplicitFlow({
+        configId: 'configId1',
+        responseType: 'id_token2',
       });
 
       expect(result).toBe(false);

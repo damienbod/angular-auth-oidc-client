@@ -1664,7 +1664,6 @@ describe('RefreshSessionService ', () => {
         refreshSessionRefreshTokenService,
         'refreshSessionWithRefreshTokens'
       );
-
       // Act
       const result = firstValueFrom(
         refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs)

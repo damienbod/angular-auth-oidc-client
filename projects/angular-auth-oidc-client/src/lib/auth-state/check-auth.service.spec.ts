@@ -125,7 +125,6 @@ describe('CheckAuthService', () => {
         'http://localhost:4200'
       );
       const isCallbackSpy = vi.spyOn(callBackService, 'isCallback');
-
       const result = await firstValueFrom(
         checkAuthService.checkAuth(allConfigs[0], allConfigs)
       );
@@ -176,12 +175,12 @@ describe('CheckAuthService', () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
       ];
+
       vi.spyOn(currentUrlService, 'getCurrentUrl').mockReturnValue(
         'http://localhost:4200'
       );
       const isCallbackSpy = vi.spyOn(callBackService, 'isCallback');
       const readSpy = vi.spyOn(storagePersistenceService, 'read');
-
       const result = await firstValueFrom(
         checkAuthService.checkAuth(allConfigs[0], allConfigs)
       );
@@ -1029,6 +1028,7 @@ describe('CheckAuthService', () => {
         { configId: 'configId1', authority: 'some-authority1' },
         { configId: 'configId2', authority: 'some-authority2' },
       ];
+
       vi.spyOn(currentUrlService, 'getCurrentUrl').mockReturnValue(
         'http://localhost:4200'
       );

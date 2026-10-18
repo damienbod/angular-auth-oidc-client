@@ -1201,7 +1201,6 @@ describe('UrlService Tests', () => {
         jwtWindowCryptoService,
         'generateCodeChallenge'
       );
-
       const result = await firstValueFrom(
         service.getAuthorizeUrl({
           configId: 'configId1',
@@ -1261,7 +1260,6 @@ describe('UrlService Tests', () => {
       const generateCodeChallengeSpy = vi
         .spyOn(jwtWindowCryptoService, 'generateCodeChallenge')
         .mockReturnValue(of('codeChallenge'));
-
       const result = await firstValueFrom(
         service.getRefreshSessionSilentRenewUrl(silentRenewConfig)
       );
@@ -1279,7 +1277,6 @@ describe('UrlService Tests', () => {
         jwtWindowCryptoService,
         'generateCodeChallenge'
       );
-
       const result = await firstValueFrom(
         service.getRefreshSessionSilentRenewUrl(silentRenewConfig)
       );
@@ -1806,6 +1803,7 @@ describe('UrlService Tests', () => {
       const config = {
         silentRenewUrl,
       };
+
       vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
       const resultObs$ = service.getRefreshSessionSilentRenewUrl(config);
       const result = await firstValueFrom(resultObs$);

@@ -5,7 +5,6 @@ import { LogLevel } from '../../logging/types/logging.types';
 import { LoggerService } from '../../logging/services/logger.service';
 import { OpenIdConfiguration } from '../openid-configuration';
 import { ConfigValidationService } from './config-validation.service';
-import { allMultipleConfigRules } from './rules';
 
 describe('Config Validation Service', () => {
   let configValidationService: ConfigValidationService;
@@ -52,27 +51,24 @@ describe('Config Validation Service', () => {
     expect(result).toBe(true);
   });
 
-  it('should call `logWarning` if one rule has warning level', () => {
+  it('should log each warning message with the config when a rule has warning level', () => {
+    const config = {
+      ...VALID_CONFIG,
+      silentRenew: true,
+      useRefreshToken: true,
+      scope: 'openid profile',
+    };
     const loggerWarningSpy = vi
       .spyOn(loggerService, 'logWarning')
       .mockReturnValue(undefined);
-    const originalGetAllMessagesOfType = (
-      configValidationService as any
-    ).getAllMessagesOfType.bind(configValidationService);
 
-    vi.spyOn(
-      configValidationService as any,
-      'getAllMessagesOfType'
-    ).mockImplementation((...args: any[]) => {
-      if (args[0] === 'warning') {
-        return ['A warning message'];
-      }
+    configValidationService.validateConfig(config);
 
-      return originalGetAllMessagesOfType(...args);
-    });
-
-    configValidationService.validateConfig(VALID_CONFIG);
-    expect(loggerWarningSpy).toHaveBeenCalled();
+    expect(loggerWarningSpy).toHaveBeenCalledTimes(1);
+    expect(loggerWarningSpy).toHaveBeenCalledWith(
+      config,
+      'When using silent renew and refresh tokens the `offline_access` scope is often required. If your provider supports this without it, set `disableRefreshTokenOfflineAccessScopeWarning` to suppress this warning.'
+    );
   });
 
   describe('ensure-clientId.rule', () => {
@@ -200,30 +196,32 @@ describe('Config Validation Service', () => {
   });
 
   describe('validateConfigs', () => {
-    it('should call internal method with empty array if something falsy is passed', () => {
-      const spy = vi.spyOn(
-        configValidationService as any,
-        'validateConfigsInternal'
-      );
+    it('should return false without logging when an empty array is passed', () => {
+      const loggerErrorSpy = vi.spyOn(loggerService, 'logError');
+      const loggerWarningSpy = vi.spyOn(loggerService, 'logWarning');
       const result = configValidationService.validateConfigs([]);
 
       expect(result).toBe(false);
-      expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith([], allMultipleConfigRules);
+      expect(loggerErrorSpy).not.toHaveBeenCalled();
+      expect(loggerWarningSpy).not.toHaveBeenCalled();
     });
 
-    it('should fall back to an empty array when null is passed', () => {
-      const spy = vi.spyOn(
-        configValidationService as any,
-        'validateConfigsInternal'
-      );
+    it('should return false without logging when null is passed', () => {
+      const loggerErrorSpy = vi.spyOn(loggerService, 'logError');
+      const loggerWarningSpy = vi.spyOn(loggerService, 'logWarning');
       const result = configValidationService.validateConfigs(
         null as unknown as OpenIdConfiguration[]
       );
 
       expect(result).toBe(false);
-      expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith([], allMultipleConfigRules);
+      expect(loggerErrorSpy).not.toHaveBeenCalled();
+      expect(loggerWarningSpy).not.toHaveBeenCalled();
+    });
+
+    it('should return true for a single valid config', () => {
+      const result = configValidationService.validateConfigs([VALID_CONFIG]);
+
+      expect(result).toBe(true);
     });
   });
 });
