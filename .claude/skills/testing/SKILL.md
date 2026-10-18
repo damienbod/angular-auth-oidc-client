@@ -1,6 +1,6 @@
 ---
 name: testing
-description: Use when writing, changing, or reviewing unit tests (*.spec.ts) in this repository. Enforces "should ..." test names and testing only through public APIs.
+description: Use when writing, changing, or reviewing unit tests (*.spec.ts) in this repository. Enforces "should ..." test names, testing only through public APIs, and Arrange/Act/Assert comments in every test.
 ---
 
 # Testing conventions
@@ -51,10 +51,43 @@ it('should build the url', () => {
 
 // Good
 it('should build an authorize url containing the client id', async () => {
+  // Arrange
+  const config = { clientId: 'foo' };
+
+  // Act
   const url = await firstValueFrom(service.getAuthorizeUrl(config));
+
+  // Assert
   expect(url).toContain('client_id=foo');
 });
 ```
+
+## 3. Every test has Arrange / Act / Assert comments
+
+Every test body is split into three phases, each introduced by a comment, with a blank line between phases. This applies to short tests too.
+
+```ts
+it('should return false when the token is expired', () => {
+  // Arrange
+  const token = createExpiredToken();
+  vi.spyOn(tokenHelper, 'getTokenExpirationDate').mockReturnValue(pastDate);
+
+  // Act
+  const result = service.isTokenValid(token);
+
+  // Assert
+  expect(result).toBe(false);
+});
+```
+
+- **Arrange**: build inputs, configure mocks and spies, and set state through public methods.
+- **Act**: run the behaviour under test, ideally one call. If you need several unrelated calls, split the test.
+- **Assert**: only `expect(...)` calls, plus whatever is needed to read the result (e.g. awaiting a subscription).
+- Use these exact comments (`// Arrange`, `// Act`, `// Assert`) so they are consistent and searchable.
+- If there is nothing to arrange (shared setup lives in `beforeEach`), leave out `// Arrange` and keep `// Act` and `// Assert`.
+- If act and assert can't be separated, use one `// Act & Assert` comment. Typical cases are `expect(() => fn()).toThrow()`, `await expect(promise).rejects...`, or asserting inside a `subscribe` callback.
+- Don't put the phase comments in `beforeEach` / `afterEach` hooks or in helper functions, only in `it` / `test` bodies.
+- When touching an existing spec file, add the comments to the tests you change.
 
 ## Checklist before finishing
 
@@ -62,3 +95,4 @@ it('should build an authorize url containing the client id', async () => {
 - [ ] No `as any` / bracket access to private members of the unit under test.
 - [ ] No spies on private methods.
 - [ ] No production visibility changed just for testing.
+- [ ] Every new or changed test has `// Arrange`, `// Act`, `// Assert` comments (or `// Act & Assert`).
