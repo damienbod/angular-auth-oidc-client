@@ -1,5 +1,5 @@
 import { inject, Injectable, NgZone, OnDestroy, DOCUMENT } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, EMPTY, Observable, of } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { AuthWellKnownEndpoints } from '../config/auth-well-known/auth-well-known-endpoints';
 import { OpenIdConfiguration } from '../config/openid-configuration';
@@ -107,7 +107,7 @@ export class CheckSessionService implements OnDestroy {
 
   private init(configuration: OpenIdConfiguration): Observable<void> {
     if (this.wasIframeRefreshedRecently()) {
-      return of();
+      return of(undefined);
     }
 
     const authWellKnownEndPoints =
@@ -119,7 +119,7 @@ export class CheckSessionService implements OnDestroy {
         'CheckSession - init check session: authWellKnownEndpoints is undefined. Returning.'
       );
 
-      return of();
+      return this.stopHeartBeat();
     }
 
     const existingIframe = this.getOrCreateIframe(configuration);
@@ -134,24 +134,10 @@ export class CheckSessionService implements OnDestroy {
         'CheckSession - init check session: checkSessionIframe is not configured to run'
       );
 
-      return of();
+      return this.stopHeartBeat();
     }
 
-    this.navigateIframeTo(existingIframe, checkSessionIframe, configuration);
-
-    return this.waitUntilIframeLoaded(existingIframe);
-  }
-
-  private wasIframeRefreshedRecently(): boolean {
-    return this.lastIFrameRefresh + this.iframeRefreshInterval > Date.now();
-  }
-
-  private navigateIframeTo(
-    iframe: HTMLIFrameElement,
-    url: string,
-    configuration: OpenIdConfiguration
-  ): void {
-    const { contentWindow } = iframe;
+    const { contentWindow } = existingIframe;
 
     if (!contentWindow) {
       this.loggerService.logWarning(
@@ -159,10 +145,22 @@ export class CheckSessionService implements OnDestroy {
         'CheckSession - init check session: IFrame contentWindow does not exist'
       );
 
-      return;
+      return this.stopHeartBeat();
     }
 
-    contentWindow.location.replace(url);
+    contentWindow.location.replace(checkSessionIframe);
+
+    return this.waitUntilIframeLoaded(existingIframe);
+  }
+
+  private stopHeartBeat(): Observable<never> {
+    this.clearScheduledHeartBeat();
+
+    return EMPTY;
+  }
+
+  private wasIframeRefreshedRecently(): boolean {
+    return this.lastIFrameRefresh + this.iframeRefreshInterval > Date.now();
   }
 
   private waitUntilIframeLoaded(iframe: HTMLIFrameElement): Observable<void> {
