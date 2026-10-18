@@ -15,7 +15,10 @@ import { AuthWellKnownService } from '../config/auth-well-known/auth-well-known.
 import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
-import { SilentRenewService } from '../iframe/silent-renew.service';
+import {
+  SilentRenewCallbackError,
+  SilentRenewService,
+} from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/services/logger.service';
 import { LoginResponse } from '../login/login-response';
 import { EventTypes } from '../public-events/event-types';
@@ -959,6 +962,39 @@ describe('RefreshSessionService ', () => {
       );
     });
 
+    it('rethrows a non-timeout error unchanged so its details are kept', async () => {
+      const allConfigs = [
+        {
+          configId: 'configId1',
+          silentRenewTimeoutInSeconds: 10,
+        },
+      ];
+      const refusal = new SilentRenewCallbackError(
+        'login_required',
+        'user must sign in'
+      );
+
+      vi.spyOn(
+        flowHelper,
+        'isCurrentFlowCodeFlowWithRefreshTokens'
+      ).mockReturnValue(false);
+      vi.spyOn(
+        silentRenewService,
+        'refreshSessionWithIFrameCompleted$',
+        'get'
+      ).mockReturnValue(of({ success: false, configId: 'configId1' }));
+      vi.spyOn(
+        refreshSessionService as any,
+        'startRefreshSession'
+      ).mockReturnValue(throwError(() => refusal));
+
+      await expect(
+        firstValueFrom(
+          refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs)
+        )
+      ).rejects.toBe(refusal);
+    });
+
     it('occurs unknown error throws it to subscriber', async () => {
       const allConfigs = [
         {
@@ -993,7 +1029,7 @@ describe('RefreshSessionService ', () => {
         firstValueFrom(
           refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs)
         )
-      ).rejects.toThrow(`Error: ${expectedErrorMessage}`);
+      ).rejects.toThrow(expectedErrorMessage);
       expect(resetSilentRenewRunningSpy).not.toHaveBeenCalled();
     });
 

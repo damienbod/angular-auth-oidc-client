@@ -711,6 +711,92 @@ describe('PeriodicallyTokenCheckService', () => {
     });
   });
 
+  describe('silent renew error identity', () => {
+    it('logs the original error of a failed periodic refresh', async () => {
+      // Arrange
+      const configs = [
+        { silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 },
+      ];
+      const currentConfig = { configId: 'currentConfig' };
+      const refreshError = new Error('iframe failed');
+
+      vi.spyOn(
+        periodicallyTokenCheckService as any,
+        'shouldStartPeriodicallyCheckForConfig'
+      ).mockReturnValue(true);
+      vi.spyOn(
+        flowHelper,
+        'isCurrentFlowCodeFlowWithRefreshTokens'
+      ).mockReturnValue(false);
+      vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
+        of(configs[0])
+      );
+      vi.spyOn(
+        refreshSessionIframeService,
+        'refreshSessionWithIframe'
+      ).mockReturnValue(throwError(() => refreshError));
+      const logErrorSpy = vi
+        .spyOn(loggerService, 'logError')
+        .mockReturnValue(undefined);
+
+      // Act
+      periodicallyTokenCheckService.startTokenValidationPeriodically(
+        configs,
+        currentConfig
+      );
+      await vi.advanceTimersByTimeAsync(1000);
+
+      // Assert
+      expect(logErrorSpy).toHaveBeenCalledWith(
+        currentConfig,
+        'silent renew failed!',
+        refreshError
+      );
+    });
+
+    it('wraps a non-error failure of a periodic refresh into an Error with the same message', async () => {
+      // Arrange
+      const configs = [
+        { silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 },
+      ];
+      const currentConfig = { configId: 'currentConfig' };
+
+      vi.spyOn(
+        periodicallyTokenCheckService as any,
+        'shouldStartPeriodicallyCheckForConfig'
+      ).mockReturnValue(true);
+      vi.spyOn(
+        flowHelper,
+        'isCurrentFlowCodeFlowWithRefreshTokens'
+      ).mockReturnValue(false);
+      vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
+        of(configs[0])
+      );
+      vi.spyOn(
+        refreshSessionIframeService,
+        'refreshSessionWithIframe'
+      ).mockReturnValue(throwError(() => 'iframe failed'));
+      const logErrorSpy = vi
+        .spyOn(loggerService, 'logError')
+        .mockReturnValue(undefined);
+
+      // Act
+      periodicallyTokenCheckService.startTokenValidationPeriodically(
+        configs,
+        currentConfig
+      );
+      await vi.advanceTimersByTimeAsync(1000);
+
+      // Assert
+      const loggedError = logErrorSpy.mock.calls.find(
+        ([config]) => config === currentConfig
+      )?.[2];
+
+      expect(loggedError).toBeInstanceOf(Error);
+      expect((loggedError as Error).message).toBe('iframe failed');
+    });
+  });
+
   describe('shouldStartPeriodicallyCheckForConfig', () => {
     it('returns false when there is no IdToken', () => {
       vi.spyOn(authStateService, 'getIdToken').mockReturnValue('');
