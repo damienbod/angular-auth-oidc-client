@@ -698,7 +698,7 @@ describe('RefreshSessionService ', () => {
       );
     });
 
-    it('should call start refresh session and waits for completed, returns idtoken and accesstoken if auth is true', async () => {
+    it('should start the refresh session, wait for completion and return idtoken and accesstoken if auth is true', async () => {
       vi.spyOn(
         flowHelper,
         'isCurrentFlowCodeFlowWithRefreshTokens'
@@ -738,7 +738,7 @@ describe('RefreshSessionService ', () => {
       expect(result.accessToken).toBe('some-access_token');
     });
 
-    it('should call start refresh session and waits for completed, returns LoginResponse if auth is false', async () => {
+    it('should start the refresh session, wait for completion and return a LoginResponse if auth is false', async () => {
       vi.spyOn(
         flowHelper,
         'isCurrentFlowCodeFlowWithRefreshTokens'
@@ -902,7 +902,7 @@ describe('RefreshSessionService ', () => {
       });
     });
 
-    it('should occur timeout error and retry mechanism exhausted max retry count throws error', async () => {
+    it('should throw an error when timeouts exhaust the max retry count', async () => {
       vi.spyOn(
         flowHelper,
         'isCurrentFlowCodeFlowWithRefreshTokens'
@@ -959,7 +959,7 @@ describe('RefreshSessionService ', () => {
       );
     });
 
-    it('should occur unknown error throws it to subscriber', async () => {
+    it('should pass an unknown error on to the subscriber', async () => {
       const allConfigs = [
         {
           configId: 'configId1',
@@ -1165,7 +1165,7 @@ describe('RefreshSessionService ', () => {
         });
       });
 
-      it('should return value only returns once', async () => {
+      it('should return the value only once', async () => {
         const allConfigs = [
           {
             configId: 'configId1',
@@ -1468,7 +1468,7 @@ describe('RefreshSessionService ', () => {
       expect(refreshSessionWithIframeSpy).toHaveBeenCalled();
     });
 
-    it('should fire SilentRenewFailed, resets the running flag and rethrows when the refresh fails', async () => {
+    it('should fire SilentRenewFailed, reset the running flag and rethrow when the refresh fails', async () => {
       // Arrange
       const allConfigs = [
         {
@@ -1521,7 +1521,7 @@ describe('RefreshSessionService ', () => {
       );
     });
 
-    it('should fire SilentRenewFailed, resets the running flag and rethrows when the well-known discovery fails', async () => {
+    it('should fire SilentRenewFailed, reset the running flag and rethrow when the well-known discovery fails', async () => {
       // Arrange
       const allConfigs = [
         {

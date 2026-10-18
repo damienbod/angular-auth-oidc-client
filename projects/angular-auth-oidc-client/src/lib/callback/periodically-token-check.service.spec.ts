@@ -218,7 +218,7 @@ describe('PeriodicallyTokenCheckService', () => {
       ]);
     });
 
-    it('should call resetAuthorizationData and returns if no silent renew is configured', async () => {
+    it('should call resetAuthorizationData and return if no silent renew is configured', async () => {
       const configs = [
         { silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 },
       ];
@@ -664,7 +664,7 @@ describe('PeriodicallyTokenCheckService', () => {
       expect(refreshSessionWithIframeSpy).not.toHaveBeenCalled();
     });
 
-    it('should log the failure against the current config and stops emitting when the periodic refresh fails', async () => {
+    it('should log the failure against the current config and stop emitting when the periodic refresh fails', async () => {
       // Arrange
       const configs = [
         { silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 },

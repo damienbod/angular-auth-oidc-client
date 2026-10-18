@@ -41,7 +41,7 @@ test('should be unauthenticated on first visit', async ({ page }) => {
   await expectUnauthenticated(page);
 });
 
-test('should log in and sends the audience custom parameter', async ({
+test('should log in and send the audience custom parameter', async ({
   page,
 }) => {
   await page.goto('/');
@@ -119,7 +119,7 @@ test('should revoke the refresh token', async ({ page }) => {
   expect((await (await revocation).response())?.status()).toBe(200);
 });
 
-test('should log out and revokes the tokens', async ({ page }) => {
+test('should log out and revoke the tokens', async ({ page }) => {
   await login(page);
 
   const revocation = page.waitForRequest(isRevocationRequest());

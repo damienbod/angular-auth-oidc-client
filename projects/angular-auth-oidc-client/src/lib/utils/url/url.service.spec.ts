@@ -164,7 +164,7 @@ describe('UrlService Tests', () => {
       expect(result).toBe(true);
     });
 
-    it('should return false and logs an error when the redirect check is enabled but no redirectUrl is configured', () => {
+    it('should return false and log an error when the redirect check is enabled but no redirectUrl is configured', () => {
       // Arrange
       const config = {
         configId: 'configId1',

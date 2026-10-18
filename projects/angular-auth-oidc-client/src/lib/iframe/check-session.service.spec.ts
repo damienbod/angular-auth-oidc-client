@@ -542,7 +542,7 @@ describe('CheckSessionService', () => {
   });
 
   describe('clearScheduledHeartBeat', () => {
-    it('should clear the pending timeout and resets the heartbeat handle', () => {
+    it('should clear the pending timeout and reset the heartbeat handle', () => {
       // Arrange
       const serviceAsAny = checkSessionService as any;
       const callback = vi.fn();
@@ -647,7 +647,7 @@ describe('CheckSessionService', () => {
       return { emissions, isCompleted: () => completed };
     }
 
-    it('should log a warning and completes without emitting when authWellKnownEndPoints is missing', () => {
+    it('should log a warning and complete without emitting when authWellKnownEndPoints is missing', () => {
       // Arrange
       vi.spyOn(storagePersistenceService, 'read').mockReturnValue(undefined);
       const spyLogWarning = vi
@@ -1056,7 +1056,7 @@ describe('CheckSessionService', () => {
       expect(serviceAsAny.outstandingMessages).toBe(0);
     });
 
-    it('should log a warning and fires no event when the iframe reports "error"', () => {
+    it('should log a warning and fire no event when the iframe reports "error"', () => {
       // Arrange
       const config = { configId: 'configId1' };
 
@@ -1082,7 +1082,7 @@ describe('CheckSessionService', () => {
       expect(serviceAsAny.checkSessionReceived).toBe(false);
     });
 
-    it('should mark the session as changed and emits checkSessionChanged$ when the iframe reports "changed"', () => {
+    it('should mark the session as changed and emit checkSessionChanged$ when the iframe reports "changed"', () => {
       // Arrange
       vi.spyOn(storagePersistenceService, 'read').mockReturnValue({
         checkSessionIframe: 'https://idp.example.com/checksession',

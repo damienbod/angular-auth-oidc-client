@@ -133,7 +133,7 @@ test('should refresh the session of one config on demand', async ({ page }) => {
   await expect(userData(page)).toContainText(USER_NAMES.idp2);
 });
 
-test('should log out one config and keeps the others', async ({
+test('should log out one config and keep the others', async ({
   page,
   baseURL,
 }) => {

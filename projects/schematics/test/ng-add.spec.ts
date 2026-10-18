@@ -132,7 +132,7 @@ describe('ng-add', () => {
       ['default', {}],
       ['--legacy-modules', { legacyModules: true }],
       ['--standalone', { standalone: true }],
-    ])('imports the AppModule in the app spec (%s)', async (_, options) => {
+    ])('should import the AppModule in the app spec (%s)', async (_, options) => {
       const tree = await runNgAdd(await createApp(false), options);
       const spec = tree.readText(appSpecPath);
 

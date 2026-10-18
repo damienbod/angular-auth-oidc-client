@@ -142,7 +142,7 @@ test('should revoke the refresh token', async ({ page }) => {
   expect((await (await revocation).response())?.status()).toBe(200);
 });
 
-test('should log out and revokes the tokens', async ({ page }) => {
+test('should log out and revoke the tokens', async ({ page }) => {
   await login(page);
 
   const revocation = page.waitForRequest(isRevocationRequest());

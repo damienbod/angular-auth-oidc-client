@@ -207,7 +207,7 @@ describe('AuthWellKnownDataService', () => {
       expect(result.issuer).toBe('localhost');
     });
 
-    it('should throw error and logs if no authwellknownUrl is given', async () => {
+    it('should throw error and log if no authwellknownUrl is given', async () => {
       const loggerSpy = vi
         .spyOn(loggerService, 'logError')
         .mockReturnValue(undefined);
@@ -253,7 +253,7 @@ describe('AuthWellKnownDataService', () => {
       expect(result).toEqual(expect.objectContaining(expected));
     });
 
-    it('should throw error and logs if well known issuer does not match authwellknownUrl', async () => {
+    it('should throw error and log if well known issuer does not match authwellknownUrl', async () => {
       const loggerSpy = vi
         .spyOn(loggerService, 'logError')
         .mockReturnValue(undefined);
@@ -319,7 +319,7 @@ describe('AuthWellKnownDataService', () => {
       expect(loggerSpy).not.toHaveBeenCalled();
     });
 
-    it('should not throws error and logs if well known issuer has a trailing slash compared to authwellknownUrl ', async () => {
+    it('should not throw an error but log if well known issuer has a trailing slash compared to authwellknownUrl ', async () => {
       const trailingSlashIssuerWellKnown = {
         ...DUMMY_WELL_KNOWN_DOCUMENT,
         issuer: DUMMY_WELL_KNOWN_DOCUMENT.issuer + '/',

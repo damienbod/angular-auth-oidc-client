@@ -343,7 +343,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
       }
     });
 
-    it('should call resetAuthorizationData, resets nonce and authStateService in case of an error', async () => {
+    it('should call resetAuthorizationData, reset nonce and authStateService in case of an error', async () => {
       const callbackContext = {
         authResult: { error: 'someError' },
         isRenewProcess: false,

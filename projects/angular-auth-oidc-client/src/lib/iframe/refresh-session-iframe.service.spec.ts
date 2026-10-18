@@ -140,7 +140,7 @@ describe('RefreshSessionIframeService', () => {
       expect(next).not.toHaveBeenCalled();
     });
 
-    it('should emit true and completes once the iframe has loaded', () => {
+    it('should emit true and complete once the iframe has loaded', () => {
       const next = vi.fn();
       const complete = vi.fn();
 

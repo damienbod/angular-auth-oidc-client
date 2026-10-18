@@ -210,7 +210,7 @@ describe('Flows Data Service', () => {
   });
 
   describe('isCodeFlowInProgress', () => {
-    it('should check code flow is in progress and returns result', () => {
+    it('should check code flow is in progress and return result', () => {
       const config = {
         configId: 'configId1',
       };
@@ -313,7 +313,7 @@ describe('Flows Data Service', () => {
       expect(spyWrite).not.toHaveBeenCalled();
     });
 
-    it('should treat a running process as stuck and resets it when silentRenewTimeoutInSeconds is not set', () => {
+    it('should treat a running process as stuck and reset it when silentRenewTimeoutInSeconds is not set', () => {
       const config = { configId: 'configId1' };
 
       vi.useFakeTimers();
@@ -394,7 +394,7 @@ describe('Flows Data Service', () => {
       expect(isSilentRenewRunningResult).toBe(false);
     });
 
-    it('should check silent renew process and returns result', () => {
+    it('should check silent renew process and return result', () => {
       const config = {
         silentRenewTimeoutInSeconds: 10,
         configId: 'configId1',

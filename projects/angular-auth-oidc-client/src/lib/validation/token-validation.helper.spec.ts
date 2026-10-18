@@ -53,7 +53,7 @@ describe('getVerifyAlg for RSA-PSS', () => {
     ['PS384', 48],
     ['PS512', 64],
   ])(
-    'returns RSA-PSS with the hash size as salt length for %s',
+    'should return RSA-PSS with the hash size as salt length for %s',
     (alg, saltLength) => {
       expect(getVerifyAlg(alg)).toEqual({ name: 'RSA-PSS', saltLength });
     }
@@ -170,7 +170,7 @@ describe('getImportAlg for RSA-PSS', () => {
     ['PS256', 'SHA-256'],
     ['PS384', 'SHA-384'],
     ['PS512', 'SHA-512'],
-  ])('returns RSA-PSS with %s hash', (alg, hash) => {
+  ])('should return RSA-PSS with %s hash', (alg, hash) => {
     expect(getImportAlg(alg)).toEqual({ name: 'RSA-PSS', hash });
   });
 });

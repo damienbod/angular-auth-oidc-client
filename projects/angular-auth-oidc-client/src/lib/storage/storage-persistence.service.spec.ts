@@ -171,7 +171,7 @@ describe('Storage Persistence Service', () => {
   });
 
   describe('getAccessToken', () => {
-    it('should get calls oidcSecurityStorage.read with correct key and returns the value', () => {
+    it('should read from oidcSecurityStorage with the correct key on get and return the value', () => {
       const returnValue = { authzData: 'someValue' };
       const config = { configId: 'configId1' };
       const spy = vi
@@ -184,7 +184,7 @@ describe('Storage Persistence Service', () => {
       expect(spy).toHaveBeenCalledWith('authzData', config);
     });
 
-    it('should get calls oidcSecurityStorage.read with correct key and returns null', () => {
+    it('should read from oidcSecurityStorage with the correct key on get and return null', () => {
       const spy = vi.spyOn(securityStorage, 'read').mockReturnValue(null);
       const config = { configId: 'configId1' };
       const result = service.getAccessToken(config);
@@ -196,7 +196,7 @@ describe('Storage Persistence Service', () => {
   });
 
   describe('getIdToken', () => {
-    it('should get calls oidcSecurityStorage.read with correct key and returns the value', () => {
+    it('should read from oidcSecurityStorage with the correct key on get and return the value', () => {
       const returnValue = { authnResult: { id_token: 'someValue' } };
       const spy = vi
         .spyOn(securityStorage, 'read')
@@ -209,7 +209,7 @@ describe('Storage Persistence Service', () => {
       expect(spy).toHaveBeenCalledWith('authnResult', config);
     });
 
-    it('should get calls oidcSecurityStorage.read with correct key and returns null', () => {
+    it('should read from oidcSecurityStorage with the correct key on get and return null', () => {
       const spy = vi.spyOn(securityStorage, 'read').mockReturnValue(null);
       const config = { configId: 'configId1' };
       const result = service.getIdToken(config);
@@ -221,7 +221,7 @@ describe('Storage Persistence Service', () => {
   });
 
   describe('getAuthenticationResult', () => {
-    it('should get calls oidcSecurityStorage.read with correct key and returns the value', () => {
+    it('should read from oidcSecurityStorage with the correct key on get and return the value', () => {
       const returnValue = { authnResult: { id_token: 'someValue' } };
       const config = { configId: 'configId1' };
       const spy = vi
@@ -234,7 +234,7 @@ describe('Storage Persistence Service', () => {
       expect(spy).toHaveBeenCalledWith('authnResult', config);
     });
 
-    it('should get calls oidcSecurityStorage.read with correct key and returns null', () => {
+    it('should read from oidcSecurityStorage with the correct key on get and return null', () => {
       const spy = vi.spyOn(securityStorage, 'read').mockReturnValue(null);
       const config = { configId: 'configId1' };
       const result = service.getAuthenticationResult(config);
@@ -246,7 +246,7 @@ describe('Storage Persistence Service', () => {
   });
 
   describe('getRefreshToken', () => {
-    it('should get calls oidcSecurityStorage.read with correct key and returns the value (refresh token with mandatory rotation - default)', () => {
+    it('should read from oidcSecurityStorage with the correct key on get and return the value (refresh token with mandatory rotation - default)', () => {
       const returnValue = { authnResult: { refresh_token: 'someValue' } };
       const spy = vi
         .spyOn(securityStorage, 'read')
@@ -259,7 +259,7 @@ describe('Storage Persistence Service', () => {
       expect(spy).toHaveBeenCalledWith('authnResult', config);
     });
 
-    it('should get calls oidcSecurityStorage.read with correct key and returns the value (refresh token without rotation)', () => {
+    it('should read from oidcSecurityStorage with the correct key on get and return the value (refresh token without rotation)', () => {
       const returnValue = { reusable_refresh_token: 'test_refresh_token' };
       const config = {
         configId: 'configId1',
@@ -286,7 +286,7 @@ describe('Storage Persistence Service', () => {
       expect(spy).toHaveBeenCalledWith('reusable_refresh_token', config);
     });
 
-    it('should get calls oidcSecurityStorage.read with correct key and returns null', () => {
+    it('should read from oidcSecurityStorage with the correct key on get and return null', () => {
       const returnValue = { authnResult: { NO_refresh_token: 'someValue' } };
       const spy = vi
         .spyOn(securityStorage, 'read')
@@ -299,7 +299,7 @@ describe('Storage Persistence Service', () => {
       expect(spy).toHaveBeenCalledWith('authnResult', config);
     });
 
-    it('should get calls oidcSecurityStorage.read with correct key and returns null', () => {
+    it('should read from oidcSecurityStorage with the correct key on get and return null', () => {
       const spy = vi.spyOn(securityStorage, 'read').mockReturnValue(null);
       const config = { configId: 'configId1' };
       const result = service.getRefreshToken(config);

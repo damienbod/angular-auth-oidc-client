@@ -51,7 +51,7 @@ describe('IntervalService', () => {
   });
 
   describe('stopPeriodicTokenCheck', () => {
-    it('should call unsubscribe and sets to null', () => {
+    it('should call unsubscribe and set to null', () => {
       intervalService.runTokenValidationRunning = new Subscription();
       const spy = vi
         .spyOn(intervalService.runTokenValidationRunning, 'unsubscribe')

@@ -217,7 +217,7 @@ describe('SilentRenewService  ', () => {
       expect(spy).toHaveBeenCalledWith(expectedContext, config, allConfigs);
     });
 
-    it('should throw error if url has error param and resets everything on error', async () => {
+    it('should throw error if url has error param and reset everything on error', async () => {
       const config = { configId: 'configId1' };
       const allConfigs = [config];
       const spy = vi
@@ -327,7 +327,7 @@ describe('SilentRenewService  ', () => {
       );
     });
 
-    it('should stop the periodic token check, resets the authorization data and rethrows when processing the callback fails', async () => {
+    it('should stop the periodic token check, reset the authorization data and rethrow when processing the callback fails', async () => {
       // Arrange
       const config = { configId: 'configId1' };
       const allConfigs = [config];
@@ -483,7 +483,7 @@ describe('SilentRenewService  ', () => {
       });
     });
 
-    it('should log and calls flowsDataService.resetSilentRenewRunning in case of an error', async () => {
+    it('should log and call flowsDataService.resetSilentRenewRunning in case of an error', async () => {
       vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
       vi.spyOn(
         silentRenewService,

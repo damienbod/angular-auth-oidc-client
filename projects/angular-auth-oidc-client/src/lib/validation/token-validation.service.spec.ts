@@ -795,7 +795,7 @@ describe('TokenValidationService', () => {
         expect(result).toBe(true);
       });
 
-      it('should return false and logs the error when no key matches the kid', async () => {
+      it('should return false and log the error when no key matches the kid', async () => {
         // Arrange
         const loggerService = TestBed.inject(LoggerService);
         const logErrorSpy = vi.spyOn(loggerService, 'logError');
@@ -822,7 +822,7 @@ describe('TokenValidationService', () => {
         );
       });
 
-      it('should return false and logs the error when the key set is empty', async () => {
+      it('should return false and log the error when the key set is empty', async () => {
         // Arrange
         const loggerService = TestBed.inject(LoggerService);
         const logErrorSpy = vi.spyOn(loggerService, 'logError');

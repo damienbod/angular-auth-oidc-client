@@ -53,7 +53,7 @@ describe('Logout and Revoke Service', () => {
   });
 
   describe('revokeAccessToken', () => {
-    it('should error with a missing configuration message and sends no request when config is null', async () => {
+    it('should error with a missing configuration message and send no request when config is null', async () => {
       // Arrange
       const postSpy = vi.spyOn(dataService, 'post');
       // Act
@@ -126,7 +126,7 @@ describe('Logout and Revoke Service', () => {
       expect(result).toEqual(expect.any(Observable));
     });
 
-    it('should log and returns unmodified response if request is positive', async () => {
+    it('should log and return unmodified response if request is positive', async () => {
       // Arrange
       const paramToken = 'damien';
 
@@ -274,7 +274,7 @@ describe('Logout and Revoke Service', () => {
   });
 
   describe('revokeRefreshToken', () => {
-    it('should error with a missing configuration message and sends no request when config is null', async () => {
+    it('should error with a missing configuration message and send no request when config is null', async () => {
       // Arrange
       const postSpy = vi.spyOn(dataService, 'post');
       // Act
@@ -346,7 +346,7 @@ describe('Logout and Revoke Service', () => {
       expect(result).toEqual(expect.any(Observable));
     });
 
-    it('should log and returns unmodified response if request is positive', async () => {
+    it('should log and return unmodified response if request is positive', async () => {
       // Arrange
       const paramToken = 'damien';
 
@@ -507,7 +507,7 @@ describe('Logout and Revoke Service', () => {
       expect(resetSpy).not.toHaveBeenCalled();
     });
 
-    it('should log and returns if `endSessionUrl` is false', async () => {
+    it('should log and return if `endSessionUrl` is false', async () => {
       // Arrange
       vi.spyOn(urlService, 'getEndSessionUrl').mockReturnValue('');
 
@@ -524,7 +524,7 @@ describe('Logout and Revoke Service', () => {
       expect(serverStateChangedSpy).not.toHaveBeenCalled();
     });
 
-    it('should log and returns if `serverStateChanged` is true', async () => {
+    it('should log and return if `serverStateChanged` is true', async () => {
       // Arrange
       vi.spyOn(urlService, 'getEndSessionUrl').mockReturnValue('someValue');
       const redirectSpy = vi
@@ -746,7 +746,7 @@ describe('Logout and Revoke Service', () => {
   });
 
   describe('logoffAndRevokeTokens', () => {
-    it('should error with a missing configuration message and revokes nothing when config is null', async () => {
+    it('should error with a missing configuration message and revoke nothing when config is null', async () => {
       // Arrange
       const revokeAccessTokenSpy = vi.spyOn(service, 'revokeAccessToken');
       const revokeRefreshTokenSpy = vi.spyOn(service, 'revokeRefreshToken');

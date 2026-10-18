@@ -64,7 +64,7 @@ describe('RandomService Tests', () => {
   }
 
   it.each([7, 8, 10, 40, 43, 67, 128])(
-    'returns exactly the required length for %i',
+    'should return exactly the required length for %i',
     (requiredLength) => {
       const r1 = randomService.createRandom(requiredLength, {
         configId: 'configId1',

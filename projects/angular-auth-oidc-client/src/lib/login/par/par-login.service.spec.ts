@@ -133,7 +133,7 @@ describe('ParLoginService', () => {
       });
     });
 
-    it('should return undefined and logs error when no url could be created', () => {
+    it('should return undefined and log error when no url could be created', () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'
@@ -355,7 +355,7 @@ describe('ParLoginService', () => {
       }
     });
 
-    it('should return undefined and logs error when no URL could be created', async () => {
+    it('should return undefined and log error when no URL could be created', async () => {
       vi.spyOn(
         responseTypeValidationService,
         'hasConfigValidResponseType'

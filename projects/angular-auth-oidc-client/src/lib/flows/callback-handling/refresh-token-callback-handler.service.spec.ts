@@ -166,7 +166,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
       expect(postSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('should retry request in case of no connection http error and fails because of http error afterwards', async () => {
+    it('should retry request in case of no connection http error and fail because of http error afterwards', async () => {
       const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(
         createRetriableStream(
           throwError(() => CONNECTION_ERROR),

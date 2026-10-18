@@ -975,7 +975,7 @@ describe('CheckAuthService', () => {
       ]);
     });
 
-    it('should check the config matching the url state first and all other configs with their redirectUrl and returns all results', async () => {
+    it('should check the config matching the url state first and all other configs with their redirectUrl and return all results', async () => {
       vi.spyOn(
         currentUrlService,
         'getStateParamFromCurrentUrl'
@@ -1040,7 +1040,7 @@ describe('CheckAuthService', () => {
       ]);
     });
 
-    it('should return an unauthenticated result and logs an error for a missing config when no state is in url', async () => {
+    it('should return an unauthenticated result and log an error for a missing config when no state is in url', async () => {
       vi.spyOn(
         currentUrlService,
         'getStateParamFromCurrentUrl'

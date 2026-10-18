@@ -494,7 +494,7 @@ describe('PopUpService', () => {
       );
     });
 
-    it('should not postMessage and logs debug when url is empty', () => {
+    it('should not postMessage and log debug when url is empty', () => {
       // arrange
       vi.stubGlobal('opener', {
         postMessage: () => undefined,

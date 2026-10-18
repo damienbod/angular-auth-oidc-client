@@ -169,9 +169,7 @@ test('should revoke the refresh token of one config', async ({ page }) => {
   expect((await (await revocation).response())?.status()).toBe(200);
 });
 
-test('should log out and revokes the tokens of one config', async ({
-  page,
-}) => {
+test('should log out and revoke the tokens of one config', async ({ page }) => {
   await loginToBoth(page);
 
   const revocation = page.waitForRequest(isRevocationRequest('idp1'));
