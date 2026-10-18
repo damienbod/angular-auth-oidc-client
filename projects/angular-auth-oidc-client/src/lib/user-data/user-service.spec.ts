@@ -26,6 +26,7 @@ describe('User Service', () => {
   let storagePersistenceService: StoragePersistenceService;
   let eventsService: PublicEventsService;
   let dataService: DataService;
+  let tokenHelperService: TokenHelperService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -47,6 +48,7 @@ describe('User Service', () => {
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
     eventsService = TestBed.inject(PublicEventsService);
     dataService = TestBed.inject(DataService);
+    tokenHelperService = TestBed.inject(TokenHelperService);
   });
 
   it('should create', () => {
@@ -58,6 +60,57 @@ describe('User Service', () => {
   });
 
   describe('getAndPersistUserDataInStore', () => {
+    it('decodes the stored id token when no id token and decoded token are passed', async () => {
+      const config = {
+        responseType: 'notcode',
+        configId: 'configId1',
+      } as OpenIdConfiguration;
+      const decodedFromStorage = { sub: 'storedSub' };
+
+      vi.spyOn(storagePersistenceService, 'getIdToken').mockReturnValue(
+        'storedIdToken'
+      );
+      const getPayloadSpy = vi
+        .spyOn(tokenHelperService, 'getPayloadFromToken')
+        .mockReturnValue(decodedFromStorage);
+      const result = await firstValueFrom(
+        userService.getAndPersistUserDataInStore(config, [config])
+      );
+
+      expect(getPayloadSpy).toHaveBeenCalledWith(
+        'storedIdToken',
+        false,
+        config
+      );
+      expect(result).toBe(decodedFromStorage);
+    });
+
+    it('asks the server for user data even if data is stored when isRenewProcess is not passed', async () => {
+      const config = {
+        responseType: 'code',
+        configId: 'configId1',
+      } as OpenIdConfiguration;
+
+      vi.spyOn(userService, 'getUserDataFromStore').mockReturnValue(
+        'userDataInStore'
+      );
+      const spy = vi
+        .spyOn(userService as any, 'getIdentityUserData')
+        .mockReturnValue(of(DUMMY_USER_DATA));
+      const result = await firstValueFrom(
+        userService.getAndPersistUserDataInStore(
+          config,
+          [config],
+          undefined,
+          'idToken',
+          { sub: DUMMY_USER_DATA.sub }
+        )
+      );
+
+      expect(spy).toHaveBeenCalled();
+      expect(result).toEqual(DUMMY_USER_DATA);
+    });
+
     it('if not currentFlow is NOT id Token or Code flow, return decoded ID Token - passed as argument', async () => {
       const isRenewProcess = false;
       const idToken = '';
@@ -287,6 +340,14 @@ describe('User Service', () => {
   });
 
   describe('getUserDataFromStore', () => {
+    it('returns null without reading storage when config is null', () => {
+      const readSpy = vi.spyOn(storagePersistenceService, 'read');
+      const result = userService.getUserDataFromStore(null);
+
+      expect(result).toBeNull();
+      expect(readSpy).not.toHaveBeenCalled();
+    });
+
     it('returns null if there is not data', () => {
       const config = { configId: 'configId1' };
       const result = userService.getUserDataFromStore(config);
@@ -313,6 +374,42 @@ describe('User Service', () => {
   });
 
   describe('setUserDataToStore', () => {
+    it('publishes an empty configId when the single config has no configId', () => {
+      const observableSpy = vi
+        .spyOn((userService as any).userDataInternal$, 'next')
+        .mockReturnValue(undefined);
+
+      userService.setUserDataToStore('userData', {}, [{}]);
+
+      expect(observableSpy).toHaveBeenCalledWith({
+        userData: 'userData',
+        allUserData: [{ configId: '', userData: 'userData' }],
+      });
+    });
+
+    it('publishes null user data and an empty configId for other configs without stored data or configId', () => {
+      const currentConfig = { configId: 'configId1' };
+      const otherConfig = {};
+      const observableSpy = vi
+        .spyOn((userService as any).userDataInternal$, 'next')
+        .mockReturnValue(undefined);
+
+      vi.spyOn(storagePersistenceService, 'read').mockReturnValue(undefined);
+
+      userService.setUserDataToStore('userData', currentConfig, [
+        currentConfig,
+        otherConfig,
+      ]);
+
+      expect(observableSpy).toHaveBeenCalledWith({
+        userData: null,
+        allUserData: [
+          { configId: 'configId1', userData: 'userData' },
+          { configId: '', userData: null },
+        ],
+      });
+    });
+
     it('sets userData in storagePersistenceService', () => {
       const config = { configId: 'configId1' };
       const spy = vi

@@ -208,6 +208,52 @@ describe('Token Helper Service', () => {
 
       expect(result).toEqual(expect.objectContaining(expected));
     });
+
+    it('returns an empty object when no configuration is given', () => {
+      const token = 'abc.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.ghi';
+      const result = tokenHelperService.getPayloadFromToken(token, false, null);
+
+      expect(result).toEqual({});
+    });
+
+    it('throws "Illegal base64url string!" when the payload length % 4 is 1', () => {
+      // Arrange
+      const token = 'abc.abcde.ghi';
+      // Act
+      const act = (): unknown =>
+        tokenHelperService.getPayloadFromToken(token, false, {
+          configId: 'configId1',
+        });
+
+      // Assert
+      expect(act).toThrow('Illegal base64url string!');
+    });
+
+    it('throws a JSON syntax error when the payload part is empty', () => {
+      // Arrange
+      const token = 'abc..ghi';
+      // Act
+      const act = (): unknown =>
+        tokenHelperService.getPayloadFromToken(token, false, {
+          configId: 'configId1',
+        });
+
+      // Assert
+      expect(act).toThrow(SyntaxError);
+    });
+
+    it('falls back to the raw binary string when the payload is not valid UTF-8', () => {
+      // Arrange
+      // base64url of the bytes `{"name":"` + 0xFF + `"}` (lone 0xFF is invalid UTF-8)
+      const token = 'abc.eyJuYW1lIjoi_yJ9.ghi';
+      // Act
+      const result = tokenHelperService.getPayloadFromToken(token, false, {
+        configId: 'configId1',
+      });
+
+      // Assert
+      expect(result).toEqual({ name: '\xFF' });
+    });
   });
 
   describe('getHeaderFromToken', () => {

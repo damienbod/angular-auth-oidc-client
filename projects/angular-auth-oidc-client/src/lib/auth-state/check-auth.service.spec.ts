@@ -40,6 +40,7 @@ describe('CheckAuthService', () => {
   let storagePersistenceService: StoragePersistenceService;
   let currentUrlService: CurrentUrlService;
   let publicEventsService: PublicEventsService;
+  let loggerService: LoggerService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -79,6 +80,7 @@ describe('CheckAuthService', () => {
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
     currentUrlService = TestBed.inject(CurrentUrlService);
     publicEventsService = TestBed.inject(PublicEventsService);
+    loggerService = TestBed.inject(LoggerService);
   });
 
   afterEach(() => {
@@ -90,6 +92,17 @@ describe('CheckAuthService', () => {
   });
 
   describe('checkAuth', () => {
+    it('errors with a missing configuration message and does not fire CheckingAuth when config is null', async () => {
+      const fireEventSpy = vi.spyOn(publicEventsService, 'fireEvent');
+
+      await expect(
+        firstValueFrom(checkAuthService.checkAuth(null, []))
+      ).rejects.toThrow(
+        'Please provide a configuration before setting up the module'
+      );
+      expect(fireEventSpy).not.toHaveBeenCalled();
+    });
+
     it('uses config with matching state when url has state param and config with state param is stored', async () => {
       vi.spyOn(
         currentUrlService,
@@ -688,6 +701,56 @@ describe('CheckAuthService', () => {
   });
 
   describe('checkAuthIncludingServer', () => {
+    it('errors with a missing configuration message and does not force a refresh when config is null', async () => {
+      const forceRefreshSessionSpy = vi.spyOn(
+        refreshSessionService,
+        'forceRefreshSession'
+      );
+
+      await expect(
+        firstValueFrom(checkAuthService.checkAuthIncludingServer(null, []))
+      ).rejects.toThrow(
+        'Please provide a configuration before setting up the module'
+      );
+      expect(forceRefreshSessionSpy).not.toHaveBeenCalled();
+    });
+
+    it('does not start check session and validation when forceRefreshSession emits no response', async () => {
+      const allConfigs = [
+        { configId: 'configId1', authority: 'some-authority' },
+      ];
+
+      vi.spyOn(callBackService, 'isCallback').mockReturnValue(false);
+      vi.spyOn(authStateService, 'areAuthStorageTokensValid').mockReturnValue(
+        false
+      );
+      vi.spyOn(currentUrlService, 'getCurrentUrl').mockReturnValue(
+        'http://localhost:4200'
+      );
+      vi.spyOn(checkSessionService, 'isCheckSessionConfigured').mockReturnValue(
+        true
+      );
+      const checkSessionServiceStartSpy = vi
+        .spyOn(checkSessionService, 'start')
+        .mockReturnValue(undefined);
+      const periodicallyTokenCheckServiceSpy = vi.spyOn(
+        periodicallyTokenCheckService,
+        'startTokenValidationPeriodically'
+      );
+
+      vi.spyOn(refreshSessionService, 'forceRefreshSession').mockReturnValue(
+        of(null as unknown as LoginResponse)
+      );
+
+      const result = await firstValueFrom(
+        checkAuthService.checkAuthIncludingServer(allConfigs[0], allConfigs)
+      );
+
+      expect(result).toBeNull();
+      expect(checkSessionServiceStartSpy).not.toHaveBeenCalled();
+      expect(periodicallyTokenCheckServiceSpy).not.toHaveBeenCalled();
+    });
+
     it('if isSilentRenewConfigured call getOrCreateIframe()', async () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
@@ -977,6 +1040,34 @@ describe('CheckAuthService', () => {
       ]);
     });
 
+    it('returns an unauthenticated result and logs an error for a missing config when no state is in url', async () => {
+      vi.spyOn(
+        currentUrlService,
+        'getStateParamFromCurrentUrl'
+      ).mockReturnValue(null);
+      const logErrorSpy = vi.spyOn(loggerService, 'logError');
+      const allConfigs = [null as unknown as OpenIdConfiguration];
+      const result = await firstValueFrom(
+        checkAuthService.checkAuthMultiple(allConfigs)
+      );
+
+      expect(result).toEqual([
+        {
+          isAuthenticated: false,
+          errorMessage:
+            'Please provide at least one configuration before setting up the module',
+          userData: null,
+          idToken: '',
+          accessToken: '',
+          configId: '',
+        },
+      ]);
+      expect(logErrorSpy).toHaveBeenCalledWith(
+        null,
+        'Please provide at least one configuration before setting up the module'
+      );
+    });
+
     it('throws error if url has state param but no config could be found', async () => {
       vi.spyOn(
         currentUrlService,
@@ -990,6 +1081,19 @@ describe('CheckAuthService', () => {
       ).rejects.toThrow(
         'could not find matching config for state the-state-param'
       );
+    });
+  });
+
+  describe('getConfigurationWithUrlState', () => {
+    it('returns null without reading storage when state is null', () => {
+      const readSpy = vi.spyOn(storagePersistenceService, 'read');
+      const result = (checkAuthService as any).getConfigurationWithUrlState(
+        [{ configId: 'configId1' }],
+        null
+      );
+
+      expect(result).toBeNull();
+      expect(readSpy).not.toHaveBeenCalled();
     });
   });
 });

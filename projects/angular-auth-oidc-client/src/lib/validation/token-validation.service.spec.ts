@@ -2,7 +2,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, of } from 'rxjs';
 import { mockProvider } from '../../test/auto-mock';
-import { JwkExtractor } from '../extractors/jwk.extractor';
+import {
+  JwkExtractor,
+  JwkExtractorInvalidArgumentError,
+  JwkExtractorNoMatchingKeysError,
+} from '../extractors/jwk.extractor';
 import { LoggerService } from '../logging/services/logger.service';
 import { CryptoService } from '../utils/crypto/crypto.service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
@@ -724,6 +728,125 @@ describe('TokenValidationService', () => {
       );
 
       expect(valueFalse).toEqual(false);
+    });
+
+    describe('key lookup', () => {
+      const idToken =
+        'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2V4YW1wbGUuY29tIiwic3ViIjoiMTIzNDU2IiwiYXVkIjoibXlfY2xpZW50X2lkIiwiZXhwIjoxMzExMjgxOTcwLCJpYXQiOjEzMTEyODA5NzAsIm5hbWUiOiJKYW5lIERvZSIsImdpdmVuX25hbWUiOiJKYW5lIiwiZmFtaWx5X25hbWUiOiJEb2UiLCJiaXJ0aGRhdGUiOiIxOTkwLTEwLTMxIiwiZW1haWwiOiJqYW5lZG9lQGV4YW1wbGUuY29tIiwicGljdHVyZSI6Imh0dHBzOi8vZXhhbXBsZS5jb20vamFuZWRvZS9tZS5qcGcifQ.SY0ilps7yKYmYCc41zNOatfmAFhOtDYwuIT80qrHMl_4FEO2WFWSv-aDl4QfTSKY9A6MMP6xy0Z_8Kk7NeRwIV7FVScMLnPvVzs9pxza0e_rl6hmZLb5P5n4AEINwn46X9XmRB5W3EZO_x2LG65_g3NZFiPrzOC1Fs_6taJl7TfI8lOveYDoJyXCWYQMS3Oh5MM9S8W-Hc29_qJLH-kixm1S01qoICRPDGMRwhtAu1DHjwWQp9Ycfz6g3uyb7N1imBvI49t1CwWy02_mQ3g-7e7bOP1Ax2kgrwnJgsVBDULnyCZG9PE8T0CHZl_fErZtvbJJ0jdoZ1fyr48906am2w';
+      // the key has no `use` property, so the lookup for `use: 'sig'` finds nothing
+      const keyWithoutUse = {
+        kty: 'RSA',
+        n: 'u1SU1LfVLPHCozMxH2Mo4lgOEePzNm0tRgeLezV6ffAt0gunVTLw7onLRnrq0_IzW7yWR7QkrmBL7jTKEn5u-qKhbwKfBstIs-bMY2Zkp18gnTxKLxoS2tFczGkPLPgizskuemMghRniWaoLcyehkd3qqGElvW_VDL5AaWTg0nLVkjRo9z-40RQzuVaE8AkAFmxZzow3x-VJYKdjykkJ0iT9wCS0DRTXu269V264Vf_3jvredZiKRkgwlL9xNAwxXFg0x_XFw005UWVRIkdgcKWTjpBP2dPwVZ4WWC-9aGVd-Gyn1o0CLelf4rEjGoXbAAEgAqeGUxrcIlbjXfbcmw',
+        e: 'AQAB',
+        alg: 'RS256',
+        kid: 'boop',
+      };
+
+      beforeEach(() => {
+        const [header, payload, signature] = idToken.split('.');
+
+        vi.spyOn(
+          tokenHelperService,
+          'getSigningInputFromToken'
+        ).mockReturnValue(`${header}.${payload}`);
+        vi.spyOn(tokenHelperService, 'getSignatureFromToken').mockReturnValue(
+          signature
+        );
+      });
+
+      it('falls back to a key without "use" when no kid is given and no signing key matches', async () => {
+        // Arrange
+        vi.spyOn(tokenHelperService, 'getHeaderFromToken').mockReturnValue({
+          alg: 'RS256',
+          typ: 'JWT',
+        });
+
+        // Act
+        const result = await firstValueFrom(
+          tokenValidationService.validateSignatureIdToken(
+            idToken,
+            { keys: [keyWithoutUse] },
+            { configId: 'configId1' }
+          )
+        );
+
+        // Assert
+        expect(result).toBe(true);
+      });
+
+      it('falls back to the key with the matching kid but without "use" when no signing key matches', async () => {
+        // Arrange
+        vi.spyOn(tokenHelperService, 'getHeaderFromToken').mockReturnValue({
+          alg: 'RS256',
+          typ: 'JWT',
+          kid: 'boop',
+        });
+
+        // Act
+        const result = await firstValueFrom(
+          tokenValidationService.validateSignatureIdToken(
+            idToken,
+            { keys: [{ ...keyWithoutUse, kid: 'other' }, keyWithoutUse] },
+            { configId: 'configId1' }
+          )
+        );
+
+        // Assert
+        expect(result).toBe(true);
+      });
+
+      it('returns false and logs the error when no key matches the kid', async () => {
+        // Arrange
+        const loggerService = TestBed.inject(LoggerService);
+        const logErrorSpy = vi.spyOn(loggerService, 'logError');
+
+        vi.spyOn(tokenHelperService, 'getHeaderFromToken').mockReturnValue({
+          alg: 'RS256',
+          kid: 'unknown-kid',
+        });
+
+        // Act
+        const result = await firstValueFrom(
+          tokenValidationService.validateSignatureIdToken(
+            idToken,
+            { keys: [keyWithoutUse] },
+            { configId: 'configId1' }
+          )
+        );
+
+        // Assert
+        expect(result).toBe(false);
+        expect(logErrorSpy).toHaveBeenCalledExactlyOnceWith(
+          { configId: 'configId1' },
+          JwkExtractorNoMatchingKeysError
+        );
+      });
+
+      it('returns false and logs the error when the key set is empty', async () => {
+        // Arrange
+        const loggerService = TestBed.inject(LoggerService);
+        const logErrorSpy = vi.spyOn(loggerService, 'logError');
+
+        vi.spyOn(tokenHelperService, 'getHeaderFromToken').mockReturnValue({
+          alg: 'RS256',
+        });
+
+        // Act
+        const result = await firstValueFrom(
+          tokenValidationService.validateSignatureIdToken(
+            idToken,
+            { keys: [] },
+            { configId: 'configId1' }
+          )
+        );
+
+        // Assert
+        expect(result).toBe(false);
+        expect(logErrorSpy).toHaveBeenCalledExactlyOnceWith(
+          { configId: 'configId1' },
+          JwkExtractorInvalidArgumentError
+        );
+      });
     });
   });
 

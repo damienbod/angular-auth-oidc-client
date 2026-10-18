@@ -137,6 +137,52 @@ describe('SilentRenewService  ', () => {
     });
   });
 
+  describe('getOrCreateIframe logging', () => {
+    it('logs that a new iframe is created when no iframe exists yet', () => {
+      // Arrange
+      const config = { configId: 'configId1' };
+      const logDebugSpy = vi.spyOn(loggerService, 'logDebug');
+
+      vi.spyOn(iFrameService, 'getExistingIFrame').mockReturnValue(null);
+      vi.spyOn(iFrameService, 'addIFrameToWindowBody').mockReturnValue({
+        name: 'anything',
+      } as HTMLIFrameElement);
+
+      // Act
+      silentRenewService.getOrCreateIframe(config);
+
+      // Assert
+      expect(logDebugSpy).toHaveBeenCalledExactlyOnceWith(
+        config,
+        'Creating new iframe: myiFrameForSilentRenew_configId1'
+      );
+    });
+
+    it('logs that the existing iframe is reused when one exists', () => {
+      // Arrange
+      const config = { configId: 'configId1' };
+      const logDebugSpy = vi.spyOn(loggerService, 'logDebug');
+      const addIFrameToWindowBodySpy = vi.spyOn(
+        iFrameService,
+        'addIFrameToWindowBody'
+      );
+
+      vi.spyOn(iFrameService, 'getExistingIFrame').mockReturnValue({
+        name: 'anything',
+      } as HTMLIFrameElement);
+
+      // Act
+      silentRenewService.getOrCreateIframe(config);
+
+      // Assert
+      expect(logDebugSpy).toHaveBeenCalledExactlyOnceWith(
+        config,
+        'Using existing iframe: myiFrameForSilentRenew_configId1'
+      );
+      expect(addIFrameToWindowBodySpy).not.toHaveBeenCalled();
+    });
+  });
+
   describe('codeFlowCallbackSilentRenewIframe', () => {
     it('calls processSilentRenewCodeFlowCallback with correct arguments', async () => {
       const config = { configId: 'configId1' };
@@ -242,6 +288,76 @@ describe('SilentRenewService  ', () => {
         expect(error.message).toBe('some_error');
         expect(error.errorDescription).toBe('some_description');
       }
+    });
+  });
+
+  describe('codeFlowCallbackSilentRenewIframe edge cases', () => {
+    it('passes empty code and state to the flow when the url has no code and state params', async () => {
+      // Arrange
+      const config = { configId: 'configId1' };
+      const allConfigs = [config];
+      const spy = vi
+        .spyOn(flowsService, 'processSilentRenewCodeFlowCallback')
+        .mockReturnValue(of({} as CallbackContext));
+
+      // Act
+      await firstValueFrom(
+        silentRenewService.codeFlowCallbackSilentRenewIframe(
+          ['url-part-1', 'session_state=some-session-state'],
+          config,
+          allConfigs
+        )
+      );
+
+      // Assert
+      expect(spy).toHaveBeenCalledExactlyOnceWith(
+        {
+          code: '',
+          refreshToken: '',
+          state: '',
+          sessionState: 'some-session-state',
+          authResult: null,
+          isRenewProcess: true,
+          jwtKeys: null,
+          validationResult: null,
+          existingIdToken: null,
+        },
+        config,
+        allConfigs
+      );
+    });
+
+    it('stops the periodic token check, resets the authorization data and rethrows when processing the callback fails', async () => {
+      // Arrange
+      const config = { configId: 'configId1' };
+      const allConfigs = [config];
+
+      vi.spyOn(
+        flowsService,
+        'processSilentRenewCodeFlowCallback'
+      ).mockReturnValue(throwError(() => 'processing failed'));
+      const stopPeriodicTokenCheckSpy = vi
+        .spyOn(intervalService, 'stopPeriodicTokenCheck')
+        .mockReturnValue(undefined);
+      const resetAuthorizationDataSpy = vi
+        .spyOn(resetAuthDataService, 'resetAuthorizationData')
+        .mockReturnValue(undefined);
+      // Act
+      const result = firstValueFrom(
+        silentRenewService.codeFlowCallbackSilentRenewIframe(
+          ['url-part-1', 'code=some-code&state=some-state'],
+          config,
+          allConfigs
+        )
+      );
+
+      // Assert
+      await expect(result).rejects.toEqual(new Error('processing failed'));
+      expect(stopPeriodicTokenCheckSpy).toHaveBeenCalledTimes(1);
+      expect(resetAuthorizationDataSpy).toHaveBeenCalledExactlyOnceWith(
+        config,
+        allConfigs
+      );
     });
   });
 
