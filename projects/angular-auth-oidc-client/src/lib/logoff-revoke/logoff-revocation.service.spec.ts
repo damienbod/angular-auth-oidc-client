@@ -46,6 +46,10 @@ describe('Logout and Revoke Service', () => {
     checkSessionService = TestBed.inject(CheckSessionService);
     resetAuthDataService = TestBed.inject(ResetAuthDataService);
     redirectService = TestBed.inject(RedirectService);
+
+    vi.spyOn(urlService, 'getRevocationEndpointUrl').mockReturnValue(
+      'https://sts.example.com/revoke'
+    );
   });
 
   it('should create', () => {
@@ -64,6 +68,48 @@ describe('Logout and Revoke Service', () => {
         'Please provide a configuration before setting up the module'
       );
       expect(postSpy).not.toHaveBeenCalled();
+    });
+
+    it('should error and send no request when the revocation endpoint is not defined', async () => {
+      // Arrange
+      vi.spyOn(urlService, 'getRevocationEndpointUrl').mockReturnValue(null);
+      const postSpy = vi.spyOn(dataService, 'post');
+      const loggerSpy = vi.spyOn(loggerService, 'logError');
+      const config = { configId: 'configId1' };
+
+      // Act & Assert
+      await expect(
+        firstValueFrom(service.revokeAccessToken(config, 'someToken'))
+      ).rejects.toThrow('Revocation endpoint not defined');
+      expect(postSpy).not.toHaveBeenCalled();
+      expect(loggerSpy).toHaveBeenCalledWith(
+        config,
+        'Revocation endpoint not defined'
+      );
+    });
+
+    it('should post the revocation body as form data to the revocation endpoint', async () => {
+      // Arrange
+      vi.spyOn(
+        urlService,
+        'createRevocationEndpointBodyAccessToken'
+      ).mockReturnValue('token=someToken');
+      const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(of(null));
+      const config = { configId: 'configId1' };
+
+      // Act
+      await firstValueFrom(service.revokeAccessToken(config, 'someToken'));
+
+      // Assert
+      expect(postSpy).toHaveBeenCalledWith(
+        'https://sts.example.com/revoke',
+        'token=someToken',
+        config,
+        expect.any(HttpHeaders)
+      );
+      expect(
+        (postSpy.mock.calls[0][3] as HttpHeaders).get('Content-Type')
+      ).toBe('application/x-www-form-urlencoded');
     });
 
     it('should use token parameter if token as parameter is passed in the method', () => {
@@ -284,6 +330,19 @@ describe('Logout and Revoke Service', () => {
       await expect(firstValueFrom(result$)).rejects.toThrow(
         'Please provide a configuration before setting up the module'
       );
+      expect(postSpy).not.toHaveBeenCalled();
+    });
+
+    it('should error and send no request when the revocation endpoint is not defined', async () => {
+      // Arrange
+      vi.spyOn(urlService, 'getRevocationEndpointUrl').mockReturnValue(null);
+      const postSpy = vi.spyOn(dataService, 'post');
+      const config = { configId: 'configId1' };
+
+      // Act & Assert
+      await expect(
+        firstValueFrom(service.revokeRefreshToken(config, 'someToken'))
+      ).rejects.toThrow('Revocation endpoint not defined');
       expect(postSpy).not.toHaveBeenCalled();
     });
 
