@@ -448,5 +448,90 @@ describe('UserCallbackHandlerService', () => {
         );
       }
     });
+
+    describe('without a validation result', () => {
+      function createCallbackContext(): CallbackContext {
+        return {
+          code: '',
+          refreshToken: '',
+          state: '',
+          sessionState: null,
+          authResult: { session_state: 'mystate' },
+          isRenewProcess: false,
+          jwtKeys: null,
+          validationResult: null,
+          existingIdToken: null,
+        };
+      }
+
+      it('does not publish an auth state when autoUserInfo is false', async () => {
+        // Arrange
+        const callbackContext = createCallbackContext();
+        const config = { configId: 'configId1', autoUserInfo: false };
+        const updateAndPublishAuthStateSpy = vi.spyOn(
+          authStateService,
+          'updateAndPublishAuthState'
+        );
+        const setUserDataToStoreSpy = vi.spyOn(
+          userService,
+          'setUserDataToStore'
+        );
+        // Act
+        const result = await firstValueFrom(
+          service.callbackUser(callbackContext, config, [config])
+        );
+
+        // Assert
+        expect(result).toBe(callbackContext);
+        expect(updateAndPublishAuthStateSpy).not.toHaveBeenCalled();
+        expect(setUserDataToStoreSpy).not.toHaveBeenCalled();
+      });
+
+      it('does not publish an auth state when autoUserInfo is true and user data is returned', async () => {
+        // Arrange
+        const callbackContext = createCallbackContext();
+        const config = { configId: 'configId1', autoUserInfo: true };
+
+        vi.spyOn(userService, 'getAndPersistUserDataInStore').mockReturnValue(
+          of({ user: 'some_data' })
+        );
+        const updateAndPublishAuthStateSpy = vi.spyOn(
+          authStateService,
+          'updateAndPublishAuthState'
+        );
+        // Act
+        const result = await firstValueFrom(
+          service.callbackUser(callbackContext, config, [config])
+        );
+
+        // Assert
+        expect(result).toBe(callbackContext);
+        expect(updateAndPublishAuthStateSpy).not.toHaveBeenCalled();
+      });
+
+      it('does not publish an unauthenticated state but still errors when no user data is returned', async () => {
+        // Arrange
+        const callbackContext = createCallbackContext();
+        const config = { configId: 'configId1', autoUserInfo: true };
+
+        vi.spyOn(userService, 'getAndPersistUserDataInStore').mockReturnValue(
+          of(null)
+        );
+        const updateAndPublishAuthStateSpy = vi.spyOn(
+          authStateService,
+          'updateAndPublishAuthState'
+        );
+        // Act
+        const result = firstValueFrom(
+          service.callbackUser(callbackContext, config, [config])
+        );
+
+        // Assert
+        await expect(result).rejects.toThrow(
+          'Failed to retrieve user info with error:  Error: Called for userData but they were null'
+        );
+        expect(updateAndPublishAuthStateSpy).not.toHaveBeenCalled();
+      });
+    });
   });
 });

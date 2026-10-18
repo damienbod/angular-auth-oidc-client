@@ -53,6 +53,19 @@ describe('Logout and Revoke Service', () => {
   });
 
   describe('revokeAccessToken', () => {
+    it('errors with a missing configuration message and sends no request when config is null', async () => {
+      // Arrange
+      const postSpy = vi.spyOn(dataService, 'post');
+      // Act
+      const result$ = service.revokeAccessToken(null, 'someToken');
+
+      // Assert
+      await expect(firstValueFrom(result$)).rejects.toThrow(
+        'Please provide a configuration before setting up the module'
+      );
+      expect(postSpy).not.toHaveBeenCalled();
+    });
+
     it('uses token parameter if token as parameter is passed in the method', () => {
       // Arrange
       const paramToken = 'passedTokenAsParam';
@@ -261,6 +274,19 @@ describe('Logout and Revoke Service', () => {
   });
 
   describe('revokeRefreshToken', () => {
+    it('errors with a missing configuration message and sends no request when config is null', async () => {
+      // Arrange
+      const postSpy = vi.spyOn(dataService, 'post');
+      // Act
+      const result$ = service.revokeRefreshToken(null, 'someToken');
+
+      // Assert
+      await expect(firstValueFrom(result$)).rejects.toThrow(
+        'Please provide a configuration before setting up the module'
+      );
+      expect(postSpy).not.toHaveBeenCalled();
+    });
+
     it('uses refresh token parameter if token as parameter is passed in the method', () => {
       // Arrange
       const paramToken = 'passedTokenAsParam';
@@ -468,6 +494,19 @@ describe('Logout and Revoke Service', () => {
   });
 
   describe('logoff', () => {
+    it('errors with a missing configuration message and does not reset auth data when config is null', async () => {
+      // Arrange
+      const resetSpy = vi.spyOn(resetAuthDataService, 'resetAuthorizationData');
+      // Act
+      const result$ = service.logoff(null, []);
+
+      // Assert
+      await expect(firstValueFrom(result$)).rejects.toThrow(
+        'Please provide a configuration before setting up the module'
+      );
+      expect(resetSpy).not.toHaveBeenCalled();
+    });
+
     it('logs and returns if `endSessionUrl` is false', async () => {
       // Arrange
       vi.spyOn(urlService, 'getEndSessionUrl').mockReturnValue('');
@@ -707,6 +746,75 @@ describe('Logout and Revoke Service', () => {
   });
 
   describe('logoffAndRevokeTokens', () => {
+    it('errors with a missing configuration message and revokes nothing when config is null', async () => {
+      // Arrange
+      const revokeAccessTokenSpy = vi.spyOn(service, 'revokeAccessToken');
+      const revokeRefreshTokenSpy = vi.spyOn(service, 'revokeRefreshToken');
+      // Act
+      const result$ = service.logoffAndRevokeTokens(null, []);
+
+      // Assert
+      await expect(firstValueFrom(result$)).rejects.toThrow(
+        'Please provide a configuration before setting up the module'
+      );
+      expect(revokeAccessTokenSpy).not.toHaveBeenCalled();
+      expect(revokeRefreshTokenSpy).not.toHaveBeenCalled();
+    });
+
+    it('only logs off without revoking when the well-known endpoints have no revocation endpoint', async () => {
+      // Arrange
+      const config = { configId: 'configId1' };
+      const logoutAuthOptions = { customParams: { some: 'param' } };
+
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'authWellKnownEndPoints') {
+            return { issuer: 'issuer' };
+          }
+
+          return undefined;
+        }
+      );
+      const loggerSpy = vi.spyOn(loggerService, 'logDebug');
+      const revokeAccessTokenSpy = vi.spyOn(service, 'revokeAccessToken');
+      const revokeRefreshTokenSpy = vi.spyOn(service, 'revokeRefreshToken');
+      const logoffSpy = vi.spyOn(service, 'logoff').mockReturnValue(of(null));
+
+      // Act
+      await firstValueFrom(
+        service.logoffAndRevokeTokens(config, [config], logoutAuthOptions)
+      );
+
+      // Assert
+      expect(loggerSpy).toHaveBeenCalledWith(
+        config,
+        'revocation endpoint not supported'
+      );
+      expect(logoffSpy).toHaveBeenCalledWith(
+        config,
+        [config],
+        logoutAuthOptions
+      );
+      expect(revokeAccessTokenSpy).not.toHaveBeenCalled();
+      expect(revokeRefreshTokenSpy).not.toHaveBeenCalled();
+    });
+
+    it('only logs off without revoking when no well-known endpoints are stored', async () => {
+      // Arrange
+      const config = { configId: 'configId1' };
+
+      vi.spyOn(storagePersistenceService, 'read').mockReturnValue(null);
+      const revokeAccessTokenSpy = vi.spyOn(service, 'revokeAccessToken');
+      const logoffSpy = vi.spyOn(service, 'logoff').mockReturnValue(of(null));
+
+      // Act
+      await firstValueFrom(service.logoffAndRevokeTokens(config, [config]));
+
+      // Assert
+      expect(logoffSpy).toHaveBeenCalledWith(config, [config], undefined);
+      expect(revokeAccessTokenSpy).not.toHaveBeenCalled();
+    });
+
     it('calls revokeRefreshToken and revokeAccessToken when storage holds a refreshtoken', async () => {
       // Arrange
       const paramToken = 'damien';

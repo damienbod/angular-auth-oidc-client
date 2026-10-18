@@ -255,6 +255,33 @@ describe('RefreshSessionService ', () => {
         allConfigs[0]
       );
     });
+
+    it('throws an error and does not start a refresh when no config is given', async () => {
+      // Arrange
+      const forceRefreshSessionSpy = vi.spyOn(
+        refreshSessionService,
+        'forceRefreshSession'
+      );
+      const writeSpy = vi.spyOn(storagePersistenceService, 'write');
+      const resetSilentRenewRunningSpy = vi.spyOn(
+        flowsDataService,
+        'resetSilentRenewRunning'
+      );
+      // Act
+      const result = firstValueFrom(
+        refreshSessionService.userForceRefreshSession(null, [], {
+          extra: 'custom',
+        })
+      );
+
+      // Assert
+      await expect(result).rejects.toThrow(
+        'Please provide a configuration before setting up the module'
+      );
+      expect(forceRefreshSessionSpy).not.toHaveBeenCalled();
+      expect(writeSpy).not.toHaveBeenCalled();
+      expect(resetSilentRenewRunningSpy).not.toHaveBeenCalled();
+    });
   });
 
   describe('forceRefreshSession', () => {
@@ -970,6 +997,134 @@ describe('RefreshSessionService ', () => {
       expect(resetSilentRenewRunningSpy).not.toHaveBeenCalled();
     });
 
+    it('returns empty tokens if auth is true but the iframe completion was not successful', async () => {
+      // Arrange
+      vi.spyOn(
+        flowHelper,
+        'isCurrentFlowCodeFlowWithRefreshTokens'
+      ).mockReturnValue(false);
+      vi.spyOn(
+        refreshSessionService as any,
+        'startRefreshSession'
+      ).mockReturnValue(of(null));
+      vi.spyOn(authStateService, 'areAuthStorageTokensValid').mockReturnValue(
+        true
+      );
+      vi.spyOn(userService, 'getUserDataFromStore').mockReturnValue({
+        sub: 'user',
+      });
+      vi.spyOn(
+        silentRenewService,
+        'refreshSessionWithIFrameCompleted$',
+        'get'
+      ).mockReturnValue(
+        of({
+          success: false,
+          configId: 'configId1',
+          errorMessage: 'login_required',
+        })
+      );
+      const allConfigs = [
+        {
+          configId: 'configId1',
+          silentRenewTimeoutInSeconds: 10,
+        },
+      ];
+      // Act
+      const result = await firstValueFrom(
+        refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs)
+      );
+
+      // Assert
+      expect(result).toEqual({
+        idToken: '',
+        accessToken: '',
+        userData: { sub: 'user' },
+        isAuthenticated: true,
+        configId: 'configId1',
+      });
+    });
+
+    it('returns empty tokens if auth is true and the successful iframe completion carries no tokens', async () => {
+      // Arrange
+      vi.spyOn(
+        flowHelper,
+        'isCurrentFlowCodeFlowWithRefreshTokens'
+      ).mockReturnValue(false);
+      vi.spyOn(
+        refreshSessionService as any,
+        'startRefreshSession'
+      ).mockReturnValue(of(null));
+      vi.spyOn(authStateService, 'areAuthStorageTokensValid').mockReturnValue(
+        true
+      );
+      vi.spyOn(
+        silentRenewService,
+        'refreshSessionWithIFrameCompleted$',
+        'get'
+      ).mockReturnValue(
+        of({ success: true, authResult: {}, configId: 'configId1' } as any)
+      );
+      const allConfigs = [
+        {
+          configId: 'configId1',
+          silentRenewTimeoutInSeconds: 10,
+        },
+      ];
+      // Act
+      const result = await firstValueFrom(
+        refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs)
+      );
+
+      // Assert
+      expect(result.idToken).toBe('');
+      expect(result.accessToken).toBe('');
+      expect(result.isAuthenticated).toBe(true);
+    });
+
+    it('times out the iframe refresh immediately and fails after the retries when no silent renew timeout is configured', async () => {
+      // Arrange
+      vi.spyOn(
+        flowHelper,
+        'isCurrentFlowCodeFlowWithRefreshTokens'
+      ).mockReturnValue(false);
+      vi.spyOn(
+        refreshSessionService as any,
+        'startRefreshSession'
+      ).mockReturnValue(of(null));
+      vi.spyOn(
+        silentRenewService,
+        'refreshSessionWithIFrameCompleted$',
+        'get'
+      ).mockReturnValue(NEVER);
+      const resetSilentRenewRunningSpy = vi
+        .spyOn(flowsDataService, 'resetSilentRenewRunning')
+        .mockReturnValue(undefined);
+      const allConfigs = [{ configId: 'configId1' }];
+      let actualError: unknown;
+
+      // Act
+      refreshSessionService
+        .forceRefreshSession(allConfigs[0], allConfigs)
+        .subscribe({
+          error: (error) => {
+            actualError = error;
+          },
+        });
+
+      // Assert
+      // 4 attempts timing out after 0s each, plus retry delays of 1s, 2s and 3s => 6s
+      await vi.advanceTimersByTimeAsync(5_900);
+      expect(actualError).toBeUndefined();
+
+      await vi.advanceTimersByTimeAsync(200);
+
+      expect(actualError).toBeInstanceOf(Error);
+      expect(resetSilentRenewRunningSpy).toHaveBeenCalledTimes(
+        MAX_RETRY_ATTEMPTS
+      );
+    });
+
     describe('NOT isCurrentFlowCodeFlowWithRefreshTokens', () => {
       it('does return null when not authenticated', async () => {
         const allConfigs = [
@@ -1056,6 +1211,123 @@ describe('RefreshSessionService ', () => {
         });
         expect(spyInsideMap).toHaveBeenCalledTimes(1);
       });
+    });
+  });
+
+  describe('waitForRunningRefreshSessionIfRequired', () => {
+    it('uses a default timeout of 20 seconds when no silent renew timeout is configured', async () => {
+      // Arrange
+      const config = { configId: 'configId1' };
+      const events$ = new ReplaySubject<any>(1);
+      let actualError: Error | undefined;
+
+      vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(true);
+      vi.spyOn(publicEventsService, 'registerForEvents').mockReturnValue(
+        events$
+      );
+
+      // Act
+      (refreshSessionService as any)
+        .waitForRunningRefreshSessionIfRequired(config)
+        .subscribe({
+          error: (error: Error) => {
+            actualError = error;
+          },
+        });
+
+      // Assert
+      await vi.advanceTimersByTimeAsync(19_900);
+      expect(actualError).toBeUndefined();
+
+      await vi.advanceTimersByTimeAsync(100);
+
+      expect(actualError?.message).toBe(
+        "Timed out waiting for the running refresh session for config 'configId1'"
+      );
+    });
+
+    it('reports an empty config id in the timeout error when the config has no config id', async () => {
+      // Arrange
+      const config = { silentRenewTimeoutInSeconds: 1 };
+      const events$ = new ReplaySubject<any>(1);
+      let actualError: Error | undefined;
+
+      vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(true);
+      vi.spyOn(publicEventsService, 'registerForEvents').mockReturnValue(
+        events$
+      );
+
+      // Act
+      (refreshSessionService as any)
+        .waitForRunningRefreshSessionIfRequired(config)
+        .subscribe({
+          error: (error: Error) => {
+            actualError = error;
+          },
+        });
+      await vi.advanceTimersByTimeAsync(1000);
+
+      // Assert
+      expect(actualError?.message).toBe(
+        "Timed out waiting for the running refresh session for config ''"
+      );
+    });
+
+    it('wraps a non-error silent renew failure value into an error', async () => {
+      // Arrange
+      const config = { configId: 'configId1', silentRenewTimeoutInSeconds: 10 };
+      const events$ = new ReplaySubject<any>(1);
+      let actualError: unknown;
+
+      vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(true);
+      vi.spyOn(publicEventsService, 'registerForEvents').mockReturnValue(
+        events$
+      );
+      events$.next({
+        type: EventTypes.SilentRenewFailed,
+        value: 'iframe renew failed',
+      });
+
+      // Act
+      (refreshSessionService as any)
+        .waitForRunningRefreshSessionIfRequired(config)
+        .subscribe({
+          error: (error: unknown) => {
+            actualError = error;
+          },
+        });
+      await vi.advanceTimersByTimeAsync(0);
+
+      // Assert
+      expect(actualError).toBeInstanceOf(Error);
+      expect((actualError as Error).message).toBe('iframe renew failed');
+    });
+
+    it('fails with a default message when the silent renew failure carries no value', async () => {
+      // Arrange
+      const config = { configId: 'configId1', silentRenewTimeoutInSeconds: 10 };
+      const events$ = new ReplaySubject<any>(1);
+      let actualError: unknown;
+
+      vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(true);
+      vi.spyOn(publicEventsService, 'registerForEvents').mockReturnValue(
+        events$
+      );
+      events$.next({ type: EventTypes.SilentRenewFailed });
+
+      // Act
+      (refreshSessionService as any)
+        .waitForRunningRefreshSessionIfRequired(config)
+        .subscribe({
+          error: (error: unknown) => {
+            actualError = error;
+          },
+        });
+      await vi.advanceTimersByTimeAsync(0);
+
+      // Assert
+      expect(actualError).toBeInstanceOf(Error);
+      expect((actualError as Error).message).toBe('Silent renew failed');
     });
   });
 
@@ -1194,6 +1466,108 @@ describe('RefreshSessionService ', () => {
 
       expect(refreshSessionWithRefreshTokensSpy).not.toHaveBeenCalled();
       expect(refreshSessionWithIframeSpy).toHaveBeenCalled();
+    });
+
+    it('fires SilentRenewFailed, resets the running flag and rethrows when the refresh fails', async () => {
+      // Arrange
+      const allConfigs = [
+        {
+          configId: 'configId1',
+          authWellknownEndpointUrl: 'https://authWell',
+        },
+      ];
+      const expectedError = new Error('refresh failed');
+
+      vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(false);
+      vi.spyOn(flowsDataService, 'setSilentRenewRunning').mockReturnValue(
+        undefined
+      );
+      const resetSilentRenewRunningSpy = vi
+        .spyOn(flowsDataService, 'resetSilentRenewRunning')
+        .mockReturnValue(undefined);
+      const fireEventSpy = vi
+        .spyOn(publicEventsService, 'fireEvent')
+        .mockReturnValue(undefined);
+
+      vi.spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      ).mockReturnValue(of({}));
+      vi.spyOn(
+        flowHelper,
+        'isCurrentFlowCodeFlowWithRefreshTokens'
+      ).mockReturnValue(true);
+      vi.spyOn(
+        refreshSessionRefreshTokenService,
+        'refreshSessionWithRefreshTokens'
+      ).mockReturnValue(throwError(() => expectedError));
+
+      // Act
+      const result = firstValueFrom(
+        (refreshSessionService as any).startRefreshSession(
+          allConfigs[0],
+          allConfigs
+        )
+      );
+
+      // Assert
+      await expect(result).rejects.toBe(expectedError);
+      expect(fireEventSpy).toHaveBeenCalledWith(
+        EventTypes.SilentRenewFailed,
+        expectedError
+      );
+      expect(resetSilentRenewRunningSpy).toHaveBeenCalledExactlyOnceWith(
+        allConfigs[0]
+      );
+    });
+
+    it('fires SilentRenewFailed, resets the running flag and rethrows when the well-known discovery fails', async () => {
+      // Arrange
+      const allConfigs = [
+        {
+          configId: 'configId1',
+          authWellknownEndpointUrl: 'https://authWell',
+        },
+      ];
+      const expectedError = new Error('discovery failed');
+
+      vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(false);
+      vi.spyOn(flowsDataService, 'setSilentRenewRunning').mockReturnValue(
+        undefined
+      );
+      const resetSilentRenewRunningSpy = vi
+        .spyOn(flowsDataService, 'resetSilentRenewRunning')
+        .mockReturnValue(undefined);
+      const fireEventSpy = vi
+        .spyOn(publicEventsService, 'fireEvent')
+        .mockReturnValue(undefined);
+
+      vi.spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      ).mockReturnValue(throwError(() => expectedError));
+      const refreshSessionWithIframeSpy = vi.spyOn(
+        refreshSessionIframeService,
+        'refreshSessionWithIframe'
+      );
+      // Act
+      const result = firstValueFrom(
+        (refreshSessionService as any).startRefreshSession(
+          allConfigs[0],
+          allConfigs
+        )
+      );
+
+      // Assert
+      await expect(result).rejects.toBe(expectedError);
+      expect(refreshSessionWithIframeSpy).not.toHaveBeenCalled();
+      expect(fireEventSpy).toHaveBeenCalledWith(
+        EventTypes.SilentRenewFailed,
+        expectedError
+      );
+      expect(resetSilentRenewRunningSpy).toHaveBeenCalledExactlyOnceWith(
+        allConfigs[0]
+      );
     });
   });
 });

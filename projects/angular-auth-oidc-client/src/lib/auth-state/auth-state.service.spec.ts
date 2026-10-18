@@ -46,6 +46,44 @@ describe('Auth State Service', () => {
   });
 
   describe('setAuthorizedAndFireEvent', () => {
+    it('uses an empty configId when the single config has no configId', () => {
+      const spy = vi
+        .spyOn((authStateService as any).authenticatedInternal$, 'next')
+        .mockReturnValue(undefined);
+
+      authStateService.setAuthenticatedAndFireEvent([{}]);
+
+      expect(spy).toHaveBeenCalledWith({
+        isAuthenticated: true,
+        allConfigsAuthenticated: [{ configId: '', isAuthenticated: true }],
+      });
+    });
+
+    it('uses an empty configId for configs without configId when multiple configs are given', () => {
+      vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue(
+        'someAccessToken'
+      );
+      vi.spyOn(storagePersistenceService, 'getIdToken').mockReturnValue(
+        'someIdToken'
+      );
+      const spy = vi
+        .spyOn((authStateService as any).authenticatedInternal$, 'next')
+        .mockReturnValue(undefined);
+
+      authStateService.setAuthenticatedAndFireEvent([
+        {},
+        { configId: 'configId2' },
+      ]);
+
+      expect(spy).toHaveBeenCalledWith({
+        isAuthenticated: true,
+        allConfigsAuthenticated: [
+          { configId: '', isAuthenticated: true },
+          { configId: 'configId2', isAuthenticated: true },
+        ],
+      });
+    });
+
     it('throws correct event with single config', () => {
       const spy = vi
         .spyOn((authStateService as any).authenticatedInternal$, 'next')
@@ -136,6 +174,19 @@ describe('Auth State Service', () => {
   });
 
   describe('setUnauthorizedAndFireEvent', () => {
+    it('uses an empty configId when the single config has no configId', () => {
+      const spy = vi
+        .spyOn((authStateService as any).authenticatedInternal$, 'next')
+        .mockReturnValue(undefined);
+
+      authStateService.setUnauthenticatedAndFireEvent({}, [{}]);
+
+      expect(spy).toHaveBeenCalledWith({
+        isAuthenticated: false,
+        allConfigsAuthenticated: [{ configId: '', isAuthenticated: false }],
+      });
+    });
+
     it('persist AuthState In Storage', () => {
       const spy = vi
         .spyOn(storagePersistenceService, 'resetAuthStateInStorage')
@@ -337,6 +388,19 @@ describe('Auth State Service', () => {
   });
 
   describe('getAccessToken', () => {
+    it('returns an empty string without reading storage when config is null', () => {
+      const getAccessTokenSpy = vi.spyOn(
+        storagePersistenceService,
+        'getAccessToken'
+      );
+      const getIdTokenSpy = vi.spyOn(storagePersistenceService, 'getIdToken');
+      const result = authStateService.getAccessToken(null);
+
+      expect(result).toBe('');
+      expect(getAccessTokenSpy).not.toHaveBeenCalled();
+      expect(getIdTokenSpy).not.toHaveBeenCalled();
+    });
+
     it('isAuthorized is false returns null', () => {
       vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue('');
       vi.spyOn(storagePersistenceService, 'getIdToken').mockReturnValue('');
@@ -367,6 +431,19 @@ describe('Auth State Service', () => {
   });
 
   describe('getAuthenticationResult', () => {
+    it('returns null without reading storage when config is null', () => {
+      const getAccessTokenSpy = vi.spyOn(
+        storagePersistenceService,
+        'getAccessToken'
+      );
+      const getIdTokenSpy = vi.spyOn(storagePersistenceService, 'getIdToken');
+      const result = authStateService.getAuthenticationResult(null);
+
+      expect(result).toBe(null);
+      expect(getAccessTokenSpy).not.toHaveBeenCalled();
+      expect(getIdTokenSpy).not.toHaveBeenCalled();
+    });
+
     it('isAuthorized is false returns null', () => {
       vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue('');
       vi.spyOn(storagePersistenceService, 'getIdToken').mockReturnValue('');
@@ -436,6 +513,19 @@ describe('Auth State Service', () => {
   });
 
   describe('getIdToken', () => {
+    it('returns an empty string without reading storage when config is null', () => {
+      const getAccessTokenSpy = vi.spyOn(
+        storagePersistenceService,
+        'getAccessToken'
+      );
+      const getIdTokenSpy = vi.spyOn(storagePersistenceService, 'getIdToken');
+      const result = authStateService.getIdToken(null);
+
+      expect(result).toBe('');
+      expect(getAccessTokenSpy).not.toHaveBeenCalled();
+      expect(getIdTokenSpy).not.toHaveBeenCalled();
+    });
+
     it('isAuthorized is false returns null', () => {
       vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue('');
       vi.spyOn(storagePersistenceService, 'getIdToken').mockReturnValue('');
@@ -458,6 +548,19 @@ describe('Auth State Service', () => {
   });
 
   describe('getRefreshToken', () => {
+    it('returns an empty string without reading storage when config is null', () => {
+      const getAccessTokenSpy = vi.spyOn(
+        storagePersistenceService,
+        'getAccessToken'
+      );
+      const getIdTokenSpy = vi.spyOn(storagePersistenceService, 'getIdToken');
+      const result = authStateService.getRefreshToken(null);
+
+      expect(result).toBe('');
+      expect(getAccessTokenSpy).not.toHaveBeenCalled();
+      expect(getIdTokenSpy).not.toHaveBeenCalled();
+    });
+
     it('isAuthorized is false returns null', () => {
       vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue('');
       vi.spyOn(storagePersistenceService, 'getIdToken').mockReturnValue('');
@@ -487,6 +590,19 @@ describe('Auth State Service', () => {
   });
 
   describe('areAuthStorageTokensValid', () => {
+    it('returns false without reading storage when config is null', () => {
+      const getAccessTokenSpy = vi.spyOn(
+        storagePersistenceService,
+        'getAccessToken'
+      );
+      const getIdTokenSpy = vi.spyOn(storagePersistenceService, 'getIdToken');
+      const result = authStateService.areAuthStorageTokensValid(null);
+
+      expect(result).toBe(false);
+      expect(getAccessTokenSpy).not.toHaveBeenCalled();
+      expect(getIdTokenSpy).not.toHaveBeenCalled();
+    });
+
     it('isAuthorized is false returns false', () => {
       vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue('');
       vi.spyOn(storagePersistenceService, 'getIdToken').mockReturnValue('');
@@ -595,6 +711,35 @@ describe('Auth State Service', () => {
   });
 
   describe('hasIdTokenExpiredAndRenewCheckIsEnabled', () => {
+    it('returns false without validating the id token when triggerRefreshWhenIdTokenExpired is false', () => {
+      const hasIdTokenExpiredSpy = vi.spyOn(
+        tokenValidationService,
+        'hasIdTokenExpired'
+      );
+      const result = authStateService.hasIdTokenExpiredAndRenewCheckIsEnabled({
+        configId: 'configId1',
+        triggerRefreshWhenIdTokenExpired: false,
+      });
+
+      expect(result).toBe(false);
+      expect(hasIdTokenExpiredSpy).not.toHaveBeenCalled();
+    });
+
+    it('returns false without validating the id token when disableIdTokenValidation is true', () => {
+      const hasIdTokenExpiredSpy = vi.spyOn(
+        tokenValidationService,
+        'hasIdTokenExpired'
+      );
+      const result = authStateService.hasIdTokenExpiredAndRenewCheckIsEnabled({
+        configId: 'configId1',
+        triggerRefreshWhenIdTokenExpired: true,
+        disableIdTokenValidation: true,
+      });
+
+      expect(result).toBe(false);
+      expect(hasIdTokenExpiredSpy).not.toHaveBeenCalled();
+    });
+
     it('tokenValidationService gets called with id token if id_token is set', () => {
       const config = {
         configId: 'configId1',
@@ -683,6 +828,49 @@ describe('Auth State Service', () => {
       expect(result).toBe(false);
       expect(tokenValidationService.hasIdTokenExpired).toHaveBeenCalledTimes(1);
       expect(spy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('isAuthenticated', () => {
+    it('returns true when access token and id token are stored', () => {
+      vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue(
+        'accessToken'
+      );
+      vi.spyOn(storagePersistenceService, 'getIdToken').mockReturnValue(
+        'idToken'
+      );
+
+      const result = authStateService.isAuthenticated({
+        configId: 'configId1',
+      });
+
+      expect(result).toBe(true);
+    });
+
+    it('returns false when only the access token is stored', () => {
+      vi.spyOn(storagePersistenceService, 'getAccessToken').mockReturnValue(
+        'accessToken'
+      );
+      vi.spyOn(storagePersistenceService, 'getIdToken').mockReturnValue('');
+
+      const result = authStateService.isAuthenticated({
+        configId: 'configId1',
+      });
+
+      expect(result).toBe(false);
+    });
+
+    it('returns false without reading storage when config is null', () => {
+      const getAccessTokenSpy = vi.spyOn(
+        storagePersistenceService,
+        'getAccessToken'
+      );
+      const getIdTokenSpy = vi.spyOn(storagePersistenceService, 'getIdToken');
+      const result = authStateService.isAuthenticated(null);
+
+      expect(result).toBe(false);
+      expect(getAccessTokenSpy).not.toHaveBeenCalled();
+      expect(getIdTokenSpy).not.toHaveBeenCalled();
     });
   });
 

@@ -66,6 +66,22 @@ describe('Flows Data Service', () => {
       });
     });
 
+    it('getAuthStateControl returns an empty string without reading storage when config is null', () => {
+      const spy = vi.spyOn(storagePersistenceService, 'read');
+      const result = service.getAuthStateControl(null);
+
+      expect(result).toBe('');
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('setAuthStateControl returns false without writing storage when config is null', () => {
+      const spy = vi.spyOn(storagePersistenceService, 'write');
+      const result = service.setAuthStateControl('ToSave', null);
+
+      expect(result).toBe(false);
+      expect(spy).not.toHaveBeenCalled();
+    });
+
     it('setAuthStateControl saves property in store', () => {
       const spy = vi
         .spyOn(storagePersistenceService, 'write')
@@ -280,6 +296,60 @@ describe('Flows Data Service', () => {
   });
 
   describe('isSilentRenewRunning', () => {
+    it('returns false when the stored entry parses to null', () => {
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'storageSilentRenewRunning') {
+            return 'null';
+          }
+
+          return undefined;
+        }
+      );
+      const spyWrite = vi.spyOn(storagePersistenceService, 'write');
+      const result = service.isSilentRenewRunning({ configId: 'configId1' });
+
+      expect(result).toBe(false);
+      expect(spyWrite).not.toHaveBeenCalled();
+    });
+
+    it('treats a running process as stuck and resets it when silentRenewTimeoutInSeconds is not set', () => {
+      const config = { configId: 'configId1' };
+
+      vi.useFakeTimers();
+      const baseTime = new Date();
+
+      vi.setSystemTime(baseTime);
+      const storageObject = {
+        state: 'running',
+        dateOfLaunchedProcessUtc: baseTime.toISOString(),
+      };
+
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) => {
+          if (args[0] === 'storageSilentRenewRunning') {
+            return JSON.stringify(storageObject);
+          }
+
+          return undefined;
+        }
+      );
+      const spyWrite = vi
+        .spyOn(storagePersistenceService, 'write')
+        .mockReturnValue(undefined as any);
+
+      vi.advanceTimersByTime(1000);
+
+      const result = service.isSilentRenewRunning(config);
+
+      expect(result).toBe(false);
+      expect(spyWrite).toHaveBeenCalledWith(
+        'storageSilentRenewRunning',
+        '',
+        config
+      );
+    });
+
     it('silent renew process timeout exceeded reset state object and returns false result', () => {
       const config = {
         silentRenewTimeoutInSeconds: 10,
@@ -405,6 +475,14 @@ describe('Flows Data Service', () => {
   });
 
   describe('resetSilentRenewRunning', () => {
+    it('does not write storage when config is null', () => {
+      const spy = vi.spyOn(storagePersistenceService, 'write');
+
+      service.resetSilentRenewRunning(null);
+
+      expect(spy).not.toHaveBeenCalled();
+    });
+
     it('set resetSilentRenewRunning to empty string when called', () => {
       const spy = vi
         .spyOn(storagePersistenceService, 'write')

@@ -163,6 +163,28 @@ describe('UrlService Tests', () => {
 
       expect(result).toBe(true);
     });
+
+    it('returns false and logs an error when the redirect check is enabled but no redirectUrl is configured', () => {
+      // Arrange
+      const config = {
+        configId: 'configId1',
+        checkRedirectUrlWhenCheckingIfIsCallback: true,
+      };
+      const logErrorSpy = vi.spyOn(loggerService, 'logError');
+      // Act
+      const result = service.isCallbackFromSts(
+        'https://the-redirect.url?code=anycode',
+        config
+      );
+
+      // Assert
+      expect(result).toBe(false);
+      expect(logErrorSpy).toHaveBeenCalledWith(
+        config,
+        'UrlService.isCallbackFromSts: could not get redirectUrl from config, was: ',
+        null
+      );
+    });
   });
 
   describe('getUrlParameter', () => {
@@ -1384,6 +1406,29 @@ describe('UrlService Tests', () => {
         null
       );
     });
+
+    it('omits code_verifier and does not read it when disablePkce is true', () => {
+      // Arrange
+      const code = 'code';
+      const redirectUrl = 'redirectUrl';
+      const clientId = 'clientId';
+      const getCodeVerifierSpy = vi.spyOn(flowsDataService, 'getCodeVerifier');
+
+      vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(false);
+
+      // Act
+      const result = service.createBodyForCodeFlowCodeRequest(code, {
+        clientId,
+        redirectUrl,
+        disablePkce: true,
+      });
+
+      // Assert
+      expect(result).toBe(
+        `grant_type=authorization_code&client_id=${clientId}&code=${code}&redirect_uri=${redirectUrl}`
+      );
+      expect(getCodeVerifierSpy).not.toHaveBeenCalled();
+    });
   });
 
   describe('createBodyForCodeFlowRefreshTokensRequest', () => {
@@ -1592,6 +1637,30 @@ describe('UrlService Tests', () => {
       expect(result).not.toContain('code_challenge_method');
       expect(createCodeVerifierSpy).not.toHaveBeenCalled();
       expect(generateCodeChallengeSpy).not.toHaveBeenCalled();
+    });
+
+    it('uses empty values for client_id, response_type and scope when they are not configured', async () => {
+      // Arrange
+      const config = {
+        redirectUrl: 'testRedirectUrl',
+        disablePkce: true,
+      };
+
+      vi.spyOn(
+        flowsDataService,
+        'getExistingOrCreateAuthStateControl'
+      ).mockReturnValue('testState');
+      vi.spyOn(flowsDataService, 'createNonce').mockReturnValue('testNonce');
+
+      // Act
+      const result = await firstValueFrom(
+        service.createBodyForParCodeFlowRequest(config)
+      );
+
+      // Assert
+      expect(result).toBe(
+        `client_id=&redirect_uri=testRedirectUrl&response_type=&scope=&nonce=testNonce&state=testState`
+      );
     });
   });
 
@@ -2283,6 +2352,34 @@ describe('UrlService Tests', () => {
       expect(value).toEqual(
         'something.auth0.com/v2/logout?client_id=someClientId'
       );
+    });
+
+    it('returns auth0 format URL for a custom domain when useCustomAuth0Domain is true', () => {
+      // Arrange
+      const config = {
+        authority: 'https://login.my-company.com',
+        clientId: 'someClientId',
+        useCustomAuth0Domain: true,
+      };
+      // Act
+      const value = service.getEndSessionUrl(config);
+
+      // Assert
+      expect(value).toEqual(
+        'https://login.my-company.com/v2/logout?client_id=someClientId'
+      );
+    });
+
+    it('returns auth0 format URL with an empty client_id when no clientId is configured', () => {
+      // Arrange
+      const config = {
+        authority: 'something.auth0.com',
+      };
+      // Act
+      const value = service.getEndSessionUrl(config);
+
+      // Assert
+      expect(value).toEqual('something.auth0.com/v2/logout?client_id=');
     });
   });
 

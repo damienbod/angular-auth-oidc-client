@@ -2400,4 +2400,135 @@ describe('State Validation Service', () => {
       expect(writeSpy).toHaveBeenCalledWith('authStateControl', '', config);
     });
   });
+
+  describe('getValidatedStateResult defaults', () => {
+    function createCodeFlowCallbackContext(
+      authResult: CallbackContext['authResult']
+    ): CallbackContext {
+      return {
+        code: 'code',
+        refreshToken: '',
+        state: 'state',
+        sessionState: null,
+        authResult,
+        isRenewProcess: false,
+        jwtKeys: null,
+        validationResult: null,
+        existingIdToken: null,
+      };
+    }
+
+    beforeEach(() => {
+      config.responseType = 'code';
+    });
+
+    it('sets an empty access token when the code flow response contains none', async () => {
+      // Arrange
+      vi.spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).mockReturnValue(true);
+      config.disableIdTokenValidation = true;
+
+      // Act
+      const result = await firstValueFrom(
+        stateValidationService.getValidatedStateResult(
+          createCodeFlowCallbackContext({ state: 'state' }),
+          config
+        )
+      );
+
+      // Assert
+      expect(result.accessToken).toBe('');
+      expect(result.state).toBe(ValidationResult.Ok);
+    });
+
+    it('uses an iat max offset of 120 seconds when none is configured', async () => {
+      // Arrange
+      vi.spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).mockReturnValue(true);
+      vi.spyOn(tokenHelperService, 'getPayloadFromToken').mockReturnValue({});
+      vi.spyOn(
+        tokenValidationService,
+        'validateSignatureIdToken'
+      ).mockReturnValue(of(true));
+      vi.spyOn(tokenValidationService, 'validateIdTokenNonce').mockReturnValue(
+        true
+      );
+      vi.spyOn(
+        tokenValidationService,
+        'validateRequiredIdToken'
+      ).mockReturnValue(true);
+      const iatSpy = vi
+        .spyOn(tokenValidationService, 'validateIdTokenIatMaxOffset')
+        .mockReturnValue(false);
+
+      delete config.maxIdTokenIatOffsetAllowedInSeconds;
+
+      // Act
+      const result = await firstValueFrom(
+        stateValidationService.getValidatedStateResult(
+          createCodeFlowCallbackContext({
+            access_token: 'access-token',
+            id_token: 'id-token',
+            state: 'state',
+          }),
+          config
+        )
+      );
+
+      // Assert
+      expect(iatSpy).toHaveBeenCalledExactlyOnceWith({}, 120, false, config);
+      expect(result.state).toBe(ValidationResult.MaxOffsetExpired);
+    });
+
+    it('clears the stored state when validation fails and autoCleanStateAfterAuthentication is true', async () => {
+      // Arrange
+      vi.spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).mockReturnValue(false);
+      config.autoCleanStateAfterAuthentication = true;
+      const writeSpy = vi.spyOn(storagePersistenceService, 'write');
+      // Act
+      const result = await firstValueFrom(
+        stateValidationService.getValidatedStateResult(
+          createCodeFlowCallbackContext({ state: 'state' }),
+          config
+        )
+      );
+
+      // Assert
+      expect(result.state).toBe(ValidationResult.StatesDoNotMatch);
+      expect(writeSpy).toHaveBeenCalledWith('authNonce', null, config);
+      expect(writeSpy).toHaveBeenCalledWith('authStateControl', '', config);
+    });
+
+    it('keeps the stored state when validation fails and autoCleanStateAfterAuthentication is false', async () => {
+      // Arrange
+      vi.spyOn(
+        tokenValidationService,
+        'validateStateFromHashCallback'
+      ).mockReturnValue(false);
+      config.autoCleanStateAfterAuthentication = false;
+      const writeSpy = vi.spyOn(storagePersistenceService, 'write');
+
+      // Act
+      await firstValueFrom(
+        stateValidationService.getValidatedStateResult(
+          createCodeFlowCallbackContext({ state: 'state' }),
+          config
+        )
+      );
+
+      // Assert
+      expect(writeSpy).toHaveBeenCalledExactlyOnceWith(
+        'authNonce',
+        null,
+        config
+      );
+    });
+  });
 });
