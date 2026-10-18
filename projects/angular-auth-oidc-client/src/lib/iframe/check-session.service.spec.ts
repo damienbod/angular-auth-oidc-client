@@ -1039,7 +1039,24 @@ describe('CheckSessionService', () => {
       expect(fireEventSpy).not.toHaveBeenCalled();
     });
 
-    it('resets outstandingMessages on every received message, even rejected ones', () => {
+    it('resets outstandingMessages when the check session iframe answers', () => {
+      // Arrange
+      vi.spyOn(storagePersistenceService, 'read').mockReturnValue({
+        checkSessionIframe: 'https://idp.example.com/checksession',
+      });
+      serviceAsAny.outstandingMessages = 3;
+
+      // Act
+      serviceAsAny.messageHandler(
+        { configId: 'configId1' },
+        messageEvent({ data: 'unchanged' })
+      );
+
+      // Assert
+      expect(serviceAsAny.outstandingMessages).toBe(0);
+    });
+
+    it('keeps outstandingMessages when a message comes from a foreign origin', () => {
       // Arrange
       vi.spyOn(storagePersistenceService, 'read').mockReturnValue({
         checkSessionIframe: 'https://idp.example.com/checksession',
@@ -1053,7 +1070,49 @@ describe('CheckSessionService', () => {
       );
 
       // Assert
-      expect(serviceAsAny.outstandingMessages).toBe(0);
+      expect(serviceAsAny.outstandingMessages).toBe(3);
+    });
+
+    it('keeps outstandingMessages when a message comes from another window of the identity provider', () => {
+      // Arrange
+      vi.spyOn(storagePersistenceService, 'read').mockReturnValue({
+        checkSessionIframe: 'https://idp.example.com/checksession',
+      });
+      serviceAsAny.outstandingMessages = 3;
+
+      // Act
+      serviceAsAny.messageHandler(
+        { configId: 'configId1' },
+        messageEvent({ source: {} as Window })
+      );
+
+      // Assert
+      expect(serviceAsAny.outstandingMessages).toBe(3);
+    });
+
+    it('still reports an unreachable server when only foreign messages arrive', () => {
+      // Arrange
+      vi.spyOn(storagePersistenceService, 'read').mockReturnValue({
+        checkSessionIframe: 'https://idp.example.com/checksession',
+      });
+      const spyLogError = vi
+        .spyOn(loggerService, 'logError')
+        .mockImplementation(() => undefined);
+
+      serviceAsAny.outstandingMessages = 4;
+
+      // Act
+      serviceAsAny.messageHandler(
+        { configId: 'configId1' },
+        messageEvent({ origin: 'https://attacker.example' })
+      );
+      serviceAsAny.complainWhenServerStopsAnswering({ configId: 'configId1' });
+
+      // Assert
+      expect(spyLogError).toHaveBeenCalledExactlyOnceWith(
+        { configId: 'configId1' },
+        expect.stringContaining("Outstanding messages: '4'")
+      );
     });
 
     it('logs a warning and fires no event when the iframe reports "error"', () => {
