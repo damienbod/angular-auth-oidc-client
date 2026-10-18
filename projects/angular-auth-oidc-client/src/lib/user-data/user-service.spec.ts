@@ -410,6 +410,83 @@ describe('User Service', () => {
       });
     });
 
+    it('publishes the passed user data for a current config without configId among multiple configs', () => {
+      const currentConfig = {};
+      const otherConfig = { configId: 'configId2' };
+      const observableSpy = vi
+        .spyOn((userService as any).userDataInternal$, 'next')
+        .mockReturnValue(undefined);
+
+      vi.spyOn(storagePersistenceService, 'read').mockReturnValue(
+        'staleUserData'
+      );
+
+      userService.setUserDataToStore('userData', currentConfig, [
+        currentConfig,
+        otherConfig,
+      ]);
+
+      expect(observableSpy).toHaveBeenCalledWith({
+        userData: null,
+        allUserData: [
+          { configId: '', userData: 'userData' },
+          { configId: 'configId2', userData: 'staleUserData' },
+        ],
+      });
+    });
+
+    it('does not publish the passed user data for another config that also has no configId', () => {
+      const currentConfig = {};
+      const otherConfigWithoutId = {};
+      const observableSpy = vi
+        .spyOn((userService as any).userDataInternal$, 'next')
+        .mockReturnValue(undefined);
+
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (key: string, config: any) =>
+          key === 'userData' && config === otherConfigWithoutId
+            ? 'otherUserData'
+            : undefined
+      );
+
+      userService.setUserDataToStore('userData', currentConfig, [
+        currentConfig,
+        otherConfigWithoutId,
+      ]);
+
+      expect(observableSpy).toHaveBeenCalledWith({
+        userData: null,
+        allUserData: [
+          { configId: '', userData: 'userData' },
+          { configId: '', userData: 'otherUserData' },
+        ],
+      });
+    });
+
+    it('publishes the passed user data for a copy of the current config with the same configId', () => {
+      const currentConfig = { configId: 'configId1' };
+      const observableSpy = vi
+        .spyOn((userService as any).userDataInternal$, 'next')
+        .mockReturnValue(undefined);
+
+      vi.spyOn(storagePersistenceService, 'read').mockReturnValue(
+        'staleUserData'
+      );
+
+      userService.setUserDataToStore('userData', currentConfig, [
+        { ...currentConfig },
+        { configId: 'configId2' },
+      ]);
+
+      expect(observableSpy).toHaveBeenCalledWith({
+        userData: null,
+        allUserData: [
+          { configId: 'configId1', userData: 'userData' },
+          { configId: 'configId2', userData: 'staleUserData' },
+        ],
+      });
+    });
+
     it('sets userData in storagePersistenceService', () => {
       const config = { configId: 'configId1' };
       const spy = vi
