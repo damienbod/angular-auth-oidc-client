@@ -1,4 +1,4 @@
-import { LogLevel } from '../logging/log-level';
+import { LogLevel } from '../logging/types/logging.types';
 import { OpenIdConfiguration } from './openid-configuration';
 
 export const DEFAULT_CONFIG: OpenIdConfiguration = {

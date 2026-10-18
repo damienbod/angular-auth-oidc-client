@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { LoggerService } from '../../logging/logger.service';
+import { LoggerService } from '../../logging/services/logger.service';
 import { OpenIdConfiguration } from '../openid-configuration';
 import { Level, RuleValidationResult } from './rule';
 import { allMultipleConfigRules, allRules } from './rules';

@@ -1,7 +1,7 @@
 import { inject, Injectable, DOCUMENT } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
-import { LoggerService } from '../../logging/logger.service';
+import { LoggerService } from '../../logging/services/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
 import { PopupOptions } from './popup-options';
 import { PopupResult } from './popup-result';

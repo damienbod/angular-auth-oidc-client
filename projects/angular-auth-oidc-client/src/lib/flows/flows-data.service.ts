@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { OpenIdConfiguration } from '../config/openid-configuration';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { SilentRenewRunning } from './flows.models';
 import { RandomService } from './random/random.service';

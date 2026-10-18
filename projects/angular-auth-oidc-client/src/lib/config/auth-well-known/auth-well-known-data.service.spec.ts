@@ -4,7 +4,7 @@ import { firstValueFrom, of, throwError } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
 import { createRetriableStream } from '../../../test/create-retriable-stream.helper';
 import { DataService } from '../../api/data.service';
-import { LoggerService } from '../../logging/logger.service';
+import { LoggerService } from '../../logging/services/logger.service';
 import { AuthWellKnownDataService } from './auth-well-known-data.service';
 import { AuthWellKnownEndpoints } from './auth-well-known-endpoints';
 

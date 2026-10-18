@@ -1,4 +1,4 @@
-import { LogLevel } from '../logging/log-level';
+import { LogLevel } from '../logging/types/logging.types';
 import { AuthWellKnownEndpoints } from './auth-well-known/auth-well-known-endpoints';
 
 export interface OpenIdConfiguration {

@@ -7,7 +7,7 @@ import { AuthStateService } from '../auth-state/auth-state.service';
 import { CallbackContext } from '../flows/callback-context';
 import { FlowsService } from '../flows/flows.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { ValidationResult } from '../validation/validation-result';
 import { IntervalService } from './interval.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';

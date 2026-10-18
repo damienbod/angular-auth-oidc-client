@@ -3,7 +3,7 @@ import { Observable, of, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { AuthStateService } from '../../auth-state/auth-state.service';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
-import { LoggerService } from '../../logging/logger.service';
+import { LoggerService } from '../../logging/services/logger.service';
 import { UserService } from '../../user-data/user.service';
 import { StateValidationResult } from '../../validation/state-validation-result';
 import { CallbackContext } from '../callback-context';

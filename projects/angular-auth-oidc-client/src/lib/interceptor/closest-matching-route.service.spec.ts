@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { mockProvider } from '../../test/auto-mock';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { ClosestMatchingRouteService } from './closest-matching-route.service';
 
 describe('ClosestMatchingRouteService', () => {

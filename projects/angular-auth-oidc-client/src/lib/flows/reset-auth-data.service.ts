@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 import { UserService } from '../user-data/user.service';
 import { FlowsDataService } from './flows-data.service';
 

@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
-import { LoggerService } from '../../logging/logger.service';
+import { LoggerService } from '../../logging/services/logger.service';
 import { CryptoService } from '../../utils/crypto/crypto.service';
 
 @Injectable({ providedIn: 'root' })

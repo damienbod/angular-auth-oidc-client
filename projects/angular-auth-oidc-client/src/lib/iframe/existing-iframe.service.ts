@@ -1,6 +1,6 @@
 import { inject, Injectable, DOCUMENT } from '@angular/core';
 import { OpenIdConfiguration } from '../config/openid-configuration';
-import { LoggerService } from '../logging/logger.service';
+import { LoggerService } from '../logging/services/logger.service';
 
 @Injectable({ providedIn: 'root' })
 export class IFrameService {
