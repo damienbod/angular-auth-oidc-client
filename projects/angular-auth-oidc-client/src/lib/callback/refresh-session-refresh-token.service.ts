@@ -11,6 +11,7 @@ import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { LoggerService } from '../logging/services/logger.service';
 import { ValidationResult } from '../validation/validation-result';
 import { IntervalService } from './interval.service';
+import { getSilentRenewTimeoutInMilliseconds } from '../config/default-config';
 
 @Injectable({ providedIn: 'root' })
 export class RefreshSessionRefreshTokenService {
@@ -128,6 +129,6 @@ export class RefreshSessionRefreshTokenService {
   ): Observable<CallbackContext> {
     return this.flowsService
       .processRefreshToken(config, allConfigs, customParamsRefresh)
-      .pipe(timeout((config.silentRenewTimeoutInSeconds ?? 20) * 1000));
+      .pipe(timeout(getSilentRenewTimeoutInMilliseconds(config)));
   }
 }

@@ -313,41 +313,59 @@ describe('Flows Data Service', () => {
       expect(spyWrite).not.toHaveBeenCalled();
     });
 
-    it('treats a running process as stuck and resets it when silentRenewTimeoutInSeconds is not set', () => {
+    describe('when silentRenewTimeoutInSeconds is not set', () => {
       const config = { configId: 'configId1' };
+      let spyWrite: ReturnType<typeof vi.spyOn>;
 
-      vi.useFakeTimers();
-      const baseTime = new Date();
+      beforeEach(() => {
+        vi.useFakeTimers();
+        const baseTime = new Date();
 
-      vi.setSystemTime(baseTime);
-      const storageObject = {
-        state: 'running',
-        dateOfLaunchedProcessUtc: baseTime.toISOString(),
-      };
+        vi.setSystemTime(baseTime);
+        const storageObject = {
+          state: 'running',
+          dateOfLaunchedProcessUtc: baseTime.toISOString(),
+        };
 
-      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
-        (...args: any[]) => {
-          if (args[0] === 'storageSilentRenewRunning') {
-            return JSON.stringify(storageObject);
+        vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+          (...args: any[]) => {
+            if (args[0] === 'storageSilentRenewRunning') {
+              return JSON.stringify(storageObject);
+            }
+
+            return undefined;
           }
+        );
+        spyWrite = vi
+          .spyOn(storagePersistenceService, 'write')
+          .mockReturnValue(undefined as any);
+      });
 
-          return undefined;
-        }
-      );
-      const spyWrite = vi
-        .spyOn(storagePersistenceService, 'write')
-        .mockReturnValue(undefined as any);
+      afterEach(() => {
+        vi.useRealTimers();
+      });
 
-      vi.advanceTimersByTime(1000);
+      it('treats a running process as still running within the default 20 seconds', () => {
+        vi.advanceTimersByTime(19_000);
 
-      const result = service.isSilentRenewRunning(config);
+        const result = service.isSilentRenewRunning(config);
 
-      expect(result).toBe(false);
-      expect(spyWrite).toHaveBeenCalledWith(
-        'storageSilentRenewRunning',
-        '',
-        config
-      );
+        expect(result).toBe(true);
+        expect(spyWrite).not.toHaveBeenCalled();
+      });
+
+      it('treats a running process as stuck and resets it after the default 20 seconds', () => {
+        vi.advanceTimersByTime(21_000);
+
+        const result = service.isSilentRenewRunning(config);
+
+        expect(result).toBe(false);
+        expect(spyWrite).toHaveBeenCalledWith(
+          'storageSilentRenewRunning',
+          '',
+          config
+        );
+      });
     });
 
     it('silent renew process timeout exceeded reset state object and returns false result', () => {

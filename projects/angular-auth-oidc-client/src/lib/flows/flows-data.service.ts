@@ -4,6 +4,7 @@ import { LoggerService } from '../logging/services/logger.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { SilentRenewRunning } from './flows.models';
 import { RandomService } from './random/random.service';
+import { getSilentRenewTimeoutInMilliseconds } from '../config/default-config';
 
 @Injectable({ providedIn: 'root' })
 export class FlowsDataService {
@@ -122,7 +123,7 @@ export class FlowsDataService {
   }
 
   isSilentRenewRunning(configuration: OpenIdConfiguration): boolean {
-    const { configId, silentRenewTimeoutInSeconds } = configuration;
+    const { configId } = configuration;
     const storageObject = this.getSilentRenewRunningStorageEntry(configuration);
 
     if (!storageObject) {
@@ -133,7 +134,8 @@ export class FlowsDataService {
       return false;
     }
 
-    const timeOutInMilliseconds = (silentRenewTimeoutInSeconds ?? 0) * 1000;
+    const timeOutInMilliseconds =
+      getSilentRenewTimeoutInMilliseconds(configuration);
     const dateOfLaunchedProcessUtc = Date.parse(
       storageObject.dateOfLaunchedProcessUtc
     );

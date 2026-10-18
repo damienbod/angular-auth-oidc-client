@@ -1082,7 +1082,7 @@ describe('RefreshSessionService ', () => {
       expect(result.isAuthenticated).toBe(true);
     });
 
-    it('times out the iframe refresh immediately and fails after the retries when no silent renew timeout is configured', async () => {
+    it('times out the iframe refresh after the default 20 seconds when no silent renew timeout is configured', async () => {
       // Arrange
       vi.spyOn(
         flowHelper,
@@ -1101,28 +1101,19 @@ describe('RefreshSessionService ', () => {
         .spyOn(flowsDataService, 'resetSilentRenewRunning')
         .mockReturnValue(undefined);
       const allConfigs = [{ configId: 'configId1' }];
-      let actualError: unknown;
-
       // Act
-      refreshSessionService
+      const subscription = refreshSessionService
         .forceRefreshSession(allConfigs[0], allConfigs)
-        .subscribe({
-          error: (error) => {
-            actualError = error;
-          },
-        });
+        .subscribe({ error: () => undefined });
 
       // Assert
-      // 4 attempts timing out after 0s each, plus retry delays of 1s, 2s and 3s => 6s
-      await vi.advanceTimersByTimeAsync(5_900);
-      expect(actualError).toBeUndefined();
+      await vi.advanceTimersByTimeAsync(19_900);
+      expect(resetSilentRenewRunningSpy).not.toHaveBeenCalled();
 
       await vi.advanceTimersByTimeAsync(200);
+      expect(resetSilentRenewRunningSpy).toHaveBeenCalledTimes(1);
 
-      expect(actualError).toBeInstanceOf(Error);
-      expect(resetSilentRenewRunningSpy).toHaveBeenCalledTimes(
-        MAX_RETRY_ATTEMPTS
-      );
+      subscription.unsubscribe();
     });
 
     describe('NOT isCurrentFlowCodeFlowWithRefreshTokens', () => {
