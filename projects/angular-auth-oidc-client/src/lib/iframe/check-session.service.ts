@@ -286,16 +286,12 @@ export class CheckSessionService implements OnDestroy {
   }
 
   private messageHandler(configuration: OpenIdConfiguration, e: any): void {
-    const isFromCheckSessionIframe = this.isMessageFromCheckSessionIframe(
-      e,
-      configuration
-    );
+    if (!this.isMessageFromCheckSessionIframe(e, configuration)) {
+      return;
+    }
 
     this.outstandingMessages = 0;
-
-    if (isFromCheckSessionIframe) {
-      this.handleCheckSessionAnswer(e, configuration);
-    }
+    this.handleCheckSessionAnswer(e, configuration);
   }
 
   private isMessageFromCheckSessionIframe(
