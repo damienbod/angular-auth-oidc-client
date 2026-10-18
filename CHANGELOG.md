@@ -1,5 +1,15 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2026-10-18 22.0.2
+- feat:  canMatch use of autoLoginPartialRoutesGuard and implicit flow callbacks
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/2330)
+- feat: Preserve auth well-known HTTP errors
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/2320)
+- feat: make useRefreshTokenLock sufficient for multi-tab refresh token renewal
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/2311)
+- feat(schematics): add --standalone and --legacy-modules options to ng-add
+  - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/2299)
+
 ### 2026-09-21 22.0.1
 
 - feat(silent-renew): surface the error and the error_description of a failed iframe silent renew
