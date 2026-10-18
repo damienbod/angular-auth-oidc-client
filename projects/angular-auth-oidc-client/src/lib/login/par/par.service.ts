@@ -1,8 +1,7 @@
-import { HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map, retry, switchMap } from 'rxjs/operators';
-import { DataService } from '../../api/data.service';
+import { DataService, formUrlEncodedHeaders } from '../../api/data.service';
 import { AuthOptions } from '../../auth-options';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/services/logger.service';
@@ -23,10 +22,7 @@ export class ParService {
     configuration: OpenIdConfiguration,
     authOptions?: AuthOptions
   ): Observable<ParResponse> {
-    let headers: HttpHeaders = new HttpHeaders();
-
-    headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
-
+    const headers = formUrlEncodedHeaders();
     const authWellKnownEndpoints = this.storagePersistenceService.read(
       'authWellKnownEndPoints',
       configuration

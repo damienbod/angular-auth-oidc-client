@@ -1,8 +1,7 @@
-import { HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, concatMap, retry, switchMap } from 'rxjs/operators';
-import { DataService } from '../api/data.service';
+import { DataService, formUrlEncodedHeaders } from '../api/data.service';
 import { LogoutAuthOptions } from '../auth-options';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
@@ -233,7 +232,7 @@ export class LogoffRevocationService {
     const idToken = this.storagePersistenceService.getIdToken(config);
     const postLogoutRedirectUrl =
       this.urlService.getPostLogoutRedirectUrl(config);
-    const headers = this.getHeaders();
+    const headers = formUrlEncodedHeaders();
     const { url } = this.urlService.getEndSessionEndpoint(config);
     const body = {
       id_token_hint: idToken,
@@ -260,7 +259,16 @@ export class LogoffRevocationService {
     body: string | null
   ): Observable<any> {
     const url = this.urlService.getRevocationEndpointUrl(configuration);
-    const headers = this.getHeaders();
+
+    if (!url) {
+      const errorMessage = 'Revocation endpoint not defined';
+
+      this.loggerService.logError(configuration, errorMessage);
+
+      return throwError(() => new Error(errorMessage));
+    }
+
+    const headers = formUrlEncodedHeaders();
 
     return this.dataService.post(url, body, configuration, headers).pipe(
       retry(2),
@@ -281,13 +289,5 @@ export class LogoffRevocationService {
         return throwError(() => new Error(errorMessage));
       })
     );
-  }
-
-  private getHeaders(): HttpHeaders {
-    let headers: HttpHeaders = new HttpHeaders();
-
-    headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
-
-    return headers;
   }
 }
