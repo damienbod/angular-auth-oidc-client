@@ -47,7 +47,7 @@ describe('LoginService', () => {
   });
 
   describe('login', () => {
-    it('calls parLoginService loginPar if usePushedAuthorisationRequests is true', () => {
+    it('should call parLoginService loginPar if usePushedAuthorisationRequests is true', () => {
       const config = { usePushedAuthorisationRequests: true };
       const loginParSpy = vi
         .spyOn(parLoginService, 'loginPar')
@@ -62,7 +62,7 @@ describe('LoginService', () => {
       expect(standardLoginSpy).not.toHaveBeenCalled();
     });
 
-    it('calls standardLoginService loginStandard if usePushedAuthorisationRequests is false', () => {
+    it('should call standardLoginService loginStandard if usePushedAuthorisationRequests is false', () => {
       const config = { usePushedAuthorisationRequests: false };
       const loginParSpy = vi
         .spyOn(parLoginService, 'loginPar')
@@ -77,7 +77,7 @@ describe('LoginService', () => {
       expect(standardLoginSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('stores the customParams to the storage if customParams are given', () => {
+    it('should store the customParams to the storage if customParams are given', () => {
       // arrange
       const config = { usePushedAuthorisationRequests: false };
       const storagePersistenceServiceSpy = vi
@@ -119,7 +119,7 @@ describe('LoginService', () => {
   });
 
   describe('loginWithPopUp', () => {
-    it('calls parLoginService loginWithPopUpPar if usePushedAuthorisationRequests is true', async () => {
+    it('should call parLoginService loginWithPopUpPar if usePushedAuthorisationRequests is true', async () => {
       // arrange
       const config = { usePushedAuthorisationRequests: true };
       const loginWithPopUpPar = vi
@@ -137,7 +137,7 @@ describe('LoginService', () => {
       expect(loginWithPopUpStandardSpy).not.toHaveBeenCalled();
     });
 
-    it('calls standardLoginService loginstandard if usePushedAuthorisationRequests is false', async () => {
+    it('should call standardLoginService loginstandard if usePushedAuthorisationRequests is false', async () => {
       // arrange
       const config = { usePushedAuthorisationRequests: false };
       const loginWithPopUpPar = vi
@@ -155,7 +155,7 @@ describe('LoginService', () => {
       expect(loginWithPopUpStandardSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('stores the customParams to the storage if customParams are given', async () => {
+    it('should store the customParams to the storage if customParams are given', async () => {
       // arrange
       const config = { usePushedAuthorisationRequests: false };
       const storagePersistenceServiceSpy = vi
@@ -182,7 +182,7 @@ describe('LoginService', () => {
       );
     });
 
-    it('throws error if configuration is null', () => {
+    it('should throw error if configuration is null', () => {
       // arrange
       const config = null;
       const loginWithPopUpParSpy = vi
@@ -204,7 +204,7 @@ describe('LoginService', () => {
       expect(loginWithPopUpStandardSpy).not.toHaveBeenCalled();
     });
 
-    it('returns error if there is already a popup open', async () => {
+    it('should return error if there is already a popup open', async () => {
       // arrange
       const config = { usePushedAuthorisationRequests: false };
       const authOptions = { customParams: { custom: 'params' } };

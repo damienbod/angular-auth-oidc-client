@@ -5,8 +5,17 @@ sidebar_position: 7
 
 # Custom Storage
 
-The library uses the `sessionStorage` as the default storage mechanism. If needed, you can create a custom storage implementation, e.g. to use `localStorage` or cookies.
-A storage provider is implemented as a class with the `AbstractSecurityStorage` interface and the `read`, `write` and `remove` methods.
+The library uses the `sessionStorage` as the default storage mechanism (`DefaultSessionStorageService`). The library also ships a `DefaultLocalStorageService`. To use `localStorage`, you do not need a custom class:
+
+```ts
+import { AbstractSecurityStorage, DefaultLocalStorageService } from 'angular-auth-oidc-client';
+
+// ...
+{ provide: AbstractSecurityStorage, useClass: DefaultLocalStorageService },
+```
+
+If needed, you can create a custom storage implementation, e.g. to use cookies.
+A storage provider is implemented as a class with the `AbstractSecurityStorage` class-interface and the `read`, `write`, `remove` and `clear` methods.
 The following example shows a custom storage that uses `localStorage`:
 
 ```ts

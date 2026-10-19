@@ -2,22 +2,28 @@ import { describe, expect, it } from 'vitest';
 import { asError } from './as-error';
 
 describe('asError', () => {
-  it('returns an Error unchanged', () => {
+  it('should return an Error unchanged', () => {
+    // Arrange
     const error = new TypeError('broken');
 
+    // Act & Assert
     expect(asError(error)).toBe(error);
   });
 
-  it('wraps a string into an Error with that message', () => {
+  it('should wrap a string into an Error with that message', () => {
+    // Act
     const result = asError('broken');
 
+    // Assert
     expect(result).toBeInstanceOf(Error);
     expect(result.message).toBe('broken');
   });
 
-  it('wraps any other value like the Error constructor does', () => {
-    expect(asError({ status: 500 }).message).toBe(
-      new Error({ status: 500 } as any).message
-    );
+  it('should wrap any other value like the Error constructor does', () => {
+    // Arrange
+    const value = { status: 500 };
+
+    // Act & Assert
+    expect(asError(value).message).toBe(new Error(value as any).message);
   });
 });

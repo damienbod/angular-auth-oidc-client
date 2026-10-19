@@ -27,39 +27,42 @@ describe('BrowserStorageService', () => {
     service = TestBed.inject(BrowserStorageService);
   });
 
+  // `unstubGlobals` only restores stubs *before* the next test, which would
+  // leave `Storage` undefined for anything running between this file and the
+  // next one. Spec files share globals (the builder runs Vitest with
+  // `isolate: false`), so restore it here instead of leaking it.
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it('should create', () => {
     expect(service).toBeTruthy();
   });
 
   describe('read', () => {
-    it('returns null if configId is missing', () => {
+    it('should return null if configId is missing', () => {
       const config = { configId: '' };
 
       expect(service.read('anything', config)).toBeNull();
     });
 
-    it('returns null if there is no storage', () => {
+    it('should return null if there is no storage', () => {
       const config = { configId: 'configId1' };
 
-      vi.spyOn(service as any, 'hasStorage').mockReturnValue(false);
+      vi.stubGlobal('Storage', undefined);
 
       expect(service.read('anything', config)).toBeNull();
     });
 
-    it('returns null if getItem returns null', () => {
+    it('should return null if getItem returns null', () => {
       const config = { configId: 'configId1' };
-
-      vi.spyOn(service as any, 'hasStorage').mockReturnValue(true);
-
       const result = service.read('anything', config);
 
       expect(result).toBeNull();
     });
 
-    it('returns the item if getItem returns an item', () => {
+    it('should return the item if getItem returns an item', () => {
       const config = { configId: 'configId1' };
-
-      vi.spyOn(service as any, 'hasStorage').mockReturnValue(true);
       const returnValue = `{ "name":"John", "age":30, "city":"New York"}`;
 
       vi.spyOn(abstractSecurityStorage, 'read').mockReturnValue(returnValue);
@@ -70,24 +73,22 @@ describe('BrowserStorageService', () => {
   });
 
   describe('write', () => {
-    it('returns false if configId is missing', () => {
+    it('should return false if configId is missing', () => {
       const config = { configId: '' };
 
       expect(service.write('anyvalue', config)).toBe(false);
     });
 
-    it('returns false if there is no storage', () => {
+    it('should return false if there is no storage', () => {
       const config = { configId: 'configId1' };
 
-      vi.spyOn(service as any, 'hasStorage').mockReturnValue(false);
+      vi.stubGlobal('Storage', undefined);
 
       expect(service.write('anyvalue', config)).toBe(false);
     });
 
-    it('writes object correctly with configId', () => {
+    it('should write object correctly with configId', () => {
       const config = { configId: 'configId1' };
-
-      vi.spyOn(service as any, 'hasStorage').mockReturnValue(true);
       const writeSpy = vi.spyOn(abstractSecurityStorage, 'write');
       const result = service.write({ anyKey: 'anyvalue' }, config);
 
@@ -99,11 +100,8 @@ describe('BrowserStorageService', () => {
       );
     });
 
-    it('writes null if item is falsy', () => {
+    it('should write null if item is falsy', () => {
       const config = { configId: 'configId1' };
-
-      vi.spyOn(service as any, 'hasStorage').mockReturnValue(true);
-
       const writeSpy = vi.spyOn(abstractSecurityStorage, 'write');
       const somethingFalsy = '';
       const result = service.write(somethingFalsy, config);
@@ -115,22 +113,20 @@ describe('BrowserStorageService', () => {
   });
 
   describe('remove', () => {
-    it('returns false if there is no storage', () => {
+    it('should return false if there is no storage', () => {
       const config = { configId: 'configId1' };
 
-      vi.spyOn(service as any, 'hasStorage').mockReturnValue(false);
+      vi.stubGlobal('Storage', undefined);
       expect(service.remove('anything', config)).toBe(false);
     });
 
-    it('returns false if configId is missing', () => {
+    it('should return false if configId is missing', () => {
       const config = { configId: '' };
 
-      vi.spyOn(service as any, 'hasStorage').mockReturnValue(true);
       expect(service.remove('anyKey', config)).toBe(false);
     });
 
-    it('removes the entire config blob for the configId', () => {
-      vi.spyOn(service as any, 'hasStorage').mockReturnValue(true);
+    it('should remove the entire config blob for the configId', () => {
       const config = { configId: 'configId1' };
       const removeSpy = vi.spyOn(abstractSecurityStorage, 'remove');
       const result = service.remove('anyKey', config);
@@ -142,23 +138,20 @@ describe('BrowserStorageService', () => {
   });
 
   describe('clear', () => {
-    it('returns false if there is no storage', () => {
-      vi.spyOn(service as any, 'hasStorage').mockReturnValue(false);
+    it('should return false if there is no storage', () => {
+      vi.stubGlobal('Storage', undefined);
       const config = { configId: 'configId1' };
 
       expect(service.clear(config)).toBe(false);
     });
 
-    it('returns false if configId is missing', () => {
+    it('should return false if configId is missing', () => {
       const config = { configId: '' };
 
-      vi.spyOn(service as any, 'hasStorage').mockReturnValue(true);
       expect(service.clear(config)).toBe(false);
     });
 
-    it('removes only the config blob for the specified configId', () => {
-      vi.spyOn(service as any, 'hasStorage').mockReturnValue(true);
-
+    it('should remove only the config blob for the specified configId', () => {
       const removeSpy = vi.spyOn(abstractSecurityStorage, 'remove');
       const config = { configId: 'configId1' };
       const result = service.clear(config);
@@ -170,8 +163,7 @@ describe('BrowserStorageService', () => {
   });
 
   describe('multi-config isolation', () => {
-    it('clear() should only remove the specified config, not other configs', () => {
-      vi.spyOn(service as any, 'hasStorage').mockReturnValue(true);
+    it('should only remove the specified config on clear, not other configs', () => {
       const config1 = { configId: 'configId1' };
       const removeSpy = vi
         .spyOn(abstractSecurityStorage, 'remove')
@@ -185,8 +177,7 @@ describe('BrowserStorageService', () => {
       expect(removeSpy).not.toHaveBeenCalledWith('configId2');
     });
 
-    it('remove() should only remove the specified config blob, not other configs', () => {
-      vi.spyOn(service as any, 'hasStorage').mockReturnValue(true);
+    it('should only remove the specified config blob on remove, not other configs', () => {
       const config1 = { configId: 'configId1' };
       const removeSpy = vi
         .spyOn(abstractSecurityStorage, 'remove')
@@ -202,8 +193,7 @@ describe('BrowserStorageService', () => {
   });
 
   describe('storage scope safety', () => {
-    it('clear() should not call abstractSecurityStorage.clear() which would destroy all storage', () => {
-      vi.spyOn(service as any, 'hasStorage').mockReturnValue(true);
+    it('should not clear the whole security storage on clear', () => {
       const config = { configId: 'configId1' };
       const clearSpy = vi
         .spyOn(abstractSecurityStorage, 'clear')
@@ -221,8 +211,7 @@ describe('BrowserStorageService', () => {
       expect(removeSpy).toHaveBeenCalledWith('configId1');
     });
 
-    it('remove() should not call abstractSecurityStorage.clear() which would destroy all storage', () => {
-      vi.spyOn(service as any, 'hasStorage').mockReturnValue(true);
+    it('should not clear the whole security storage on remove', () => {
       const config = { configId: 'configId1' };
       const clearSpy = vi
         .spyOn(abstractSecurityStorage, 'clear')
@@ -238,22 +227,6 @@ describe('BrowserStorageService', () => {
       expect(clearSpy).not.toHaveBeenCalled();
       expect(removeSpy).toHaveBeenCalledTimes(1);
       expect(removeSpy).toHaveBeenCalledWith('configId1');
-    });
-  });
-
-  describe('hasStorage', () => {
-    // `unstubGlobals` only restores stubs *before* the next test, which would
-    // leave `Storage` undefined for anything running between this file and the
-    // next one. Spec files share globals (the builder runs Vitest with
-    // `isolate: false`), so restore it here instead of leaking it.
-    afterEach(() => {
-      vi.unstubAllGlobals();
-    });
-
-    it('returns false if there is no storage', () => {
-      vi.stubGlobal('Storage', undefined);
-
-      expect((service as any).hasStorage()).toBe(false);
     });
   });
 });

@@ -27,7 +27,9 @@ async function loginViaProtectedRoute(page: Page): Promise<void> {
   await expect(page).toHaveURL(/\/protected$/);
 }
 
-test('shows the public home route without logging in', async ({ page }) => {
+test('should show the public home route without logging in', async ({
+  page,
+}) => {
   const authorizeRequests = collectRequests(page, isAuthorizeRequest());
 
   await page.goto('/');
@@ -38,7 +40,7 @@ test('shows the public home route without logging in', async ({ page }) => {
   expect(authorizeRequests).toEqual([]);
 });
 
-test('logs in automatically when navigating to a guarded route', async ({
+test('should log in automatically when navigating to a guarded route', async ({
   page,
 }) => {
   await page.goto('/');
@@ -53,12 +55,14 @@ test('logs in automatically when navigating to a guarded route', async ({
   await expectAuthenticatedHome(page);
 });
 
-test('returns to a deep linked guarded route after login', async ({ page }) => {
+test('should return to a deep linked guarded route after login', async ({
+  page,
+}) => {
   await loginViaProtectedRoute(page);
 });
 
 test.describe('lazy loaded routes guarded with canMatch', () => {
-  test('logs in automatically when loading the lazy loaded module', async ({
+  test('should log in automatically when loading the lazy loaded module', async ({
     page,
   }) => {
     await page.goto('/customers/details');
@@ -67,7 +71,9 @@ test.describe('lazy loaded routes guarded with canMatch', () => {
     await expect(page).toHaveURL(/\/customers\/details$/);
   });
 
-  test('opens the lazy loaded module once authenticated', async ({ page }) => {
+  test('should open the lazy loaded module once authenticated', async ({
+    page,
+  }) => {
     await loginViaProtectedRoute(page);
 
     await page.getByRole('link', { name: 'lazy customers' }).click();
@@ -76,7 +82,7 @@ test.describe('lazy loaded routes guarded with canMatch', () => {
   });
 });
 
-test('navigates guarded routes without a new login once authenticated', async ({
+test('should navigate guarded routes without a new login once authenticated', async ({
   page,
 }) => {
   await loginViaProtectedRoute(page);
@@ -95,7 +101,9 @@ test('navigates guarded routes without a new login once authenticated', async ({
   expect(authorizeRequests).toEqual([]);
 });
 
-test('renews the tokens silently with refresh tokens', async ({ page }) => {
+test('should renew the tokens silently with refresh tokens', async ({
+  page,
+}) => {
   await loginViaProtectedRoute(page);
 
   await waitForRefreshTokenRenew(page);
@@ -103,7 +111,7 @@ test('renews the tokens silently with refresh tokens', async ({ page }) => {
   await expectAuthenticatedHome(page);
 });
 
-test('logs out through the end session endpoint', async ({ page }) => {
+test('should log out through the end session endpoint', async ({ page }) => {
   await loginViaProtectedRoute(page);
 
   const logoutRequest = page.waitForRequest(isLogoutRequest());

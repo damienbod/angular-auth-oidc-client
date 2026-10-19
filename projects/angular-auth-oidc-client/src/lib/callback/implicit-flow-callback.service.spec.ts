@@ -41,7 +41,7 @@ describe('ImplicitFlowCallbackService ', () => {
   });
 
   describe('authorizedImplicitFlowCallback', () => {
-    it('calls flowsService.processImplicitFlowCallback with hash if given', () => {
+    it('should call flowsService.processImplicitFlowCallback with hash if given', () => {
       const spy = vi
         .spyOn(flowsService, 'processImplicitFlowCallback')
         .mockReturnValue(of({} as CallbackContext));
@@ -61,7 +61,7 @@ describe('ImplicitFlowCallbackService ', () => {
       expect(spy).toHaveBeenCalledWith(config, [config], 'some-hash');
     });
 
-    it('does nothing if triggerAuthorizationResultEvent is true and isRenewProcess is true', async () => {
+    it('should do nothing if triggerAuthorizationResultEvent is true and isRenewProcess is true', async () => {
       const callbackContext = {
         code: '',
         refreshToken: '',
@@ -97,7 +97,7 @@ describe('ImplicitFlowCallbackService ', () => {
       expect(routerSpy).not.toHaveBeenCalled();
     });
 
-    it('calls router if triggerAuthorizationResultEvent is false and isRenewProcess is false', async () => {
+    it('should call router if triggerAuthorizationResultEvent is false and isRenewProcess is false', async () => {
       const callbackContext = {
         code: '',
         refreshToken: '',
@@ -135,7 +135,7 @@ describe('ImplicitFlowCallbackService ', () => {
       expect(routerSpy).toHaveBeenCalledWith('postLoginRoute');
     });
 
-    it('resetSilentRenewRunning and stopPeriodicallyTokenCheck in case of error', async () => {
+    it('should reset silent renew and stop the periodic token check in case of error', async () => {
       vi.spyOn(flowsService, 'processImplicitFlowCallback').mockReturnValue(
         throwError(() => new Error('error'))
       );
@@ -164,7 +164,7 @@ describe('ImplicitFlowCallbackService ', () => {
       expect(stopPeriodicallyTokenCheckSpy).toHaveBeenCalled();
     });
 
-    it(`navigates to unauthorizedRoute in case of error and  in case of error and
+    it(`should navigate to unauthorizedRoute in case of error and  in case of error and
         triggerAuthorizationResultEvent is false`, async () => {
       vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(false);
       vi.spyOn(flowsService, 'processImplicitFlowCallback').mockReturnValue(

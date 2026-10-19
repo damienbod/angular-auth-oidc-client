@@ -15,6 +15,8 @@ You can get the access token by calling the method `getAccessToken()` on the `Oi
 this.oidcSecurityService.getAccessToken().subscribe(at => ...);
 ```
 
+If the user is not authenticated, the observable emits an empty string.
+
 or for a specific config:
 
 ```ts
@@ -26,7 +28,7 @@ You can then manually use the token within `HttpHeaders` when performing an HTTP
 ```ts
 import { HttpHeaders } from '@angular/common/http';
 
-this.oidcSecurityServices.getAccessToken().subscribe((token) => {
+this.oidcSecurityService.getAccessToken().subscribe((token) => {
   const httpOptions = {
     headers: new HttpHeaders({
       Authorization: 'Bearer ' + token,
@@ -37,7 +39,7 @@ this.oidcSecurityServices.getAccessToken().subscribe((token) => {
 
 ## Revoke the access token
 
-Access tokens can be revoked using the `revokeAccessToken()` method. If you provide the access token as a parameter, any access token from the same Security Token Service can be revoked, if the Security Token Service supports the revocation endpoint.
+Access tokens can be revoked using the `revokeAccessToken(accessToken?, configId?)` method. Without a parameter, the stored access token is revoked. If you provide the access token as a parameter, any access token from the same Security Token Service can be revoked. The Security Token Service has to expose a `revocation_endpoint`. The request is retried twice, after which the observable errors with `Revocation request failed`. Refresh tokens can be revoked in the same way with `revokeRefreshToken()`.
 
 ```ts
 revokeAccessToken() {

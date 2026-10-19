@@ -14,9 +14,24 @@ Both of these approaches are not perfect and bring some disadvantages. The secur
 
 ## Silent Renew Code Flow with PKCE using refresh tokens
 
-For session renewal with the PKCE flow, no iframes are used by default. Instead, a refresh token is used to obtain a new access token from the auth server. Thus, the renewal only needs to be configured in the app module. Some servers require the `offline_access` scope for this to work which is defined in the OIDC specifications. Other servers do not require this.
+For session renewal with the PKCE flow and `useRefreshToken: true`, no iframes are used. Instead, a refresh token is used to obtain a new access token from the auth server. Thus, only `useRefreshToken: true` and `silentRenew: true` need to be set in the configuration. Some servers require the `offline_access` scope for this to work which is defined in the OIDC specifications. Other servers do not require this. If the scope is missing, the library logs a warning, which you can suppress with [`disableRefreshTokenOfflineAccessScopeWarning`](./configuration#disablerefreshtokenofflineaccessscopewarning).
 
 Refresh tokens should be rotated and the refresh token should be revoked on a logout using the revocation endpoint.
+
+### Refresh tokens with multiple tabs
+
+With rotating refresh tokens, two browser tabs refreshing at the same time can invalidate each other's refresh token. Set [`useRefreshTokenLock`](./configuration#userefreshtokenlock) to `true` to serialize the refreshes across tabs with the [Web Locks API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Locks_API). Only one tab calls the token endpoint at a time, and a tab that waited reuses the tokens the other tab has stored. In browsers without `navigator.locks` the option has no effect.
+
+```ts
+provideAuth({
+  config: {
+    // ...
+    silentRenew: true,
+    useRefreshToken: true,
+    useRefreshTokenLock: true,
+  },
+}),
+```
 
 ## Silent Renew Code Flow with PKCE using refresh tokens and no id_token returned in the refresh
 
@@ -82,13 +97,15 @@ export class AuthConfigModule {}
 
 ## Silent Renew (iframe)
 
-When silent renew is enabled, a DOM event will automatically be installed in the application's host window. The event `oidc-silent-renew-message` accepts a `CustomEvent` instance with the token returned from the OAuth server in its `detail` field. The event handler will send this token to the authorization callback and complete the validation.
+When an iframe renew starts, the library listens on the application's host window for the `oidc-silent-renew-message` event. The event is a `CustomEvent` whose `detail` field contains `{ url, srcFrameId }`: the callback URL returned from the OAuth server (code flow) or its fragment (implicit flow), and the id of the iframe. A plain string in `detail` is still accepted for backward compatibility. The event handler sends the callback to the authorization callback handling and completes the validation.
 
 Point the `silentRenewUrl` property to an HTML file which contains the following script element to enable authorization.
 
 The `renewTimeBeforeTokenExpiresInSeconds` property can be used to start the renew process n-seconds before the tokens expired.
 
-Both the access token and the id_token are used to start this process.
+Every `tokenRefreshInSeconds` (default 4) the library checks whether the access token (if it has an expiry) or the id_token (only if `triggerRefreshWhenIdTokenExpired` is `true`) has expired, and if so starts a renew. A renew is only started if an id_token and user data are in the storage, and no other renew or code flow is running. This applies to iframes and refresh tokens alike.
+
+Pushed authorization requests (`usePushedAuthorisationRequests`) cannot be combined with the iframe renew. Use refresh tokens instead.
 
 ### Silent Renew Code Flow with PKCE (iframe)
 
@@ -140,9 +157,17 @@ window.onload = function () {
 </script>
 ```
 
+## Timeouts and errors
+
+A renew is aborted after [`silentRenewTimeoutInSeconds`](./configuration#silentrenewtimeoutinseconds) (default 20). If a refresh token request fails because of a network error, it is retried every [`refreshTokenRetryInSeconds`](./configuration#refreshtokenretryinseconds) (default 3).
+
+With refresh tokens, network errors and timeouts keep the current session. Any other error (e.g. `invalid_grant`) clears the local session and stops the periodic renew. With iframes, an error returned by the identity provider (e.g. `login_required`) clears the local session, publishes the auth state with `ValidationResult.LoginRequired` and stops the periodic renew.
+
+Every failure fires the `SilentRenewFailed` [event](./public-events). If an iframe renew started with [`forceRefreshSession()`](./public-api) fails, the method returns `isAuthenticated: false` with the `error` of the identity provider in `errorMessage` and, if one was sent, its `error_description` in `errorDescription`. With refresh tokens, a failed `forceRefreshSession()` errors the returned observable.
+
 ## Security Token Service CSP and CORS
 
-When silent renew is enabled, the lib will attempt to perform a renew before returning the authorization state.
-This allows the application to authorize a user, that is already authenticated, without performing redirects.
+`checkAuth()` only reads the stored tokens. Use `checkAuthIncludingServer()` to also try a silent renew when the user is not authenticated locally.
+This allows the application to authorize a user, that is already authenticated on the Security Token Service, without performing redirects.
 
 Silent renew requires CSP configuration on the server to allow iframes and also CORS.

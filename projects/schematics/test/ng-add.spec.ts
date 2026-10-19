@@ -49,7 +49,7 @@ describe('ng-add', () => {
   }
 
   describe('standalone application', () => {
-    it('uses the standalone setup by default', async () => {
+    it('should use the standalone setup by default', async () => {
       const tree = await runNgAdd(await createApp(true));
 
       expect(tree.exists(`${appPath}/auth/auth.config.ts`)).toBe(true);
@@ -57,14 +57,14 @@ describe('ng-add', () => {
       expect(tree.readText(appConfigPath)).toContain('provideAuth(authConfig)');
     });
 
-    it('uses the standalone setup with --standalone', async () => {
+    it('should use the standalone setup with --standalone', async () => {
       const tree = await runNgAdd(await createApp(true), { standalone: true });
 
       expect(tree.exists(`${appPath}/auth/auth.config.ts`)).toBe(true);
       expect(tree.readText(appConfigPath)).toContain('provideAuth(authConfig)');
     });
 
-    it('creates the http config file for the http config flow', async () => {
+    it('should create the http config file for the http config flow', async () => {
       const tree = await runNgAdd(await createApp(true), {
         standalone: true,
         flowType: 'OIDC Code Flow PKCE using iframe silent renew getting config from http',
@@ -74,7 +74,7 @@ describe('ng-add', () => {
       expect(tree.readText(appConfigPath)).toContain('provideAuth(authConfig)');
     });
 
-    it('does not change the app spec', async () => {
+    it('should not change the app spec', async () => {
       const app = await createApp(true);
       const specBefore = app.readText(appSpecPath);
 
@@ -83,7 +83,7 @@ describe('ng-add', () => {
       expect(tree.readText(appSpecPath)).toBe(specBefore);
     });
 
-    it('fails with --legacy-modules because there is no AppModule', async () => {
+    it('should fail with --legacy-modules because there is no AppModule', async () => {
       const app = await createApp(true);
 
       await expect(runNgAdd(app, { legacyModules: true })).rejects.toThrow(
@@ -93,7 +93,7 @@ describe('ng-add', () => {
   });
 
   describe('NgModule application', () => {
-    it('uses the legacy modules setup by default', async () => {
+    it('should use the legacy modules setup by default', async () => {
       const tree = await runNgAdd(await createApp(false));
 
       expect(tree.exists(`${appPath}/auth/auth-config.module.ts`)).toBe(true);
@@ -102,14 +102,14 @@ describe('ng-add', () => {
       expect(tree.readText(appModulePath)).toMatch(/imports: \[[^\]]*AuthConfigModule/);
     });
 
-    it('uses the legacy modules setup with --legacy-modules', async () => {
+    it('should use the legacy modules setup with --legacy-modules', async () => {
       const tree = await runNgAdd(await createApp(false), { legacyModules: true });
 
       expect(tree.exists(`${appPath}/auth/auth-config.module.ts`)).toBe(true);
       expect(tree.readText(appModulePath)).toMatch(/imports: \[[^\]]*AuthConfigModule/);
     });
 
-    it('creates the http config module for the http config flow', async () => {
+    it('should create the http config module for the http config flow', async () => {
       const tree = await runNgAdd(await createApp(false), {
         legacyModules: true,
         flowType: 'OIDC Code Flow PKCE using iframe silent renew getting config from http',
@@ -119,7 +119,7 @@ describe('ng-add', () => {
       expect(tree.readText(appModulePath)).toMatch(/imports: \[[^\]]*AuthHttpConfigModule/);
     });
 
-    it('uses the standalone setup with --standalone and provides the config in the AppModule', async () => {
+    it('should use the standalone setup with --standalone and provides the config in the AppModule', async () => {
       const tree = await runNgAdd(await createApp(false), { standalone: true });
 
       expect(tree.exists(`${appPath}/auth/auth.config.ts`)).toBe(true);
@@ -132,7 +132,7 @@ describe('ng-add', () => {
       ['default', {}],
       ['--legacy-modules', { legacyModules: true }],
       ['--standalone', { standalone: true }],
-    ])('imports the AppModule in the app spec (%s)', async (_, options) => {
+    ])('should import the AppModule in the app spec (%s)', async (_, options) => {
       const tree = await runNgAdd(await createApp(false), options);
       const spec = tree.readText(appSpecPath);
 
@@ -143,7 +143,7 @@ describe('ng-add', () => {
   });
 
   describe('app spec update', () => {
-    it('keeps declarations which are not part of the AppModule', async () => {
+    it('should keep declarations which are not part of the AppModule', async () => {
       const app = await createApp(false);
       app.overwrite(
         appSpecPath,
@@ -159,7 +159,7 @@ describe('ng-add', () => {
       expect(spec).toContain(importsWithAppModule);
     });
 
-    it('does not import the AppModule twice', async () => {
+    it('should not import the AppModule twice', async () => {
       const app = await createApp(false);
       const tree = await runNgAdd(app);
       const specAfterFirstRun = tree.readText(appSpecPath);
@@ -169,9 +169,9 @@ describe('ng-add', () => {
       expect(secondRun.readText(appSpecPath)).toBe(specAfterFirstRun);
     });
 
-    it('leaves a spec without a TestBed configuration unchanged', async () => {
+    it('should leave a spec without a TestBed configuration unchanged', async () => {
       const app = await createApp(false);
-      const customSpec = `describe('App', () => {\n  it('works', () => {\n    expect(true).toBe(true);\n  });\n});\n`;
+      const customSpec = `describe('App', () => {\n  it('should work', () => {\n    expect(true).toBe(true);\n  });\n});\n`;
       app.overwrite(appSpecPath, customSpec);
 
       const tree = await runNgAdd(app);
@@ -180,7 +180,7 @@ describe('ng-add', () => {
     });
   });
 
-  it('fails when --standalone and --legacy-modules are combined', async () => {
+  it('should fail when --standalone and --legacy-modules are combined', async () => {
     const app = await createApp(false);
 
     await expect(runNgAdd(app, { standalone: true, legacyModules: true })).rejects.toThrow(

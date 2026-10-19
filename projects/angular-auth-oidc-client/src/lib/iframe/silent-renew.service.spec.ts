@@ -71,7 +71,7 @@ describe('SilentRenewService  ', () => {
   });
 
   describe('refreshSessionWithIFrameCompleted', () => {
-    it('is of type observable', () => {
+    it('should be of type observable', () => {
       expect(silentRenewService.refreshSessionWithIFrameCompleted$).toEqual(
         expect.any(Observable)
       );
@@ -79,21 +79,21 @@ describe('SilentRenewService  ', () => {
   });
 
   describe('isSilentRenewConfigured', () => {
-    it('returns true if refreshToken is configured false and silentRenew is configured true', () => {
+    it('should return true if refreshToken is configured false and silentRenew is configured true', () => {
       const config = { useRefreshToken: false, silentRenew: true };
       const result = silentRenewService.isSilentRenewConfigured(config);
 
       expect(result).toBe(true);
     });
 
-    it('returns false if refreshToken is configured true and silentRenew is configured true', () => {
+    it('should return false if refreshToken is configured true and silentRenew is configured true', () => {
       const config = { useRefreshToken: true, silentRenew: true };
       const result = silentRenewService.isSilentRenewConfigured(config);
 
       expect(result).toBe(false);
     });
 
-    it('returns false if refreshToken is configured false and silentRenew is configured false', () => {
+    it('should return false if refreshToken is configured false and silentRenew is configured false', () => {
       const config = { useRefreshToken: false, silentRenew: false };
       const result = silentRenewService.isSilentRenewConfigured(config);
 
@@ -102,7 +102,7 @@ describe('SilentRenewService  ', () => {
   });
 
   describe('getOrCreateIframe', () => {
-    it('returns iframe if iframe is truthy', () => {
+    it('should return iframe if iframe is truthy', () => {
       const config = { configId: 'configId1' };
       const mockIframe = { name: 'anything' } as HTMLIFrameElement;
 
@@ -117,7 +117,7 @@ describe('SilentRenewService  ', () => {
       );
     });
 
-    it('adds iframe to body if existing iframe is falsy', () => {
+    it('should add iframe to body if existing iframe is falsy', () => {
       const config = { configId: 'configId1' };
 
       vi.spyOn(iFrameService, 'getExistingIFrame').mockReturnValue(null);
@@ -138,7 +138,7 @@ describe('SilentRenewService  ', () => {
   });
 
   describe('getOrCreateIframe logging', () => {
-    it('logs that a new iframe is created when no iframe exists yet', () => {
+    it('should log that a new iframe is created when no iframe exists yet', () => {
       // Arrange
       const config = { configId: 'configId1' };
       const logDebugSpy = vi.spyOn(loggerService, 'logDebug');
@@ -158,7 +158,7 @@ describe('SilentRenewService  ', () => {
       );
     });
 
-    it('logs that the existing iframe is reused when one exists', () => {
+    it('should log that the existing iframe is reused when one exists', () => {
       // Arrange
       const config = { configId: 'configId1' };
       const logDebugSpy = vi.spyOn(loggerService, 'logDebug');
@@ -184,7 +184,7 @@ describe('SilentRenewService  ', () => {
   });
 
   describe('codeFlowCallbackSilentRenewIframe', () => {
-    it('calls processSilentRenewCodeFlowCallback with correct arguments', async () => {
+    it('should call processSilentRenewCodeFlowCallback with correct arguments', async () => {
       const config = { configId: 'configId1' };
       const allConfigs = [config];
       const spy = vi
@@ -217,7 +217,7 @@ describe('SilentRenewService  ', () => {
       expect(spy).toHaveBeenCalledWith(expectedContext, config, allConfigs);
     });
 
-    it('throws error if url has error param and resets everything on error', async () => {
+    it('should throw error if url has error param and reset everything on error', async () => {
       const config = { configId: 'configId1' };
       const allConfigs = [config];
       const spy = vi
@@ -268,7 +268,7 @@ describe('SilentRenewService  ', () => {
       }
     });
 
-    it('keeps the error_description of the url on the thrown error', async () => {
+    it('should keep the error_description of the url on the thrown error', async () => {
       const config = { configId: 'configId1' };
       const allConfigs = [config];
       const url = 'url-part-1';
@@ -292,7 +292,7 @@ describe('SilentRenewService  ', () => {
   });
 
   describe('codeFlowCallbackSilentRenewIframe edge cases', () => {
-    it('passes empty code and state to the flow when the url has no code and state params', async () => {
+    it('should pass empty code and state to the flow when the url has no code and state params', async () => {
       // Arrange
       const config = { configId: 'configId1' };
       const allConfigs = [config];
@@ -327,7 +327,7 @@ describe('SilentRenewService  ', () => {
       );
     });
 
-    it('stops the periodic token check, resets the authorization data and rethrows when processing the callback fails', async () => {
+    it('should stop the periodic token check, reset the authorization data and rethrow when processing the callback fails', async () => {
       // Arrange
       const config = { configId: 'configId1' };
       const allConfigs = [config];
@@ -362,7 +362,7 @@ describe('SilentRenewService  ', () => {
   });
 
   describe('codeFlowCallbackSilentRenewIframe error identity', () => {
-    it('rethrows an Error from processing the callback unchanged', async () => {
+    it('should rethrow an Error from processing the callback unchanged', async () => {
       // Arrange
       const config = { configId: 'configId1' };
       const processingError = new SilentRenewCallbackError(
@@ -388,7 +388,7 @@ describe('SilentRenewService  ', () => {
       await expect(result).rejects.toBe(processingError);
     });
 
-    it('publishes the original error message instead of a doubled "Error: " prefix', async () => {
+    it('should publish the original error message instead of a doubled "Error: " prefix', async () => {
       // Arrange
       const config = { configId: 'configId1' };
       const published: unknown[] = [];
@@ -423,7 +423,7 @@ describe('SilentRenewService  ', () => {
   });
 
   describe('silentRenewEventHandler', () => {
-    it('returns if no details is given', async () => {
+    it('should return if no details is given', async () => {
       const isCurrentFlowCodeFlowSpy = vi
         .spyOn(flowHelper, 'isCurrentFlowCodeFlow')
         .mockReturnValue(false);
@@ -444,7 +444,7 @@ describe('SilentRenewService  ', () => {
       expect(isCurrentFlowCodeFlowSpy).not.toHaveBeenCalled();
     });
 
-    it('calls authorizedImplicitFlowCallback if current flow is not code flow', async () => {
+    it('should call authorizedImplicitFlowCallback if current flow is not code flow', async () => {
       const isCurrentFlowCodeFlowSpy = vi
         .spyOn(flowHelper, 'isCurrentFlowCodeFlow')
         .mockReturnValue(false);
@@ -469,7 +469,7 @@ describe('SilentRenewService  ', () => {
       );
     });
 
-    it('calls codeFlowCallbackSilentRenewIframe if current flow is code flow', async () => {
+    it('should call codeFlowCallbackSilentRenewIframe if current flow is code flow', async () => {
       vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
       const codeFlowCallbackSilentRenewIframe = vi
         .spyOn(silentRenewService, 'codeFlowCallbackSilentRenewIframe')
@@ -491,7 +491,7 @@ describe('SilentRenewService  ', () => {
       );
     });
 
-    it('does not call authenticatedImplicitFlowCallback if current flow is code flow', async () => {
+    it('should not call authenticatedImplicitFlowCallback if current flow is code flow', async () => {
       vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
       vi.spyOn(
         silentRenewService,
@@ -512,7 +512,7 @@ describe('SilentRenewService  ', () => {
       expect(authenticatedImplicitFlowCallbackSpy).not.toHaveBeenCalled();
     });
 
-    it('calls next on refreshSessionWithIFrameCompleted with callbackcontext', async () => {
+    it('should call next on refreshSessionWithIFrameCompleted with callbackcontext', async () => {
       vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
       vi.spyOn(
         silentRenewService,
@@ -544,7 +544,7 @@ describe('SilentRenewService  ', () => {
       });
     });
 
-    it('loggs and calls flowsDataService.resetSilentRenewRunning in case of an error', async () => {
+    it('should log and call flowsDataService.resetSilentRenewRunning in case of an error', async () => {
       vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
       vi.spyOn(
         silentRenewService,

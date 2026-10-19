@@ -29,7 +29,7 @@ describe('AutoLoginService ', () => {
   });
 
   describe('checkSavedRedirectRouteAndNavigate', () => {
-    it('does nothing if config is null', () => {
+    it('should do nothing if config is null', () => {
       const readSpy = vi
         .spyOn(storagePersistenceService, 'read')
         .mockReturnValue(undefined);
@@ -43,7 +43,7 @@ describe('AutoLoginService ', () => {
       expect(routerSpy).not.toHaveBeenCalled();
     });
 
-    it('if not route is saved, router and delete are not called', () => {
+    it('should not navigate or delete the stored route when no route is saved', () => {
       const deleteSpy = vi
         .spyOn(storagePersistenceService, 'remove')
         .mockReturnValue(undefined);
@@ -66,7 +66,7 @@ describe('AutoLoginService ', () => {
       });
     });
 
-    it('if route is saved, router and delete are called', () => {
+    it('should navigate to and delete the stored route when a route is saved', () => {
       const deleteSpy = vi
         .spyOn(storagePersistenceService, 'remove')
         .mockReturnValue(undefined);
@@ -96,7 +96,7 @@ describe('AutoLoginService ', () => {
   });
 
   describe('saveRedirectRoute', () => {
-    it('does nothing if config is null', () => {
+    it('should do nothing if config is null', () => {
       const writeSpy = vi
         .spyOn(storagePersistenceService, 'write')
         .mockReturnValue(undefined as any);
@@ -106,7 +106,7 @@ describe('AutoLoginService ', () => {
       expect(writeSpy).not.toHaveBeenCalled();
     });
 
-    it('calls storageService with correct params', () => {
+    it('should call storageService with correct params', () => {
       const writeSpy = vi
         .spyOn(storagePersistenceService, 'write')
         .mockReturnValue(undefined as any);

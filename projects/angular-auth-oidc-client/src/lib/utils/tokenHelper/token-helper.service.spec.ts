@@ -23,7 +23,7 @@ describe('Token Helper Service', () => {
   });
 
   describe('getTokenExpirationDate', () => {
-    it('returns the current date (second precision) if param has no property exp', () => {
+    it('should return the current date (second precision) if param has no property exp', () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date('2026-01-01T12:34:56.789Z'));
 
@@ -36,7 +36,7 @@ describe('Token Helper Service', () => {
       }
     });
 
-    it('returns correct date if param has property exp', () => {
+    it('should return correct date if param has property exp', () => {
       const expectedDate = new Date(0);
 
       expectedDate.setUTCSeconds(123);
@@ -50,7 +50,7 @@ describe('Token Helper Service', () => {
   });
 
   describe('getSigningInputFromToken', () => {
-    it('returns empty string if token is not valid', () => {
+    it('should return empty string if token is not valid', () => {
       const result = tokenHelperService.getSigningInputFromToken('', true, {
         configId: 'configId1',
       });
@@ -58,7 +58,7 @@ describe('Token Helper Service', () => {
       expect(result).toBe('');
     });
 
-    it('returns string if token is valid', () => {
+    it('should return string if token is valid', () => {
       const token = 'a.valid.token';
       const result = tokenHelperService.getSigningInputFromToken(token, true, {
         configId: 'configId1',
@@ -69,7 +69,7 @@ describe('Token Helper Service', () => {
   });
 
   describe('getPayloadFromToken', () => {
-    it('returns not null if token is undefined, encode is false', () => {
+    it('should return not null if token is undefined, encode is false', () => {
       const result = tokenHelperService.getPayloadFromToken(undefined, false, {
         configId: 'configId1',
       });
@@ -77,7 +77,7 @@ describe('Token Helper Service', () => {
       expect(result).toEqual({});
     });
 
-    it('returns not null if token is undefined, encode is true', () => {
+    it('should return not null if token is undefined, encode is true', () => {
       const result = tokenHelperService.getPayloadFromToken(undefined, true, {
         configId: 'configId1',
       });
@@ -85,7 +85,7 @@ describe('Token Helper Service', () => {
       expect(result).toEqual({});
     });
 
-    it('returns not null if token is null, encode is true', () => {
+    it('should return not null if token is null, encode is true', () => {
       const result = tokenHelperService.getPayloadFromToken(null, true, {
         configId: 'configId1',
       });
@@ -93,7 +93,7 @@ describe('Token Helper Service', () => {
       expect(result).toEqual({});
     });
 
-    it('returns not null if token is empty, encode is true', () => {
+    it('should return not null if token is empty, encode is true', () => {
       const result = tokenHelperService.getPayloadFromToken('', true, {
         configId: 'configId1',
       });
@@ -101,7 +101,7 @@ describe('Token Helper Service', () => {
       expect(result).toEqual({});
     });
 
-    it('returns not null if token has no points, encode is true', () => {
+    it('should return not null if token has no points, encode is true', () => {
       const result = tokenHelperService.getPayloadFromToken(
         'testStringWithoutDots',
         true,
@@ -111,7 +111,7 @@ describe('Token Helper Service', () => {
       expect(result).toEqual({});
     });
 
-    it('returns not null if token has no points, encode is false', () => {
+    it('should return not null if token has no points, encode is false', () => {
       const result = tokenHelperService.getPayloadFromToken(
         'testStringWithoutDots',
         false,
@@ -121,7 +121,7 @@ describe('Token Helper Service', () => {
       expect(result).toEqual({});
     });
 
-    it('returns not null if token has only one point, encode is false', () => {
+    it('should return not null if token has only one point, encode is false', () => {
       const result = tokenHelperService.getPayloadFromToken(
         'testStringWith.dot',
         false,
@@ -131,7 +131,7 @@ describe('Token Helper Service', () => {
       expect(result).toEqual({});
     });
 
-    it('returns payload if token is correct, encode is true 1', () => {
+    it('should return payload if token is correct, encode is true 1', () => {
       const token = 'abc.def.ghi';
       const expected = 'def';
       const result = tokenHelperService.getPayloadFromToken(token, true, {
@@ -141,7 +141,7 @@ describe('Token Helper Service', () => {
       expect(expected).toEqual(result);
     });
 
-    it('returns payload if token is correct, encode is true 2', () => {
+    it('should return payload if token is correct, encode is true 2', () => {
       const token = 'abc.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.ghi';
       const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
       const result = tokenHelperService.getPayloadFromToken(token, true, {
@@ -151,7 +151,7 @@ describe('Token Helper Service', () => {
       expect(expected).toEqual(result);
     });
 
-    it('returns payload if token is correct, encode is true 4', () => {
+    it('should return payload if token is correct, encode is true 4', () => {
       const token =
         'SGVsbG8gV29ybGQgMTIzIQ==.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.SGVsbG8gV29ybGQgMTIzIQ==';
       const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
@@ -162,7 +162,7 @@ describe('Token Helper Service', () => {
       expect(expected).toEqual(result);
     });
 
-    it('returns payload if token is correct, encode is false 1', () => {
+    it('should return payload if token is correct, encode is false 1', () => {
       const token = 'abc.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.ghi';
       const expected = JSON.parse('{ "text" : "Hello World 123!"}');
       const result = tokenHelperService.getPayloadFromToken(token, false, {
@@ -172,7 +172,7 @@ describe('Token Helper Service', () => {
       expect(expected).toEqual(result);
     });
 
-    it('returns payload if token is correct, encode is false 2', () => {
+    it('should return payload if token is correct, encode is false 2', () => {
       const token =
         'SGVsbG8gV29ybGQgMTIzIQ==.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.SGVsbG8gV29ybGQgMTIzIQ==';
       const expected = JSON.parse(`{ "text" : "Hello World 123!"}`);
@@ -183,7 +183,7 @@ describe('Token Helper Service', () => {
       expect(expected).toEqual(result);
     });
 
-    it('returns payload if token is correct, encode is false 3', () => {
+    it('should return payload if token is correct, encode is false 3', () => {
       const token =
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSm9obiBEw7PDqyJ9.wMn-1oLWnxKJolMGb7YKnlwjqusWf4xnnjABgFaDkI4';
       const jsonString = `{ "name" : "John D\xF3\xEB" }`;
@@ -195,7 +195,7 @@ describe('Token Helper Service', () => {
       expect(expected).toEqual(result);
     });
 
-    it('returns payload if token is correct, encode is false 4', () => {
+    it('should return payload if token is correct, encode is false 4', () => {
       const token =
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9' +
         '.eyJzdWIiOiIxIiwibmFtZSI6IkpvaG4gRF83NDc377-977-9MDEiLCJhZG1pbiI6dHJ1ZSwiaWF0IjoxNTE2MjI0MjQyfQ' +
@@ -209,14 +209,14 @@ describe('Token Helper Service', () => {
       expect(result).toEqual(expect.objectContaining(expected));
     });
 
-    it('returns an empty object when no configuration is given', () => {
+    it('should return an empty object when no configuration is given', () => {
       const token = 'abc.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.ghi';
       const result = tokenHelperService.getPayloadFromToken(token, false, null);
 
       expect(result).toEqual({});
     });
 
-    it('throws "Illegal base64url string!" when the payload length % 4 is 1', () => {
+    it('should throw "Illegal base64url string!" when the payload length % 4 is 1', () => {
       // Arrange
       const token = 'abc.abcde.ghi';
       // Act
@@ -229,7 +229,7 @@ describe('Token Helper Service', () => {
       expect(act).toThrow('Illegal base64url string!');
     });
 
-    it('throws a JSON syntax error when the payload part is empty', () => {
+    it('should throw a JSON syntax error when the payload part is empty', () => {
       // Arrange
       const token = 'abc..ghi';
       // Act
@@ -242,7 +242,7 @@ describe('Token Helper Service', () => {
       expect(act).toThrow(SyntaxError);
     });
 
-    it('falls back to the raw binary string when the payload is not valid UTF-8', () => {
+    it('should fall back to the raw binary string when the payload is not valid UTF-8', () => {
       // Arrange
       // base64url of the bytes `{"name":"` + 0xFF + `"}` (lone 0xFF is invalid UTF-8)
       const token = 'abc.eyJuYW1lIjoi_yJ9.ghi';
@@ -257,7 +257,7 @@ describe('Token Helper Service', () => {
   });
 
   describe('getHeaderFromToken', () => {
-    it('returns not null if token is undefined, encode is false', () => {
+    it('should return not null if token is undefined, encode is false', () => {
       const result = tokenHelperService.getHeaderFromToken(undefined, false, {
         configId: 'configId1',
       });
@@ -265,7 +265,7 @@ describe('Token Helper Service', () => {
       expect(result).toEqual({});
     });
 
-    it('returns not null if token is undefined, encode is true', () => {
+    it('should return not null if token is undefined, encode is true', () => {
       const result = tokenHelperService.getHeaderFromToken(undefined, true, {
         configId: 'configId1',
       });
@@ -273,7 +273,7 @@ describe('Token Helper Service', () => {
       expect(result).toEqual({});
     });
 
-    it('returns not null if token is null, encode is true', () => {
+    it('should return not null if token is null, encode is true', () => {
       const result = tokenHelperService.getHeaderFromToken(null, true, {
         configId: 'configId1',
       });
@@ -281,7 +281,7 @@ describe('Token Helper Service', () => {
       expect(result).toEqual({});
     });
 
-    it('returns not null if token is empty, encode is true', () => {
+    it('should return not null if token is empty, encode is true', () => {
       const result = tokenHelperService.getHeaderFromToken('', true, {
         configId: 'configId1',
       });
@@ -289,7 +289,7 @@ describe('Token Helper Service', () => {
       expect(result).toEqual({});
     });
 
-    it('returns not null if token has no points, encode is true', () => {
+    it('should return not null if token has no points, encode is true', () => {
       const result = tokenHelperService.getHeaderFromToken(
         'testStringWithoutDots',
         true,
@@ -299,7 +299,7 @@ describe('Token Helper Service', () => {
       expect(result).toEqual({});
     });
 
-    it('returns not null if token has no points, encode is false', () => {
+    it('should return not null if token has no points, encode is false', () => {
       const result = tokenHelperService.getHeaderFromToken(
         'testStringWithoutDots',
         false,
@@ -309,7 +309,7 @@ describe('Token Helper Service', () => {
       expect(result).toEqual({});
     });
 
-    it('returns not null if token has only one point, encode is false', () => {
+    it('should return not null if token has only one point, encode is false', () => {
       const result = tokenHelperService.getHeaderFromToken(
         'testStringWith.dot',
         false,
@@ -319,7 +319,7 @@ describe('Token Helper Service', () => {
       expect(result).toEqual({});
     });
 
-    it('returns payload if token is correct, encode is true', () => {
+    it('should return payload if token is correct, encode is true', () => {
       const token = 'abc.def.ghi';
       const expected = 'abc';
       const result = tokenHelperService.getHeaderFromToken(token, true, {
@@ -329,7 +329,7 @@ describe('Token Helper Service', () => {
       expect(expected).toEqual(result);
     });
 
-    it('returns payload if token is correct, encode is true', () => {
+    it('should return payload if token is correct, encode is true', () => {
       const token = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.def.ghi';
       const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
       const result = tokenHelperService.getHeaderFromToken(token, true, {
@@ -339,7 +339,7 @@ describe('Token Helper Service', () => {
       expect(expected).toEqual(result);
     });
 
-    it('returns payload if token is correct, encode is false', () => {
+    it('should return payload if token is correct, encode is false', () => {
       const token = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.def.ghi';
       const expected = JSON.parse(`{ "text" : "Hello World 123!"}`);
       const result = tokenHelperService.getHeaderFromToken(token, false, {
@@ -349,7 +349,7 @@ describe('Token Helper Service', () => {
       expect(expected).toEqual(result);
     });
 
-    it('returns payload if token is correct, encode is false', () => {
+    it('should return payload if token is correct, encode is false', () => {
       const token =
         'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.SGVsbG8gV29ybGQgMTIzIQ==.SGVsbG8gV29ybGQgMTIzIQ==';
       const expected = JSON.parse(`{ "text" : "Hello World 123!"}`);
@@ -360,7 +360,7 @@ describe('Token Helper Service', () => {
       expect(expected).toEqual(result);
     });
 
-    it('returns payload if token is correct, encode is true', () => {
+    it('should return payload if token is correct, encode is true', () => {
       const token = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.abc.ghi';
       const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
       const result = tokenHelperService.getHeaderFromToken(token, true, {
@@ -370,7 +370,7 @@ describe('Token Helper Service', () => {
       expect(expected).toEqual(result);
     });
 
-    it('returns payload if token is correct, encode is true', () => {
+    it('should return payload if token is correct, encode is true', () => {
       const token =
         'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.SGVsbG8gV29ybGQgMTIzIQ==.SGVsbG8gV29ybGQgMTIzIQ==';
       const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
@@ -381,7 +381,7 @@ describe('Token Helper Service', () => {
       expect(expected).toEqual(result);
     });
 
-    it('returns payload if token is correct, encode is false', () => {
+    it('should return payload if token is correct, encode is false', () => {
       const token =
         'eyJ0ZXh0IjogIkhlbGxvIFdvcmxkIDEyMyEifQ=.SGVsbG8gV29ybGQgMTIzIQ==.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
       const expected = JSON.parse(`{"text": "Hello World 123!"}`);
@@ -394,7 +394,7 @@ describe('Token Helper Service', () => {
   });
 
   describe('getSignatureFromToken', () => {
-    it('returns not null if token is undefined, encode is false', () => {
+    it('should return not null if token is undefined, encode is false', () => {
       const result = tokenHelperService.getSignatureFromToken(
         undefined,
         false,
@@ -404,7 +404,7 @@ describe('Token Helper Service', () => {
       expect(result).toEqual({});
     });
 
-    it('returns not null if token is undefined, encode is true', () => {
+    it('should return not null if token is undefined, encode is true', () => {
       const result = tokenHelperService.getSignatureFromToken(undefined, true, {
         configId: 'configId1',
       });
@@ -412,7 +412,7 @@ describe('Token Helper Service', () => {
       expect(result).toEqual({});
     });
 
-    it('returns not null if token is null, encode is true', () => {
+    it('should return not null if token is null, encode is true', () => {
       const result = tokenHelperService.getSignatureFromToken(null, true, {
         configId: 'configId1',
       });
@@ -420,7 +420,7 @@ describe('Token Helper Service', () => {
       expect(result).toEqual({});
     });
 
-    it('returns not null if token is empty, encode is true', () => {
+    it('should return not null if token is empty, encode is true', () => {
       const result = tokenHelperService.getSignatureFromToken('', true, {
         configId: 'configId1',
       });
@@ -428,7 +428,7 @@ describe('Token Helper Service', () => {
       expect(result).toEqual({});
     });
 
-    it('returns not null if token has no points, encode is true', () => {
+    it('should return not null if token has no points, encode is true', () => {
       const result = tokenHelperService.getSignatureFromToken(
         'testStringWithoutDots',
         true,
@@ -438,7 +438,7 @@ describe('Token Helper Service', () => {
       expect(result).toEqual({});
     });
 
-    it('returns not null if token has no points, encode is false', () => {
+    it('should return not null if token has no points, encode is false', () => {
       const result = tokenHelperService.getSignatureFromToken(
         'testStringWithoutDots',
         false,
@@ -448,7 +448,7 @@ describe('Token Helper Service', () => {
       expect(result).toEqual({});
     });
 
-    it('returns not null if token has only one point, encode is false', () => {
+    it('should return not null if token has only one point, encode is false', () => {
       const result = tokenHelperService.getSignatureFromToken(
         'testStringWith.dot',
         false,
@@ -458,7 +458,7 @@ describe('Token Helper Service', () => {
       expect(result).toEqual({});
     });
 
-    it('returns payload if token is correct, encode is true', () => {
+    it('should return payload if token is correct, encode is true', () => {
       const token = 'abc.def.ghi';
       const expected = 'ghi';
       const result = tokenHelperService.getSignatureFromToken(token, true, {
@@ -468,7 +468,7 @@ describe('Token Helper Service', () => {
       expect(expected).toEqual(result);
     });
 
-    it('returns payload if token is correct, encode is true', () => {
+    it('should return payload if token is correct, encode is true', () => {
       const token = 'def.ghi.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
       const expected = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
       const result = tokenHelperService.getSignatureFromToken(token, true, {
@@ -478,7 +478,7 @@ describe('Token Helper Service', () => {
       expect(expected).toEqual(result);
     });
 
-    it('returns payload if token is correct, encode is false', () => {
+    it('should return payload if token is correct, encode is false', () => {
       const token = 'def.ghi.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
       const expected = JSON.parse(`{ "text" : "Hello World 123!"}`);
       const result = tokenHelperService.getSignatureFromToken(token, false, {
@@ -488,7 +488,7 @@ describe('Token Helper Service', () => {
       expect(expected).toEqual(result);
     });
 
-    it('returns payload if token is correct, encode is false', () => {
+    it('should return payload if token is correct, encode is false', () => {
       const token =
         'SGVsbG8gV29ybGQgMTIzIQ==.SGVsbG8gV29ybGQgMTIzIQ==.eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9';
       const expected = JSON.parse(`{ "text" : "Hello World 123!"}`);
@@ -499,7 +499,7 @@ describe('Token Helper Service', () => {
       expect(expected).toEqual(result);
     });
 
-    it('returns payload if token is correct, encode is true', () => {
+    it('should return payload if token is correct, encode is true', () => {
       const token = 'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.abc.ghi';
       const expected = 'ghi';
       const result = tokenHelperService.getSignatureFromToken(token, true, {
@@ -509,7 +509,7 @@ describe('Token Helper Service', () => {
       expect(expected).toEqual(result);
     });
 
-    it('returns payload if token is correct, encode is true', () => {
+    it('should return payload if token is correct, encode is true', () => {
       const token =
         'eyAidGV4dCIgOiAiSGVsbG8gV29ybGQgMTIzISJ9.SGVsbG8gV29ybGQgMTIzIQ==.SGVsbG8gV29ybGQgMTIzIQ==';
       const expected = 'SGVsbG8gV29ybGQgMTIzIQ==';
@@ -536,7 +536,7 @@ describe('Token Helper Service without defaultView', () => {
     tokenHelperService = TestBed.inject(TokenHelperService);
   });
 
-  it('decodes the payload when defaultView is null (SSR)', () => {
+  it('should decode the payload when defaultView is null (SSR)', () => {
     const token = 'eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiLDpMO2w7wifQ.sig';
     const result = tokenHelperService.getPayloadFromToken(token, false, {
       configId: 'configId1',

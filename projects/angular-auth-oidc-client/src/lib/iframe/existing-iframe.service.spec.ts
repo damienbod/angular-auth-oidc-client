@@ -34,7 +34,7 @@ describe('IFrameService', () => {
       service = TestBed.inject(IFrameService);
     });
 
-    it('returns the iframe found on the parent window', () => {
+    it('should return the iframe found on the parent window', () => {
       const result = service.getExistingIFrame('iframeId');
 
       expect(result).toBe(iframe);
@@ -62,7 +62,7 @@ describe('IFrameService', () => {
       service = TestBed.inject(IFrameService);
     });
 
-    it('returns null when accessing the parent window throws', () => {
+    it('should return null when accessing the parent window throws', () => {
       const result = service.getExistingIFrame('iframeId');
 
       expect(result).toBeNull();
@@ -95,7 +95,7 @@ describe('IFrameService', () => {
       service = TestBed.inject(IFrameService);
     });
 
-    it('returns the iframe found on the own window when the parent window has none', () => {
+    it('should return the iframe found on the own window when the parent window has none', () => {
       const result = service.getExistingIFrame('iframeId');
 
       expect(result).toBe(iframe);
@@ -125,7 +125,7 @@ describe('IFrameService', () => {
       service = TestBed.inject(IFrameService);
     });
 
-    it('returns null when the elements with the identifier are not iframes', () => {
+    it('should return null when the elements with the identifier are not iframes', () => {
       const result = service.getExistingIFrame('iframeId');
 
       expect(result).toBeNull();

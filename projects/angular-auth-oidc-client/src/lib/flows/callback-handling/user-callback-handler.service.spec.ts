@@ -45,7 +45,7 @@ describe('UserCallbackHandlerService', () => {
   });
 
   describe('callbackUser', () => {
-    it('calls flowsDataService.setSessionState with correct params if autoUserInfo is false, isRenewProcess is false and refreshToken is null', async () => {
+    it('should call flowsDataService.setSessionState with correct params if autoUserInfo is false, isRenewProcess is false and refreshToken is null', async () => {
       const svr = new StateValidationResult(
         'accesstoken',
         'idtoken',
@@ -81,7 +81,7 @@ describe('UserCallbackHandlerService', () => {
       expect(resultCallbackContext).toEqual(callbackContext);
     });
 
-    it('does NOT call flowsDataService.setSessionState if autoUserInfo is false, isRenewProcess is true and refreshToken is null', async () => {
+    it('should not set the session state if autoUserInfo is false, isRenewProcess is true and refreshToken is null', async () => {
       const svr = new StateValidationResult(
         'accesstoken',
         'idtoken',
@@ -116,7 +116,7 @@ describe('UserCallbackHandlerService', () => {
       expect(resultCallbackContext).toEqual(callbackContext);
     });
 
-    it('does NOT call flowsDataService.setSessionState if autoUserInfo is false isRenewProcess is false, refreshToken has value', async () => {
+    it('should not set the session state if autoUserInfo is false, isRenewProcess is false and refreshToken has a value', async () => {
       const svr = new StateValidationResult(
         'accesstoken',
         'idtoken',
@@ -151,7 +151,7 @@ describe('UserCallbackHandlerService', () => {
       expect(resultCallbackContext).toEqual(callbackContext);
     });
 
-    it('does NOT call flowsDataService.setSessionState if autoUserInfo is false isRenewProcess is false, refreshToken has value, id_token is false', async () => {
+    it('should not set the session state if autoUserInfo is false, isRenewProcess is false, refreshToken has a value and id_token is false', async () => {
       const svr = new StateValidationResult('accesstoken', '', true, '');
       const callbackContext = {
         code: '',
@@ -181,7 +181,7 @@ describe('UserCallbackHandlerService', () => {
       expect(resultCallbackContext).toEqual(callbackContext);
     });
 
-    it('calls authStateService.updateAndPublishAuthState with correct params if autoUserInfo is false', async () => {
+    it('should call authStateService.updateAndPublishAuthState with correct params if autoUserInfo is false', async () => {
       const svr = new StateValidationResult(
         'accesstoken',
         'idtoken',
@@ -222,7 +222,7 @@ describe('UserCallbackHandlerService', () => {
       expect(resultCallbackContext).toEqual(callbackContext);
     });
 
-    it('calls userService.getAndPersistUserDataInStore with correct params if autoUserInfo is true', async () => {
+    it('should call userService.getAndPersistUserDataInStore with correct params if autoUserInfo is true', async () => {
       const svr = new StateValidationResult(
         'accesstoken',
         'idtoken',
@@ -264,7 +264,7 @@ describe('UserCallbackHandlerService', () => {
       expect(resultCallbackContext).toEqual(callbackContext);
     });
 
-    it('calls authStateService.updateAndPublishAuthState with correct params if autoUserInfo is true', async () => {
+    it('should call authStateService.updateAndPublishAuthState with correct params if autoUserInfo is true', async () => {
       const svr = new StateValidationResult(
         'accesstoken',
         'idtoken',
@@ -310,7 +310,7 @@ describe('UserCallbackHandlerService', () => {
       expect(resultCallbackContext).toEqual(callbackContext);
     });
 
-    it('calls flowsDataService.setSessionState with correct params if user data is present and NOT refresh token', async () => {
+    it('should call flowsDataService.setSessionState with correct params if user data is present and NOT refresh token', async () => {
       const svr = new StateValidationResult(
         'accesstoken',
         'idtoken',
@@ -351,7 +351,7 @@ describe('UserCallbackHandlerService', () => {
       expect(resultCallbackContext).toEqual(callbackContext);
     });
 
-    it('calls authStateService.publishUnauthorizedState with correct params if user info which are coming back are null', async () => {
+    it('should call authStateService.publishUnauthorizedState with correct params if user info which are coming back are null', async () => {
       const svr = new StateValidationResult(
         'accesstoken',
         'idtoken',
@@ -403,7 +403,7 @@ describe('UserCallbackHandlerService', () => {
       }
     });
 
-    it('calls resetAuthDataService.resetAuthorizationData if user info which are coming back are null', async () => {
+    it('should call resetAuthDataService.resetAuthorizationData if user info which are coming back are null', async () => {
       const svr = new StateValidationResult(
         'accesstoken',
         'idtoken',
@@ -464,7 +464,7 @@ describe('UserCallbackHandlerService', () => {
         };
       }
 
-      it('does not publish an auth state when autoUserInfo is false', async () => {
+      it('should not publish an auth state when autoUserInfo is false', async () => {
         // Arrange
         const callbackContext = createCallbackContext();
         const config = { configId: 'configId1', autoUserInfo: false };
@@ -487,7 +487,7 @@ describe('UserCallbackHandlerService', () => {
         expect(setUserDataToStoreSpy).not.toHaveBeenCalled();
       });
 
-      it('does not publish an auth state when autoUserInfo is true and user data is returned', async () => {
+      it('should not publish an auth state when autoUserInfo is true and user data is returned', async () => {
         // Arrange
         const callbackContext = createCallbackContext();
         const config = { configId: 'configId1', autoUserInfo: true };
@@ -509,7 +509,7 @@ describe('UserCallbackHandlerService', () => {
         expect(updateAndPublishAuthStateSpy).not.toHaveBeenCalled();
       });
 
-      it('does not publish an unauthenticated state but still errors when no user data is returned', async () => {
+      it('should not publish an unauthenticated state but still errors when no user data is returned', async () => {
         // Arrange
         const callbackContext = createCallbackContext();
         const config = { configId: 'configId1', autoUserInfo: true };
