@@ -46,12 +46,23 @@ describe('getVerifyAlg', () => {
     });
   });
 
-  it.each(['EdDSA', 'Ed25519'])('returns Ed25519 if algorithm is %s', (alg) => {
-    expect(getVerifyAlg(alg)).toEqual({ name: 'Ed25519' });
-  });
+  it.each(['EdDSA', 'Ed25519'])(
+    'should return Ed25519 if algorithm is %s',
+    (alg) => {
+      // Act
+      const result = getVerifyAlg(alg);
 
-  it('keeps the ECDSA mapping for ES256', () => {
-    expect(getVerifyAlg('ES256')).toEqual({ name: 'ECDSA', hash: 'SHA-256' });
+      // Assert
+      expect(result).toEqual({ name: 'Ed25519' });
+    }
+  );
+
+  it('should keep the ECDSA mapping for ES256', () => {
+    // Act
+    const result = getVerifyAlg('ES256');
+
+    // Assert
+    expect(result).toEqual({ name: 'ECDSA', hash: 'SHA-256' });
   });
 });
 
@@ -91,13 +102,23 @@ describe('alg2kty', () => {
     expect(result).toEqual('EC');
   });
 
-  it.each(['EdDSA', 'Ed25519'])('returns OKP if algorithm is %s', (alg) => {
-    expect(alg2kty(alg)).toEqual('OKP');
-  });
+  it.each(['EdDSA', 'Ed25519'])(
+    'should return OKP if algorithm is %s',
+    (alg) => {
+      // Act
+      const result = alg2kty(alg);
 
-  it('keeps EC for ES256 and ES384', () => {
-    expect(alg2kty('ES256')).toEqual('EC');
-    expect(alg2kty('ES384')).toEqual('EC');
+      // Assert
+      expect(result).toEqual('OKP');
+    }
+  );
+
+  it.each(['ES256', 'ES384'])('should keep EC for %s', (alg) => {
+    // Act
+    const result = alg2kty(alg);
+
+    // Assert
+    expect(result).toEqual('EC');
   });
 
   it('should throw if algorithm is neither R nor E', () => {
@@ -181,15 +202,23 @@ describe('getImportAlg', () => {
     });
   });
 
-  it.each(['EdDSA', 'Ed25519'])('returns Ed25519 if algorithm is %s', (alg) => {
-    expect(getImportAlg(alg)).toEqual({ name: 'Ed25519' });
-  });
+  it.each(['EdDSA', 'Ed25519'])(
+    'should return Ed25519 if algorithm is %s',
+    (alg) => {
+      // Act
+      const result = getImportAlg(alg);
 
-  it('keeps the ECDSA mapping for ES256', () => {
-    expect(getImportAlg('ES256')).toEqual({
-      name: 'ECDSA',
-      namedCurve: 'P-256',
-    });
+      // Assert
+      expect(result).toEqual({ name: 'Ed25519' });
+    }
+  );
+
+  it('should keep the ECDSA mapping for ES256', () => {
+    // Act
+    const result = getImportAlg('ES256');
+
+    // Assert
+    expect(result).toEqual({ name: 'ECDSA', namedCurve: 'P-256' });
   });
 });
 

@@ -914,53 +914,66 @@ describe('TokenValidationService', () => {
         } as JsonWebKey;
       });
 
-      it('returns true for a valid signature with kid', async () => {
+      it('should return true for a valid signature with kid', async () => {
+        // Arrange
         const header = { alg: 'EdDSA', typ: 'JWT', kid };
         const idToken = await signIdToken(header);
 
         mockTokenParts(idToken, header);
 
+        // Act
         const result = await validate(idToken, [rsaKey, publicJwk]);
 
+        // Assert
         expect(publicJwk.kty).toEqual('OKP');
         expect(result).toEqual(true);
       });
 
-      it('returns true for a valid signature with the RFC 9864 alg Ed25519', async () => {
+      it('should return true for a valid signature with the RFC 9864 alg Ed25519', async () => {
+        // Arrange
         const header = { alg: 'Ed25519', typ: 'JWT', kid };
         const idToken = await signIdToken(header);
 
         mockTokenParts(idToken, header);
 
+        // Act
         const result = await validate(idToken, [publicJwk]);
 
+        // Assert
         expect(result).toEqual(true);
       });
 
-      it('skips OKP keys of other curves when there is no kid', async () => {
+      it('should skip OKP keys of other curves when there is no kid', async () => {
+        // Arrange
         const header = { alg: 'EdDSA', typ: 'JWT' };
         const idToken = await signIdToken(header);
         const x25519Key = { ...publicJwk, kid: 'x25519-key', crv: 'X25519' };
 
         mockTokenParts(idToken, header);
 
+        // Act
         const result = await validate(idToken, [x25519Key, publicJwk]);
 
+        // Assert
         expect(result).toEqual(true);
       });
 
-      it('returns true for a valid signature without kid', async () => {
+      it('should return true for a valid signature without kid', async () => {
+        // Arrange
         const header = { alg: 'EdDSA', typ: 'JWT' };
         const idToken = await signIdToken(header);
 
         mockTokenParts(idToken, header);
 
+        // Act
         const result = await validate(idToken, [rsaKey, publicJwk]);
 
+        // Assert
         expect(result).toEqual(true);
       });
 
-      it('returns false for a tampered payload', async () => {
+      it('should return false for a tampered payload', async () => {
+        // Arrange
         const header = { alg: 'EdDSA', typ: 'JWT', kid };
         const [encodedHeader, , signature] = (await signIdToken(header)).split(
           '.'
@@ -969,18 +982,20 @@ describe('TokenValidationService', () => {
 
         mockTokenParts(tamperedIdToken, header);
 
+        // Act
         const result = await validate(tamperedIdToken, [publicJwk]);
 
+        // Assert
         expect(result).toEqual(false);
       });
 
-      it('returns false and logs a warning if the browser does not support Ed25519', async () => {
+      it('should return false and log a warning if the browser does not support Ed25519', async () => {
+        // Arrange
         const header = { alg: 'EdDSA', typ: 'JWT', kid };
         const idToken = await signIdToken(header);
-
-        mockTokenParts(idToken, header);
         const logWarningSpy = vi.spyOn(loggerService, 'logWarning');
 
+        mockTokenParts(idToken, header);
         vi.spyOn(
           jwkWindowCryptoService,
           'importVerificationKey'
@@ -988,8 +1003,10 @@ describe('TokenValidationService', () => {
           new DOMException('Unrecognized name.', 'NotSupportedError')
         );
 
+        // Act
         const result = await validate(idToken, [publicJwk]);
 
+        // Assert
         expect(result).toEqual(false);
         expect(logWarningSpy).toHaveBeenCalledWith(
           configuration,
@@ -998,7 +1015,8 @@ describe('TokenValidationService', () => {
         );
       });
 
-      it('still errors for other algorithms if the key import fails', async () => {
+      it('should still error for other algorithms if the key import fails', async () => {
+        // Arrange
         vi.spyOn(tokenHelperService, 'getHeaderFromToken').mockReturnValue({
           alg: 'RS256',
         });
@@ -1007,6 +1025,7 @@ describe('TokenValidationService', () => {
           'importVerificationKey'
         ).mockRejectedValue(new Error('import failed'));
 
+        // Act & Assert
         await expect(
           validate('header.payload.signature', [rsaKey])
         ).rejects.toThrow('import failed');
@@ -1109,28 +1128,34 @@ describe('TokenValidationService', () => {
         );
 
       it.each(['EdDSA', 'Ed25519'])(
-        'returns true for %s if atHash is the SHA-512 hash',
+        'should return true for %s if atHash is the SHA-512 hash',
         async (alg) => {
+          // Act
           const result = await validate(sha512AtHash, alg);
 
+          // Assert
           expect(result).toEqual(true);
         }
       );
 
       it.each(['EdDSA', 'Ed25519'])(
-        'returns false for %s if atHash is the SHA-256 hash',
+        'should return false for %s if atHash is the SHA-256 hash',
         async (alg) => {
+          // Act
           const result = await validate(sha256AtHash, alg);
 
+          // Assert
           expect(result).toEqual(false);
         }
       );
 
       it.each(['RS256', 'ES256', 'PS256'])(
-        'keeps using SHA-256 for %s',
+        'should keep using SHA-256 for %s',
         async (alg) => {
+          // Act
           const result = await validate(sha256AtHash, alg);
 
+          // Assert
           expect(result).toEqual(true);
         }
       );
