@@ -27,7 +27,7 @@ This library is <a href="http://openid.net/certification/#RPs">certified</a> by 
 - [Supports OpenID Connect Session Management 1.0](http://openid.net/specs/openid-connect-session-1_0.html)
 - [Supports RFC7009 - OAuth 2.0 Token Revocation](https://tools.ietf.org/html/rfc7009)
 - [Supports RFC7636 - Proof Key for Code Exchange (PKCE)](https://tools.ietf.org/html/rfc7636)
-- [Supports OAuth 2.0 Pushed authorisation requests (PAR) draft](https://tools.ietf.org/html/draft-ietf-oauth-par-06)
+- [Supports RFC9126 - OAuth 2.0 Pushed Authorization Requests (PAR)](https://www.rfc-editor.org/rfc/rfc9126)
 - Semantic releases
 - Github actions
 - Modern coding guidelines with prettier, husky

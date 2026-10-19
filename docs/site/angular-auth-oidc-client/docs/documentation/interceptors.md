@@ -46,17 +46,23 @@ export const appConfig: ApplicationConfig = {
 };
 ```
 
-If you configured a route to be protected, every child route underneath is protected, too. So if you configure `https://example.org/api` the token is also added to a request to the route `https://example.org/api/users`. It is also possible to configure wildcard routes by using `*`. If you configure `https://example.org/api/*/token` all requests to the resource `api`, ending with an access to `token` will be treated as a secured route, e.g. `https://example.org/api/applications/token` or `https://example.org/api/applications/example/token`.
+A request is treated as secured if its URL starts with a configured route (a plain string prefix check). So if you configure `https://example.org/api` the token is also added to a request to the route `https://example.org/api/users`, but also to `https://example.org/api-internal`. End the route with a `/` to avoid this.
 
-In case you are running multiple configurations all the configured routes over all configurations are collected and compared against the currently requested route. If a match is made, the token for the configuration you added the secure route to is being taken and applied in the Authorization header.
+It is also possible to configure wildcard routes by using `*`. A route containing a wildcard has to match the whole request URL, and `*` matches any characters, including `/`. If you configure `https://example.org/api/*/token`, requests like `https://example.org/api/applications/token` or `https://example.org/api/applications/example/token` are treated as secured routes, but `https://example.org/api/applications/token?x=1` is not.
+
+The URLs are compared as they are passed to the `HttpClient`. If you use relative URLs in your requests, configure relative `secureRoutes` as well.
+
+The token is added as `Authorization: Bearer <token>` header, replacing an existing `Authorization` header. If the matching configuration is not authenticated, the request is sent unchanged.
+
+In case you are running multiple configurations, the configurations are checked in the order they were provided, and the first configuration with a matching secure route wins (first match, not the most specific match). The access token of that configuration is applied in the Authorization header.
 
 Keep in mind that you always can implement your own interceptor as [described in the Angular documentation](https://angular.dev/guide/http/interceptors#interceptors).
 
 ## NgModule
 
-To use configure the interceptors in an `NgModule` see the following example, which:
+To configure the interceptor in an `NgModule` see the following example, which:
 
-- Imports the `AuthModule`, and sets the `secureRoutes`.
+- Imports the `AuthModule`, and sets the `secureRoutes` in the `config`.
 - Registers the `AuthInterceptor` to `HTTP_INTERCEPTORS`.
 
 ```ts
@@ -67,10 +73,11 @@ import { AuthInterceptor, AuthModule } from 'angular-auth-oidc-client';
   imports: [
     // ...
     AuthModule.forRoot({
-      // ...
-      secureRoutes: ['https://my-secure-url.com/', 'https://my-second-secure-url.com/'],
+      config: {
+        // ...
+        secureRoutes: ['https://my-secure-url.com/', 'https://my-second-secure-url.com/'],
+      },
     }),
-    HttpClientModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
@@ -79,3 +86,5 @@ import { AuthInterceptor, AuthModule } from 'angular-auth-oidc-client';
 })
 export class AppModule {}
 ```
+
+The `AuthModule` already provides the `HttpClient` with `provideHttpClient(withInterceptorsFromDi())`, so interceptors registered with `HTTP_INTERCEPTORS` are picked up and importing the deprecated `HttpClientModule` is not needed.

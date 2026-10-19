@@ -28,7 +28,7 @@ By default, the schematic detects how your application is bootstrapped:
 | Standalone (`bootstrapApplication`) | `src/app/auth/auth.config.ts` | `provideAuth(authConfig)` in the providers of `app.config.ts` |
 | NgModule (`bootstrapModule`) | `src/app/auth/auth-config.module.ts` | `AuthConfigModule` in the imports of the `AppModule` |
 
-If you choose the flow that loads the configuration over HTTP, the files are named `auth-http.config.ts` and `auth-http-config.module.ts` instead.
+If you choose the flow that loads the configuration over HTTP, the files are named `auth-http.config.ts` and `auth-http-config.module.ts` (module class `AuthHttpConfigModule`) instead. For the flows using the iframe silent renew, a `silent-renew.html` is copied to `src/` and added to the `assets` in the `angular.json`.
 
 To choose the setup explicitly, pass one of these options:
 
@@ -44,7 +44,7 @@ ng add angular-auth-oidc-client --legacy-modules
 - `--legacy-modules` requires an `AppModule` (`app.module.ts` or `app-module.ts`). In a standalone application the schematic stops with an error.
 - The two options cannot be combined.
 
-In NgModule applications the schematic also imports the `AppModule` into the `TestBed` of the root component spec (`app.spec.ts`), so the test compiles the component with its module and gets the auth configuration. Components declared by the `AppModule` are removed from the `TestBed` `declarations`, because a component can only be declared in one NgModule. If the spec has a different shape, it is left unchanged.
+In NgModule applications the schematic also imports the `AppModule` into the `TestBed` of the root component spec (`app.spec.ts` or `app.component.spec.ts`), so the test compiles the component with its module and gets the auth configuration. Components declared by the `AppModule` are removed from the `TestBed` `declarations`, because a component can only be declared in one NgModule. If the spec has a different shape, it is left unchanged.
 
 ### Npm / Yarn / pnpm
 

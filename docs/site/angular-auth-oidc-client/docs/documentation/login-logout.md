@@ -57,6 +57,14 @@ login() {
 
 ```
 
+### Pushed Authorization Requests (PAR)
+
+Set `usePushedAuthorisationRequests: true` in the configuration to send the authorize parameters to the `pushed_authorization_request_endpoint` of the identity provider first. The user is then redirected (or the popup is opened) with only the returned `request_uri`. Both `authorize()` and `authorizeWithPopUp()` support this, and the `urlHandler` and `customParams` of the `AuthOptions` are still used.
+
+PAR cannot be combined with the iframe silent renew; use refresh tokens instead.
+
+[PAR Sample](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-par)
+
 ## Login using a Popup
 
 You can authenticate with any OpenID Connect identity provider using a popup.
@@ -74,9 +82,13 @@ loginWithPopup() {
 }
 ```
 
+If the user closes the popup, the observable emits `isAuthenticated: false` with `errorMessage: 'User closed popup'`. If a popup is already open, `errorMessage` is `'There is already a popup open.'`.
+
+Any message posted to the window that is not a string closes the popup. Set `disableCleaningPopupOnInvalidMessage: true` in the configuration if other scripts post messages to your window.
+
 ### PopupOptions
 
-You can pass options to control the dimension of the popup with the `PopupOptions` interface as a second parameter.
+You can set the size of the popup with `width` and `height` of the `PopupOptions` interface as a second parameter (default 500 × 500). The popup is always centered on the current window; `left` and `top` are currently ignored.
 
 ```ts
 loginWithPopup() {
@@ -138,7 +150,13 @@ A simplified page (instead of the application url) can be used. Here's an exampl
 
 ## Logout
 
-The `logoff()` method sends an end session request to the OIDC server, if it is available, or the check session has not sent a changed event.
+The `logoff()` method sends an end session request to the OIDC server if an end session endpoint is known and the check session has not reported a changed server state. In that case the local session is cleared and the browser is redirected to the end session endpoint (`GET`, default). With a custom `urlHandler`, the handler is called instead of the redirect.
+
+:::info
+
+If there is no end session endpoint, or the server state has changed, nothing is sent and the local session is **not** cleared. Call [`logoffLocal()`](#logofflocal) in that case.
+
+:::
 
 ```ts
 logout() {
@@ -187,7 +205,7 @@ logout() {
 }
 ```
 
-If you prefer to send a POST logout request:
+If you prefer to send a POST logout request, the local session is cleared and `id_token_hint`, `client_id`, `post_logout_redirect_uri` and the `state`, `logout_hint` and `ui_locales` custom params are posted as a form to the end session endpoint. A POST does not navigate; the returned observable emits the response of the server.
 
 ```ts
 logout() {
@@ -206,7 +224,7 @@ logout() {
 
 ### `logoffAndRevokeTokens()`
 
-The `logoffAndRevokeTokens()` method revokes the access token and the refresh token if using a refresh flow, and then logoff like above.
+The `logoffAndRevokeTokens()` method revokes the refresh token (if present) and then the access token at the revocation endpoint, and then calls `logoff()` like above. If the identity provider has no `revocation_endpoint`, only `logoff()` is called. If the revocation fails, the observable errors and no logoff is done.
 
 ```ts
 logoffAndRevokeTokens() {
@@ -234,10 +252,20 @@ The method also takes `configId` and `logoutAuthOptions` parameters if needed.
 
 ### `logoffLocal()`
 
-The `logoffLocal()` method is used to reset your local session in the browser, but does not send anything to the server. It also accepts the `configId` parameter.
+The `logoffLocal()` method is used to reset your local session in the browser and stop the check session monitoring, but does not send anything to the server. It also accepts the `configId` parameter.
 
 ```ts
 logoffLocal() {
   this.oidcSecurityService.logoffLocal();
+}
+```
+
+### `logoffLocalMultiple()`
+
+The `logoffLocalMultiple()` method resets the local session of all configurations without sending anything to the server. Use it instead of `logoffLocal()` when running multiple configurations.
+
+```ts
+logoffLocalMultiple() {
+  this.oidcSecurityService.logoffLocalMultiple();
 }
 ```
