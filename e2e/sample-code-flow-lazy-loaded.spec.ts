@@ -40,7 +40,7 @@ async function login(page: Page): Promise<void> {
   await expect(page.getByText('user is authenticated: true')).toBeVisible();
 }
 
-test('shows the public root and an unauthenticated lazy module', async ({
+test('should show the public root and an unauthenticated lazy module', async ({
   page,
 }) => {
   const authorizeRequests = collectRequests(page, isAuthorizeRequest());
@@ -58,7 +58,7 @@ test('shows the public root and an unauthenticated lazy module', async ({
   expect(authorizeRequests).toEqual([]);
 });
 
-test('logs in from inside the lazy loaded module', async ({ page }) => {
+test('should log in from inside the lazy loaded module', async ({ page }) => {
   await login(page);
 
   await expect(
@@ -66,7 +66,9 @@ test('logs in from inside the lazy loaded module', async ({ page }) => {
   ).toBeVisible();
 });
 
-test('stays authenticated after reloading the lazy route', async ({ page }) => {
+test('should stay authenticated after reloading the lazy route', async ({
+  page,
+}) => {
   await login(page);
 
   const authorizeRequests = collectRequests(page, isAuthorizeRequest());
@@ -77,7 +79,9 @@ test('stays authenticated after reloading the lazy route', async ({ page }) => {
   expect(authorizeRequests).toEqual([]);
 });
 
-test('renews the tokens silently with refresh tokens', async ({ page }) => {
+test('should renew the tokens silently with refresh tokens', async ({
+  page,
+}) => {
   await login(page);
 
   await waitForRefreshTokenRenew(page);
@@ -85,7 +89,7 @@ test('renews the tokens silently with refresh tokens', async ({ page }) => {
   await expect(page.getByText('user is authenticated: true')).toBeVisible();
 });
 
-test('logs out from inside the lazy loaded module', async ({
+test('should log out from inside the lazy loaded module', async ({
   page,
   baseURL,
 }) => {

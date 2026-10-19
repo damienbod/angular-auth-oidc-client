@@ -8,66 +8,53 @@ export class IFrameService {
   private readonly loggerService = inject(LoggerService);
 
   getExistingIFrame(identifier: string): HTMLIFrameElement | null {
-    const iFrameOnParent = this.getIFrameFromParentWindow(identifier);
-
-    if (this.isIFrameElement(iFrameOnParent)) {
-      return iFrameOnParent;
-    }
-
-    const iFrameOnSelf = this.getIFrameFromWindow(identifier);
-
-    if (this.isIFrameElement(iFrameOnSelf)) {
-      return iFrameOnSelf;
-    }
-
-    return null;
+    return (
+      this.getIFrameFromParentWindow(identifier) ??
+      this.getIFrameFromWindow(identifier)
+    );
   }
 
   addIFrameToWindowBody(
     identifier: string,
     config: OpenIdConfiguration
   ): HTMLIFrameElement {
-    const sessionIframe = this.document.createElement('iframe');
+    const sessionIframe = this.createHiddenIFrame(identifier);
 
-    sessionIframe.id = identifier;
-    sessionIframe.title = identifier;
     this.loggerService.logDebug(config, sessionIframe);
-    sessionIframe.style.display = 'none';
     this.document.body.appendChild(sessionIframe);
 
     return sessionIframe;
+  }
+
+  private createHiddenIFrame(identifier: string): HTMLIFrameElement {
+    const iframe = this.document.createElement('iframe');
+
+    iframe.id = identifier;
+    iframe.title = identifier;
+    iframe.style.display = 'none';
+
+    return iframe;
   }
 
   private getIFrameFromParentWindow(
     identifier: string
   ): HTMLIFrameElement | null {
     try {
-      const iFrameElement =
-        this.document.defaultView?.parent.document.getElementById(identifier);
+      const parentDocument = this.document.defaultView?.parent.document;
 
-      if (this.isIFrameElement(iFrameElement)) {
-        return iFrameElement;
-      }
-
-      return null;
+      return this.asIFrameOrNull(parentDocument?.getElementById(identifier));
     } catch (_e) {
       return null;
     }
   }
 
   private getIFrameFromWindow(identifier: string): HTMLIFrameElement | null {
-    const iFrameElement = this.document.getElementById(identifier);
-
-    if (this.isIFrameElement(iFrameElement)) {
-      return iFrameElement;
-    }
-
-    return null;
+    return this.asIFrameOrNull(this.document.getElementById(identifier));
   }
 
-  private isIFrameElement(
+  private asIFrameOrNull(
     element: HTMLElement | null | undefined
-  ): element is HTMLIFrameElement {
-    return !!element && element instanceof HTMLIFrameElement;
+  ): HTMLIFrameElement | null {
+    return element instanceof HTMLIFrameElement ? element : null;
   }
 }

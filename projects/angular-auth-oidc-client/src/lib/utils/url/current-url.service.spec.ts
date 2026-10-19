@@ -27,7 +27,7 @@ describe('CurrentUrlService with existing Url', () => {
   });
 
   describe('getCurrentUrl', () => {
-    it('returns the current URL', () => {
+    it('should return the current URL', () => {
       const currentUrl = service.getCurrentUrl();
 
       expect(currentUrl).toBe('http://my-url.com?state=my-state');
@@ -35,7 +35,7 @@ describe('CurrentUrlService with existing Url', () => {
   });
 
   describe('getStateParamFromCurrentUrl', () => {
-    it('returns null if there is no current URL', () => {
+    it('should return null if there is no current URL', () => {
       vi.spyOn(service, 'getCurrentUrl').mockReturnValue(null);
 
       const stateParam = service.getStateParamFromCurrentUrl('');
@@ -43,13 +43,13 @@ describe('CurrentUrlService with existing Url', () => {
       expect(stateParam).toBe(null);
     });
 
-    it('returns the state param for the URL', () => {
+    it('should return the state param for the URL', () => {
       const stateParam = service.getStateParamFromCurrentUrl();
 
       expect(stateParam).toBe('my-state');
     });
 
-    it('returns the state param for the URL if one is passed', () => {
+    it('should return the state param for the URL if one is passed', () => {
       const stateParam = service.getStateParamFromCurrentUrl(
         'http://my-url.com?state=my-passed-state'
       );
@@ -57,7 +57,7 @@ describe('CurrentUrlService with existing Url', () => {
       expect(stateParam).toBe('my-passed-state');
     });
 
-    it('returns the state param from the fragment (implicit flow)', () => {
+    it('should return the state param from the fragment (implicit flow)', () => {
       const stateParam = service.getStateParamFromCurrentUrl(
         'http://my-url.com#id_token=abc&state=my-fragment-state'
       );
@@ -65,7 +65,7 @@ describe('CurrentUrlService with existing Url', () => {
       expect(stateParam).toBe('my-fragment-state');
     });
 
-    it('prefers the state param from the query over the fragment', () => {
+    it('should prefer the state param from the query over the fragment', () => {
       const stateParam = service.getStateParamFromCurrentUrl(
         'http://my-url.com?state=query-state#state=fragment-state'
       );
@@ -73,13 +73,13 @@ describe('CurrentUrlService with existing Url', () => {
       expect(stateParam).toBe('query-state');
     });
 
-    it('returns the state param for the URL if one is passed as empty string', () => {
+    it('should return the state param for the URL if one is passed as empty string', () => {
       const stateParam = service.getStateParamFromCurrentUrl('');
 
       expect(stateParam).toBe('my-state');
     });
 
-    it('returns the state param for the URL if one is passed as null', () => {
+    it('should return the state param for the URL if one is passed as null', () => {
       const stateParam = service.getStateParamFromCurrentUrl(
         null as unknown as string
       );
@@ -87,7 +87,7 @@ describe('CurrentUrlService with existing Url', () => {
       expect(stateParam).toBe('my-state');
     });
 
-    it('returns the state param for the URL if one is passed as undefined', () => {
+    it('should return the state param for the URL if one is passed as undefined', () => {
       const stateParam = service.getStateParamFromCurrentUrl(undefined);
 
       expect(stateParam).toBe('my-state');
@@ -112,7 +112,7 @@ describe('CurrentUrlService without defaultView', () => {
   });
 
   describe('getCurrentUrl', () => {
-    it('returns null when defaultView is not available', () => {
+    it('should return null when defaultView is not available', () => {
       const currentUrl = service.getCurrentUrl();
 
       expect(currentUrl).toBeNull();

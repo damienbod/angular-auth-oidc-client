@@ -24,31 +24,31 @@ describe('error helper', () => {
       url: 'https://identity-server.test/openid-connect/token',
     });
 
-    it('returns true on http error with status = 0', () => {
+    it('should return true on http error with status = 0', () => {
       expect(isNetworkError(CONNECTION_ERROR)).toBe(true);
     });
 
-    it('returns true on http error with status = 0 and unknown error', () => {
+    it('should return true on http error with status = 0 and unknown error', () => {
       expect(isNetworkError(UNKNOWN_CONNECTION_ERROR)).toBe(true);
     });
 
-    it('returns true on http error with status <> 0 and error ProgressEvent', () => {
+    it('should return true on http error with status <> 0 and error ProgressEvent', () => {
       expect(isNetworkError(PARTIAL_CONNECTION_ERROR)).toBe(true);
     });
 
-    it('returns false on non http error', () => {
+    it('should return false on non http error', () => {
       expect(isNetworkError(new Error('not a HttpErrorResponse'))).toBe(false);
     });
 
-    it('returns false on string error', () => {
+    it('should return false on string error', () => {
       expect(isNetworkError('not a HttpErrorResponse')).toBe(false);
     });
 
-    it('returns false on undefined', () => {
+    it('should return false on undefined', () => {
       expect(isNetworkError(undefined)).toBe(false);
     });
 
-    it('returns false on empty http error', () => {
+    it('should return false on empty http error', () => {
       expect(isNetworkError(HTTP_ERROR)).toBe(false);
     });
   });

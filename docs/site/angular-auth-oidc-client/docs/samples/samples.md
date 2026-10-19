@@ -80,9 +80,9 @@ The is a multiple configurations sample using code flow with PKCE and iframe ren
 
 [Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-multi-iframe)
 
-## Azure B2C code flow PKCE with Silent renew
+## Azure B2C code flow PKCE with refresh tokens
 
-The sample uses the code flow PKCE and iframe renew with Azure B2C as the Security Token Service.
+The sample uses the code flow PKCE with refresh tokens with Azure B2C as the Security Token Service.
 
 [Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-azure-b2c)
 
@@ -94,19 +94,19 @@ The example uses the Open ID Connect implicit flow with iframe renew. This flow 
 
 ## Implicit flow google (Not recommended)
 
-The example uses the implicit flow with silent renew with google. This flow is no longer recommended, but some servers support this flow only, and not the code flow with PKCE.
+The example uses the implicit flow with google (silent renew is turned off). This flow is no longer recommended, but some servers support this flow only, and not the code flow with PKCE.
 
 [Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-implicit-flow-google)
 
 ## Code flow with a lazy loaded module
 
-The example uses the code flow with silent renew but you authenticate in a lazy loaded module
+The example uses the code flow with refresh tokens. The auth configuration is registered at root level and the login is triggered from a lazy loaded module.
 
 [Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-lazy-loaded)
 
 ## Code flow using the standalone API
 
-The example uses the code flow with silent renew within a project that uses the standalone API
+The example uses the code flow with refresh tokens within a project that uses the standalone API
 
 [Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-standalone)
 

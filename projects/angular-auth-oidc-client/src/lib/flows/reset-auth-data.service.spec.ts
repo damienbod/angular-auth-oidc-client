@@ -37,7 +37,7 @@ describe('ResetAuthDataService', () => {
   });
 
   describe('resetAuthorizationData', () => {
-    it('does nothing if no current configuration is provided', () => {
+    it('should do nothing if no current configuration is provided', () => {
       // arrange
       const resetUserDataInStoreSpy = vi
         .spyOn(userService, 'resetUserDataInStore')
@@ -58,7 +58,7 @@ describe('ResetAuthDataService', () => {
       expect(setUnauthenticatedAndFireEventSpy).not.toHaveBeenCalled();
     });
 
-    it('calls resetUserDataInStore when autoUserInfo is true', () => {
+    it('should call resetUserDataInStore when autoUserInfo is true', () => {
       const resetUserDataInStoreSpy = vi
         .spyOn(userService, 'resetUserDataInStore')
         .mockReturnValue(undefined);
@@ -72,7 +72,7 @@ describe('ResetAuthDataService', () => {
       expect(resetUserDataInStoreSpy).toHaveBeenCalled();
     });
 
-    it('calls correct methods', () => {
+    it('should call correct methods', () => {
       const resetStorageFlowDataSpy = vi
         .spyOn(flowsDataService, 'resetStorageFlowData')
         .mockReturnValue(undefined);

@@ -60,14 +60,16 @@ async function loginToBoth(page: Page): Promise<void> {
   );
 }
 
-test('is unauthenticated for both configs on first visit', async ({ page }) => {
+test('should be unauthenticated for both configs on first visit', async ({
+  page,
+}) => {
   await page.goto('/');
 
   await expect(page.locator('pre').first()).toContainText('allUserData');
   await expectConfigsWithUserData(page, []);
 });
 
-test('logs in to both configs with popups without leaving the page', async ({
+test('should log in to both configs with popups without leaving the page', async ({
   page,
 }) => {
   await page.goto('/');
@@ -101,7 +103,7 @@ test('logs in to both configs with popups without leaving the page', async ({
   expect(navigations.filter((url) => url.startsWith(IDP_ORIGIN))).toEqual([]);
 });
 
-test('keeps both sessions after a page reload', async ({ page }) => {
+test('should keep both sessions after a page reload', async ({ page }) => {
   await loginToBoth(page);
 
   await page.reload();
@@ -112,7 +114,7 @@ test('keeps both sessions after a page reload', async ({ page }) => {
   );
 });
 
-test('refreshes each config on demand', async ({ page }) => {
+test('should refresh each config on demand', async ({ page }) => {
   await loginToBoth(page);
 
   for (const { configId, realm } of CONFIGS) {
@@ -125,7 +127,7 @@ test('refreshes each config on demand', async ({ page }) => {
   }
 });
 
-test('logs out of one config while the other stays authenticated', async ({
+test('should log out of one config while the other stays authenticated', async ({
   page,
 }) => {
   await loginToBoth(page);

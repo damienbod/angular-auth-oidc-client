@@ -23,7 +23,7 @@ describe('JwtWindowCryptoService', () => {
   });
 
   describe('generateCodeChallenge', () => {
-    it('returns good result with correct codeVerifier', async () => {
+    it('should return good result with correct codeVerifier', async () => {
       const outcome = 'R2TWD45Vtcf_kfAqjuE3LMSRF3JDE5fsFndnn6-a0nQ';
       const value = await firstValueFrom(
         service.generateCodeChallenge('44445543344242132145455aaabbdc3b4')

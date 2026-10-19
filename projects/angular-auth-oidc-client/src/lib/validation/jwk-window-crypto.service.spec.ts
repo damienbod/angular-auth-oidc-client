@@ -53,7 +53,7 @@ describe('JwkWindowCryptoService', () => {
   });
 
   describe('importVerificationKey', () => {
-    it('returns instance of CryptoKey when valid input is provided', async () => {
+    it('should return instance of CryptoKey when valid input is provided', async () => {
       const promises = keys.map((key) =>
         service.importVerificationKey(key, alg)
       );
@@ -67,7 +67,7 @@ describe('JwkWindowCryptoService', () => {
   });
 
   describe('verifyKey', () => {
-    it('returns true when valid input is provided', async () => {
+    it('should return true when valid input is provided', async () => {
       const headerAndPayloadString =
         'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0';
       const signatureString =

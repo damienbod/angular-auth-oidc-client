@@ -20,13 +20,6 @@ const IFRAME_FOR_SILENT_RENEW_IDENTIFIER = 'myiFrameForSilentRenew';
 export const getFrameId = (configId?: string): string =>
   `${IFRAME_FOR_SILENT_RENEW_IDENTIFIER}_${configId}`;
 
-/**
- * Error of a silent renew whose callback URL carried an OAuth `error`
- * parameter. Keeps that callback's `error_description` next to the error, which
- * identity providers use to say why the silent login was refused. It is only a
- * carrier for the description, so `name` and `message` stay those of the plain
- * `Error` thrown before.
- */
 export class SilentRenewCallbackError extends Error {
   constructor(
     error: string,
@@ -44,6 +37,7 @@ type RefreshSessionWithIFrameCompleted =
       errorMessage?: string;
       errorDescription?: string;
     };
+
 @Injectable({ providedIn: 'root' })
 export class SilentRenewService {
   private readonly refreshSessionWithIFrameCompletedInternal$ =
@@ -66,19 +60,18 @@ export class SilentRenewService {
   private readonly intervalService = inject(IntervalService);
 
   getOrCreateIframe(config: OpenIdConfiguration): HTMLIFrameElement {
-    // Create unique iframe identifier for each configuration
     const iframeId = getFrameId(config.configId);
     const existingIframe = this.iFrameService.getExistingIFrame(iframeId);
 
-    if (!existingIframe) {
-      this.loggerService.logDebug(config, `Creating new iframe: ${iframeId}`);
+    if (existingIframe) {
+      this.loggerService.logDebug(config, `Using existing iframe: ${iframeId}`);
 
-      return this.iFrameService.addIFrameToWindowBody(iframeId, config);
+      return existingIframe;
     }
 
-    this.loggerService.logDebug(config, `Using existing iframe: ${iframeId}`);
+    this.loggerService.logDebug(config, `Creating new iframe: ${iframeId}`);
 
-    return existingIframe;
+    return this.iFrameService.addIFrameToWindowBody(iframeId, config);
   }
 
   isSilentRenewConfigured(configuration: OpenIdConfiguration): boolean {
@@ -92,45 +85,70 @@ export class SilentRenewService {
     config: OpenIdConfiguration,
     allConfigs: OpenIdConfiguration[]
   ): Observable<CallbackContext> {
-    const params = new HttpParams({
-      fromString: urlParts[1],
-    });
+    const params = new HttpParams({ fromString: urlParts[1] });
     const errorParam = params.get('error');
 
     if (errorParam) {
-      this.authStateService.updateAndPublishAuthState({
-        isAuthenticated: false,
-        validationResult: ValidationResult.LoginRequired,
-        isRenewProcess: true,
-        configId: config.configId,
-      });
-      this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
-      this.flowsDataService.setNonce('', config);
-      this.intervalService.stopPeriodicTokenCheck();
-
-      return throwError(
-        () =>
-          new SilentRenewCallbackError(
-            errorParam,
-            params.get('error_description') ?? undefined
-          )
+      return this.rejectSilentRenewRefusedByServer(
+        errorParam,
+        params,
+        config,
+        allConfigs
       );
     }
 
-    const code = params.get('code') ?? '';
-    const state = params.get('state') ?? '';
-    const sessionState = params.get('session_state');
-    const callbackContext: CallbackContext = {
-      code,
-      refreshToken: '',
-      state,
-      sessionState,
-      authResult: null,
+    return this.processSilentRenewCode(params, config, allConfigs);
+  }
+
+  silentRenewEventHandler(
+    e: CustomEvent,
+    config: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[]
+  ): void {
+    this.loggerService.logDebug(config, 'silentRenewEventHandler');
+
+    if (!e.detail) {
+      return;
+    }
+
+    this.createSilentRenewCallback(e, config, allConfigs).subscribe({
+      next: ({ authResult }) =>
+        this.publishSilentRenewSucceeded(authResult, config),
+      error: (error: unknown) => this.publishSilentRenewFailed(error, config),
+    });
+  }
+
+  private rejectSilentRenewRefusedByServer(
+    errorParam: string,
+    params: HttpParams,
+    config: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[]
+  ): Observable<never> {
+    this.authStateService.updateAndPublishAuthState({
+      isAuthenticated: false,
+      validationResult: ValidationResult.LoginRequired,
       isRenewProcess: true,
-      jwtKeys: null,
-      validationResult: null,
-      existingIdToken: null,
-    };
+      configId: config.configId,
+    });
+    this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
+    this.flowsDataService.setNonce('', config);
+    this.intervalService.stopPeriodicTokenCheck();
+
+    return throwError(
+      () =>
+        new SilentRenewCallbackError(
+          errorParam,
+          params.get('error_description') ?? undefined
+        )
+    );
+  }
+
+  private processSilentRenewCode(
+    params: HttpParams,
+    config: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[]
+  ): Observable<CallbackContext> {
+    const callbackContext = this.createSilentRenewCallbackContext(params);
 
     return this.flowsService
       .processSilentRenewCodeFlowCallback(callbackContext, config, allConfigs)
@@ -144,61 +162,73 @@ export class SilentRenewService {
       );
   }
 
-  silentRenewEventHandler(
+  private createSilentRenewCallbackContext(
+    params: HttpParams
+  ): CallbackContext {
+    return {
+      code: params.get('code') ?? '',
+      refreshToken: '',
+      state: params.get('state') ?? '',
+      sessionState: params.get('session_state'),
+      authResult: null,
+      isRenewProcess: true,
+      jwtKeys: null,
+      validationResult: null,
+      existingIdToken: null,
+    };
+  }
+
+  private createSilentRenewCallback(
     e: CustomEvent,
     config: OpenIdConfiguration,
     allConfigs: OpenIdConfiguration[]
-  ): void {
-    this.loggerService.logDebug(config, 'silentRenewEventHandler');
-    if (!e.detail) {
-      return;
-    }
-
-    let callback$: Observable<CallbackContext>;
-    const isCodeFlow = this.flowHelper.isCurrentFlowCodeFlow(config);
-
-    if (isCodeFlow) {
+  ): Observable<CallbackContext> {
+    if (this.flowHelper.isCurrentFlowCodeFlow(config)) {
       const urlParts = e.detail.toString().split('?');
 
-      callback$ = this.codeFlowCallbackSilentRenewIframe(
+      return this.codeFlowCallbackSilentRenewIframe(
         urlParts,
         config,
         allConfigs
       );
-    } else {
-      callback$ =
-        this.implicitFlowCallbackService.authenticatedImplicitFlowCallback(
-          config,
-          allConfigs,
-          e.detail
-        );
     }
 
-    callback$.subscribe({
-      next: ({ authResult }) => {
-        this.refreshSessionWithIFrameCompletedInternal$.next({
-          authResult,
-          configId: config.configId,
-          success: true,
-        });
-        this.flowsDataService.resetSilentRenewRunning(config);
-      },
-      error: (err: unknown) => {
-        const errorMessage = err instanceof Error ? err.message : String(err);
-        const errorDescription =
-          err instanceof SilentRenewCallbackError
-            ? err.errorDescription
-            : undefined;
+    return this.implicitFlowCallbackService.authenticatedImplicitFlowCallback(
+      config,
+      allConfigs,
+      e.detail
+    );
+  }
 
-        this.loggerService.logError(config, 'Error: ' + err);
-        this.refreshSessionWithIFrameCompletedInternal$.next({
-          configId: config.configId,
-          success: false,
-          errorMessage,
-          ...(errorDescription === undefined ? {} : { errorDescription }),
-        });
-        this.flowsDataService.resetSilentRenewRunning(config);
-      },
+  private publishSilentRenewSucceeded(
+    authResult: AuthResult | null,
+    config: OpenIdConfiguration
+  ): void {
+    this.refreshSessionWithIFrameCompletedInternal$.next({
+      authResult,
+      configId: config.configId,
+      success: true,
     });
+    this.flowsDataService.resetSilentRenewRunning(config);
+  }
+
+  private publishSilentRenewFailed(
+    error: unknown,
+    config: OpenIdConfiguration
+  ): void {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorDescription =
+      error instanceof SilentRenewCallbackError
+        ? error.errorDescription
+        : undefined;
+
+    this.loggerService.logError(config, 'Error: ' + error);
+    this.refreshSessionWithIFrameCompletedInternal$.next({
+      configId: config.configId,
+      success: false,
+      errorMessage,
+      ...(errorDescription === undefined ? {} : { errorDescription }),
+    });
+    this.flowsDataService.resetSilentRenewRunning(config);
   }
 }

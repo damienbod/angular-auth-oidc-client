@@ -45,7 +45,7 @@ describe('UserCallbackHandlerService', () => {
   });
 
   describe('callbackUser', () => {
-    it('calls flowsDataService.setSessionState with correct params if autoUserInfo is false, isRenewProcess is false and refreshToken is null', async () => {
+    it('should call flowsDataService.setSessionState with correct params if autoUserInfo is false, isRenewProcess is false and refreshToken is null', async () => {
       const svr = new StateValidationResult(
         'accesstoken',
         'idtoken',
@@ -81,7 +81,7 @@ describe('UserCallbackHandlerService', () => {
       expect(resultCallbackContext).toEqual(callbackContext);
     });
 
-    it('does NOT call flowsDataService.setSessionState if autoUserInfo is false, isRenewProcess is true and refreshToken is null', async () => {
+    it('should not set the session state if autoUserInfo is false, isRenewProcess is true and refreshToken is null', async () => {
       const svr = new StateValidationResult(
         'accesstoken',
         'idtoken',
@@ -116,7 +116,7 @@ describe('UserCallbackHandlerService', () => {
       expect(resultCallbackContext).toEqual(callbackContext);
     });
 
-    it('does NOT call flowsDataService.setSessionState if autoUserInfo is false isRenewProcess is false, refreshToken has value', async () => {
+    it('should not set the session state if autoUserInfo is false, isRenewProcess is false and refreshToken has a value', async () => {
       const svr = new StateValidationResult(
         'accesstoken',
         'idtoken',
@@ -151,7 +151,7 @@ describe('UserCallbackHandlerService', () => {
       expect(resultCallbackContext).toEqual(callbackContext);
     });
 
-    it('does NOT call flowsDataService.setSessionState if autoUserInfo is false isRenewProcess is false, refreshToken has value, id_token is false', async () => {
+    it('should not set the session state if autoUserInfo is false, isRenewProcess is false, refreshToken has a value and id_token is false', async () => {
       const svr = new StateValidationResult('accesstoken', '', true, '');
       const callbackContext = {
         code: '',
@@ -181,7 +181,7 @@ describe('UserCallbackHandlerService', () => {
       expect(resultCallbackContext).toEqual(callbackContext);
     });
 
-    it('calls authStateService.updateAndPublishAuthState with correct params if autoUserInfo is false', async () => {
+    it('should call authStateService.updateAndPublishAuthState with correct params if autoUserInfo is false', async () => {
       const svr = new StateValidationResult(
         'accesstoken',
         'idtoken',
@@ -222,7 +222,7 @@ describe('UserCallbackHandlerService', () => {
       expect(resultCallbackContext).toEqual(callbackContext);
     });
 
-    it('calls userService.getAndPersistUserDataInStore with correct params if autoUserInfo is true', async () => {
+    it('should call userService.getAndPersistUserDataInStore with correct params if autoUserInfo is true', async () => {
       const svr = new StateValidationResult(
         'accesstoken',
         'idtoken',
@@ -264,7 +264,7 @@ describe('UserCallbackHandlerService', () => {
       expect(resultCallbackContext).toEqual(callbackContext);
     });
 
-    it('calls authStateService.updateAndPublishAuthState with correct params if autoUserInfo is true', async () => {
+    it('should call authStateService.updateAndPublishAuthState with correct params if autoUserInfo is true', async () => {
       const svr = new StateValidationResult(
         'accesstoken',
         'idtoken',
@@ -310,7 +310,7 @@ describe('UserCallbackHandlerService', () => {
       expect(resultCallbackContext).toEqual(callbackContext);
     });
 
-    it('calls flowsDataService.setSessionState with correct params if user data is present and NOT refresh token', async () => {
+    it('should call flowsDataService.setSessionState with correct params if user data is present and NOT refresh token', async () => {
       const svr = new StateValidationResult(
         'accesstoken',
         'idtoken',
@@ -351,7 +351,7 @@ describe('UserCallbackHandlerService', () => {
       expect(resultCallbackContext).toEqual(callbackContext);
     });
 
-    it('calls authStateService.publishUnauthorizedState with correct params if user info which are coming back are null', async () => {
+    it('should call authStateService.publishUnauthorizedState with correct params if user info which are coming back are null', async () => {
       const svr = new StateValidationResult(
         'accesstoken',
         'idtoken',
@@ -403,7 +403,7 @@ describe('UserCallbackHandlerService', () => {
       }
     });
 
-    it('calls resetAuthDataService.resetAuthorizationData if user info which are coming back are null', async () => {
+    it('should call resetAuthDataService.resetAuthorizationData if user info which are coming back are null', async () => {
       const svr = new StateValidationResult(
         'accesstoken',
         'idtoken',
@@ -447,6 +447,91 @@ describe('UserCallbackHandlerService', () => {
           'Failed to retrieve user info with error:  Error: Called for userData but they were null'
         );
       }
+    });
+
+    describe('without a validation result', () => {
+      function createCallbackContext(): CallbackContext {
+        return {
+          code: '',
+          refreshToken: '',
+          state: '',
+          sessionState: null,
+          authResult: { session_state: 'mystate' },
+          isRenewProcess: false,
+          jwtKeys: null,
+          validationResult: null,
+          existingIdToken: null,
+        };
+      }
+
+      it('should not publish an auth state when autoUserInfo is false', async () => {
+        // Arrange
+        const callbackContext = createCallbackContext();
+        const config = { configId: 'configId1', autoUserInfo: false };
+        const updateAndPublishAuthStateSpy = vi.spyOn(
+          authStateService,
+          'updateAndPublishAuthState'
+        );
+        const setUserDataToStoreSpy = vi.spyOn(
+          userService,
+          'setUserDataToStore'
+        );
+        // Act
+        const result = await firstValueFrom(
+          service.callbackUser(callbackContext, config, [config])
+        );
+
+        // Assert
+        expect(result).toBe(callbackContext);
+        expect(updateAndPublishAuthStateSpy).not.toHaveBeenCalled();
+        expect(setUserDataToStoreSpy).not.toHaveBeenCalled();
+      });
+
+      it('should not publish an auth state when autoUserInfo is true and user data is returned', async () => {
+        // Arrange
+        const callbackContext = createCallbackContext();
+        const config = { configId: 'configId1', autoUserInfo: true };
+
+        vi.spyOn(userService, 'getAndPersistUserDataInStore').mockReturnValue(
+          of({ user: 'some_data' })
+        );
+        const updateAndPublishAuthStateSpy = vi.spyOn(
+          authStateService,
+          'updateAndPublishAuthState'
+        );
+        // Act
+        const result = await firstValueFrom(
+          service.callbackUser(callbackContext, config, [config])
+        );
+
+        // Assert
+        expect(result).toBe(callbackContext);
+        expect(updateAndPublishAuthStateSpy).not.toHaveBeenCalled();
+      });
+
+      it('should not publish an unauthenticated state but still errors when no user data is returned', async () => {
+        // Arrange
+        const callbackContext = createCallbackContext();
+        const config = { configId: 'configId1', autoUserInfo: true };
+
+        vi.spyOn(userService, 'getAndPersistUserDataInStore').mockReturnValue(
+          of(null)
+        );
+        const updateAndPublishAuthStateSpy = vi.spyOn(
+          authStateService,
+          'updateAndPublishAuthState'
+        );
+        // Act
+        const result = firstValueFrom(
+          service.callbackUser(callbackContext, config, [config])
+        );
+
+        // Assert
+        await expect(result).rejects.toThrow(
+          'Failed to retrieve user info with error:  Error: Called for userData but they were null'
+        );
+        expect(updateAndPublishAuthStateSpy).not.toHaveBeenCalled();
+      });
     });
   });
 });

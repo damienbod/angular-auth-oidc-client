@@ -32,7 +32,7 @@ describe('ResponseTypeValidationService', () => {
   });
 
   describe('hasConfigValidResponseType', () => {
-    it('returns true if current configured flow is any implicit flow', () => {
+    it('should return true if current configured flow is any implicit flow', () => {
       vi.spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').mockReturnValue(
         true
       );
@@ -44,7 +44,7 @@ describe('ResponseTypeValidationService', () => {
       expect(result).toEqual(true);
     });
 
-    it('returns true if current configured flow is code flow', () => {
+    it('should return true if current configured flow is code flow', () => {
       vi.spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').mockReturnValue(
         false
       );
@@ -57,7 +57,7 @@ describe('ResponseTypeValidationService', () => {
       expect(result).toEqual(true);
     });
 
-    it('returns false if current configured flow is neither code nor implicit flow', () => {
+    it('should return false if current configured flow is neither code nor implicit flow', () => {
       vi.spyOn(flowHelper, 'isCurrentFlowAnyImplicitFlow').mockReturnValue(
         false
       );

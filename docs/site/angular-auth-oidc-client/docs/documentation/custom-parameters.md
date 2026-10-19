@@ -46,6 +46,19 @@ login() {
 
 > If you want to pass static parameters to the Security Token Service every time please use the custom parameters in the [Configuration](configuration.md) instead!
 
+## Other requests
+
+Custom parameters can also be added to the other requests of the library:
+
+| Config property                   | Added to                                                |
+| --------------------------------- | ------------------------------------------------------- |
+| `customParamsAuthRequest`         | the authorize URL (and the PAR request)                 |
+| `customParamsCodeRequest`         | the body of the token request that exchanges the code   |
+| `customParamsRefreshTokenRequest` | the body of the refresh token request                   |
+| `customParamsEndSessionRequest`   | the end session (logout) URL                            |
+
+Parameters passed at runtime are merged over the configured ones, e.g. with `authorize(configId, { customParams })`, `forceRefreshSession(customParams)`, `logoff(configId, { customParams })` or `getEndSessionUrl(customParams)`.
+
 ## NgModule
 
 If you want to use custom parameters in the `NgModule`, you can do this as follows:

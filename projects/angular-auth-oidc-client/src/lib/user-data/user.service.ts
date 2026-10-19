@@ -109,12 +109,7 @@ export class UserService {
 
   getUserDataFromStore(currentConfiguration: OpenIdConfiguration | null): any {
     if (!currentConfiguration) {
-      return throwError(
-        () =>
-          new Error(
-            'Please provide a configuration before setting up the module'
-          )
-      );
+      return null;
     }
 
     return (

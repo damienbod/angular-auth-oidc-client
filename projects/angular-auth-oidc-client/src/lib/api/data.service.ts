@@ -1,14 +1,19 @@
-import { HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { OpenIdConfiguration } from '../config/openid-configuration';
-import { HttpBaseService } from './http-base.service';
 
 const NGSW_CUSTOM_PARAM = 'ngsw-bypass';
 
+export function formUrlEncodedHeaders(): HttpHeaders {
+  return new HttpHeaders({
+    'Content-Type': 'application/x-www-form-urlencoded',
+  });
+}
+
 @Injectable({ providedIn: 'root' })
 export class DataService {
-  private readonly httpClient = inject(HttpBaseService);
+  private readonly httpClient = inject(HttpClient);
 
   get<T>(
     url: string,
@@ -18,47 +23,42 @@ export class DataService {
     const headers = this.prepareHeaders(token);
     const params = this.prepareParams(config);
 
-    return this.httpClient.get<T>(url, {
-      headers,
-      params,
-    });
+    return this.httpClient.get<T>(url, { headers, params });
   }
 
   post<T>(
-    url: string | null,
+    url: string,
     body: unknown,
     config: OpenIdConfiguration,
-    headersParams?: HttpHeaders
+    customHeaders?: HttpHeaders
   ): Observable<T> {
-    const headers = headersParams || this.prepareHeaders();
+    const headers = this.prepareHeaders(undefined, customHeaders);
     const params = this.prepareParams(config);
 
-    return this.httpClient.post<T>(url ?? '', body, { headers, params });
+    return this.httpClient.post<T>(url, body, { headers, params });
   }
 
-  private prepareHeaders(token?: string): HttpHeaders {
-    let headers = new HttpHeaders();
+  // Custom headers are merged over the defaults and win on conflicts.
+  private prepareHeaders(
+    token?: string,
+    customHeaders?: HttpHeaders
+  ): HttpHeaders {
+    let headers = new HttpHeaders({ Accept: 'application/json' });
 
-    headers = headers.set('Accept', 'application/json');
-
-    if (!!token) {
-      headers = headers.set(
-        'Authorization',
-        'Bearer ' + decodeURIComponent(token)
-      );
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
     }
+
+    customHeaders?.keys().forEach((key) => {
+      headers = headers.set(key, customHeaders.getAll(key) ?? []);
+    });
 
     return headers;
   }
 
   private prepareParams(config: OpenIdConfiguration): HttpParams {
-    let params = new HttpParams();
-    const { ngswBypass } = config;
+    const params = new HttpParams();
 
-    if (ngswBypass) {
-      params = params.set(NGSW_CUSTOM_PARAM, '');
-    }
-
-    return params;
+    return config.ngswBypass ? params.set(NGSW_CUSTOM_PARAM, '') : params;
   }
 }

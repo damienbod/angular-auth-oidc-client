@@ -47,15 +47,17 @@ describe('RefreshTokenCallbackHandlerService', () => {
       url: 'https://identity-server.test/openid-connect/token',
     });
 
-    it('throws error if no tokenEndpoint is given', async () => {
+    it('should throw error if no tokenEndpoint is given', async () => {
       await expect(
         firstValueFrom(
-          (service as any).refreshTokensRequestTokens({} as CallbackContext)
+          service.refreshTokensRequestTokens({} as CallbackContext, {
+            configId: 'configId1',
+          })
         )
       ).rejects.toThrow('Token Endpoint not defined');
     });
 
-    it('calls data service if all params are good', async () => {
+    it('should call data service if all params are good', async () => {
       const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(of({}));
 
       vi.spyOn(storagePersistenceService, 'read').mockImplementation(
@@ -89,7 +91,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
       );
     });
 
-    it('calls data service with correct headers if all params are good', async () => {
+    it('should call data service with correct headers if all params are good', async () => {
       const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(of({}));
 
       vi.spyOn(storagePersistenceService, 'read').mockImplementation(
@@ -116,7 +118,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
       );
     });
 
-    it('returns error in case of http error', async () => {
+    it('should return error in case of http error', async () => {
       vi.spyOn(dataService, 'post').mockReturnValue(
         throwError(() => HTTP_ERROR)
       );
@@ -139,7 +141,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
       ).rejects.toThrow('OidcService code request authority');
     });
 
-    it('retries request in case of no connection http error and succeeds', async () => {
+    it('should retry request in case of no connection http error and succeeds', async () => {
       const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(
         createRetriableStream(
           throwError(() => CONNECTION_ERROR),
@@ -166,7 +168,7 @@ describe('RefreshTokenCallbackHandlerService', () => {
       expect(postSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('retries request in case of no connection http error and fails because of http error afterwards', async () => {
+    it('should retry request in case of no connection http error and fail because of http error afterwards', async () => {
       const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(
         createRetriableStream(
           throwError(() => CONNECTION_ERROR),

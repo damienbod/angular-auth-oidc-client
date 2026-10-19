@@ -41,7 +41,7 @@ describe('ParService', () => {
   });
 
   describe('postParRequest', () => {
-    it('throws error if authWellKnownEndPoints does not exist in storage', async () => {
+    it('should throw error if authWellKnownEndPoints does not exist in storage', async () => {
       vi.spyOn(urlService, 'createBodyForParCodeFlowRequest').mockReturnValue(
         of(null)
       );
@@ -65,7 +65,7 @@ describe('ParService', () => {
       }
     });
 
-    it('throws error if par endpoint does not exist in storage', async () => {
+    it('should throw error if par endpoint does not exist in storage', async () => {
       vi.spyOn(urlService, 'createBodyForParCodeFlowRequest').mockReturnValue(
         of(null)
       );
@@ -89,7 +89,7 @@ describe('ParService', () => {
       }
     });
 
-    it('calls data service with correct params', async () => {
+    it('should call data service with correct params', async () => {
       vi.spyOn(urlService, 'createBodyForParCodeFlowRequest').mockReturnValue(
         of('some-url123')
       );
@@ -118,7 +118,7 @@ describe('ParService', () => {
       );
     });
 
-    it('Gives back correct object properties', async () => {
+    it('should return the correct object properties', async () => {
       vi.spyOn(urlService, 'createBodyForParCodeFlowRequest').mockReturnValue(
         of('some-url456')
       );
@@ -142,7 +142,7 @@ describe('ParService', () => {
       expect(result).toEqual({ expiresIn: 123, requestUri: 'request_uri' });
     });
 
-    it('throws error if data service has got an error', async () => {
+    it('should throw error if data service has got an error', async () => {
       vi.spyOn(urlService, 'createBodyForParCodeFlowRequest').mockReturnValue(
         of('some-url789')
       );
