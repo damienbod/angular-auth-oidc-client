@@ -1,6 +1,6 @@
 ﻿import { inject, Injectable } from '@angular/core';
 import { base64url } from 'rfc4648';
-import { from, Observable, of, throwError } from 'rxjs';
+import { from, Observable, of } from 'rxjs';
 import { catchError, map, mergeMap, tap } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { JwkExtractor } from '../extractors/jwk.extractor';
@@ -526,7 +526,7 @@ export class TokenValidationService {
       }),
       catchError((error: unknown) => {
         if (!isEd25519Alg(alg)) {
-          return throwError(() => error);
+          throw error;
         }
 
         // e.g. the browser does not support Ed25519 in WebCrypto
