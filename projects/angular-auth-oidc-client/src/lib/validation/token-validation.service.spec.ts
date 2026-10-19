@@ -45,7 +45,7 @@ describe('TokenValidationService', () => {
   });
 
   describe('validateIdTokenAud', () => {
-    it('returns true if aud is string and passed aud matches idToken.aud', () => {
+    it('should return true if aud is string and passed aud matches idToken.aud', () => {
       const dataIdToken = { aud: 'banana' };
       const valueTrue = tokenValidationService.validateIdTokenAud(
         dataIdToken,
@@ -56,7 +56,7 @@ describe('TokenValidationService', () => {
       expect(valueTrue).toEqual(true);
     });
 
-    it('returns false if aud is string and passed aud does not match idToken.aud', () => {
+    it('should return false if aud is string and passed aud does not match idToken.aud', () => {
       const dataIdToken = { aud: 'banana' };
       const valueFalse = tokenValidationService.validateIdTokenAud(
         dataIdToken,
@@ -67,7 +67,7 @@ describe('TokenValidationService', () => {
       expect(valueFalse).toEqual(false);
     });
 
-    it('returns true if aud is string array and passed aud is included in the array', () => {
+    it('should return true if aud is string array and passed aud is included in the array', () => {
       const dataIdToken = {
         aud: ['banana', 'apple', 'https://nice.dom'],
       };
@@ -80,7 +80,7 @@ describe('TokenValidationService', () => {
       expect(audValidTrue).toEqual(true);
     });
 
-    it('returns false if aud is string array and passed aud is NOT included in the array', () => {
+    it('should return false if aud is string array and passed aud is NOT included in the array', () => {
       const dataIdToken = {
         aud: ['banana', 'apple', 'https://nice.dom'],
       };
@@ -173,7 +173,7 @@ describe('TokenValidationService', () => {
   });
 
   describe('validateIdTokenAzpExistsIfMoreThanOneAud', () => {
-    it('returns false if aud is array, öength is bigger than 1 and has no azp property', () => {
+    it('should return false if aud is array, öength is bigger than 1 and has no azp property', () => {
       const dataIdToken = {
         aud: ['one', 'two'],
       };
@@ -185,7 +185,7 @@ describe('TokenValidationService', () => {
       expect(result).toBe(false);
     });
 
-    it('returns false if dataIdToken is null', () => {
+    it('should return false if dataIdToken is null', () => {
       const result =
         tokenValidationService.validateIdTokenAzpExistsIfMoreThanOneAud(null);
 
@@ -194,13 +194,13 @@ describe('TokenValidationService', () => {
   });
 
   describe('validateIdTokenAzpValid', () => {
-    it('returns true dataIdToken param is null', () => {
+    it('should return true dataIdToken param is null', () => {
       const result = tokenValidationService.validateIdTokenAzpValid(null, '');
 
       expect(result).toBe(true);
     });
 
-    it('returns false when aud is an array and client id is NOT in the aud array', () => {
+    it('should return false when aud is an array and client id is NOT in the aud array', () => {
       const dataIdToken = {
         aud: [
           'banana',
@@ -217,7 +217,7 @@ describe('TokenValidationService', () => {
       expect(azpInvalid).toEqual(false);
     });
 
-    it('returns true when aud is an array and client id is in the aud array', () => {
+    it('should return true when aud is an array and client id is in the aud array', () => {
       const dataIdToken = {
         aud: [
           'banana',
@@ -234,7 +234,7 @@ describe('TokenValidationService', () => {
       expect(azpValid).toEqual(true);
     });
 
-    it('returns true if ID token has no azp property', () => {
+    it('should return true if ID token has no azp property', () => {
       const dataIdToken = {
         noAzpProperty: 'something',
       };
@@ -248,7 +248,7 @@ describe('TokenValidationService', () => {
   });
 
   describe('validateIdTokenAzpExistsIfMoreThanOneAud', () => {
-    it('returns true if aud is array and aud contains azp', () => {
+    it('should return true if aud is array and aud contains azp', () => {
       const dataIdToken = {
         aud: [
           'banana',
@@ -265,7 +265,7 @@ describe('TokenValidationService', () => {
       expect(valueTrue).toEqual(true);
     });
 
-    it('returns true if aud is array but only has one item', () => {
+    it('should return true if aud is array but only has one item', () => {
       const dataIdToken = {
         aud: ['banana'],
       };
@@ -277,7 +277,7 @@ describe('TokenValidationService', () => {
       expect(valueTrue).toEqual(true);
     });
 
-    it('returns true if aud is NOT an array', () => {
+    it('should return true if aud is NOT an array', () => {
       const dataIdToken = {
         aud: 'banana',
       };
@@ -291,7 +291,7 @@ describe('TokenValidationService', () => {
   });
 
   describe('validateRequiredIdToken', () => {
-    it('returns false if property iat is missing', () => {
+    it('should return false if property iat is missing', () => {
       const decodedIdToken = {
         iss: 'https://damienbod.b2clogin.com/a0958f45-195b-4036-9259-de2f7e594db6/v2.0/',
         sub: 'f836f380-3c64-4802-8dbc-011981c068f5',
@@ -307,7 +307,7 @@ describe('TokenValidationService', () => {
       expect(result).toEqual(false);
     });
 
-    it('returns false if property exp is missing', () => {
+    it('should return false if property exp is missing', () => {
       const decodedIdToken = {
         iss: 'https://damienbod.b2clogin.com/a0958f45-195b-4036-9259-de2f7e594db6/v2.0/',
         sub: 'f836f380-3c64-4802-8dbc-011981c068f5',
@@ -323,7 +323,7 @@ describe('TokenValidationService', () => {
       expect(result).toEqual(false);
     });
 
-    it('returns false if property aud is missing', () => {
+    it('should return false if property aud is missing', () => {
       const decodedIdToken = {
         iss: 'https://damienbod.b2clogin.com/a0958f45-195b-4036-9259-de2f7e594db6/v2.0/',
         sub: 'f836f380-3c64-4802-8dbc-011981c068f5',
@@ -339,7 +339,7 @@ describe('TokenValidationService', () => {
       expect(result).toEqual(false);
     });
 
-    it('returns false if property sub is missing', () => {
+    it('should return false if property sub is missing', () => {
       const decodedIdToken = {
         iss: 'https://damienbod.b2clogin.com/a0958f45-195b-4036-9259-de2f7e594db6/v2.0/',
         // sub: 'f836f380-3c64-4802-8dbc-011981c068f5',
@@ -355,7 +355,7 @@ describe('TokenValidationService', () => {
       expect(result).toEqual(false);
     });
 
-    it('returns false if property iss is missing', () => {
+    it('should return false if property iss is missing', () => {
       const decodedIdToken = {
         // iss: 'https://damienbod.b2clogin.com/a0958f45-195b-4036-9259-de2f7e594db6/v2.0/',
         sub: 'f836f380-3c64-4802-8dbc-011981c068f5',
@@ -371,7 +371,7 @@ describe('TokenValidationService', () => {
       expect(result).toEqual(false);
     });
 
-    it('returns true if all is valid', () => {
+    it('should return true if all is valid', () => {
       const decodedIdToken = {
         iss: 'https://damienbod.b2clogin.com/a0958f45-195b-4036-9259-de2f7e594db6/v2.0/',
         sub: 'f836f380-3c64-4802-8dbc-011981c068f5',
@@ -389,7 +389,7 @@ describe('TokenValidationService', () => {
   });
 
   describe('validateIdTokenIss', () => {
-    it('returns true if issuer matches iss in idToken', () => {
+    it('should return true if issuer matches iss in idToken', () => {
       const decodedIdToken = {
         iss: 'xc',
       };
@@ -402,7 +402,7 @@ describe('TokenValidationService', () => {
       expect(valueTrue).toEqual(true);
     });
 
-    it('returns false if issuer does not match iss in idToken', () => {
+    it('should return false if issuer does not match iss in idToken', () => {
       const decodedIdToken = {
         iss: 'xc',
       };
@@ -417,7 +417,7 @@ describe('TokenValidationService', () => {
   });
 
   describe('validateIdTokenIatMaxOffset', () => {
-    it('returns true if validationIsDisabled', () => {
+    it('should return true if validationIsDisabled', () => {
       const result = tokenValidationService.validateIdTokenIatMaxOffset(
         null,
         0,
@@ -428,7 +428,7 @@ describe('TokenValidationService', () => {
       expect(result).toBe(true);
     });
 
-    it('returns false if dataIdToken has no property "iat"', () => {
+    it('should return false if dataIdToken has no property "iat"', () => {
       const dataIdToken = {
         notIat: 'test',
       };
@@ -442,7 +442,7 @@ describe('TokenValidationService', () => {
       expect(result).toBe(false);
     });
 
-    it('returns true if iat is in the past (May 2020), and the offset is big like 500000000000 seconds', () => {
+    it('should return true if iat is in the past (May 2020), and the offset is big like 500000000000 seconds', () => {
       const decodedIdToken = {
         iat: 1589206486, // Mon May 11 2020 14:14:46 GMT+0000 (in the past)
       };
@@ -456,7 +456,7 @@ describe('TokenValidationService', () => {
       expect(valueTrue).toEqual(true);
     });
 
-    it('returns false if iat is far in the future, and the offset is 0 seconds', () => {
+    it('should return false if iat is far in the future, and the offset is 0 seconds', () => {
       const decodedIdTokenNegIat = {
         iat: 500348877430, // seconds since epoch -> far in the future
       };
@@ -470,7 +470,7 @@ describe('TokenValidationService', () => {
       expect(valueFalseNeg).toEqual(false);
     });
 
-    it('returns false if iat is in the past (May 2020), and the offset is small like 5 seconds', () => {
+    it('should return false if iat is in the past (May 2020), and the offset is small like 5 seconds', () => {
       const decodedIdToken = {
         iat: 1589206486, // Mon May 11 2020 14:14:46 GMT+0000 (in the past)
       };
@@ -486,7 +486,7 @@ describe('TokenValidationService', () => {
   });
 
   describe('validateSignatureIdToken', () => {
-    it('returns false if no kwtKeys are passed', async () => {
+    it('should return false if no kwtKeys are passed', async () => {
       const valueFalse = await firstValueFrom(
         tokenValidationService.validateSignatureIdToken('some-id-token', null, {
           configId: 'configId1',
@@ -496,7 +496,7 @@ describe('TokenValidationService', () => {
       expect(valueFalse).toEqual(false);
     });
 
-    it('returns true if no idToken is passed', async () => {
+    it('should return true if no idToken is passed', async () => {
       const valueFalse = await firstValueFrom(
         tokenValidationService.validateSignatureIdToken(
           null as any,
@@ -508,7 +508,7 @@ describe('TokenValidationService', () => {
       expect(valueFalse).toEqual(true);
     });
 
-    it('returns false if jwtkeys has no keys-property', async () => {
+    it('should return false if jwtkeys has no keys-property', async () => {
       const valueFalse = await firstValueFrom(
         tokenValidationService.validateSignatureIdToken(
           'some-id-token',
@@ -520,7 +520,7 @@ describe('TokenValidationService', () => {
       expect(valueFalse).toEqual(false);
     });
 
-    it('returns false if header data has no header data', async () => {
+    it('should return false if header data has no header data', async () => {
       vi.spyOn(tokenHelperService, 'getHeaderFromToken').mockReturnValue({});
 
       const jwtKeys = { keys: 'someThing' };
@@ -535,7 +535,7 @@ describe('TokenValidationService', () => {
       expect(valueFalse).toEqual(false);
     });
 
-    it('returns false if header data alg property does not exist in keyalgorithms', async () => {
+    it('should return false if header data alg property does not exist in keyalgorithms', async () => {
       vi.spyOn(tokenHelperService, 'getHeaderFromToken').mockReturnValue({
         alg: 'NOT SUPPORTED ALG',
       });
@@ -552,7 +552,7 @@ describe('TokenValidationService', () => {
       expect(valueFalse).toEqual(false);
     });
 
-    it('returns false if header data has kid property and jwtKeys has same kid property but they are not valid with the token', async () => {
+    it('should return false if header data has kid property and jwtKeys has same kid property but they are not valid with the token', async () => {
       const kid = '5626CE6A8F4F5FCD79C6642345282CA76D337548';
 
       vi.spyOn(tokenHelperService, 'getHeaderFromToken').mockReturnValue({
@@ -624,7 +624,7 @@ describe('TokenValidationService', () => {
       expect(valueTrue).toEqual(true);
     });
 
-    it('returns false and does not throw if alg is HS256', async () => {
+    it('should return false and not throw if alg is HS256', async () => {
       vi.spyOn(tokenHelperService, 'getHeaderFromToken').mockReturnValue({
         alg: 'HS256',
       });
@@ -693,7 +693,7 @@ describe('TokenValidationService', () => {
       };
     }
 
-    it('returns true for a valid PS256 signed token', async () => {
+    it('should return true for a valid PS256 signed token', async () => {
       const { idToken, jwtKeys } = await createRsaPssSignedToken(
         'PS256',
         'SHA-256',
@@ -708,7 +708,7 @@ describe('TokenValidationService', () => {
       expect(valueTrue).toEqual(true);
     });
 
-    it('returns false for a PS384 signed token with a tampered payload', async () => {
+    it('should return false for a PS384 signed token with a tampered payload', async () => {
       const { idToken, jwtKeys } = await createRsaPssSignedToken(
         'PS384',
         'SHA-384',
@@ -754,7 +754,7 @@ describe('TokenValidationService', () => {
         );
       });
 
-      it('falls back to a key without "use" when no kid is given and no signing key matches', async () => {
+      it('should fall back to a key without "use" when no kid is given and no signing key matches', async () => {
         // Arrange
         vi.spyOn(tokenHelperService, 'getHeaderFromToken').mockReturnValue({
           alg: 'RS256',
@@ -774,7 +774,7 @@ describe('TokenValidationService', () => {
         expect(result).toBe(true);
       });
 
-      it('falls back to the key with the matching kid but without "use" when no signing key matches', async () => {
+      it('should fall back to the key with the matching kid but without "use" when no signing key matches', async () => {
         // Arrange
         vi.spyOn(tokenHelperService, 'getHeaderFromToken').mockReturnValue({
           alg: 'RS256',
@@ -795,7 +795,7 @@ describe('TokenValidationService', () => {
         expect(result).toBe(true);
       });
 
-      it('returns false and logs the error when no key matches the kid', async () => {
+      it('should return false and log the error when no key matches the kid', async () => {
         // Arrange
         const loggerService = TestBed.inject(LoggerService);
         const logErrorSpy = vi.spyOn(loggerService, 'logError');
@@ -822,7 +822,7 @@ describe('TokenValidationService', () => {
         );
       });
 
-      it('returns false and logs the error when the key set is empty', async () => {
+      it('should return false and log the error when the key set is empty', async () => {
         // Arrange
         const loggerService = TestBed.inject(LoggerService);
         const logErrorSpy = vi.spyOn(loggerService, 'logError');
@@ -851,7 +851,7 @@ describe('TokenValidationService', () => {
   });
 
   describe('validateIdTokenAtHash', () => {
-    it('returns true if sha is sha256 and generated hash equals atHash param', async () => {
+    it('should return true if sha is sha256 and generated hash equals atHash param', async () => {
       const accessToken = 'iGU3DhbPoDljiYtr0oepxi7zpT8BsjdU7aaXcdq-DPk';
       const atHash = '-ODC_7Go_UIUTC8nP4k2cA';
       const result$ = tokenValidationService.validateIdTokenAtHash(
@@ -865,7 +865,7 @@ describe('TokenValidationService', () => {
       expect(result).toEqual(true);
     });
 
-    it('returns false if sha is sha256 and generated hash does not equal atHash param', async () => {
+    it('should return false if sha is sha256 and generated hash does not equal atHash param', async () => {
       const accessToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
       const atHash = 'bad';
@@ -880,7 +880,7 @@ describe('TokenValidationService', () => {
       expect(result).toEqual(false);
     });
 
-    it('returns true if sha is sha256 and generated hash does equal atHash param', async () => {
+    it('should return true if sha is sha256 and generated hash does equal atHash param', async () => {
       const accessToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
       const atHash = 'good';
@@ -900,7 +900,7 @@ describe('TokenValidationService', () => {
       expect(result).toEqual(true);
     });
 
-    it('returns false if sha is sha384 and generated hash does not equal atHash param', async () => {
+    it('should return false if sha is sha384 and generated hash does not equal atHash param', async () => {
       const accessToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
       const atHash = 'bad';
@@ -915,7 +915,7 @@ describe('TokenValidationService', () => {
       expect(result).toEqual(false);
     });
 
-    it('returns false if sha is sha512 and generated hash does not equal atHash param', async () => {
+    it('should return false if sha is sha512 and generated hash does not equal atHash param', async () => {
       const accessToken =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
       const atHash = 'bad';
@@ -932,7 +932,7 @@ describe('TokenValidationService', () => {
   });
 
   describe('validateStateFromHashCallback', () => {
-    it('returns true when state and localstate match', () => {
+    it('should return true when state and localstate match', () => {
       const result = tokenValidationService.validateStateFromHashCallback(
         'sssd',
         'sssd',
@@ -942,7 +942,7 @@ describe('TokenValidationService', () => {
       expect(result).toEqual(true);
     });
 
-    it('returns false when state and local state do not match', () => {
+    it('should return false when state and local state do not match', () => {
       const result = tokenValidationService.validateStateFromHashCallback(
         'sssd',
         'bad',
@@ -954,7 +954,7 @@ describe('TokenValidationService', () => {
   });
 
   describe('validateIdTokenExpNotExpired', () => {
-    it('returns false when getTokenExpirationDate returns null', () => {
+    it('should return false when getTokenExpirationDate returns null', () => {
       vi.spyOn(tokenHelperService, 'getTokenExpirationDate').mockReturnValue(
         null as unknown as Date
       );
@@ -967,7 +967,7 @@ describe('TokenValidationService', () => {
       expect(notExpired).toEqual(false);
     });
 
-    it('returns false if token is expired', () => {
+    it('should return false if token is expired', () => {
       // exp: 1589210086 -> Mon May 11 2020 15:14:46 GMT+0000
       vi.spyOn(tokenHelperService, 'getTokenExpirationDate').mockReturnValue(
         new Date(1589210086 * 1000)
@@ -1006,7 +1006,7 @@ describe('TokenValidationService', () => {
     ];
 
     testCases.forEach(({ date, offsetSeconds, expectedResult }) => {
-      it(`returns ${expectedResult} if ${date} is given with an offset of ${offsetSeconds}`, () => {
+      it(`should return ${expectedResult} if ${date} is given with an offset of ${offsetSeconds}`, () => {
         const notExpired = tokenValidationService.validateAccessTokenNotExpired(
           date as Date,
           { configId: 'configId1' },
@@ -1019,7 +1019,7 @@ describe('TokenValidationService', () => {
   });
 
   describe('hasIdTokenExpired', () => {
-    it('returns true if token has expired', () => {
+    it('should return true if token has expired', () => {
       // exp: 1589210086 -> Mon May 11 2020 15:14:46 GMT+0000
       vi.spyOn(tokenHelperService, 'getTokenExpirationDate').mockReturnValue(
         new Date(1589210086 * 1000)
@@ -1033,7 +1033,7 @@ describe('TokenValidationService', () => {
       expect(result).toBe(true);
     });
 
-    it('returns false if token has not expired using offset', () => {
+    it('should return false if token has not expired using offset', () => {
       vi.useFakeTimers({ toFake: ['Date'] });
       vi.setSystemTime(new Date('2050-02-12T08:00:00.000Z'));
 
@@ -1057,7 +1057,7 @@ describe('TokenValidationService', () => {
       }
     });
 
-    it('returns true if token has not expired yet but expires within the offset', () => {
+    it('should return true if token has not expired yet but expires within the offset', () => {
       vi.useFakeTimers({ toFake: ['Date'] });
       vi.setSystemTime(new Date('2050-02-12T08:00:00.000Z'));
 

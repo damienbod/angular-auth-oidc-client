@@ -47,7 +47,7 @@ describe('CodeFlowCallbackHandlerService', () => {
   });
 
   describe('codeFlowCallback', () => {
-    it('throws error if no state is given', async () => {
+    it('should throw error if no state is given', async () => {
       vi.spyOn(urlService, 'getUrlParameter').mockImplementation(
         (...args: any[]) => {
           if (args[0] === 'test-url' && args[1] === 'state') {
@@ -65,7 +65,7 @@ describe('CodeFlowCallbackHandlerService', () => {
       ).rejects.toThrow('no state in url');
     });
 
-    it('throws error if no code is given', async () => {
+    it('should throw error if no code is given', async () => {
       vi.spyOn(urlService, 'getUrlParameter').mockImplementation(
         (...args: any[]) => {
           if (args[0] === 'test-url' && args[1] === 'code') {
@@ -83,7 +83,7 @@ describe('CodeFlowCallbackHandlerService', () => {
       ).rejects.toThrow('no code in url');
     });
 
-    it('returns callbackContext if all params are good', async () => {
+    it('should return callbackContext if all params are good', async () => {
       vi.spyOn(urlService, 'getUrlParameter').mockReturnValue('params');
 
       const expectedCallbackContext = {
@@ -114,7 +114,7 @@ describe('CodeFlowCallbackHandlerService', () => {
       url: 'https://identity-server.test/openid-connect/token',
     });
 
-    it('throws error if state is not correct', async () => {
+    it('should throw error if state is not correct', async () => {
       vi.spyOn(
         tokenValidationService,
         'validateStateFromHashCallback'
@@ -129,7 +129,7 @@ describe('CodeFlowCallbackHandlerService', () => {
       ).rejects.toThrow('codeFlowCodeRequest incorrect state');
     });
 
-    it('throws error if authWellknownEndpoints is null is given', async () => {
+    it('should throw error if authWellknownEndpoints is null is given', async () => {
       vi.spyOn(
         tokenValidationService,
         'validateStateFromHashCallback'
@@ -153,7 +153,7 @@ describe('CodeFlowCallbackHandlerService', () => {
       ).rejects.toThrow('Token Endpoint not defined');
     });
 
-    it('throws error if tokenendpoint is null is given', async () => {
+    it('should throw error if tokenendpoint is null is given', async () => {
       vi.spyOn(
         tokenValidationService,
         'validateStateFromHashCallback'
@@ -177,7 +177,7 @@ describe('CodeFlowCallbackHandlerService', () => {
       ).rejects.toThrow('Token Endpoint not defined');
     });
 
-    it('calls dataService if all params are good', async () => {
+    it('should call dataService if all params are good', async () => {
       const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(of({}));
 
       vi.spyOn(storagePersistenceService, 'read').mockImplementation(
@@ -210,7 +210,7 @@ describe('CodeFlowCallbackHandlerService', () => {
       );
     });
 
-    it('calls url service with custom token params', async () => {
+    it('should call url service with custom token params', async () => {
       const urlServiceSpy = vi
         .spyOn(urlService, 'createBodyForCodeFlowCodeRequest')
         .mockReturnValue(undefined as any);
@@ -247,7 +247,7 @@ describe('CodeFlowCallbackHandlerService', () => {
       expect(postSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('calls dataService with correct headers if all params are good', async () => {
+    it('should call dataService with correct headers if all params are good', async () => {
       const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(of({}));
       const config = {
         configId: 'configId1',
@@ -281,7 +281,7 @@ describe('CodeFlowCallbackHandlerService', () => {
       );
     });
 
-    it('returns error in case of http error', async () => {
+    it('should return error in case of http error', async () => {
       vi.spyOn(dataService, 'post').mockReturnValue(
         throwError(() => HTTP_ERROR)
       );
@@ -313,7 +313,7 @@ describe('CodeFlowCallbackHandlerService', () => {
       ).rejects.toThrow('OidcService code request authority');
     });
 
-    it('retries request in case of no connection http error and succeeds', async () => {
+    it('should retry request in case of no connection http error and succeeds', async () => {
       const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(
         createRetriableStream(
           throwError(() => CONNECTION_ERROR),
@@ -349,7 +349,7 @@ describe('CodeFlowCallbackHandlerService', () => {
       expect(postSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('retries request in case of no connection http error and fails because of http error afterwards', async () => {
+    it('should retry request in case of no connection http error and fail because of http error afterwards', async () => {
       const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(
         createRetriableStream(
           throwError(() => CONNECTION_ERROR),

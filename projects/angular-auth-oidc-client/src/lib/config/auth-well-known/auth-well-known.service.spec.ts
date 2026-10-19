@@ -38,7 +38,7 @@ describe('AuthWellKnownService', () => {
   });
 
   describe('getAuthWellKnownEndPoints', () => {
-    it('getAuthWellKnownEndPoints throws an error if not config provided', async () => {
+    it('should throw an error from getAuthWellKnownEndPoints if no config is provided', async () => {
       try {
         await firstValueFrom(service.queryAndStoreAuthWellKnownEndPoints(null));
         expect.fail('expected an error');
@@ -51,7 +51,7 @@ describe('AuthWellKnownService', () => {
       }
     });
 
-    it('getAuthWellKnownEndPoints calls always dataservice', async () => {
+    it('should always call the data service from getAuthWellKnownEndPoints', async () => {
       const dataServiceSpy = vi
         .spyOn(dataService, 'getWellKnownEndPointsForConfig')
         .mockReturnValue(of({ issuer: 'anything' }));
@@ -75,7 +75,7 @@ describe('AuthWellKnownService', () => {
       expect(result).toEqual({ issuer: 'anything' });
     });
 
-    it('getAuthWellKnownEndPoints stored the result if http call is made', async () => {
+    it('should store the result of getAuthWellKnownEndPoints if an http call is made', async () => {
       const dataServiceSpy = vi
         .spyOn(dataService, 'getWellKnownEndPointsForConfig')
         .mockReturnValue(of({ issuer: 'anything' }));
@@ -101,7 +101,7 @@ describe('AuthWellKnownService', () => {
       expect(result).toEqual({ issuer: 'anything' });
     });
 
-    it('throws `ConfigLoadingFailed` event when error happens from http', async () => {
+    it('should throw `ConfigLoadingFailed` event when error happens from http', async () => {
       const httpError = new HttpErrorResponse({
         status: 404,
         statusText: 'Not Found',

@@ -38,7 +38,7 @@ describe('Redirect Service Tests', () => {
     expect(myDocument).toBeTruthy();
   });
 
-  it('redirectTo sets window location href', () => {
+  it('should set the window location href on redirectTo', () => {
     const spy = vi
       .spyOn(myDocument.location, 'href', 'set')
       .mockReturnValue(undefined);

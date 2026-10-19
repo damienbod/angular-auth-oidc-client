@@ -1,8 +1,7 @@
-import { HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable, of, throwError, timer } from 'rxjs';
 import { catchError, mergeMap, retryWhen, switchMap } from 'rxjs/operators';
-import { DataService } from '../../api/data.service';
+import { DataService, formUrlEncodedHeaders } from '../../api/data.service';
 import { OpenIdConfiguration } from '../../config/openid-configuration';
 import { LoggerService } from '../../logging/services/logger.service';
 import { StoragePersistenceService } from '../../storage/storage-persistence.service';
@@ -95,10 +94,7 @@ export class CodeFlowCallbackHandlerService {
       return throwError(() => new Error('Token Endpoint not defined'));
     }
 
-    let headers: HttpHeaders = new HttpHeaders();
-
-    headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
-
+    const headers = formUrlEncodedHeaders();
     const bodyForCodeFlow = this.urlService.createBodyForCodeFlowCodeRequest(
       callbackContext.code,
       config,

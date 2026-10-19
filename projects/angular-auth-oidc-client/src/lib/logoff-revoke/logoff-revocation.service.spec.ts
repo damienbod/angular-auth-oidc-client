@@ -46,6 +46,10 @@ describe('Logout and Revoke Service', () => {
     checkSessionService = TestBed.inject(CheckSessionService);
     resetAuthDataService = TestBed.inject(ResetAuthDataService);
     redirectService = TestBed.inject(RedirectService);
+
+    vi.spyOn(urlService, 'getRevocationEndpointUrl').mockReturnValue(
+      'https://sts.example.com/revoke'
+    );
   });
 
   it('should create', () => {
@@ -53,7 +57,7 @@ describe('Logout and Revoke Service', () => {
   });
 
   describe('revokeAccessToken', () => {
-    it('errors with a missing configuration message and sends no request when config is null', async () => {
+    it('should error with a missing configuration message and send no request when config is null', async () => {
       // Arrange
       const postSpy = vi.spyOn(dataService, 'post');
       // Act
@@ -66,7 +70,49 @@ describe('Logout and Revoke Service', () => {
       expect(postSpy).not.toHaveBeenCalled();
     });
 
-    it('uses token parameter if token as parameter is passed in the method', () => {
+    it('should error and send no request when the revocation endpoint is not defined', async () => {
+      // Arrange
+      vi.spyOn(urlService, 'getRevocationEndpointUrl').mockReturnValue(null);
+      const postSpy = vi.spyOn(dataService, 'post');
+      const loggerSpy = vi.spyOn(loggerService, 'logError');
+      const config = { configId: 'configId1' };
+
+      // Act & Assert
+      await expect(
+        firstValueFrom(service.revokeAccessToken(config, 'someToken'))
+      ).rejects.toThrow('Revocation endpoint not defined');
+      expect(postSpy).not.toHaveBeenCalled();
+      expect(loggerSpy).toHaveBeenCalledWith(
+        config,
+        'Revocation endpoint not defined'
+      );
+    });
+
+    it('should post the revocation body as form data to the revocation endpoint', async () => {
+      // Arrange
+      vi.spyOn(
+        urlService,
+        'createRevocationEndpointBodyAccessToken'
+      ).mockReturnValue('token=someToken');
+      const postSpy = vi.spyOn(dataService, 'post').mockReturnValue(of(null));
+      const config = { configId: 'configId1' };
+
+      // Act
+      await firstValueFrom(service.revokeAccessToken(config, 'someToken'));
+
+      // Assert
+      expect(postSpy).toHaveBeenCalledWith(
+        'https://sts.example.com/revoke',
+        'token=someToken',
+        config,
+        expect.any(HttpHeaders)
+      );
+      expect(
+        (postSpy.mock.calls[0][3] as HttpHeaders).get('Content-Type')
+      ).toBe('application/x-www-form-urlencoded');
+    });
+
+    it('should use token parameter if token as parameter is passed in the method', () => {
       // Arrange
       const paramToken = 'passedTokenAsParam';
       const revocationSpy = vi
@@ -84,7 +130,7 @@ describe('Logout and Revoke Service', () => {
       expect(revocationSpy).toHaveBeenCalledWith(paramToken, config);
     });
 
-    it('uses token parameter from persistence if no param is provided', () => {
+    it('should use token parameter from persistence if no param is provided', () => {
       // Arrange
       const paramToken = 'damien';
 
@@ -106,7 +152,7 @@ describe('Logout and Revoke Service', () => {
       expect(revocationSpy).toHaveBeenCalledWith(paramToken, config);
     });
 
-    it('returns type observable', () => {
+    it('should return type observable', () => {
       // Arrange
       const paramToken = 'damien';
 
@@ -126,7 +172,7 @@ describe('Logout and Revoke Service', () => {
       expect(result).toEqual(expect.any(Observable));
     });
 
-    it('loggs and returns unmodified response if request is positive', async () => {
+    it('should log and return unmodified response if request is positive', async () => {
       // Arrange
       const paramToken = 'damien';
 
@@ -151,7 +197,7 @@ describe('Logout and Revoke Service', () => {
       expect(loggerSpy).toHaveBeenCalled();
     });
 
-    it('loggs error when request is negative', async () => {
+    it('should log error when request is negative', async () => {
       // Arrange
       const paramToken = 'damien';
 
@@ -274,7 +320,7 @@ describe('Logout and Revoke Service', () => {
   });
 
   describe('revokeRefreshToken', () => {
-    it('errors with a missing configuration message and sends no request when config is null', async () => {
+    it('should error with a missing configuration message and send no request when config is null', async () => {
       // Arrange
       const postSpy = vi.spyOn(dataService, 'post');
       // Act
@@ -287,7 +333,20 @@ describe('Logout and Revoke Service', () => {
       expect(postSpy).not.toHaveBeenCalled();
     });
 
-    it('uses refresh token parameter if token as parameter is passed in the method', () => {
+    it('should error and send no request when the revocation endpoint is not defined', async () => {
+      // Arrange
+      vi.spyOn(urlService, 'getRevocationEndpointUrl').mockReturnValue(null);
+      const postSpy = vi.spyOn(dataService, 'post');
+      const config = { configId: 'configId1' };
+
+      // Act & Assert
+      await expect(
+        firstValueFrom(service.revokeRefreshToken(config, 'someToken'))
+      ).rejects.toThrow('Revocation endpoint not defined');
+      expect(postSpy).not.toHaveBeenCalled();
+    });
+
+    it('should use refresh token parameter if token as parameter is passed in the method', () => {
       // Arrange
       const paramToken = 'passedTokenAsParam';
       const revocationSpy = vi
@@ -305,7 +364,7 @@ describe('Logout and Revoke Service', () => {
       expect(revocationSpy).toHaveBeenCalledWith(paramToken, config);
     });
 
-    it('uses refresh token parameter from persistence if no param is provided', () => {
+    it('should use refresh token parameter from persistence if no param is provided', () => {
       // Arrange
       const paramToken = 'damien';
 
@@ -326,7 +385,7 @@ describe('Logout and Revoke Service', () => {
       expect(revocationSpy).toHaveBeenCalledWith(paramToken, config);
     });
 
-    it('returns type observable', () => {
+    it('should return type observable', () => {
       // Arrange
       const paramToken = 'damien';
 
@@ -346,7 +405,7 @@ describe('Logout and Revoke Service', () => {
       expect(result).toEqual(expect.any(Observable));
     });
 
-    it('loggs and returns unmodified response if request is positive', async () => {
+    it('should log and return unmodified response if request is positive', async () => {
       // Arrange
       const paramToken = 'damien';
 
@@ -371,7 +430,7 @@ describe('Logout and Revoke Service', () => {
       expect(loggerSpy).toHaveBeenCalled();
     });
 
-    it('loggs error when request is negative', async () => {
+    it('should log error when request is negative', async () => {
       // Arrange
       const paramToken = 'damien';
 
@@ -494,7 +553,7 @@ describe('Logout and Revoke Service', () => {
   });
 
   describe('logoff', () => {
-    it('errors with a missing configuration message and does not reset auth data when config is null', async () => {
+    it('should error with a missing configuration message and not reset auth data when config is null', async () => {
       // Arrange
       const resetSpy = vi.spyOn(resetAuthDataService, 'resetAuthorizationData');
       // Act
@@ -507,7 +566,7 @@ describe('Logout and Revoke Service', () => {
       expect(resetSpy).not.toHaveBeenCalled();
     });
 
-    it('logs and returns if `endSessionUrl` is false', async () => {
+    it('should log and return if `endSessionUrl` is false', async () => {
       // Arrange
       vi.spyOn(urlService, 'getEndSessionUrl').mockReturnValue('');
 
@@ -524,7 +583,7 @@ describe('Logout and Revoke Service', () => {
       expect(serverStateChangedSpy).not.toHaveBeenCalled();
     });
 
-    it('logs and returns if `serverStateChanged` is true', async () => {
+    it('should log and return if `serverStateChanged` is true', async () => {
       // Arrange
       vi.spyOn(urlService, 'getEndSessionUrl').mockReturnValue('someValue');
       const redirectSpy = vi
@@ -542,7 +601,7 @@ describe('Logout and Revoke Service', () => {
       expect(redirectSpy).not.toHaveBeenCalled();
     });
 
-    it('calls urlHandler if urlhandler is passed', async () => {
+    it('should call urlHandler if urlhandler is passed', async () => {
       // Arrange
       vi.spyOn(urlService, 'getEndSessionUrl').mockReturnValue('someValue');
       const spy = vi.fn();
@@ -572,7 +631,7 @@ describe('Logout and Revoke Service', () => {
       expect(resetAuthorizationDataSpy).toHaveBeenCalled();
     });
 
-    it('calls redirect service if no logoutOptions are passed', async () => {
+    it('should call redirect service if no logoutOptions are passed', async () => {
       // Arrange
       vi.spyOn(urlService, 'getEndSessionUrl').mockReturnValue('someValue');
 
@@ -594,7 +653,7 @@ describe('Logout and Revoke Service', () => {
       expect(redirectSpy).toHaveBeenCalledWith('someValue');
     });
 
-    it('calls redirect service if logoutOptions are passed and method is GET', async () => {
+    it('should call redirect service if logoutOptions are passed and method is GET', async () => {
       // Arrange
       vi.spyOn(urlService, 'getEndSessionUrl').mockReturnValue('someValue');
 
@@ -616,7 +675,7 @@ describe('Logout and Revoke Service', () => {
       expect(redirectSpy).toHaveBeenCalledWith('someValue');
     });
 
-    it('calls dataservice post if logoutOptions are passed and method is POST', async () => {
+    it('should call dataservice post if logoutOptions are passed and method is POST', async () => {
       // Arrange
       vi.spyOn(urlService, 'getEndSessionUrl').mockReturnValue('someValue');
 
@@ -668,7 +727,7 @@ describe('Logout and Revoke Service', () => {
       );
     });
 
-    it('calls dataservice post if logoutOptions with customParams are passed and method is POST', async () => {
+    it('should call dataservice post if logoutOptions with customParams are passed and method is POST', async () => {
       // Arrange
       vi.spyOn(urlService, 'getEndSessionUrl').mockReturnValue('someValue');
 
@@ -730,7 +789,7 @@ describe('Logout and Revoke Service', () => {
   });
 
   describe('logoffLocal', () => {
-    it('calls flowsService.resetAuthorizationData', () => {
+    it('should call flowsService.resetAuthorizationData', () => {
       // Arrange
       const resetAuthorizationDataSpy = vi
         .spyOn(resetAuthDataService, 'resetAuthorizationData')
@@ -746,7 +805,7 @@ describe('Logout and Revoke Service', () => {
   });
 
   describe('logoffAndRevokeTokens', () => {
-    it('errors with a missing configuration message and revokes nothing when config is null', async () => {
+    it('should error with a missing configuration message and revoke nothing when config is null', async () => {
       // Arrange
       const revokeAccessTokenSpy = vi.spyOn(service, 'revokeAccessToken');
       const revokeRefreshTokenSpy = vi.spyOn(service, 'revokeRefreshToken');
@@ -761,7 +820,7 @@ describe('Logout and Revoke Service', () => {
       expect(revokeRefreshTokenSpy).not.toHaveBeenCalled();
     });
 
-    it('only logs off without revoking when the well-known endpoints have no revocation endpoint', async () => {
+    it('should only log off without revoking when the well-known endpoints have no revocation endpoint', async () => {
       // Arrange
       const config = { configId: 'configId1' };
       const logoutAuthOptions = { customParams: { some: 'param' } };
@@ -799,7 +858,7 @@ describe('Logout and Revoke Service', () => {
       expect(revokeRefreshTokenSpy).not.toHaveBeenCalled();
     });
 
-    it('only logs off without revoking when no well-known endpoints are stored', async () => {
+    it('should only log off without revoking when no well-known endpoints are stored', async () => {
       // Arrange
       const config = { configId: 'configId1' };
 
@@ -815,7 +874,7 @@ describe('Logout and Revoke Service', () => {
       expect(revokeAccessTokenSpy).not.toHaveBeenCalled();
     });
 
-    it('calls revokeRefreshToken and revokeAccessToken when storage holds a refreshtoken', async () => {
+    it('should call revokeRefreshToken and revokeAccessToken when storage holds a refreshtoken', async () => {
       // Arrange
       const paramToken = 'damien';
       const config = { configId: 'configId1' };
@@ -847,7 +906,7 @@ describe('Logout and Revoke Service', () => {
       expect(revokeAccessTokenSpy).toHaveBeenCalled();
     });
 
-    it('logs error when revokeaccesstoken throws an error', async () => {
+    it('should log error when revokeaccesstoken throws an error', async () => {
       // Arrange
       const paramToken = 'damien';
       const config = { configId: 'configId1' };
@@ -882,7 +941,7 @@ describe('Logout and Revoke Service', () => {
       expect(loggerSpy).toHaveBeenCalled();
     });
 
-    it('calls logoff in case of success', async () => {
+    it('should call logoff in case of success', async () => {
       // Arrange
       const paramToken = 'damien';
 
@@ -916,7 +975,7 @@ describe('Logout and Revoke Service', () => {
       expect(logoffSpy).toHaveBeenCalled();
     });
 
-    it('calls logoff with urlhandler in case of success', async () => {
+    it('should call logoff with urlhandler in case of success', async () => {
       // Arrange
       const paramToken = 'damien';
 
@@ -955,7 +1014,7 @@ describe('Logout and Revoke Service', () => {
       expect(logoffSpy).toHaveBeenCalledWith(config, [config], { urlHandler });
     });
 
-    it('calls revokeAccessToken when storage does not hold a refreshtoken', async () => {
+    it('should call revokeAccessToken when storage does not hold a refreshtoken', async () => {
       // Arrange
       const config = { configId: 'configId1' };
 
@@ -987,7 +1046,7 @@ describe('Logout and Revoke Service', () => {
       expect(revokeAccessTokenSpy).toHaveBeenCalled();
     });
 
-    it('logs error when revokeaccesstoken throws an error', async () => {
+    it('should log error when revokeaccesstoken throws an error', async () => {
       // Arrange
       const config = { configId: 'configId1' };
 
@@ -1020,7 +1079,7 @@ describe('Logout and Revoke Service', () => {
   });
 
   describe('logoffLocalMultiple', () => {
-    it('calls logoffLocal for every config which is present', () => {
+    it('should call logoffLocal for every config which is present', () => {
       // Arrange
       const allConfigs = [{ configId: 'configId1' }, { configId: 'configId2' }];
       const resetAuthorizationDataSpy = vi

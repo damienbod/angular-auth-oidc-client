@@ -12,7 +12,7 @@ describe('useOfflineScopeWithSilentRenew', () => {
     ...overrides,
   });
 
-  it('returns a warning when refresh tokens are used without offline_access', () => {
+  it('should return a warning when refresh tokens are used without offline_access', () => {
     const result = useOfflineScopeWithSilentRenew(createConfig());
 
     expect(result).toEqual({
@@ -24,7 +24,7 @@ describe('useOfflineScopeWithSilentRenew', () => {
     });
   });
 
-  it('returns a positive result when the warning is disabled explicitly', () => {
+  it('should return a positive result when the warning is disabled explicitly', () => {
     const result = useOfflineScopeWithSilentRenew(
       createConfig({
         disableRefreshTokenOfflineAccessScopeWarning: true,
@@ -38,7 +38,7 @@ describe('useOfflineScopeWithSilentRenew', () => {
     });
   });
 
-  it('returns a positive result when offline_access is included', () => {
+  it('should return a positive result when offline_access is included', () => {
     const result = useOfflineScopeWithSilentRenew(
       createConfig({
         scope: 'openid profile offline_access',

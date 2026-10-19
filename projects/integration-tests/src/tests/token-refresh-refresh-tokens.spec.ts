@@ -61,7 +61,7 @@ describe('Manual refresh-token concurrency', () => {
     oidcSecurityService.logoffLocalMultiple();
   });
 
-  it('keeps concurrent forceRefreshSession calls aligned with the freshly stored tokens', async () => {
+  it('should keep concurrent forceRefreshSession calls aligned with the freshly stored tokens', async () => {
     const authorizeUrl = await new Promise<string>((resolve) => {
       oidcSecurityService.authorize(configId, {
         customParams: {

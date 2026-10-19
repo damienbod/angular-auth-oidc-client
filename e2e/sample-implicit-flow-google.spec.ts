@@ -26,7 +26,7 @@ function fragmentOf(authorizeResponse: Response): URLSearchParams {
   return new URLSearchParams(location.split('#')[1] ?? '');
 }
 
-test('logs in automatically with the implicit flow', async ({ page }) => {
+test('should log in automatically with the implicit flow', async ({ page }) => {
   const tokenRequests = collectRequests(page, (request) =>
     request.url().startsWith(`${idp()}/token`)
   );
@@ -57,7 +57,9 @@ test('logs in automatically with the implicit flow', async ({ page }) => {
   expect(tokenRequests).toEqual([]);
 });
 
-test('returns to the requested route after the login', async ({ page }) => {
+test('should return to the requested route after the login', async ({
+  page,
+}) => {
   await page.goto('/forbidden');
 
   await expect(
@@ -67,7 +69,7 @@ test('returns to the requested route after the login', async ({ page }) => {
   await expect(page.getByText('Logout')).toBeVisible();
 });
 
-test('rejects an access token that does not match the at_hash', async ({
+test('should reject an access token that does not match the at_hash', async ({
   page,
 }) => {
   const atHashRejected = page.waitForEvent('console', {
@@ -111,7 +113,7 @@ test('rejects an access token that does not match the at_hash', async ({
   await expectAuthenticated(page);
 });
 
-test('logs out through the end session endpoint', async ({ page }) => {
+test('should log out through the end session endpoint', async ({ page }) => {
   await page.goto('/home');
   await expectAuthenticated(page);
 

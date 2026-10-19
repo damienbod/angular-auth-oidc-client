@@ -29,21 +29,21 @@ describe('RandomService Tests', () => {
     expect(r1).not.toEqual(r2);
   });
 
-  it('correct length with high number', () => {
+  it('should return the correct length for a high number', () => {
     const r1 = randomService.createRandom(79, { configId: 'configId1' });
     const result = r1.length;
 
     expect(result).toBe(79);
   });
 
-  it('correct length with small number', () => {
+  it('should return the correct length for a small number', () => {
     const r1 = randomService.createRandom(7, { configId: 'configId1' });
     const result = r1.length;
 
     expect(result).toBe(7);
   });
 
-  it('correct length with 0', () => {
+  it('should return the correct length for 0', () => {
     const r1 = randomService.createRandom(0, { configId: 'configId1' });
     const result = r1.length;
 
@@ -52,7 +52,7 @@ describe('RandomService Tests', () => {
   });
 
   for (let index = 1; index < 7; index++) {
-    it('Giving back 10 or more characters when called with numbers less than 7', () => {
+    it('should return 10 or more characters when called with numbers less than 7', () => {
       const requiredLengthSmallerThenSeven = index;
       const fallbackLength = 10;
       const r1 = randomService.createRandom(requiredLengthSmallerThenSeven, {
@@ -64,7 +64,7 @@ describe('RandomService Tests', () => {
   }
 
   it.each([7, 8, 10, 40, 43, 67, 128])(
-    'returns exactly the required length for %i',
+    'should return exactly the required length for %i',
     (requiredLength) => {
       const r1 = randomService.createRandom(requiredLength, {
         configId: 'configId1',

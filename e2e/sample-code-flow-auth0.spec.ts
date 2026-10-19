@@ -35,13 +35,15 @@ async function login(page: Page): Promise<void> {
   await expectAuthenticated(page);
 }
 
-test('is unauthenticated on first visit', async ({ page }) => {
+test('should be unauthenticated on first visit', async ({ page }) => {
   await page.goto('/');
 
   await expectUnauthenticated(page);
 });
 
-test('logs in and sends the audience custom parameter', async ({ page }) => {
+test('should log in and send the audience custom parameter', async ({
+  page,
+}) => {
   await page.goto('/');
 
   const authorizeRequest = page.waitForRequest(isAuthorizeRequest());
@@ -64,7 +66,7 @@ test('logs in and sends the audience custom parameter', async ({ page }) => {
   await expect(page).not.toHaveURL(/[?&](code|state)=/);
 });
 
-test('stays authenticated after a page reload', async ({ page }) => {
+test('should stay authenticated after a page reload', async ({ page }) => {
   await login(page);
 
   const authorizeRequests = collectRequests(page, isAuthorizeRequest());
@@ -75,7 +77,7 @@ test('stays authenticated after a page reload', async ({ page }) => {
   expect(authorizeRequests).toEqual([]);
 });
 
-test('renews silently with the custom scope on the refresh request', async ({
+test('should renew silently with the custom scope on the refresh request', async ({
   page,
 }) => {
   await login(page);
@@ -93,7 +95,7 @@ test('renews silently with the custom scope on the refresh request', async ({
   await expectAuthenticated(page);
 });
 
-test('refreshes the session on demand', async ({ page }) => {
+test('should refresh the session on demand', async ({ page }) => {
   await login(page);
 
   const refresh = waitForRefreshTokenRenew(page);
@@ -104,7 +106,7 @@ test('refreshes the session on demand', async ({ page }) => {
   await expectAuthenticated(page);
 });
 
-test('revokes the refresh token', async ({ page }) => {
+test('should revoke the refresh token', async ({ page }) => {
   await login(page);
 
   const revocation = page.waitForRequest(isRevocationRequest());
@@ -117,7 +119,7 @@ test('revokes the refresh token', async ({ page }) => {
   expect((await (await revocation).response())?.status()).toBe(200);
 });
 
-test('logs out and revokes the tokens', async ({ page }) => {
+test('should log out and revoke the tokens', async ({ page }) => {
   await login(page);
 
   const revocation = page.waitForRequest(isRevocationRequest());
@@ -130,7 +132,7 @@ test('logs out and revokes the tokens', async ({ page }) => {
   await expectUnauthenticated(page);
 });
 
-test('logs out through the end session endpoint', async ({ page }) => {
+test('should log out through the end session endpoint', async ({ page }) => {
   await login(page);
 
   const logoutRequest = page.waitForRequest(isLogoutRequest());

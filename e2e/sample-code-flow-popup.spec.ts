@@ -43,13 +43,13 @@ async function login(page: Page): Promise<void> {
   await expectAuthenticated(page);
 }
 
-test('is unauthenticated on first visit', async ({ page }) => {
+test('should be unauthenticated on first visit', async ({ page }) => {
   await page.goto('/');
 
   await expectUnauthenticated(page);
 });
 
-test('logs in through a popup without leaving the page', async ({
+test('should log in through a popup without leaving the page', async ({
   context,
   page,
 }) => {
@@ -91,7 +91,7 @@ test('logs in through a popup without leaving the page', async ({
   expect(navigations.filter((url) => url.startsWith(IDP_ORIGIN))).toEqual([]);
 });
 
-test('stays authenticated after a page reload', async ({ page }) => {
+test('should stay authenticated after a page reload', async ({ page }) => {
   await login(page);
 
   await page.reload();
@@ -99,7 +99,9 @@ test('stays authenticated after a page reload', async ({ page }) => {
   await expectAuthenticated(page);
 });
 
-test('renews the tokens silently with refresh tokens', async ({ page }) => {
+test('should renew the tokens silently with refresh tokens', async ({
+  page,
+}) => {
   await login(page);
 
   await waitForRefreshTokenRenew(page);
@@ -107,7 +109,7 @@ test('renews the tokens silently with refresh tokens', async ({ page }) => {
   await expectAuthenticated(page);
 });
 
-test('refreshes the session on demand', async ({ page }) => {
+test('should refresh the session on demand', async ({ page }) => {
   await login(page);
 
   const refresh = waitForRefreshTokenRenew(page);
@@ -118,7 +120,7 @@ test('refreshes the session on demand', async ({ page }) => {
   await expectAuthenticated(page);
 });
 
-test('logs out through the end session endpoint', async ({ page }) => {
+test('should log out through the end session endpoint', async ({ page }) => {
   await login(page);
 
   const logout = page.waitForRequest(isLogoutRequest());

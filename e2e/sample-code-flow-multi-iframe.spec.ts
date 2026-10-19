@@ -55,7 +55,9 @@ async function loginToBoth(page: Page): Promise<void> {
   );
 }
 
-test('is unauthenticated for both configs on first visit', async ({ page }) => {
+test('should be unauthenticated for both configs on first visit', async ({
+  page,
+}) => {
   await page.goto('/');
 
   await expect(page.locator('pre').first()).toContainText(
@@ -64,13 +66,13 @@ test('is unauthenticated for both configs on first visit', async ({ page }) => {
   await expectAuthenticatedConfigs(page, []);
 });
 
-test('logs in to both configs', async ({ page }) => {
+test('should log in to both configs', async ({ page }) => {
   await loginToBoth(page);
 
   await expect(page.locator('pre').nth(1)).toContainText(USER_NAMES.idp1);
 });
 
-test('renews both configs silently through iframes', async ({ page }) => {
+test('should renew both configs silently through iframes', async ({ page }) => {
   await loginToBoth(page);
 
   const silentRenews = collectRequests(page, isSilentRenewRequest());
@@ -117,7 +119,7 @@ test('renews both configs silently through iframes', async ({ page }) => {
   );
 });
 
-test('logs out of one config while the other stays authenticated', async ({
+test('should log out of one config while the other stays authenticated', async ({
   page,
 }) => {
   await loginToBoth(page);

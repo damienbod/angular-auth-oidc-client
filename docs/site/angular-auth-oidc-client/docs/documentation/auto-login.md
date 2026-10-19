@@ -7,6 +7,8 @@ sidebar_position: 9
 
 The library supports route-based automatic login thanks to the functional route guard: `autoLoginPartialRoutesGuard`. The guard can be used with `canActivate`, `canActivateChild` and `canMatch`, and will preserve the route upon completing a successful login.
 
+The guard only checks whether valid tokens are already in storage; it does not run `checkAuth()` itself. If the user is not authenticated, the guard saves the requested URL (key `redirect` in the configured storage) and starts the login. After the callback, a successful `checkAuth()` navigates back to that URL and removes it from the storage.
+
 ## Common Scenarios
 
 Here are a couple of the common use cases.
@@ -42,6 +44,7 @@ Please make sure to call [`checkAuth()`](./public-api#checkauthurl-string-config
 
 If you need to pass custom params to the login request you can use the [data](https://angular.dev/api/router/Route#data) attribute of the route.
 These parameters will then be appended to the login request.
+All keys of the route's `data` object are sent as custom parameters, so keep only parameters meant for the authorize request in it. The class-based `canLoad` does not pass `data` along.
 
 ```ts
 import { autoLoginPartialRoutesGuard } from 'angular-auth-oidc-client';
@@ -81,7 +84,7 @@ Instead of the functional guards, you can also use the guard classes.
 
 :::info
 
-If you use multiple configurations, the AutoLoginPartialRoutesGuard class-based guard selects the first provided configuration to perform the login.
+If you use multiple configurations, both the functional `autoLoginPartialRoutesGuard` and the `AutoLoginPartialRoutesGuard` class select the first provided configuration to perform the login. Use `autoLoginPartialRoutesGuardWithConfig('configId')` to choose another one.
 
 :::
 
@@ -110,3 +113,11 @@ const routes: Routes = [
   { path: 'unauthorized', component: UnauthorizedComponent },
 ];
 ```
+
+### AutoLoginAllRoutesGuard (deprecated)
+
+:::warning
+
+`AutoLoginAllRoutesGuard` is deprecated and will be removed in a future version. Use `autoLoginPartialRoutesGuard` instead. More information: [Why is AutoLoginAllRoutesGuard not recommended?](https://github.com/damienbod/angular-auth-oidc-client/issues/1549)
+
+:::

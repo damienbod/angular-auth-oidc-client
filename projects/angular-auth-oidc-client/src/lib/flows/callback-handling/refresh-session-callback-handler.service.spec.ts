@@ -31,7 +31,7 @@ describe('RefreshSessionCallbackHandlerService', () => {
   });
 
   describe('refreshSessionWithRefreshTokens', () => {
-    it('returns callbackContext if all params are good', async () => {
+    it('should return callbackContext if all params are good', async () => {
       vi.spyOn(authStateService, 'getRefreshToken').mockReturnValue(
         'henlo-furiend'
       );
@@ -55,7 +55,7 @@ describe('RefreshSessionCallbackHandlerService', () => {
       expect(callbackContext).toEqual(expectedCallbackContext);
     });
 
-    it('throws error if no refresh token is given', async () => {
+    it('should throw error if no refresh token is given', async () => {
       vi.spyOn(authStateService, 'getRefreshToken').mockReturnValue('');
       vi.spyOn(authStateService, 'getIdToken').mockReturnValue('henlo-legger');
 

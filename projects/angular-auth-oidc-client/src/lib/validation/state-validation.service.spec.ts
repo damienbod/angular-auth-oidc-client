@@ -11,6 +11,7 @@ import { StoragePersistenceService } from '../storage/storage-persistence.servic
 import { EqualityService } from '../utils/equality/equality.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
+import { StateValidationResult } from './state-validation-result';
 import { StateValidationService } from './state-validation.service';
 import { TokenValidationService } from './token-validation.service';
 import { ValidationResult } from './validation-result';
@@ -83,55 +84,15 @@ describe('State Validation Service', () => {
     expect(tokenValidationService).toBeTruthy();
   });
 
-  describe('isIdTokenAfterRefreshTokenRequestValid', () => {
-    it('validate refresh good ', () => {
-      const accessToken =
-        'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJpc3MiOiJodHRwczovL2RhbWllbmJvZC5iMmNsb2dpbi5jb20vYTA5NThmNDUtMTk1Yi00MDM2LTkyNTktZGUyZjdlNTk0ZGI2L3YyLjAvIiwiZXhwIjoxNTg5MjEwMDg2LCJuYmYiOjE1ODkyMDY0ODYsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsIm5hbWUiOiJkYW1pZW5ib2QiLCJlbWFpbHMiOlsiZGFtaWVuQGRhbWllbmJvZC5vbm1pY3Jvc29mdC5jb20iXSwidGZwIjoiQjJDXzFfYjJjcG9saWN5ZGFtaWVuIiwibm9uY2UiOiIwMDdjNDE1M2I2YTA1MTdjMGU0OTc0NzZmYjI0OTk0OGVjNWNsT3ZRUSIsInNjcCI6ImRlbW8ucmVhZCIsImF6cCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInZlciI6IjEuMCIsImlhdCI6MTU4OTIwNjQ4Nn0.Zyg8GAsyj8_ljdheJ57oQ8ldZMon4nLs1VCkBnIon2cXGrXlTA_fYP_Ypf5x5OZcCg-wXdo9RttsLRD69v1cnd5eUc9crzkJ18BruRdhoVQdlrGuakwKujozY2-EU8KNH64qSDpPOqQ9m4jdzGAOkY0wWitOlvYoNZHDzDS4ZIWn8W5H2nwAbf8LMAdXqy41YaIBF4lo3ZaKoUKQqCwIG_0aLvRQcmiwkEoQ5-EUb_hdOejTIbIT5PryyqMnvJYgyrKTf1VY060YpETH19PMosNriwPrPesJhsruphqzaJexg0Pt09ILoMHJhebkON-oPjXLjDOGLfnRTPp6oP_Drg';
-      const idToken =
-        'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
-      const refreshTokenData =
-        'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';
-      const configRefresh = {
-        authority: 'https://localhost:44363',
-        redirectUrl: 'https://localhost:44363',
-        clientId: 'singleapp',
-        responseType: 'icode',
-        scope: 'dataEventRecords openid',
-        postLogoutRedirectUri: 'https://localhost:44363/Unauthorized',
-        startCheckSession: false,
-        silentRenew: true,
-        silentRenewUrl: 'https://localhost:44363/silent-renew.html',
-        postLoginRoute: '/dataeventrecords',
-        forbiddenRoute: '/Forbidden',
-        unauthorizedRoute: '/Unauthorized',
-        logLevel: LogLevel.Debug,
-        maxIdTokenIatOffsetAllowedInSeconds: 10,
-        useRefreshToken: true,
-        ignoreNonceAfterRefresh: true,
-        disableRefreshIdTokenAuthTimeValidation: true,
-        triggerRefreshWhenIdTokenExpired: true,
-      };
+  describe('getValidatedStateResult id_token claims after a refresh', () => {
+    const existingIdToken = 'existing_id_token';
+    const newIdToken = 'new_id_token';
+    let configRefresh: OpenIdConfiguration;
+    let existingClaims: Record<string, unknown>;
+    let logDebugSpy: ReturnType<typeof vi.spyOn>;
 
-      vi.spyOn(
-        tokenValidationService,
-        'validateStateFromHashCallback'
-      ).mockReturnValue(false);
-
-      const callbackContext = {
-        code: 'fdffsdfsdf',
-        refreshToken: refreshTokenData,
-        state: 'fdffsggggggdfsdf',
-        sessionState: 'fdffsggggggdfsdf',
-        existingIdToken: idToken,
-        authResult: {
-          access_token: accessToken,
-          id_token: idToken,
-        },
-        isRenewProcess: false,
-        jwtKeys: null,
-        validationResult: null,
-      };
-      const decodedIdToken = {
+    function createClaims(): Record<string, unknown> {
+      return {
         exp: 1589210086,
         nbf: 1589206486,
         ver: '1.0',
@@ -146,527 +107,216 @@ describe('State Validation Service', () => {
         tfp: 'B2C_1_b2cpolicydamien',
         at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
       };
-      const isValid = (
-        stateValidationService as any
-      ).isIdTokenAfterRefreshTokenRequestValid(
-        callbackContext,
-        decodedIdToken,
-        configRefresh
+    }
+
+    function arrangeNewIdTokenClaims(newClaims: Record<string, unknown>): void {
+      vi.spyOn(tokenHelperService, 'getPayloadFromToken').mockImplementation(
+        (token: any) => (token === existingIdToken ? existingClaims : newClaims)
       );
+    }
 
-      expect(isValid).toBe(true);
-    });
-
-    it('validate refresh invalid iss ', () => {
-      const accessToken =
-        'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJpc3MiOiJodHRwczovL2RhbWllbmJvZC5iMmNsb2dpbi5jb20vYTA5NThmNDUtMTk1Yi00MDM2LTkyNTktZGUyZjdlNTk0ZGI2L3YyLjAvIiwiZXhwIjoxNTg5MjEwMDg2LCJuYmYiOjE1ODkyMDY0ODYsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsIm5hbWUiOiJkYW1pZW5ib2QiLCJlbWFpbHMiOlsiZGFtaWVuQGRhbWllbmJvZC5vbm1pY3Jvc29mdC5jb20iXSwidGZwIjoiQjJDXzFfYjJjcG9saWN5ZGFtaWVuIiwibm9uY2UiOiIwMDdjNDE1M2I2YTA1MTdjMGU0OTc0NzZmYjI0OTk0OGVjNWNsT3ZRUSIsInNjcCI6ImRlbW8ucmVhZCIsImF6cCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInZlciI6IjEuMCIsImlhdCI6MTU4OTIwNjQ4Nn0.Zyg8GAsyj8_ljdheJ57oQ8ldZMon4nLs1VCkBnIon2cXGrXlTA_fYP_Ypf5x5OZcCg-wXdo9RttsLRD69v1cnd5eUc9crzkJ18BruRdhoVQdlrGuakwKujozY2-EU8KNH64qSDpPOqQ9m4jdzGAOkY0wWitOlvYoNZHDzDS4ZIWn8W5H2nwAbf8LMAdXqy41YaIBF4lo3ZaKoUKQqCwIG_0aLvRQcmiwkEoQ5-EUb_hdOejTIbIT5PryyqMnvJYgyrKTf1VY060YpETH19PMosNriwPrPesJhsruphqzaJexg0Pt09ILoMHJhebkON-oPjXLjDOGLfnRTPp6oP_Drg';
-      const idToken =
-        'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
-      const refreshTokenData =
-        'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';
-      const configRefresh = {
-        authority: 'https://localhost:44363',
-        redirectUrl: 'https://localhost:44363',
-        clientId: 'singleapp',
-        responseType: 'icode',
-        scope: 'dataEventRecords openid',
-        postLogoutRedirectUri: 'https://localhost:44363/Unauthorized',
-        startCheckSession: false,
-        silentRenew: true,
-        silentRenewUrl: 'https://localhost:44363/silent-renew.html',
-        postLoginRoute: '/dataeventrecords',
-        forbiddenRoute: '/Forbidden',
-        unauthorizedRoute: '/Unauthorized',
-        logLevel: LogLevel.Debug,
-        maxIdTokenIatOffsetAllowedInSeconds: 10,
-        useRefreshToken: true,
-        ignoreNonceAfterRefresh: true,
-        disableRefreshIdTokenAuthTimeValidation: true,
-        triggerRefreshWhenIdTokenExpired: true,
-      };
-
-      vi.spyOn(
-        tokenValidationService,
-        'validateStateFromHashCallback'
-      ).mockReturnValue(false);
-
-      const callbackContext = {
-        code: 'fdffsdfsdf',
-        refreshToken: refreshTokenData,
-        state: 'fdffsggggggdfsdf',
-        sessionState: 'fdffsggggggdfsdf',
-        existingIdToken: idToken,
+    function createRefreshCallbackContext(
+      existingToken: string | null = existingIdToken
+    ): CallbackContext {
+      return {
+        code: '',
+        refreshToken: 'refresh-token',
+        state: '',
+        sessionState: null,
         authResult: {
-          access_token: accessToken,
-          id_token: idToken,
+          access_token: 'access-token',
+          id_token: newIdToken,
         },
-        isRenewProcess: false,
+        isRenewProcess: true,
         jwtKeys: null,
         validationResult: null,
+        existingIdToken: existingToken,
       };
-      const decodedIdToken = {
-        exp: 1589210086,
-        nbf: 1589206486,
-        ver: '1.0',
+    }
+
+    function getValidatedStateResult(
+      callbackContext: CallbackContext = createRefreshCallbackContext()
+    ): Promise<StateValidationResult> {
+      return firstValueFrom(
+        stateValidationService.getValidatedStateResult(
+          callbackContext,
+          configRefresh
+        )
+      );
+    }
+
+    beforeEach(() => {
+      configRefresh = {
+        ...config,
+        responseType: 'code',
+        useRefreshToken: true,
+        ignoreNonceAfterRefresh: true,
+        disableRefreshIdTokenAuthTimeValidation: false,
+        triggerRefreshWhenIdTokenExpired: true,
+      };
+      existingClaims = createClaims();
+
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (...args: any[]) =>
+          args[0] === 'authWellKnownEndPoints'
+            ? authWellKnownEndpoints
+            : undefined
+      );
+      vi.spyOn(tokenHelperService, 'getHeaderFromToken').mockReturnValue({
+        alg: 'RS256',
+      });
+      vi.spyOn(
+        tokenValidationService,
+        'validateSignatureIdToken'
+      ).mockReturnValue(of(true));
+      vi.spyOn(tokenValidationService, 'validateIdTokenNonce').mockReturnValue(
+        true
+      );
+      vi.spyOn(
+        tokenValidationService,
+        'validateRequiredIdToken'
+      ).mockReturnValue(true);
+      vi.spyOn(tokenValidationService, 'validateIdTokenIss').mockReturnValue(
+        true
+      );
+      vi.spyOn(tokenValidationService, 'validateIdTokenAud').mockReturnValue(
+        true
+      );
+      vi.spyOn(
+        tokenValidationService,
+        'validateIdTokenAzpExistsIfMoreThanOneAud'
+      ).mockReturnValue(true);
+      vi.spyOn(
+        tokenValidationService,
+        'validateIdTokenAzpValid'
+      ).mockReturnValue(true);
+      vi.spyOn(tokenValidationService, 'validateIdTokenAtHash').mockReturnValue(
+        of(true)
+      );
+      logDebugSpy = vi
+        .spyOn(loggerService, 'logDebug')
+        .mockImplementation(() => undefined);
+    });
+
+    it('should be valid when the new id_token claims match the existing id_token and auth_time validation is disabled', async () => {
+      configRefresh.disableRefreshIdTokenAuthTimeValidation = true;
+      arrangeNewIdTokenClaims(createClaims());
+
+      const state = await getValidatedStateResult();
+
+      expect(state.authResponseIsValid).toBe(true);
+      expect(state.state).toBe(ValidationResult.Ok);
+    });
+
+    it('should be valid when all new id_token claims including auth_time match the existing id_token', async () => {
+      arrangeNewIdTokenClaims(createClaims());
+
+      const state = await getValidatedStateResult();
+
+      expect(state.authResponseIsValid).toBe(true);
+      expect(state.state).toBe(ValidationResult.Ok);
+    });
+
+    it('should be valid when there is no existing id_token to compare with', async () => {
+      arrangeNewIdTokenClaims({ ...createClaims(), iss: 'other-iss' });
+
+      const state = await getValidatedStateResult(
+        createRefreshCallbackContext(null)
+      );
+
+      expect(state.authResponseIsValid).toBe(true);
+      expect(state.state).toBe(ValidationResult.Ok);
+    });
+
+    it('should not compare the claims when refresh tokens are not used', async () => {
+      configRefresh.useRefreshToken = false;
+      arrangeNewIdTokenClaims({ ...createClaims(), iss: 'other-iss' });
+
+      const state = await getValidatedStateResult();
+
+      expect(state.authResponseIsValid).toBe(true);
+      expect(state.state).toBe(ValidationResult.Ok);
+    });
+
+    it('should be invalid when the iss of the new id_token differs', async () => {
+      arrangeNewIdTokenClaims({
+        ...createClaims(),
         iss: 'https://damienbod.b2clogin.ch/a0958f45-195b-4036-9259-de2f7e594db6/v2.0/',
-        sub: 'f836f380-3c64-4802-8dbc-011981c068f5',
-        aud: 'f1934a6e-958d-4198-9f36-6127cfc4cdb3',
-        nonce: '007c4153b6a0517c0e497476fb249948ec5clOvQQ',
-        iat: 1589206486,
-        auth_time: 1589206486,
-        name: 'damienbod',
-        emails: ['damien@damienbod.onmicrosoft.com'],
-        tfp: 'B2C_1_b2cpolicydamien',
-        at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
-      };
-      const isValid = (
-        stateValidationService as any
-      ).isIdTokenAfterRefreshTokenRequestValid(
-        callbackContext,
-        decodedIdToken,
-        configRefresh
-      );
+      });
 
-      expect(isValid).toBe(false);
+      const state = await getValidatedStateResult();
+
+      expect(state.authResponseIsValid).toBe(false);
+      expect(state.state).toBe(
+        ValidationResult.IncorrectIdTokenClaimsAfterRefresh
+      );
+      expect(logDebugSpy).toHaveBeenCalledWith(
+        configRefresh,
+        expect.stringContaining('iss do not match')
+      );
     });
 
-    it('validate refresh invalid sub ', () => {
-      const accessToken =
-        'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJpc3MiOiJodHRwczovL2RhbWllbmJvZC5iMmNsb2dpbi5jb20vYTA5NThmNDUtMTk1Yi00MDM2LTkyNTktZGUyZjdlNTk0ZGI2L3YyLjAvIiwiZXhwIjoxNTg5MjEwMDg2LCJuYmYiOjE1ODkyMDY0ODYsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsIm5hbWUiOiJkYW1pZW5ib2QiLCJlbWFpbHMiOlsiZGFtaWVuQGRhbWllbmJvZC5vbm1pY3Jvc29mdC5jb20iXSwidGZwIjoiQjJDXzFfYjJjcG9saWN5ZGFtaWVuIiwibm9uY2UiOiIwMDdjNDE1M2I2YTA1MTdjMGU0OTc0NzZmYjI0OTk0OGVjNWNsT3ZRUSIsInNjcCI6ImRlbW8ucmVhZCIsImF6cCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInZlciI6IjEuMCIsImlhdCI6MTU4OTIwNjQ4Nn0.Zyg8GAsyj8_ljdheJ57oQ8ldZMon4nLs1VCkBnIon2cXGrXlTA_fYP_Ypf5x5OZcCg-wXdo9RttsLRD69v1cnd5eUc9crzkJ18BruRdhoVQdlrGuakwKujozY2-EU8KNH64qSDpPOqQ9m4jdzGAOkY0wWitOlvYoNZHDzDS4ZIWn8W5H2nwAbf8LMAdXqy41YaIBF4lo3ZaKoUKQqCwIG_0aLvRQcmiwkEoQ5-EUb_hdOejTIbIT5PryyqMnvJYgyrKTf1VY060YpETH19PMosNriwPrPesJhsruphqzaJexg0Pt09ILoMHJhebkON-oPjXLjDOGLfnRTPp6oP_Drg';
-      const idToken =
-        'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
-      const refreshTokenData =
-        'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';
-      const configRefresh = {
-        authority: 'https://localhost:44363',
-        redirectUrl: 'https://localhost:44363',
-        clientId: 'singleapp',
-        responseType: 'icode',
-        scope: 'dataEventRecords openid',
-        postLogoutRedirectUri: 'https://localhost:44363/Unauthorized',
-        startCheckSession: false,
-        silentRenew: true,
-        silentRenewUrl: 'https://localhost:44363/silent-renew.html',
-        postLoginRoute: '/dataeventrecords',
-        forbiddenRoute: '/Forbidden',
-        unauthorizedRoute: '/Unauthorized',
-        logLevel: LogLevel.Debug,
-        maxIdTokenIatOffsetAllowedInSeconds: 10,
-        useRefreshToken: true,
-        ignoreNonceAfterRefresh: true,
-        disableRefreshIdTokenAuthTimeValidation: true,
-        triggerRefreshWhenIdTokenExpired: true,
-      };
-
-      vi.spyOn(
-        tokenValidationService,
-        'validateStateFromHashCallback'
-      ).mockReturnValue(false);
-
-      const callbackContext = {
-        code: 'fdffsdfsdf',
-        refreshToken: refreshTokenData,
-        state: 'fdffsggggggdfsdf',
-        sessionState: 'fdffsggggggdfsdf',
-        existingIdToken: idToken,
-        authResult: {
-          access_token: accessToken,
-          id_token: idToken,
-        },
-        isRenewProcess: false,
-        jwtKeys: null,
-        validationResult: null,
-      };
-      const decodedIdToken = {
-        exp: 1589210086,
-        nbf: 1589206486,
-        ver: '1.0',
-        iss: 'https://damienbod.b2clogin.com/a0958f45-195b-4036-9259-de2f7e594db6/v2.0/',
+    it('should be invalid when the sub of the new id_token differs', async () => {
+      arrangeNewIdTokenClaims({
+        ...createClaims(),
         sub: 'f836f380-3c64-4802-8dbc-011981c068f7',
-        aud: 'f1934a6e-958d-4198-9f36-6127cfc4cdb3',
-        nonce: '007c4153b6a0517c0e497476fb249948ec5clOvQQ',
-        iat: 1589206486,
-        auth_time: 1589206486,
-        name: 'damienbod',
-        emails: ['damien@damienbod.onmicrosoft.com'],
-        tfp: 'B2C_1_b2cpolicydamien',
-        at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
-      };
-      const isValid = (
-        stateValidationService as any
-      ).isIdTokenAfterRefreshTokenRequestValid(
-        callbackContext,
-        decodedIdToken,
-        configRefresh
-      );
+      });
 
-      expect(isValid).toBe(false);
+      const state = await getValidatedStateResult();
+
+      expect(state.authResponseIsValid).toBe(false);
+      expect(state.state).toBe(
+        ValidationResult.IncorrectIdTokenClaimsAfterRefresh
+      );
+      expect(logDebugSpy).toHaveBeenCalledWith(
+        configRefresh,
+        expect.stringContaining('sub do not match')
+      );
     });
 
-    it('validate refresh invalid auth_time ', () => {
-      const accessToken =
-        'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJpc3MiOiJodHRwczovL2RhbWllbmJvZC5iMmNsb2dpbi5jb20vYTA5NThmNDUtMTk1Yi00MDM2LTkyNTktZGUyZjdlNTk0ZGI2L3YyLjAvIiwiZXhwIjoxNTg5MjEwMDg2LCJuYmYiOjE1ODkyMDY0ODYsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsIm5hbWUiOiJkYW1pZW5ib2QiLCJlbWFpbHMiOlsiZGFtaWVuQGRhbWllbmJvZC5vbm1pY3Jvc29mdC5jb20iXSwidGZwIjoiQjJDXzFfYjJjcG9saWN5ZGFtaWVuIiwibm9uY2UiOiIwMDdjNDE1M2I2YTA1MTdjMGU0OTc0NzZmYjI0OTk0OGVjNWNsT3ZRUSIsInNjcCI6ImRlbW8ucmVhZCIsImF6cCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInZlciI6IjEuMCIsImlhdCI6MTU4OTIwNjQ4Nn0.Zyg8GAsyj8_ljdheJ57oQ8ldZMon4nLs1VCkBnIon2cXGrXlTA_fYP_Ypf5x5OZcCg-wXdo9RttsLRD69v1cnd5eUc9crzkJ18BruRdhoVQdlrGuakwKujozY2-EU8KNH64qSDpPOqQ9m4jdzGAOkY0wWitOlvYoNZHDzDS4ZIWn8W5H2nwAbf8LMAdXqy41YaIBF4lo3ZaKoUKQqCwIG_0aLvRQcmiwkEoQ5-EUb_hdOejTIbIT5PryyqMnvJYgyrKTf1VY060YpETH19PMosNriwPrPesJhsruphqzaJexg0Pt09ILoMHJhebkON-oPjXLjDOGLfnRTPp6oP_Drg';
-      const idToken =
-        'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
-      const refreshTokenData =
-        'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';
-      const configRefresh = {
-        authority: 'https://localhost:44363',
-        redirectUrl: 'https://localhost:44363',
-        clientId: 'singleapp',
-        responseType: 'icode',
-        scope: 'dataEventRecords openid',
-        postLogoutRedirectUri: 'https://localhost:44363/Unauthorized',
-        startCheckSession: false,
-        silentRenew: true,
-        silentRenewUrl: 'https://localhost:44363/silent-renew.html',
-        postLoginRoute: '/dataeventrecords',
-        forbiddenRoute: '/Forbidden',
-        unauthorizedRoute: '/Unauthorized',
-        logLevel: LogLevel.Debug,
-        maxIdTokenIatOffsetAllowedInSeconds: 10,
-        useRefreshToken: true,
-        ignoreNonceAfterRefresh: true,
-        disableRefreshIdTokenAuthTimeValidation: false,
-        triggerRefreshWhenIdTokenExpired: true,
-      };
+    it('should be invalid when the auth_time of the new id_token differs', async () => {
+      arrangeNewIdTokenClaims({ ...createClaims(), auth_time: 1589206488 });
 
-      vi.spyOn(
-        tokenValidationService,
-        'validateStateFromHashCallback'
-      ).mockReturnValue(false);
+      const state = await getValidatedStateResult();
 
-      const callbackContext = {
-        code: 'fdffsdfsdf',
-        refreshToken: refreshTokenData,
-        state: 'fdffsggggggdfsdf',
-        sessionState: 'fdffsggggggdfsdf',
-        existingIdToken: idToken,
-        authResult: {
-          access_token: accessToken,
-          id_token: idToken,
-        },
-        isRenewProcess: false,
-        jwtKeys: null,
-        validationResult: null,
-      };
-      const decodedIdToken = {
-        exp: 1589210086,
-        nbf: 1589206486,
-        ver: '1.0',
-        iss: 'https://damienbod.b2clogin.com/a0958f45-195b-4036-9259-de2f7e594db6/v2.0/',
-        sub: 'f836f380-3c64-4802-8dbc-011981c068f5',
-        aud: 'f1934a6e-958d-4198-9f36-6127cfc4cdb3',
-        nonce: '007c4153b6a0517c0e497476fb249948ec5clOvQQ',
-        iat: 1589206486,
-        auth_time: 1589206488,
-        name: 'damienbod',
-        emails: ['damien@damienbod.onmicrosoft.com'],
-        tfp: 'B2C_1_b2cpolicydamien',
-        at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
-      };
-      const isValid = (
-        stateValidationService as any
-      ).isIdTokenAfterRefreshTokenRequestValid(
-        callbackContext,
-        decodedIdToken,
-        configRefresh
+      expect(state.authResponseIsValid).toBe(false);
+      expect(state.state).toBe(
+        ValidationResult.IncorrectIdTokenClaimsAfterRefresh
       );
-
-      expect(isValid).toBe(false);
+      expect(logDebugSpy).toHaveBeenCalledWith(
+        configRefresh,
+        expect.stringContaining('auth_time do not match')
+      );
     });
 
-    it('validate refresh good full', () => {
-      const accessToken =
-        'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJpc3MiOiJodHRwczovL2RhbWllbmJvZC5iMmNsb2dpbi5jb20vYTA5NThmNDUtMTk1Yi00MDM2LTkyNTktZGUyZjdlNTk0ZGI2L3YyLjAvIiwiZXhwIjoxNTg5MjEwMDg2LCJuYmYiOjE1ODkyMDY0ODYsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsIm5hbWUiOiJkYW1pZW5ib2QiLCJlbWFpbHMiOlsiZGFtaWVuQGRhbWllbmJvZC5vbm1pY3Jvc29mdC5jb20iXSwidGZwIjoiQjJDXzFfYjJjcG9saWN5ZGFtaWVuIiwibm9uY2UiOiIwMDdjNDE1M2I2YTA1MTdjMGU0OTc0NzZmYjI0OTk0OGVjNWNsT3ZRUSIsInNjcCI6ImRlbW8ucmVhZCIsImF6cCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInZlciI6IjEuMCIsImlhdCI6MTU4OTIwNjQ4Nn0.Zyg8GAsyj8_ljdheJ57oQ8ldZMon4nLs1VCkBnIon2cXGrXlTA_fYP_Ypf5x5OZcCg-wXdo9RttsLRD69v1cnd5eUc9crzkJ18BruRdhoVQdlrGuakwKujozY2-EU8KNH64qSDpPOqQ9m4jdzGAOkY0wWitOlvYoNZHDzDS4ZIWn8W5H2nwAbf8LMAdXqy41YaIBF4lo3ZaKoUKQqCwIG_0aLvRQcmiwkEoQ5-EUb_hdOejTIbIT5PryyqMnvJYgyrKTf1VY060YpETH19PMosNriwPrPesJhsruphqzaJexg0Pt09ILoMHJhebkON-oPjXLjDOGLfnRTPp6oP_Drg';
-      const idToken =
-        'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
-      const refreshTokenData =
-        'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';
-      const configRefresh = {
-        authority: 'https://localhost:44363',
-        redirectUrl: 'https://localhost:44363',
-        clientId: 'singleapp',
-        responseType: 'icode',
-        scope: 'dataEventRecords openid',
-        postLogoutRedirectUri: 'https://localhost:44363/Unauthorized',
-        startCheckSession: false,
-        silentRenew: true,
-        silentRenewUrl: 'https://localhost:44363/silent-renew.html',
-        postLoginRoute: '/dataeventrecords',
-        forbiddenRoute: '/Forbidden',
-        unauthorizedRoute: '/Unauthorized',
-        logLevel: LogLevel.Debug,
-        maxIdTokenIatOffsetAllowedInSeconds: 10,
-        useRefreshToken: true,
-        ignoreNonceAfterRefresh: true,
-        disableRefreshIdTokenAuthTimeValidation: false,
-        triggerRefreshWhenIdTokenExpired: true,
-      };
+    it('should be invalid when the aud of the new id_token differs', async () => {
+      arrangeNewIdTokenClaims({ ...createClaims(), aud: 'bad' });
 
-      vi.spyOn(
-        tokenValidationService,
-        'validateStateFromHashCallback'
-      ).mockReturnValue(false);
+      const state = await getValidatedStateResult();
 
-      const callbackContext = {
-        code: 'fdffsdfsdf',
-        refreshToken: refreshTokenData,
-        state: 'fdffsggggggdfsdf',
-        sessionState: 'fdffsggggggdfsdf',
-        existingIdToken: idToken,
-        authResult: {
-          access_token: accessToken,
-          id_token: idToken,
-        },
-        isRenewProcess: false,
-        jwtKeys: null,
-        validationResult: null,
-      };
-      const decodedIdToken = {
-        exp: 1589210086,
-        nbf: 1589206486,
-        ver: '1.0',
-        iss: 'https://damienbod.b2clogin.com/a0958f45-195b-4036-9259-de2f7e594db6/v2.0/',
-        sub: 'f836f380-3c64-4802-8dbc-011981c068f5',
-        aud: 'f1934a6e-958d-4198-9f36-6127cfc4cdb3',
-        nonce: '007c4153b6a0517c0e497476fb249948ec5clOvQQ',
-        iat: 1589206486,
-        auth_time: 1589206486,
-        name: 'damienbod',
-        emails: ['damien@damienbod.onmicrosoft.com'],
-        tfp: 'B2C_1_b2cpolicydamien',
-        at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
-      };
-      const isValid = (
-        stateValidationService as any
-      ).isIdTokenAfterRefreshTokenRequestValid(
-        callbackContext,
-        decodedIdToken,
-        configRefresh
+      expect(state.authResponseIsValid).toBe(false);
+      expect(state.state).toBe(
+        ValidationResult.IncorrectIdTokenClaimsAfterRefresh
       );
-
-      expect(isValid).toBe(true);
+      expect(logDebugSpy).toHaveBeenCalledWith(
+        configRefresh,
+        expect.stringContaining('aud in new id_token is not valid')
+      );
     });
 
-    it('validate refresh good no existing id_token', () => {
-      const accessToken =
-        'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJpc3MiOiJodHRwczovL2RhbWllbmJvZC5iMmNsb2dpbi5jb20vYTA5NThmNDUtMTk1Yi00MDM2LTkyNTktZGUyZjdlNTk0ZGI2L3YyLjAvIiwiZXhwIjoxNTg5MjEwMDg2LCJuYmYiOjE1ODkyMDY0ODYsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsIm5hbWUiOiJkYW1pZW5ib2QiLCJlbWFpbHMiOlsiZGFtaWVuQGRhbWllbmJvZC5vbm1pY3Jvc29mdC5jb20iXSwidGZwIjoiQjJDXzFfYjJjcG9saWN5ZGFtaWVuIiwibm9uY2UiOiIwMDdjNDE1M2I2YTA1MTdjMGU0OTc0NzZmYjI0OTk0OGVjNWNsT3ZRUSIsInNjcCI6ImRlbW8ucmVhZCIsImF6cCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInZlciI6IjEuMCIsImlhdCI6MTU4OTIwNjQ4Nn0.Zyg8GAsyj8_ljdheJ57oQ8ldZMon4nLs1VCkBnIon2cXGrXlTA_fYP_Ypf5x5OZcCg-wXdo9RttsLRD69v1cnd5eUc9crzkJ18BruRdhoVQdlrGuakwKujozY2-EU8KNH64qSDpPOqQ9m4jdzGAOkY0wWitOlvYoNZHDzDS4ZIWn8W5H2nwAbf8LMAdXqy41YaIBF4lo3ZaKoUKQqCwIG_0aLvRQcmiwkEoQ5-EUb_hdOejTIbIT5PryyqMnvJYgyrKTf1VY060YpETH19PMosNriwPrPesJhsruphqzaJexg0Pt09ILoMHJhebkON-oPjXLjDOGLfnRTPp6oP_Drg';
-      const idToken =
-        'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
-      const refreshTokenData =
-        'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';
-      const configRefresh = {
-        authority: 'https://localhost:44363',
-        redirectUrl: 'https://localhost:44363',
-        clientId: 'singleapp',
-        responseType: 'icode',
-        scope: 'dataEventRecords openid',
-        postLogoutRedirectUri: 'https://localhost:44363/Unauthorized',
-        startCheckSession: false,
-        silentRenew: true,
-        silentRenewUrl: 'https://localhost:44363/silent-renew.html',
-        postLoginRoute: '/dataeventrecords',
-        forbiddenRoute: '/Forbidden',
-        unauthorizedRoute: '/Unauthorized',
-        logLevel: LogLevel.Debug,
-        maxIdTokenIatOffsetAllowedInSeconds: 10,
-        useRefreshToken: true,
-        ignoreNonceAfterRefresh: true,
-        disableRefreshIdTokenAuthTimeValidation: false,
-        triggerRefreshWhenIdTokenExpired: true,
-      };
+    it('should be invalid when the new id_token has an azp the existing id_token does not have', async () => {
+      arrangeNewIdTokenClaims({ ...createClaims(), azp: 'no bad' });
 
-      vi.spyOn(
-        tokenValidationService,
-        'validateStateFromHashCallback'
-      ).mockReturnValue(false);
+      const state = await getValidatedStateResult();
 
-      const callbackContext = {
-        code: 'fdffsdfsdf',
-        refreshToken: refreshTokenData,
-        state: 'fdffsggggggdfsdf',
-        sessionState: 'fdffsggggggdfsdf',
-        existingIdToken: null,
-        authResult: {
-          access_token: accessToken,
-          id_token: idToken,
-        },
-        isRenewProcess: false,
-        jwtKeys: null,
-        validationResult: null,
-      };
-      const decodedIdToken = {
-        exp: 1589210086,
-        nbf: 1589206486,
-        ver: '1.0',
-        iss: 'https://damienbod.b2clogin.com/a0958f45-195b-4036-9259-de2f7e594db6/v2.0/',
-        sub: 'f836f380-3c64-4802-8dbc-011981c068f5',
-        aud: 'f1934a6e-958d-4198-9f36-6127cfc4cdb3',
-        nonce: '007c4153b6a0517c0e497476fb249948ec5clOvQQ',
-        iat: 1589206486,
-        auth_time: 1589206486,
-        name: 'damienbod',
-        emails: ['damien@damienbod.onmicrosoft.com'],
-        tfp: 'B2C_1_b2cpolicydamien',
-        at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
-      };
-      const isValid = (
-        stateValidationService as any
-      ).isIdTokenAfterRefreshTokenRequestValid(
-        callbackContext,
-        decodedIdToken,
-        configRefresh
+      expect(state.authResponseIsValid).toBe(false);
+      expect(state.state).toBe(
+        ValidationResult.IncorrectIdTokenClaimsAfterRefresh
       );
-
-      expect(isValid).toBe(true);
-    });
-
-    it('validate refresh invalid aud ', () => {
-      const accessToken =
-        'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJpc3MiOiJodHRwczovL2RhbWllbmJvZC5iMmNsb2dpbi5jb20vYTA5NThmNDUtMTk1Yi00MDM2LTkyNTktZGUyZjdlNTk0ZGI2L3YyLjAvIiwiZXhwIjoxNTg5MjEwMDg2LCJuYmYiOjE1ODkyMDY0ODYsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsIm5hbWUiOiJkYW1pZW5ib2QiLCJlbWFpbHMiOlsiZGFtaWVuQGRhbWllbmJvZC5vbm1pY3Jvc29mdC5jb20iXSwidGZwIjoiQjJDXzFfYjJjcG9saWN5ZGFtaWVuIiwibm9uY2UiOiIwMDdjNDE1M2I2YTA1MTdjMGU0OTc0NzZmYjI0OTk0OGVjNWNsT3ZRUSIsInNjcCI6ImRlbW8ucmVhZCIsImF6cCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInZlciI6IjEuMCIsImlhdCI6MTU4OTIwNjQ4Nn0.Zyg8GAsyj8_ljdheJ57oQ8ldZMon4nLs1VCkBnIon2cXGrXlTA_fYP_Ypf5x5OZcCg-wXdo9RttsLRD69v1cnd5eUc9crzkJ18BruRdhoVQdlrGuakwKujozY2-EU8KNH64qSDpPOqQ9m4jdzGAOkY0wWitOlvYoNZHDzDS4ZIWn8W5H2nwAbf8LMAdXqy41YaIBF4lo3ZaKoUKQqCwIG_0aLvRQcmiwkEoQ5-EUb_hdOejTIbIT5PryyqMnvJYgyrKTf1VY060YpETH19PMosNriwPrPesJhsruphqzaJexg0Pt09ILoMHJhebkON-oPjXLjDOGLfnRTPp6oP_Drg';
-      const idToken =
-        'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
-      const refreshTokenData =
-        'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';
-      const configRefresh = {
-        authority: 'https://localhost:44363',
-        redirectUrl: 'https://localhost:44363',
-        clientId: 'singleapp',
-        responseType: 'icode',
-        scope: 'dataEventRecords openid',
-        postLogoutRedirectUri: 'https://localhost:44363/Unauthorized',
-        startCheckSession: false,
-        silentRenew: true,
-        silentRenewUrl: 'https://localhost:44363/silent-renew.html',
-        postLoginRoute: '/dataeventrecords',
-        forbiddenRoute: '/Forbidden',
-        unauthorizedRoute: '/Unauthorized',
-        logLevel: LogLevel.Debug,
-        maxIdTokenIatOffsetAllowedInSeconds: 10,
-        useRefreshToken: true,
-        ignoreNonceAfterRefresh: true,
-        disableRefreshIdTokenAuthTimeValidation: false,
-        triggerRefreshWhenIdTokenExpired: true,
-      };
-
-      vi.spyOn(
-        tokenValidationService,
-        'validateStateFromHashCallback'
-      ).mockReturnValue(false);
-
-      const callbackContext = {
-        code: 'fdffsdfsdf',
-        refreshToken: refreshTokenData,
-        state: 'fdffsggggggdfsdf',
-        sessionState: 'fdffsggggggdfsdf',
-        existingIdToken: idToken,
-        authResult: {
-          access_token: accessToken,
-          id_token: idToken,
-        },
-        isRenewProcess: false,
-        jwtKeys: null,
-        validationResult: null,
-      };
-      const decodedIdToken = {
-        exp: 1589210086,
-        nbf: 1589206486,
-        ver: '1.0',
-        iss: 'https://damienbod.b2clogin.com/a0958f45-195b-4036-9259-de2f7e594db6/v2.0/',
-        sub: 'f836f380-3c64-4802-8dbc-011981c068f5',
-        aud: 'bad',
-        nonce: '007c4153b6a0517c0e497476fb249948ec5clOvQQ',
-        iat: 1589206486,
-        auth_time: 1589206486,
-        name: 'damienbod',
-        emails: ['damien@damienbod.onmicrosoft.com'],
-        tfp: 'B2C_1_b2cpolicydamien',
-        at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
-      };
-      const isValid = (
-        stateValidationService as any
-      ).isIdTokenAfterRefreshTokenRequestValid(
-        callbackContext,
-        decodedIdToken,
-        configRefresh
+      expect(logDebugSpy).toHaveBeenCalledWith(
+        configRefresh,
+        expect.stringContaining('azp do not match')
       );
-
-      expect(isValid).toBe(false);
-    });
-
-    it('validate refresh invalid azp ', () => {
-      const accessToken =
-        'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJpc3MiOiJodHRwczovL2RhbWllbmJvZC5iMmNsb2dpbi5jb20vYTA5NThmNDUtMTk1Yi00MDM2LTkyNTktZGUyZjdlNTk0ZGI2L3YyLjAvIiwiZXhwIjoxNTg5MjEwMDg2LCJuYmYiOjE1ODkyMDY0ODYsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsIm5hbWUiOiJkYW1pZW5ib2QiLCJlbWFpbHMiOlsiZGFtaWVuQGRhbWllbmJvZC5vbm1pY3Jvc29mdC5jb20iXSwidGZwIjoiQjJDXzFfYjJjcG9saWN5ZGFtaWVuIiwibm9uY2UiOiIwMDdjNDE1M2I2YTA1MTdjMGU0OTc0NzZmYjI0OTk0OGVjNWNsT3ZRUSIsInNjcCI6ImRlbW8ucmVhZCIsImF6cCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsInZlciI6IjEuMCIsImlhdCI6MTU4OTIwNjQ4Nn0.Zyg8GAsyj8_ljdheJ57oQ8ldZMon4nLs1VCkBnIon2cXGrXlTA_fYP_Ypf5x5OZcCg-wXdo9RttsLRD69v1cnd5eUc9crzkJ18BruRdhoVQdlrGuakwKujozY2-EU8KNH64qSDpPOqQ9m4jdzGAOkY0wWitOlvYoNZHDzDS4ZIWn8W5H2nwAbf8LMAdXqy41YaIBF4lo3ZaKoUKQqCwIG_0aLvRQcmiwkEoQ5-EUb_hdOejTIbIT5PryyqMnvJYgyrKTf1VY060YpETH19PMosNriwPrPesJhsruphqzaJexg0Pt09ILoMHJhebkON-oPjXLjDOGLfnRTPp6oP_Drg';
-      const idToken =
-        'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ilg1ZVhrNHh5b2pORnVtMWtsMll0djhkbE5QNC1jNTdkTzZRR1RWQndhTmsifQ.eyJleHAiOjE1ODkyMTAwODYsIm5iZiI6MTU4OTIwNjQ4NiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kYW1pZW5ib2QuYjJjbG9naW4uY29tL2EwOTU4ZjQ1LTE5NWItNDAzNi05MjU5LWRlMmY3ZTU5NGRiNi92Mi4wLyIsInN1YiI6ImY4MzZmMzgwLTNjNjQtNDgwMi04ZGJjLTAxMTk4MWMwNjhmNSIsImF1ZCI6ImYxOTM0YTZlLTk1OGQtNDE5OC05ZjM2LTYxMjdjZmM0Y2RiMyIsIm5vbmNlIjoiMDA3YzQxNTNiNmEwNTE3YzBlNDk3NDc2ZmIyNDk5NDhlYzVjbE92UVEiLCJpYXQiOjE1ODkyMDY0ODYsImF1dGhfdGltZSI6MTU4OTIwNjQ4NiwibmFtZSI6ImRhbWllbmJvZCIsImVtYWlscyI6WyJkYW1pZW5AZGFtaWVuYm9kLm9ubWljcm9zb2Z0LmNvbSJdLCJ0ZnAiOiJCMkNfMV9iMmNwb2xpY3lkYW1pZW4iLCJhdF9oYXNoIjoiWmswZktKU19wWWhPcE04SUJhMTJmdyJ9.E5Z-0kOzNU7LBkeVHHMyNoER8TUapGzUUfXmW6gVu4v6QMM5fQ4sJ7KC8PHh8lBFYiCnaDiTtpn3QytUwjXEFnLDAX5qcZT1aPoEgL_OmZMC-8y-4GyHp35l7VFD4iNYM9fJmLE8SYHTVl7eWPlXSyz37Ip0ciiV0Fd6eoksD_aVc-hkIqngDfE4fR8ZKfv4yLTNN_SfknFfuJbZ56yN-zIBL4GkuHsbQCBYpjtWQ62v98p1jO7NhHKV5JP2ec_Ge6oYc_bKTrE6OIX38RJ2rIm7zU16mtdjnl_350Nw3ytHcTPnA1VpP_VLElCfe83jr5aDHc_UQRYaAcWlOgvmVg';
-      const refreshTokenData =
-        'eyJraWQiOiJjcGltY29yZV8wOTI1MjAxNSIsInZlciI6IjEuMCIsInppcCI6IkRlZmxhdGUiLCJzZXIiOiIxLjAifQ..Gn8_Hs0IAsJm7Tlw.4dvuowpuUHz2RifIINXM5mBbiOorKgAWZapLdohY9LYd4yxAr-K2E8PFCi_lmbTfY0nxXkRqL9S_JnJKP_2Sd_R0g3PC5weu9XxGIT-oWATtkVX4KDWlAsN0-xWUosulT4LEbFygC3bA6B5Ch2BgN_zZ5L-aJjwE1JkE55tQCDgT2tS6uRQjvh1U3ddWgYEsmCqbWQnwbMPPkxA-PvXXTtUKqXTzAo0T9tLBXrSaXurq0Y-visy036Sy9Y7f-duiTLMJ8WKw_XYz3uzsj7Y0SV2A3m2rJNs3HjPBRUOyyWpdhmjo3VAes1bc8nZuZHsP4S2HSe7hRoOxYkWfGhIBvI8FT3dBZKfttAT64fsR-fQtQ4ia0z12SsLoCJhF1VRf3NU1-Lc2raP0kvN7HOGQFuVPkjmWOqKKoy4at7PAvC_sWHOND7QkmYkFyfQvGcNmt_lA10VZlr_cOeuiNCTPUHZHi-pv7nsefxVoPYGJPztGvIJ_daAUigXMZGARTTIhCt84PzPEdPMlCSI3GuNxQoD95rhvSyZP8SBQ5NIs_qwxYMAfzXgJP8aFK-ZHd8ZQfm1Rg79mO0LH1GcQzIhc4pC4PsvcSm6I6Jo1ZeEw5pRQQWf59asPyORG-2qfnMvZB1hGCZU7J78lAcse6sXCtBlQDLe9Th5Goibn.XdCGzjyrmgKzJktSPSDH0g';
-      const configRefresh = {
-        authority: 'https://localhost:44363',
-        redirectUrl: 'https://localhost:44363',
-        clientId: 'singleapp',
-        responseType: 'icode',
-        scope: 'dataEventRecords openid',
-        postLogoutRedirectUri: 'https://localhost:44363/Unauthorized',
-        startCheckSession: false,
-        silentRenew: true,
-        silentRenewUrl: 'https://localhost:44363/silent-renew.html',
-        postLoginRoute: '/dataeventrecords',
-        forbiddenRoute: '/Forbidden',
-        unauthorizedRoute: '/Unauthorized',
-        logLevel: LogLevel.Debug,
-        maxIdTokenIatOffsetAllowedInSeconds: 10,
-        useRefreshToken: true,
-        ignoreNonceAfterRefresh: true,
-        disableRefreshIdTokenAuthTimeValidation: false,
-        triggerRefreshWhenIdTokenExpired: true,
-      };
-
-      vi.spyOn(
-        tokenValidationService,
-        'validateStateFromHashCallback'
-      ).mockReturnValue(false);
-
-      const callbackContext = {
-        code: 'fdffsdfsdf',
-        refreshToken: refreshTokenData,
-        state: 'fdffsggggggdfsdf',
-        sessionState: 'fdffsggggggdfsdf',
-        existingIdToken: idToken,
-        authResult: {
-          access_token: accessToken,
-          id_token: idToken,
-        },
-        isRenewProcess: false,
-        jwtKeys: null,
-        validationResult: null,
-      };
-      const decodedIdToken = {
-        exp: 1589210086,
-        nbf: 1589206486,
-        ver: '1.0',
-        iss: 'https://damienbod.b2clogin.com/a0958f45-195b-4036-9259-de2f7e594db6/v2.0/',
-        sub: 'f836f380-3c64-4802-8dbc-011981c068f5',
-        aud: 'f1934a6e-958d-4198-9f36-6127cfc4cdb3',
-        nonce: '007c4153b6a0517c0e497476fb249948ec5clOvQQ',
-        iat: 1589206486,
-        auth_time: 1589206486,
-        name: 'damienbod',
-        emails: ['damien@damienbod.onmicrosoft.com'],
-        tfp: 'B2C_1_b2cpolicydamien',
-        at_hash: 'Zk0fKJS_pYhOpM8IBa12fw',
-        azp: 'no bad',
-      };
-      const isValid = (
-        stateValidationService as any
-      ).isIdTokenAfterRefreshTokenRequestValid(
-        callbackContext,
-        decodedIdToken,
-        configRefresh
-      );
-
-      expect(isValid).toBe(false);
     });
   });
 
@@ -887,7 +537,7 @@ describe('State Validation Service', () => {
       expect(state.idToken).toBe('');
     });
 
-    it('access_token should equal result.access_token and is valid if response_type is "id_token token"', async () => {
+    it('should set the access_token and be valid if response_type is "id_token token"', async () => {
       vi.spyOn(tokenHelperService, 'getPayloadFromToken').mockReturnValue(
         'decoded_id_token'
       );
@@ -1662,14 +1312,17 @@ describe('State Validation Service', () => {
       expect(state.state).toBe(ValidationResult.IncorrectAzp);
     });
 
-    it('should return invalid result if isIdTokenAfterRefreshTokenRequestValid is false', async () => {
+    it('should return invalid result if the id_token claims after a refresh do not match the existing id_token', async () => {
       vi.spyOn(
         tokenValidationService,
         'validateStateFromHashCallback'
       ).mockReturnValue(true);
       config.responseType = 'id_token token';
-      vi.spyOn(tokenHelperService, 'getPayloadFromToken').mockReturnValue(
-        'decoded_id_token'
+      vi.spyOn(tokenHelperService, 'getPayloadFromToken').mockImplementation(
+        (token: any) =>
+          token === 'existing_id_token'
+            ? { iss: 'other-iss' }
+            : 'decoded_id_token'
       );
       vi.spyOn(
         tokenValidationService,
@@ -1701,10 +1354,7 @@ describe('State Validation Service', () => {
         tokenValidationService,
         'validateIdTokenAzpValid'
       ).mockReturnValue(true);
-      vi.spyOn(
-        stateValidationService as any,
-        'isIdTokenAfterRefreshTokenRequestValid'
-      ).mockReturnValue(false);
+      config.useRefreshToken = true;
 
       config.clientId = '';
       vi.spyOn(storagePersistenceService, 'read').mockImplementation(
@@ -1736,7 +1386,7 @@ describe('State Validation Service', () => {
         isRenewProcess: false,
         jwtKeys: null,
         validationResult: null,
-        existingIdToken: null,
+        existingIdToken: 'existing_id_token',
       };
       const state = await firstValueFrom(
         stateValidationService.getValidatedStateResult(callbackContext, config)
@@ -1757,7 +1407,7 @@ describe('State Validation Service', () => {
       );
     });
 
-    it('Reponse is valid if authConfiguration.response_type does not equal "id_token token"', async () => {
+    it('should be valid if response_type does not equal "id_token token"', async () => {
       vi.spyOn(tokenValidationService, 'hasIdTokenExpired').mockReturnValue(
         false
       );
@@ -1861,7 +1511,7 @@ describe('State Validation Service', () => {
       expect(state.authResponseIsValid).toBe(true);
     });
 
-    it('Response is invalid if validateIdTokenAtHash is false', async () => {
+    it('should be invalid if validateIdTokenAtHash is false', async () => {
       vi.spyOn(
         tokenValidationService,
         'validateStateFromHashCallback'
@@ -2279,7 +1929,7 @@ describe('State Validation Service', () => {
       };
     }
 
-    it('does not compare the state with the stored one', async () => {
+    it('should not compare the state with the stored one', async () => {
       // Arrange
       const validateStateSpy = vi.spyOn(
         tokenValidationService,
@@ -2304,7 +1954,7 @@ describe('State Validation Service', () => {
       expect(result.state).toBe(ValidationResult.Ok);
     });
 
-    it('validates the nonce against the refresh token placeholder instead of the stored nonce', async () => {
+    it('should validate the nonce against the refresh token placeholder instead of the stored nonce', async () => {
       // Arrange
       const validateNonceSpy = vi
         .spyOn(tokenValidationService, 'validateIdTokenNonce')
@@ -2327,7 +1977,7 @@ describe('State Validation Service', () => {
       );
     });
 
-    it('does not clear the stored state and nonce after a valid refresh', async () => {
+    it('should not clear the stored state and nonce after a valid refresh', async () => {
       // Arrange
       vi.spyOn(tokenValidationService, 'validateIdTokenNonce').mockReturnValue(
         true
@@ -2346,7 +1996,7 @@ describe('State Validation Service', () => {
       expect(writeSpy).not.toHaveBeenCalled();
     });
 
-    it('does not clear the stored state and nonce after an invalid refresh', async () => {
+    it('should not clear the stored state and nonce after an invalid refresh', async () => {
       // Arrange
       vi.spyOn(tokenValidationService, 'validateIdTokenNonce').mockReturnValue(
         false
@@ -2365,7 +2015,7 @@ describe('State Validation Service', () => {
       expect(writeSpy).not.toHaveBeenCalled();
     });
 
-    it('still clears the stored state and nonce after a valid code flow callback', async () => {
+    it('should still clear the stored state and nonce after a valid code flow callback', async () => {
       // Arrange
       vi.spyOn(
         tokenValidationService,
@@ -2422,7 +2072,7 @@ describe('State Validation Service', () => {
       config.responseType = 'code';
     });
 
-    it('sets an empty access token when the code flow response contains none', async () => {
+    it('should set an empty access token when the code flow response contains none', async () => {
       // Arrange
       vi.spyOn(
         tokenValidationService,
@@ -2443,7 +2093,7 @@ describe('State Validation Service', () => {
       expect(result.state).toBe(ValidationResult.Ok);
     });
 
-    it('uses an iat max offset of 120 seconds when none is configured', async () => {
+    it('should use an iat max offset of 120 seconds when none is configured', async () => {
       // Arrange
       vi.spyOn(
         tokenValidationService,
@@ -2484,7 +2134,7 @@ describe('State Validation Service', () => {
       expect(result.state).toBe(ValidationResult.MaxOffsetExpired);
     });
 
-    it('clears the stored state when validation fails and autoCleanStateAfterAuthentication is true', async () => {
+    it('should clear the stored state when validation fails and autoCleanStateAfterAuthentication is true', async () => {
       // Arrange
       vi.spyOn(
         tokenValidationService,
@@ -2506,7 +2156,7 @@ describe('State Validation Service', () => {
       expect(writeSpy).toHaveBeenCalledWith('authStateControl', '', config);
     });
 
-    it('keeps the stored state when validation fails and autoCleanStateAfterAuthentication is false', async () => {
+    it('should keep the stored state when validation fails and autoCleanStateAfterAuthentication is false', async () => {
       // Arrange
       vi.spyOn(
         tokenValidationService,

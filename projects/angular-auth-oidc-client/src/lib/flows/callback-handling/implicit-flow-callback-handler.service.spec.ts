@@ -49,7 +49,7 @@ describe('ImplicitFlowCallbackHandlerService', () => {
   });
 
   describe('implicitFlowCallback', () => {
-    it('calls "resetAuthorizationData" if silent renew is not running', async () => {
+    it('should call "resetAuthorizationData" if silent renew is not running', async () => {
       vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(false);
       const resetAuthorizationDataSpy = vi
         .spyOn(resetAuthDataService, 'resetAuthorizationData')
@@ -67,7 +67,7 @@ describe('ImplicitFlowCallbackHandlerService', () => {
       expect(resetAuthorizationDataSpy).toHaveBeenCalled();
     });
 
-    it('does NOT calls "resetAuthorizationData" if silent renew is running', async () => {
+    it('should not reset authorization data if silent renew is running', async () => {
       vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(true);
       const resetAuthorizationDataSpy = vi
         .spyOn(resetAuthDataService, 'resetAuthorizationData')
@@ -85,7 +85,7 @@ describe('ImplicitFlowCallbackHandlerService', () => {
       expect(resetAuthorizationDataSpy).not.toHaveBeenCalled();
     });
 
-    it('returns callbackContext if all params are good', async () => {
+    it('should return callbackContext if all params are good', async () => {
       vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(true);
       const expectedCallbackContext = {
         code: '',
@@ -110,7 +110,7 @@ describe('ImplicitFlowCallbackHandlerService', () => {
       expect(callbackContext).toEqual(expectedCallbackContext);
     });
 
-    it('uses window location hash if no hash is passed', async () => {
+    it('should use window location hash if no hash is passed', async () => {
       vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(true);
       const expectedCallbackContext = {
         code: '',

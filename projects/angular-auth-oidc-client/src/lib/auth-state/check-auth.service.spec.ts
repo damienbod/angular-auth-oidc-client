@@ -92,7 +92,7 @@ describe('CheckAuthService', () => {
   });
 
   describe('checkAuth', () => {
-    it('errors with a missing configuration message and does not fire CheckingAuth when config is null', async () => {
+    it('should error with a missing configuration message and not fire CheckingAuth when config is null', async () => {
       const fireEventSpy = vi.spyOn(publicEventsService, 'fireEvent');
 
       await expect(
@@ -103,7 +103,7 @@ describe('CheckAuthService', () => {
       expect(fireEventSpy).not.toHaveBeenCalled();
     });
 
-    it('uses config with matching state when url has state param and config with state param is stored', async () => {
+    it('should use config with matching state when url has state param and config with state param is stored', async () => {
       vi.spyOn(
         currentUrlService,
         'getStateParamFromCurrentUrl'
@@ -121,17 +121,23 @@ describe('CheckAuthService', () => {
           return undefined;
         }
       );
-      const spy = vi.spyOn(checkAuthService as any, 'checkAuthWithConfig');
-
-      await firstValueFrom(
+      vi.spyOn(currentUrlService, 'getCurrentUrl').mockReturnValue(
+        'http://localhost:4200'
+      );
+      const isCallbackSpy = vi.spyOn(callBackService, 'isCallback');
+      const result = await firstValueFrom(
         checkAuthService.checkAuth(allConfigs[0], allConfigs)
       );
 
-      expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith(allConfigs[0], allConfigs, undefined);
+      expect(isCallbackSpy).toHaveBeenCalledTimes(1);
+      expect(isCallbackSpy).toHaveBeenCalledWith(
+        'http://localhost:4200',
+        allConfigs[0]
+      );
+      expect(result.configId).toBe('configId1');
     });
 
-    it('throws error when url has state param and stored config with matching state param is not found', async () => {
+    it('should throw error when url has state param and stored config with matching state param is not found', async () => {
       vi.spyOn(
         currentUrlService,
         'getStateParamFromCurrentUrl'
@@ -149,17 +155,19 @@ describe('CheckAuthService', () => {
           return undefined;
         }
       );
-      const spy = vi.spyOn(checkAuthService as any, 'checkAuthWithConfig');
+      const isCallbackSpy = vi.spyOn(callBackService, 'isCallback');
+      const getCurrentUrlSpy = vi.spyOn(currentUrlService, 'getCurrentUrl');
 
       await expect(
         firstValueFrom(checkAuthService.checkAuth(allConfigs[0], allConfigs))
       ).rejects.toThrow(
         'could not find matching config for state the-state-param'
       );
-      expect(spy).not.toHaveBeenCalled();
+      expect(getCurrentUrlSpy).not.toHaveBeenCalled();
+      expect(isCallbackSpy).not.toHaveBeenCalled();
     });
 
-    it('uses first/default config when no param is passed', async () => {
+    it('should use first/default config when no param is passed', async () => {
       vi.spyOn(
         currentUrlService,
         'getStateParamFromCurrentUrl'
@@ -167,34 +175,36 @@ describe('CheckAuthService', () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
       ];
-      const spy = vi.spyOn(checkAuthService as any, 'checkAuthWithConfig');
 
-      await firstValueFrom(
+      vi.spyOn(currentUrlService, 'getCurrentUrl').mockReturnValue(
+        'http://localhost:4200'
+      );
+      const isCallbackSpy = vi.spyOn(callBackService, 'isCallback');
+      const readSpy = vi.spyOn(storagePersistenceService, 'read');
+      const result = await firstValueFrom(
         checkAuthService.checkAuth(allConfigs[0], allConfigs)
       );
 
-      expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith(
-        { configId: 'configId1', authority: 'some-authority' },
-        allConfigs,
-        undefined
+      expect(isCallbackSpy).toHaveBeenCalledTimes(1);
+      expect(isCallbackSpy).toHaveBeenCalledWith('http://localhost:4200', {
+        configId: 'configId1',
+        authority: 'some-authority',
+      });
+      expect(readSpy).not.toHaveBeenCalledWith(
+        'authStateControl',
+        expect.anything()
       );
+      expect(result.configId).toBe('configId1');
     });
 
-    it('returns null and sendMessageToMainWindow if currently in a popup', async () => {
+    it('should return null and sendMessageToMainWindow if currently in a popup', async () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
       ];
 
-      vi.spyOn(popUpService as any, 'canAccessSessionStorage').mockReturnValue(
-        true
-      );
       vi.spyOn(currentUrlService, 'getCurrentUrl').mockReturnValue(
         'http://localhost:4200'
       );
-      vi.spyOn(popUpService as any, 'windowInternal', 'get').mockReturnValue({
-        opener: {} as Window,
-      });
       vi.spyOn(storagePersistenceService, 'read').mockReturnValue(null);
 
       vi.spyOn(popUpService, 'isCurrentlyInPopup').mockReturnValue(true);
@@ -216,7 +226,7 @@ describe('CheckAuthService', () => {
       expect(popupSpy).toHaveBeenCalled();
     });
 
-    it('returns isAuthenticated: false with error message in case handleCallbackAndFireEvents throws an error', async () => {
+    it('should return isAuthenticated: false with error message in case handleCallbackAndFireEvents throws an error', async () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
       ];
@@ -249,7 +259,7 @@ describe('CheckAuthService', () => {
       expect(spy).toHaveBeenCalled();
     });
 
-    it('calls callbackService.handlePossibleStsCallback with current url when callback is true', async () => {
+    it('should call callbackService.handlePossibleStsCallback with current url when callback is true', async () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
       ];
@@ -286,7 +296,7 @@ describe('CheckAuthService', () => {
       );
     });
 
-    it('does NOT call handleCallbackAndFireEvents with current url when callback is false', async () => {
+    it('should not call handleCallbackAndFireEvents with the current url when it is not a callback', async () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
       ];
@@ -320,7 +330,7 @@ describe('CheckAuthService', () => {
       expect(spy).not.toHaveBeenCalled();
     });
 
-    it('does fire the auth and user data events when it is not a callback from the security token service and is authenticated', async () => {
+    it('should fire the auth and user data events when it is not a callback from the security token service and is authenticated', async () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
       ];
@@ -364,7 +374,7 @@ describe('CheckAuthService', () => {
       expect(userServiceSpy).toHaveBeenCalled();
     });
 
-    it('does NOT fire the auth and user data events when it is not a callback from the security token service and is NOT authenticated', async () => {
+    it('should not fire the auth and user data events when it is not a callback from the security token service and is not authenticated', async () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
       ];
@@ -403,7 +413,7 @@ describe('CheckAuthService', () => {
       expect(userServiceSpy).not.toHaveBeenCalled();
     });
 
-    it('if authenticated return true', async () => {
+    it('should return true when authenticated', async () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
       ];
@@ -433,7 +443,7 @@ describe('CheckAuthService', () => {
       });
     });
 
-    it('if authenticated set auth and fires event ', async () => {
+    it('should set authorization data and fire an event when authenticated', async () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
       ];
@@ -457,7 +467,7 @@ describe('CheckAuthService', () => {
       expect(spy).toHaveBeenCalled();
     });
 
-    it('if authenticated publishUserdataIfExists', async () => {
+    it('should publish user data if it exists when authenticated', async () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
       ];
@@ -483,7 +493,7 @@ describe('CheckAuthService', () => {
       expect(spy).toHaveBeenCalled();
     });
 
-    it('if authenticated callbackService startTokenValidationPeriodically', async () => {
+    it('should start periodic token validation when authenticated', async () => {
       const config = {
         authority: 'authority',
         tokenRefreshInSeconds: 7,
@@ -513,7 +523,7 @@ describe('CheckAuthService', () => {
       expect(spy).toHaveBeenCalled();
     });
 
-    it('if isCheckSessionConfigured call checkSessionService.start()', async () => {
+    it('should start the check session service when check session is configured', async () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
       ];
@@ -541,7 +551,7 @@ describe('CheckAuthService', () => {
       expect(spy).toHaveBeenCalled();
     });
 
-    it('if isSilentRenewConfigured call getOrCreateIframe()', async () => {
+    it('should create the silent renew iframe when silent renew is configured', async () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
       ];
@@ -569,7 +579,7 @@ describe('CheckAuthService', () => {
       expect(spy).toHaveBeenCalled();
     });
 
-    it('calls checkSavedRedirectRouteAndNavigate if authenticated', async () => {
+    it('should call checkSavedRedirectRouteAndNavigate if authenticated', async () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
       ];
@@ -596,7 +606,7 @@ describe('CheckAuthService', () => {
       expect(spy).toHaveBeenCalledWith(allConfigs[0]);
     });
 
-    it('does not call checkSavedRedirectRouteAndNavigate if not authenticated', async () => {
+    it('should not call checkSavedRedirectRouteAndNavigate if not authenticated', async () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
       ];
@@ -621,7 +631,7 @@ describe('CheckAuthService', () => {
       expect(spy).toHaveBeenCalledTimes(0);
     });
 
-    it('fires CheckingAuth-Event on start and finished event on end', async () => {
+    it('should fire CheckingAuth-Event on start and finished event on end', async () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
       ];
@@ -647,7 +657,7 @@ describe('CheckAuthService', () => {
       ]);
     });
 
-    it('fires CheckingAuth-Event on start and CheckingAuthFinishedWithError event on end if exception occurs', async () => {
+    it('should fire CheckingAuth-Event on start and CheckingAuthFinishedWithError event on end if exception occurs', async () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
       ];
@@ -673,7 +683,7 @@ describe('CheckAuthService', () => {
       ]);
     });
 
-    it('fires CheckingAuth-Event on start and finished event on end if not authenticated', async () => {
+    it('should fire CheckingAuth-Event on start and finished event on end if not authenticated', async () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
       ];
@@ -701,7 +711,7 @@ describe('CheckAuthService', () => {
   });
 
   describe('checkAuthIncludingServer', () => {
-    it('errors with a missing configuration message and does not force a refresh when config is null', async () => {
+    it('should error with a missing configuration message and not force a refresh when config is null', async () => {
       const forceRefreshSessionSpy = vi.spyOn(
         refreshSessionService,
         'forceRefreshSession'
@@ -715,7 +725,7 @@ describe('CheckAuthService', () => {
       expect(forceRefreshSessionSpy).not.toHaveBeenCalled();
     });
 
-    it('does not start check session and validation when forceRefreshSession emits no response', async () => {
+    it('should not start check session and validation when forceRefreshSession emits no response', async () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
       ];
@@ -751,7 +761,7 @@ describe('CheckAuthService', () => {
       expect(periodicallyTokenCheckServiceSpy).not.toHaveBeenCalled();
     });
 
-    it('if isSilentRenewConfigured call getOrCreateIframe()', async () => {
+    it('should create the silent renew iframe when silent renew is configured', async () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
       ];
@@ -785,7 +795,7 @@ describe('CheckAuthService', () => {
       expect(forceRefreshSessionSpy).not.toHaveBeenCalled();
     });
 
-    it('does forceRefreshSession get called and is NOT authenticated', async () => {
+    it('should call forceRefreshSession and not be authenticated', async () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority' },
       ];
@@ -937,7 +947,7 @@ describe('CheckAuthService', () => {
   });
 
   describe('checkAuthMultiple', () => {
-    it('uses config with matching state when url has state param and config with state param is stored', async () => {
+    it('should use config with matching state when url has state param and config with state param is stored', async () => {
       const allConfigs = [
         { configId: 'configId1', authority: 'some-authority1' },
         { configId: 'configId2', authority: 'some-authority2' },
@@ -956,26 +966,23 @@ describe('CheckAuthService', () => {
           return undefined;
         }
       );
-      const spy = vi.spyOn(checkAuthService as any, 'checkAuthWithConfig');
+      vi.spyOn(currentUrlService, 'getCurrentUrl').mockReturnValue(
+        'http://localhost:4200'
+      );
+      const isCallbackSpy = vi.spyOn(callBackService, 'isCallback');
       const result = await firstValueFrom(
         checkAuthService.checkAuthMultiple(allConfigs)
       );
 
-      expect(Array.isArray(result)).toBe(true);
-      expect(spy).toHaveBeenCalledTimes(2);
-      expect(vi.mocked(spy).mock.calls[0]).toEqual([
-        allConfigs[0],
-        allConfigs,
-        undefined,
-      ]);
-      expect(vi.mocked(spy).mock.calls[1]).toEqual([
-        allConfigs[1],
-        allConfigs,
-        undefined,
+      expect(result.map((x) => x.configId)).toEqual(['configId1', 'configId2']);
+      expect(isCallbackSpy).toHaveBeenCalledTimes(2);
+      expect(isCallbackSpy.mock.calls).toEqual([
+        ['http://localhost:4200', allConfigs[0]],
+        ['http://localhost:4200', allConfigs[1]],
       ]);
     });
 
-    it('checks the config matching the url state first and all other configs with their redirectUrl and returns all results', async () => {
+    it('should check the config matching the url state first and all other configs with their redirectUrl and return all results', async () => {
       vi.spyOn(
         currentUrlService,
         'getStateParamFromCurrentUrl'
@@ -999,19 +1006,19 @@ describe('CheckAuthService', () => {
           return undefined;
         }
       );
-      const spy = vi.spyOn(checkAuthService as any, 'checkAuthWithConfig');
+      const isCallbackSpy = vi.spyOn(callBackService, 'isCallback');
       const result = await firstValueFrom(
         checkAuthService.checkAuthMultiple(allConfigs, 'https://current-url')
       );
 
-      expect(result.length).toBe(2);
-      expect(vi.mocked(spy).mock.calls).toEqual([
-        [allConfigs[1], allConfigs, 'https://current-url'],
-        [allConfigs[0], allConfigs, 'https://redirect-url-1'],
+      expect(result.map((x) => x.configId)).toEqual(['configId2', 'configId1']);
+      expect(isCallbackSpy.mock.calls).toEqual([
+        ['https://current-url', allConfigs[1]],
+        ['https://redirect-url-1', allConfigs[0]],
       ]);
     });
 
-    it('runs through all configs if no parameter is passed and has no state in url', async () => {
+    it('should run through all configs if no parameter is passed and has no state in url', async () => {
       vi.spyOn(
         currentUrlService,
         'getStateParamFromCurrentUrl'
@@ -1021,26 +1028,30 @@ describe('CheckAuthService', () => {
         { configId: 'configId1', authority: 'some-authority1' },
         { configId: 'configId2', authority: 'some-authority2' },
       ];
-      const spy = vi.spyOn(checkAuthService as any, 'checkAuthWithConfig');
+
+      vi.spyOn(currentUrlService, 'getCurrentUrl').mockReturnValue(
+        'http://localhost:4200'
+      );
+      const isCallbackSpy = vi.spyOn(callBackService, 'isCallback');
       const result = await firstValueFrom(
         checkAuthService.checkAuthMultiple(allConfigs)
       );
 
-      expect(Array.isArray(result)).toBe(true);
-      expect(spy).toHaveBeenCalledTimes(2);
-      expect(vi.mocked(spy).mock.calls[0]).toEqual([
-        { configId: 'configId1', authority: 'some-authority1' },
-        allConfigs,
-        undefined,
-      ]);
-      expect(vi.mocked(spy).mock.calls[1]).toEqual([
-        { configId: 'configId2', authority: 'some-authority2' },
-        allConfigs,
-        undefined,
+      expect(result.map((x) => x.configId)).toEqual(['configId1', 'configId2']);
+      expect(isCallbackSpy).toHaveBeenCalledTimes(2);
+      expect(isCallbackSpy.mock.calls).toEqual([
+        [
+          'http://localhost:4200',
+          { configId: 'configId1', authority: 'some-authority1' },
+        ],
+        [
+          'http://localhost:4200',
+          { configId: 'configId2', authority: 'some-authority2' },
+        ],
       ]);
     });
 
-    it('returns an unauthenticated result and logs an error for a missing config when no state is in url', async () => {
+    it('should return an unauthenticated result and log an error for a missing config when no state is in url', async () => {
       vi.spyOn(
         currentUrlService,
         'getStateParamFromCurrentUrl'
@@ -1068,7 +1079,7 @@ describe('CheckAuthService', () => {
       );
     });
 
-    it('throws error if url has state param but no config could be found', async () => {
+    it('should throw error if url has state param but no config could be found', async () => {
       vi.spyOn(
         currentUrlService,
         'getStateParamFromCurrentUrl'
@@ -1081,19 +1092,6 @@ describe('CheckAuthService', () => {
       ).rejects.toThrow(
         'could not find matching config for state the-state-param'
       );
-    });
-  });
-
-  describe('getConfigurationWithUrlState', () => {
-    it('returns null without reading storage when state is null', () => {
-      const readSpy = vi.spyOn(storagePersistenceService, 'read');
-      const result = (checkAuthService as any).getConfigurationWithUrlState(
-        [{ configId: 'configId1' }],
-        null
-      );
-
-      expect(result).toBeNull();
-      expect(readSpy).not.toHaveBeenCalled();
     });
   });
 });

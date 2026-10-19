@@ -65,7 +65,7 @@ describe('Flows Service', () => {
   });
 
   describe('processCodeFlowCallback', () => {
-    it('calls all methods correctly', async () => {
+    it('should call all methods correctly', async () => {
       const codeFlowCallbackSpy = vi
         .spyOn(codeFlowCallbackHandlerService, 'codeFlowCallback')
         .mockReturnValue(of({} as CallbackContext));
@@ -111,7 +111,7 @@ describe('Flows Service', () => {
   });
 
   describe('processSilentRenewCodeFlowCallback', () => {
-    it('calls all methods correctly', async () => {
+    it('should call all methods correctly', async () => {
       const codeFlowCodeRequestSpy = vi
         .spyOn(codeFlowCallbackHandlerService, 'codeFlowCodeRequest')
         .mockReturnValue(of({} as CallbackContext));
@@ -149,7 +149,7 @@ describe('Flows Service', () => {
   });
 
   describe('processImplicitFlowCallback', () => {
-    it('calls all methods correctly', async () => {
+    it('should call all methods correctly', async () => {
       const implicitFlowCallbackSpy = vi
         .spyOn(implicitFlowCallbackHandlerService, 'implicitFlowCallback')
         .mockReturnValue(of({} as CallbackContext));
@@ -187,7 +187,7 @@ describe('Flows Service', () => {
   });
 
   describe('processRefreshToken', () => {
-    it('calls all methods correctly', async () => {
+    it('should call all methods correctly', async () => {
       const refreshSessionWithRefreshTokensSpy = vi
         .spyOn(
           refreshSessionCallbackHandlerService,
