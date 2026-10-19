@@ -11,6 +11,7 @@ import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { LoggerService } from '../logging/services/logger.service';
 import { ValidationResult } from '../validation/validation-result';
 import { IntervalService } from './interval.service';
+import { asError } from '../utils/error/as-error';
 
 @Injectable({ providedIn: 'root' })
 export class RefreshSessionRefreshTokenService {
@@ -42,7 +43,7 @@ export class RefreshSessionRefreshTokenService {
         this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
         refreshTokenFailedPermanently = true;
 
-        return throwError(() => new Error(error));
+        return throwError(() => asError(error));
       }),
       finalize(
         () =>

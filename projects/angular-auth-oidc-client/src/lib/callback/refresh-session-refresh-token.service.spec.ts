@@ -93,6 +93,28 @@ describe('RefreshSessionRefreshTokenService', () => {
       expect(resetSilentRenewRunningSpy).toHaveBeenCalled();
     });
 
+    it('should pass the original error on to the subscriber unchanged', async () => {
+      // Arrange
+      const refreshError = new Error('invalid_grant');
+
+      vi.spyOn(flowsService, 'processRefreshToken').mockReturnValue(
+        throwError(() => refreshError)
+      );
+      vi.spyOn(resetAuthDataService, 'resetAuthorizationData').mockReturnValue(
+        undefined
+      );
+
+      // Act & Assert
+      await expect(
+        firstValueFrom(
+          refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(
+            { configId: 'configId1' },
+            [{ configId: 'configId1' }]
+          )
+        )
+      ).rejects.toBe(refreshError);
+    });
+
     it('should preserve authorization data and the original error for network failures', async () => {
       const networkError = new HttpErrorResponse({
         error: new ProgressEvent('error'),
