@@ -45,6 +45,25 @@ describe('getVerifyAlg', () => {
       hash: 'SHA-384',
     });
   });
+
+  it.each(['EdDSA', 'Ed25519'])(
+    'should return Ed25519 if algorithm is %s',
+    (alg) => {
+      // Act
+      const result = getVerifyAlg(alg);
+
+      // Assert
+      expect(result).toEqual({ name: 'Ed25519' });
+    }
+  );
+
+  it('should keep the ECDSA mapping for ES256', () => {
+    // Act
+    const result = getVerifyAlg('ES256');
+
+    // Assert
+    expect(result).toEqual({ name: 'ECDSA', hash: 'SHA-256' });
+  });
 });
 
 describe('getVerifyAlg for RSA-PSS', () => {
@@ -80,6 +99,25 @@ describe('alg2kty', () => {
     const algorithm = 'E';
     const result = alg2kty(algorithm);
 
+    expect(result).toEqual('EC');
+  });
+
+  it.each(['EdDSA', 'Ed25519'])(
+    'should return OKP if algorithm is %s',
+    (alg) => {
+      // Act
+      const result = alg2kty(alg);
+
+      // Assert
+      expect(result).toEqual('OKP');
+    }
+  );
+
+  it.each(['ES256', 'ES384'])('should keep EC for %s', (alg) => {
+    // Act
+    const result = alg2kty(alg);
+
+    // Assert
     expect(result).toEqual('EC');
   });
 
@@ -162,6 +200,25 @@ describe('getImportAlg', () => {
       name: 'ECDSA',
       namedCurve: 'P-384',
     });
+  });
+
+  it.each(['EdDSA', 'Ed25519'])(
+    'should return Ed25519 if algorithm is %s',
+    (alg) => {
+      // Act
+      const result = getImportAlg(alg);
+
+      // Assert
+      expect(result).toEqual({ name: 'Ed25519' });
+    }
+  );
+
+  it('should keep the ECDSA mapping for ES256', () => {
+    // Act
+    const result = getImportAlg('ES256');
+
+    // Assert
+    expect(result).toEqual({ name: 'ECDSA', namedCurve: 'P-256' });
   });
 });
 

@@ -1,14 +1,19 @@
 ﻿import { inject, Injectable } from '@angular/core';
 import { base64url } from 'rfc4648';
 import { from, Observable, of } from 'rxjs';
-import { map, mergeMap, tap } from 'rxjs/operators';
+import { catchError, map, mergeMap, tap } from 'rxjs/operators';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { JwkExtractor } from '../extractors/jwk.extractor';
 import { LoggerService } from '../logging/services/logger.service';
 import { TokenHelperService } from '../utils/tokenHelper/token-helper.service';
 import { JwkWindowCryptoService } from './jwk-window-crypto.service';
 import { JwtWindowCryptoService } from './jwt-window-crypto.service';
-import { alg2kty, getImportAlg, getVerifyAlg } from './token-validation.helper';
+import {
+  alg2kty,
+  getImportAlg,
+  getVerifyAlg,
+  isEd25519Alg,
+} from './token-validation.helper';
 
 // http://openid.net/specs/openid-connect-implicit-1_0.html
 
@@ -69,6 +74,8 @@ export class TokenValidationService {
     'PS256',
     'PS384',
     'PS512',
+    'EdDSA',
+    'Ed25519',
   ];
 
   private readonly tokenHelperService = inject(TokenHelperService);
@@ -458,17 +465,18 @@ export class TokenValidationService {
     }
 
     const kty = alg2kty(alg);
+    const crv = isEd25519Alg(alg) ? 'Ed25519' : undefined;
     const use = 'sig';
 
     try {
       foundKeys = kid
-        ? this.jwkExtractor.extractJwk(keys, { kid, kty, use }, false)
-        : this.jwkExtractor.extractJwk(keys, { kty, use }, false);
+        ? this.jwkExtractor.extractJwk(keys, { kid, kty, crv, use }, false)
+        : this.jwkExtractor.extractJwk(keys, { kty, crv, use }, false);
 
       if (foundKeys.length === 0) {
         foundKeys = kid
-          ? this.jwkExtractor.extractJwk(keys, { kid, kty })
-          : this.jwkExtractor.extractJwk(keys, { kty });
+          ? this.jwkExtractor.extractJwk(keys, { kid, kty, crv })
+          : this.jwkExtractor.extractJwk(keys, { kty, crv });
       }
 
       key = foundKeys[0];
@@ -515,6 +523,20 @@ export class TokenValidationService {
             'incorrect Signature, validation failed for id_token'
           );
         }
+      }),
+      catchError((error: unknown) => {
+        if (!isEd25519Alg(alg)) {
+          throw error;
+        }
+
+        // e.g. the browser does not support Ed25519 in WebCrypto
+        this.loggerService.logWarning(
+          configuration,
+          `could not verify id_token signature with alg ${alg}`,
+          error
+        );
+
+        return of(false);
       })
     );
   }
@@ -551,11 +573,12 @@ export class TokenValidationService {
     );
 
     // 'sha256' 'sha384' 'sha512'
+    // EdDSA (Ed25519) uses SHA-512, see OpenID Connect Core 1.0 errata set 2
     let sha = 'SHA-256';
 
     if (idTokenAlg.includes('384')) {
       sha = 'SHA-384';
-    } else if (idTokenAlg.includes('512')) {
+    } else if (idTokenAlg.includes('512') || isEd25519Alg(idTokenAlg)) {
       sha = 'SHA-512';
     }
 

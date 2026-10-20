@@ -280,6 +280,10 @@ Warnings:
 
 When the application is not running in a browser (for example during SSR), `startCheckSession`, `silentRenew`, `useRefreshToken` and `usePushedAuthorisationRequests` are set to `false`.
 
+## Supported id_token signing algorithms
+
+The id_token signature is validated with the keys from the `jwks_uri` using WebCrypto. Supported `alg` values are `RS256`, `RS384`, `RS512`, `PS256`, `PS384`, `PS512`, `ES256`, `ES384`, `EdDSA` and its fully-specified form `Ed25519` (RFC 9864), both for keys with `kty` `OKP` and `crv` `Ed25519`. EdDSA requires a browser that supports Ed25519 in WebCrypto (Chrome/Edge 137+, Firefox 129+, Safari 17+); in other browsers the signature validation fails and a warning is logged.
+
 ## Config Values
 
 ### `configId`

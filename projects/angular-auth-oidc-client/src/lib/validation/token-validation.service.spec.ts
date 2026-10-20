@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
+import { base64url } from 'rfc4648';
 import { firstValueFrom, of } from 'rxjs';
 import { mockProvider } from '../../test/auto-mock';
 import {
@@ -18,6 +19,8 @@ describe('TokenValidationService', () => {
   let tokenValidationService: TokenValidationService;
   let tokenHelperService: TokenHelperService;
   let jwtWindowCryptoService: JwtWindowCryptoService;
+  let jwkWindowCryptoService: JwkWindowCryptoService;
+  let loggerService: LoggerService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -38,6 +41,8 @@ describe('TokenValidationService', () => {
     tokenValidationService = TestBed.inject(TokenValidationService);
     tokenHelperService = TestBed.inject(TokenHelperService);
     jwtWindowCryptoService = TestBed.inject(JwtWindowCryptoService);
+    jwkWindowCryptoService = TestBed.inject(JwkWindowCryptoService);
+    loggerService = TestBed.inject(LoggerService);
   });
 
   it('should create', () => {
@@ -797,7 +802,6 @@ describe('TokenValidationService', () => {
 
       it('should return false and log the error when no key matches the kid', async () => {
         // Arrange
-        const loggerService = TestBed.inject(LoggerService);
         const logErrorSpy = vi.spyOn(loggerService, 'logError');
 
         vi.spyOn(tokenHelperService, 'getHeaderFromToken').mockReturnValue({
@@ -824,7 +828,6 @@ describe('TokenValidationService', () => {
 
       it('should return false and log the error when the key set is empty', async () => {
         // Arrange
-        const loggerService = TestBed.inject(LoggerService);
         const logErrorSpy = vi.spyOn(loggerService, 'logError');
 
         vi.spyOn(tokenHelperService, 'getHeaderFromToken').mockReturnValue({
@@ -846,6 +849,186 @@ describe('TokenValidationService', () => {
           { configId: 'configId1' },
           JwkExtractorInvalidArgumentError
         );
+      });
+    });
+
+    describe('EdDSA (Ed25519)', () => {
+      const kid = 'ed25519-key';
+      const configuration = { configId: 'configId1' };
+      const rsaKey = { kty: 'RSA', use: 'sig', kid: 'rsa-key', e: 'AQAB' };
+      let subtle: SubtleCrypto;
+      let privateKey: CryptoKey;
+      let publicJwk: JsonWebKey;
+      const encode = (value: object): string =>
+        base64url.stringify(new TextEncoder().encode(JSON.stringify(value)), {
+          pad: false,
+        });
+
+      async function signIdToken(header: object): Promise<string> {
+        const signingInput = `${encode(header)}.${encode({ sub: '123456' })}`;
+        const signature = await subtle.sign(
+          { name: 'Ed25519' },
+          privateKey,
+          new TextEncoder().encode(signingInput)
+        );
+
+        return `${signingInput}.${base64url.stringify(new Uint8Array(signature), { pad: false })}`;
+      }
+
+      function mockTokenParts(idToken: string, header: object): void {
+        const [encodedHeader, payload, signature] = idToken.split('.');
+
+        vi.spyOn(tokenHelperService, 'getHeaderFromToken').mockReturnValue(
+          header
+        );
+        vi.spyOn(
+          tokenHelperService,
+          'getSigningInputFromToken'
+        ).mockReturnValue(`${encodedHeader}.${payload}`);
+        vi.spyOn(tokenHelperService, 'getSignatureFromToken').mockReturnValue(
+          signature
+        );
+      }
+
+      const validate = (idToken: string, keys: object[]): Promise<boolean> =>
+        firstValueFrom(
+          tokenValidationService.validateSignatureIdToken(
+            idToken,
+            { keys },
+            configuration
+          )
+        );
+
+      beforeEach(async () => {
+        subtle = TestBed.inject(CryptoService).getCrypto().subtle;
+        const keyPair = (await subtle.generateKey({ name: 'Ed25519' }, true, [
+          'sign',
+          'verify',
+        ])) as CryptoKeyPair;
+
+        privateKey = keyPair.privateKey;
+        publicJwk = {
+          ...(await subtle.exportKey('jwk', keyPair.publicKey)),
+          kid,
+          use: 'sig',
+        } as JsonWebKey;
+      });
+
+      it('should return true for a valid signature with kid', async () => {
+        // Arrange
+        const header = { alg: 'EdDSA', typ: 'JWT', kid };
+        const idToken = await signIdToken(header);
+
+        mockTokenParts(idToken, header);
+
+        // Act
+        const result = await validate(idToken, [rsaKey, publicJwk]);
+
+        // Assert
+        expect(publicJwk.kty).toEqual('OKP');
+        expect(result).toEqual(true);
+      });
+
+      it('should return true for a valid signature with the RFC 9864 alg Ed25519', async () => {
+        // Arrange
+        const header = { alg: 'Ed25519', typ: 'JWT', kid };
+        const idToken = await signIdToken(header);
+
+        mockTokenParts(idToken, header);
+
+        // Act
+        const result = await validate(idToken, [publicJwk]);
+
+        // Assert
+        expect(result).toEqual(true);
+      });
+
+      it('should skip OKP keys of other curves when there is no kid', async () => {
+        // Arrange
+        const header = { alg: 'EdDSA', typ: 'JWT' };
+        const idToken = await signIdToken(header);
+        const x25519Key = { ...publicJwk, kid: 'x25519-key', crv: 'X25519' };
+
+        mockTokenParts(idToken, header);
+
+        // Act
+        const result = await validate(idToken, [x25519Key, publicJwk]);
+
+        // Assert
+        expect(result).toEqual(true);
+      });
+
+      it('should return true for a valid signature without kid', async () => {
+        // Arrange
+        const header = { alg: 'EdDSA', typ: 'JWT' };
+        const idToken = await signIdToken(header);
+
+        mockTokenParts(idToken, header);
+
+        // Act
+        const result = await validate(idToken, [rsaKey, publicJwk]);
+
+        // Assert
+        expect(result).toEqual(true);
+      });
+
+      it('should return false for a tampered payload', async () => {
+        // Arrange
+        const header = { alg: 'EdDSA', typ: 'JWT', kid };
+        const [encodedHeader, , signature] = (await signIdToken(header)).split(
+          '.'
+        );
+        const tamperedIdToken = `${encodedHeader}.${encode({ sub: 'attacker' })}.${signature}`;
+
+        mockTokenParts(tamperedIdToken, header);
+
+        // Act
+        const result = await validate(tamperedIdToken, [publicJwk]);
+
+        // Assert
+        expect(result).toEqual(false);
+      });
+
+      it('should return false and log a warning if the browser does not support Ed25519', async () => {
+        // Arrange
+        const header = { alg: 'EdDSA', typ: 'JWT', kid };
+        const idToken = await signIdToken(header);
+        const logWarningSpy = vi.spyOn(loggerService, 'logWarning');
+
+        mockTokenParts(idToken, header);
+        vi.spyOn(
+          jwkWindowCryptoService,
+          'importVerificationKey'
+        ).mockRejectedValue(
+          new DOMException('Unrecognized name.', 'NotSupportedError')
+        );
+
+        // Act
+        const result = await validate(idToken, [publicJwk]);
+
+        // Assert
+        expect(result).toEqual(false);
+        expect(logWarningSpy).toHaveBeenCalledWith(
+          configuration,
+          'could not verify id_token signature with alg EdDSA',
+          expect.anything()
+        );
+      });
+
+      it('should still error for other algorithms if the key import fails', async () => {
+        // Arrange
+        vi.spyOn(tokenHelperService, 'getHeaderFromToken').mockReturnValue({
+          alg: 'RS256',
+        });
+        vi.spyOn(
+          jwkWindowCryptoService,
+          'importVerificationKey'
+        ).mockRejectedValue(new Error('import failed'));
+
+        // Act & Assert
+        await expect(
+          validate('header.payload.signature', [rsaKey])
+        ).rejects.toThrow('import failed');
       });
     });
   });
@@ -928,6 +1111,54 @@ describe('TokenValidationService', () => {
       const result = await firstValueFrom(result$);
 
       expect(result).toEqual(false);
+    });
+
+    describe('EdDSA', () => {
+      const accessToken = 'iGU3DhbPoDljiYtr0oepxi7zpT8BsjdU7aaXcdq-DPk';
+      const sha256AtHash = '-ODC_7Go_UIUTC8nP4k2cA';
+      const sha512AtHash = 'KfkjN6Io0IcgeW4Zu1Gnh1ONa4OkFvxbY7EukMSkx34';
+      const validate = (atHash: string, alg: string): Promise<boolean> =>
+        firstValueFrom(
+          tokenValidationService.validateIdTokenAtHash(
+            accessToken,
+            atHash,
+            alg,
+            { configId: 'configId1' }
+          )
+        );
+
+      it.each(['EdDSA', 'Ed25519'])(
+        'should return true for %s if atHash is the SHA-512 hash',
+        async (alg) => {
+          // Act
+          const result = await validate(sha512AtHash, alg);
+
+          // Assert
+          expect(result).toEqual(true);
+        }
+      );
+
+      it.each(['EdDSA', 'Ed25519'])(
+        'should return false for %s if atHash is the SHA-256 hash',
+        async (alg) => {
+          // Act
+          const result = await validate(sha256AtHash, alg);
+
+          // Assert
+          expect(result).toEqual(false);
+        }
+      );
+
+      it.each(['RS256', 'ES256', 'PS256'])(
+        'should keep using SHA-256 for %s',
+        async (alg) => {
+          // Act
+          const result = await validate(sha256AtHash, alg);
+
+          // Assert
+          expect(result).toEqual(true);
+        }
+      );
     });
   });
 
