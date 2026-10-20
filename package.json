@@ -75,7 +75,7 @@
     "@angular-devkit/schematics": "^22.2.0",
     "@angular-eslint/builder": "^22.5.0",
     "@angular/build": "^22.2.0",
-    "@angular/cli": "^22.2.0",
+    "@angular/cli": "^22.2.3",
     "@angular/compiler-cli": "^22.2.0",
     "@playwright/test": "^1.62.1",
     "@types/node": "^26.2.0",
