@@ -63,7 +63,7 @@
     "@angular/forms": "^22.2.0",
     "@angular/platform-browser": "^22.2.0",
     "@angular/platform-browser-dynamic": "^22.2.0",
-    "@angular/router": "^22.2.0",
+    "@angular/router": "^22.2.1",
     "@schematics/angular": "^22.2.0",
     "rxjs": "~7.8.0",
     "shelljs": "^0.8.5",
