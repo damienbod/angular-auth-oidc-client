@@ -70,6 +70,15 @@ module.exports = {
             },
           ],
         },
+        {
+          title: 'Maintained by',
+          items: [
+            {
+              label: 'offering.solutions',
+              href: 'https://offering.solutions/angular-consulting/',
+            },
+          ],
+        },
       ],
       copyright: `Copyright © ${new Date().getFullYear()} Angular Auth OIDC Client Docs, Inc. Built with Docusaurus.`,
     },

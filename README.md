@@ -224,3 +224,7 @@ Current Version is Version 22.x
 
 - [@DamienBod](https://www.github.com/damienbod)
 - [@FabianGosebrink](https://www.github.com/FabianGosebrink)
+
+## Maintained by
+
+Maintained by [offering.solutions](https://offering.solutions/angular-consulting/).
