@@ -5,6 +5,7 @@ import { firstValueFrom, Observable, of } from 'rxjs';
 import { mockProvider } from '../test/auto-mock';
 import { AuthStateService } from './auth-state/auth-state.service';
 import { CheckAuthService } from './auth-state/check-auth.service';
+import { TokensResult } from './auth-state/tokens-result';
 import { CallbackService } from './callback/callback.service';
 import { RefreshSessionService } from './callback/refresh-session.service';
 import { AuthWellKnownService } from './config/auth-well-known/auth-well-known.service';
@@ -15,9 +16,12 @@ import { LoginResponse } from './login/login-response';
 import { LoginService } from './login/login.service';
 import { LogoffRevocationService } from './logoff-revoke/logoff-revocation.service';
 import { OidcSecurityService } from './oidc.security.service';
+import { EventTypes } from './public-events/event-types';
+import { PublicEventsService } from './public-events/public-events.service';
 import { UserService } from './user-data/user.service';
 import { TokenHelperService } from './utils/tokenHelper/token-helper.service';
 import { UrlService } from './utils/url/url.service';
+import { ValidationResult } from './validation/validation-result';
 
 describe('OidcSecurityService', () => {
   let oidcSecurityService: OidcSecurityService;
@@ -34,6 +38,7 @@ describe('OidcSecurityService', () => {
   let userService: UserService;
   let urlService: UrlService;
   let callbackService: CallbackService;
+  let publicEventsService: PublicEventsService;
   let authenticatedSpy: Mock;
   let userDataSpy: Mock;
 
@@ -73,6 +78,7 @@ describe('OidcSecurityService', () => {
     authWellKnownService = TestBed.inject(AuthWellKnownService);
     checkSessionService = TestBed.inject(CheckSessionService);
     callbackService = TestBed.inject(CallbackService);
+    publicEventsService = TestBed.inject(PublicEventsService);
 
     // this is required because these methods will be invoked by the signal properties when the service is created
     authenticatedSpy = vi
@@ -153,6 +159,139 @@ describe('OidcSecurityService', () => {
 
       expect(completed).toBe(true);
       expect(spy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('tokens$', () => {
+    let tokenCounter: number;
+    let emitted: TokensResult[];
+    const fireAuthenticationResult = (
+      isAuthenticated: boolean,
+      isRenewProcess: boolean,
+      configId = 'configId1'
+    ): void =>
+      publicEventsService.fireEvent(EventTypes.NewAuthenticationResult, {
+        isAuthenticated,
+        validationResult: isAuthenticated
+          ? ValidationResult.Ok
+          : ValidationResult.LoginRequired,
+        isRenewProcess,
+        configId,
+      });
+
+    beforeEach(() => {
+      tokenCounter = 0;
+      emitted = [];
+
+      vi.spyOn(
+        configurationService,
+        'getOpenIDConfiguration'
+      ).mockImplementation((configId?: string) => of({ configId } as any));
+      // every call hands out the tokens of the "latest" authentication result
+      vi.spyOn(authStateService, 'getAccessToken').mockImplementation(
+        () => `access-token-${tokenCounter}`
+      );
+      vi.spyOn(authStateService, 'getIdToken').mockImplementation(
+        () => `id-token-${tokenCounter}`
+      );
+      vi.spyOn(userService, 'getUserDataFromStore').mockImplementation(() => ({
+        sub: `user-${tokenCounter}`,
+      }));
+    });
+
+    it('should emit the tokens and the user data of a login', () => {
+      oidcSecurityService.tokens$.subscribe((tokens) => emitted.push(tokens));
+
+      tokenCounter = 1;
+      fireAuthenticationResult(true, false);
+
+      expect(emitted).toEqual([
+        {
+          accessToken: 'access-token-1',
+          idToken: 'id-token-1',
+          userData: { sub: 'user-1' },
+          isRenewProcess: false,
+          configId: 'configId1',
+        },
+      ]);
+    });
+
+    it('should keep emitting on every renewal, which getAuthenticationResult() does not', () => {
+      oidcSecurityService.tokens$.subscribe((tokens) => emitted.push(tokens));
+
+      tokenCounter = 1;
+      fireAuthenticationResult(true, false);
+      tokenCounter = 2;
+      fireAuthenticationResult(true, true);
+      tokenCounter = 3;
+      fireAuthenticationResult(true, true);
+
+      expect(emitted.map((tokens) => tokens.accessToken)).toEqual([
+        'access-token-1',
+        'access-token-2',
+        'access-token-3',
+      ]);
+      expect(emitted.map((tokens) => tokens.isRenewProcess)).toEqual([
+        false,
+        true,
+        true,
+      ]);
+    });
+
+    it('should read the tokens from the config of the event', () => {
+      oidcSecurityService.tokens$.subscribe((tokens) => emitted.push(tokens));
+
+      fireAuthenticationResult(true, true, 'configId2');
+
+      expect(
+        configurationService.getOpenIDConfiguration
+      ).toHaveBeenCalledExactlyOnceWith('configId2');
+      expect(authStateService.getAccessToken).toHaveBeenCalledExactlyOnceWith({
+        configId: 'configId2',
+      });
+      expect(emitted[0].configId).toBe('configId2');
+    });
+
+    it('should not emit for a result that is not authenticated', () => {
+      oidcSecurityService.tokens$.subscribe((tokens) => emitted.push(tokens));
+
+      fireAuthenticationResult(false, true);
+
+      expect(emitted).toEqual([]);
+    });
+
+    it('should not emit for other events', () => {
+      oidcSecurityService.tokens$.subscribe((tokens) => emitted.push(tokens));
+
+      publicEventsService.fireEvent(EventTypes.SilentRenewStarted);
+      publicEventsService.fireEvent(EventTypes.TokenExpired, true);
+      publicEventsService.fireEvent(EventTypes.CheckingAuthFinished);
+
+      expect(emitted).toEqual([]);
+    });
+
+    it('should not emit if the config of the event is unknown', () => {
+      vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
+        of(null)
+      );
+      oidcSecurityService.tokens$.subscribe((tokens) => emitted.push(tokens));
+
+      fireAuthenticationResult(true, true, 'unknown');
+
+      expect(emitted).toEqual([]);
+    });
+
+    it('should not complete', () => {
+      let completed = false;
+
+      oidcSecurityService.tokens$.subscribe({
+        complete: () => {
+          completed = true;
+        },
+      });
+      fireAuthenticationResult(true, false);
+
+      expect(completed).toBe(false);
     });
   });
 
