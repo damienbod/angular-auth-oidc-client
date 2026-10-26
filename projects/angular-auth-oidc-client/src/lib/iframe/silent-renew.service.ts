@@ -14,6 +14,7 @@ import { LoggerService } from '../logging/services/logger.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { ValidationResult } from '../validation/validation-result';
 import { IFrameService } from './existing-iframe.service';
+import { asError } from '../utils/error/as-error';
 
 const IFRAME_FOR_SILENT_RENEW_IDENTIFIER = 'myiFrameForSilentRenew';
 
@@ -157,7 +158,7 @@ export class SilentRenewService {
           this.intervalService.stopPeriodicTokenCheck();
           this.resetAuthDataService.resetAuthorizationData(config, allConfigs);
 
-          return throwError(() => new Error(error));
+          return throwError(() => asError(error));
         })
       );
   }

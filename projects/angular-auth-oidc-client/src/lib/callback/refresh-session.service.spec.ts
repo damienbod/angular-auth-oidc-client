@@ -15,7 +15,10 @@ import { AuthWellKnownService } from '../config/auth-well-known/auth-well-known.
 import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
-import { SilentRenewService } from '../iframe/silent-renew.service';
+import {
+  SilentRenewCallbackError,
+  SilentRenewService,
+} from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/services/logger.service';
 import { LoginResponse } from '../login/login-response';
 import { EventTypes } from '../public-events/event-types';
@@ -1009,14 +1012,15 @@ describe('RefreshSessionService ', () => {
       );
     });
 
-    it('should pass an unknown error on to the subscriber', async () => {
+    it('should pass an unknown error on to the subscriber unchanged', async () => {
+      // Arrange
       const allConfigs = [
         {
           configId: 'configId1',
           silentRenewTimeoutInSeconds: 10,
         },
       ];
-      const expectedErrorMessage = 'Test error message';
+      const expectedError = new Error('Test error message');
 
       vi.spyOn(
         flowHelper,
@@ -1034,20 +1038,69 @@ describe('RefreshSessionService ', () => {
       vi.spyOn(
         refreshSessionIframeService,
         'refreshSessionWithIframe'
-      ).mockReturnValue(throwError(() => new Error(expectedErrorMessage)));
+      ).mockReturnValue(throwError(() => expectedError));
       vi.spyOn(authStateService, 'areAuthStorageTokensValid').mockReturnValue(
         false
       );
-
       const resetSilentRenewRunningSpy = vi
         .spyOn(flowsDataService, 'resetSilentRenewRunning')
         .mockReturnValue(undefined);
 
+      // Act & Assert
       await expect(
         firstValueFrom(
           refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs)
         )
-      ).rejects.toThrow(`Error: ${expectedErrorMessage}`);
+      ).rejects.toBe(expectedError);
+      // reset once by the failed refresh itself, but no retry is attempted
+      expect(resetSilentRenewRunningSpy).toHaveBeenCalledExactlyOnceWith(
+        allConfigs[0]
+      );
+    });
+
+    it('should keep the details of a silent renew callback error passed on to the subscriber', async () => {
+      // Arrange
+      const allConfigs = [
+        {
+          configId: 'configId1',
+          silentRenewTimeoutInSeconds: 10,
+        },
+      ];
+      const refusal = new SilentRenewCallbackError(
+        'login_required',
+        'user must sign in'
+      );
+
+      vi.spyOn(
+        flowHelper,
+        'isCurrentFlowCodeFlowWithRefreshTokens'
+      ).mockReturnValue(false);
+      vi.spyOn(
+        silentRenewService,
+        'refreshSessionWithIFrameCompleted$',
+        'get'
+      ).mockReturnValue(of({ success: false, configId: 'configId1' }));
+      vi.spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      ).mockReturnValue(of({}));
+      vi.spyOn(
+        refreshSessionIframeService,
+        'refreshSessionWithIframe'
+      ).mockReturnValue(throwError(() => refusal));
+      vi.spyOn(authStateService, 'areAuthStorageTokensValid').mockReturnValue(
+        false
+      );
+      const resetSilentRenewRunningSpy = vi
+        .spyOn(flowsDataService, 'resetSilentRenewRunning')
+        .mockReturnValue(undefined);
+
+      // Act & Assert
+      await expect(
+        firstValueFrom(
+          refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs)
+        )
+      ).rejects.toBe(refusal);
       // reset once by the failed refresh itself, but no retry is attempted
       expect(resetSilentRenewRunningSpy).toHaveBeenCalledExactlyOnceWith(
         allConfigs[0]

@@ -199,5 +199,29 @@ describe('ImplicitFlowCallbackService ', () => {
       expect(routerSpy).toHaveBeenCalledTimes(1);
       expect(routerSpy).toHaveBeenCalledWith('unauthorizedRoute');
     });
+
+    it('should pass the original error on to the subscriber unchanged', async () => {
+      // Arrange
+      const callbackError = new Error('state mismatch');
+      const config = {
+        configId: 'configId1',
+        triggerAuthorizationResultEvent: true,
+      };
+
+      vi.spyOn(flowsService, 'processImplicitFlowCallback').mockReturnValue(
+        throwError(() => callbackError)
+      );
+
+      // Act & Assert
+      await expect(
+        firstValueFrom(
+          implicitFlowCallbackService.authenticatedImplicitFlowCallback(
+            config,
+            [config],
+            'some-hash'
+          )
+        )
+      ).rejects.toBe(callbackError);
+    });
   });
 });

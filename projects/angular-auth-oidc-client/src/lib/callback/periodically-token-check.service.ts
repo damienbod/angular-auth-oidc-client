@@ -16,6 +16,7 @@ import { UserService } from '../user-data/user.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { IntervalService } from './interval.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
+import { asError } from '../utils/error/as-error';
 
 @Injectable({ providedIn: 'root' })
 export class PeriodicallyTokenCheckService {
@@ -76,7 +77,7 @@ export class PeriodicallyTokenCheckService {
       );
 
     this.intervalService.runTokenValidationRunning = periodicallyCheck$
-      .pipe(catchError((error) => throwError(() => new Error(error))))
+      .pipe(catchError((error) => throwError(() => asError(error))))
       .subscribe({
         next: (objectWithConfigIds) => {
           for (const [configId, _] of Object.entries(objectWithConfigIds)) {
@@ -127,7 +128,7 @@ export class PeriodicallyTokenCheckService {
         this.publicEventsService.fireEvent(EventTypes.SilentRenewFailed, error);
         this.flowsDataService.resetSilentRenewRunning(config);
 
-        return throwError(() => new Error(error));
+        return throwError(() => asError(error));
       })
     );
   }
