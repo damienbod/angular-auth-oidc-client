@@ -280,10 +280,9 @@ export class UserService {
     }
 
     const allUserData: ConfigUserDataResult[] = allConfigs.map((config) => {
-      const currentConfigId = currentConfiguration.configId ?? '';
       const configId = config.configId ?? '';
 
-      if (this.currentConfigIsToUpdate(currentConfigId, config)) {
+      if (this.currentConfigIsToUpdate(currentConfiguration, config)) {
         return { configId, userData: passedUserData };
       }
 
@@ -313,9 +312,16 @@ export class UserService {
   }
 
   private currentConfigIsToUpdate(
-    configId: string,
+    currentConfiguration: OpenIdConfiguration,
     config: OpenIdConfiguration
   ): boolean {
-    return config.configId === configId;
+    if (config === currentConfiguration) {
+      return true;
+    }
+
+    return (
+      Boolean(config.configId) &&
+      config.configId === currentConfiguration.configId
+    );
   }
 }
