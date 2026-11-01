@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import {
   firstValueFrom,
@@ -1679,6 +1680,56 @@ describe('RefreshSessionService ', () => {
       expect(resetSilentRenewRunningSpy).toHaveBeenCalledExactlyOnceWith(
         allConfigs[0]
       );
+    });
+
+    it('should fire SilentRenewFailed with an Error wrapping the HttpErrorResponse and rethrow the original when the well-known request fails', async () => {
+      // Arrange
+      const allConfigs = [
+        {
+          configId: 'configId1',
+          authWellknownEndpointUrl: 'https://authWell',
+        },
+      ];
+      const httpError = new HttpErrorResponse({
+        status: 500,
+        statusText: 'Server Error',
+        url: 'https://authWell/.well-known/openid-configuration',
+      });
+
+      vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(false);
+      vi.spyOn(flowsDataService, 'setSilentRenewRunning').mockReturnValue(
+        undefined
+      );
+      vi.spyOn(flowsDataService, 'resetSilentRenewRunning').mockReturnValue(
+        undefined
+      );
+      const fireEventSpy = vi
+        .spyOn(publicEventsService, 'fireEvent')
+        .mockReturnValue(undefined);
+
+      vi.spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      ).mockReturnValue(throwError(() => httpError));
+      vi.spyOn(
+        flowHelper,
+        'isCurrentFlowCodeFlowWithRefreshTokens'
+      ).mockReturnValue(true);
+
+      // Act
+      const result = firstValueFrom(
+        refreshSessionService.forceRefreshSession(allConfigs[0], allConfigs)
+      );
+
+      // Assert
+      await expect(result).rejects.toBe(httpError);
+      const failedEventValue = fireEventSpy.mock.calls.find(
+        ([type]) => type === EventTypes.SilentRenewFailed
+      )?.[1];
+
+      expect(failedEventValue).toBeInstanceOf(Error);
+      expect((failedEventValue as Error).message).toBe(httpError.message);
+      expect((failedEventValue as Error).cause).toBe(httpError);
     });
   });
 });

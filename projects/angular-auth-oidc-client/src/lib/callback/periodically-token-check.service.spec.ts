@@ -228,6 +228,49 @@ describe('PeriodicallyTokenCheckService', () => {
       ]);
     });
 
+    it('should fire the silent renew failed event with an Error when the refresh fails with a non Error value', async () => {
+      // Arrange
+      const configs = [
+        { silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 },
+      ];
+
+      arrangeTokenCheckDue(true);
+      vi.spyOn(flowsDataService, 'resetSilentRenewRunning').mockReturnValue(
+        undefined
+      );
+      const fireEventSpy = vi
+        .spyOn(publicEventsService, 'fireEvent')
+        .mockReturnValue(undefined);
+
+      vi.spyOn(
+        flowHelper,
+        'isCurrentFlowCodeFlowWithRefreshTokens'
+      ).mockReturnValue(true);
+      vi.spyOn(
+        refreshSessionRefreshTokenService,
+        'refreshSessionWithRefreshTokens'
+      ).mockReturnValue(throwError(() => 'refresh failed'));
+      vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
+        of(configs[0])
+      );
+
+      // Act
+      periodicallyTokenCheckService.startTokenValidationPeriodically(
+        configs,
+        configs[0]
+      );
+      await vi.advanceTimersByTimeAsync(1000);
+
+      // Assert
+      const failedEventValue = fireEventSpy.mock.calls.find(
+        ([type]) => type === EventTypes.SilentRenewFailed
+      )?.[1];
+
+      expect(failedEventValue).toBeInstanceOf(Error);
+      expect((failedEventValue as Error).message).toBe('refresh failed');
+      expect((failedEventValue as Error).cause).toBe('refresh failed');
+    });
+
     it('should call resetAuthorizationData and return if no silent renew is configured', async () => {
       const configs = [
         { silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 },

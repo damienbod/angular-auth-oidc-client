@@ -12,6 +12,7 @@ export * from './config/config.service';
 export * from './config/loader/config-loader';
 export * from './config/openid-configuration';
 export { AuthResult } from './flows/callback-context';
+export { SilentRenewCallbackError } from './iframe/silent-renew.service';
 export * from './interceptor/auth.interceptor';
 export * from './logging/services/abstract-logger.service';
 export { LogLevel } from './logging/types/logging.types';

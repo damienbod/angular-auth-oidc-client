@@ -7,10 +7,13 @@ import { ImplicitFlowCallbackService } from '../callback/implicit-flow-callback.
 import { IntervalService } from '../callback/interval.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { AuthResult, CallbackContext } from '../flows/callback-context';
+import { toError } from '../flows/callback-handling/error-helper';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { LoggerService } from '../logging/services/logger.service';
+import { EventTypes } from '../public-events/event-types';
+import { PublicEventsService } from '../public-events/public-events.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { ValidationResult } from '../validation/validation-result';
 import { IFrameService } from './existing-iframe.service';
@@ -58,6 +61,7 @@ export class SilentRenewService {
     ImplicitFlowCallbackService
   );
   private readonly intervalService = inject(IntervalService);
+  private readonly publicEventsService = inject(PublicEventsService);
 
   getOrCreateIframe(config: OpenIdConfiguration): HTMLIFrameElement {
     const iframeId = getFrameId(config.configId);
@@ -229,6 +233,10 @@ export class SilentRenewService {
       errorMessage,
       ...(errorDescription === undefined ? {} : { errorDescription }),
     });
+    this.publicEventsService.fireEvent(
+      EventTypes.SilentRenewFailed,
+      toError(error)
+    );
     this.flowsDataService.resetSilentRenewRunning(config);
   }
 }

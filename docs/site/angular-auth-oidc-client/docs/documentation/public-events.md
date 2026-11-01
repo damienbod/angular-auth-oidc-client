@@ -77,4 +77,34 @@ export interface OidcClientNotification<T> {
 | `TokenExpired`                  | An access token expiry check found the token expired. Can fire repeatedly.                                                                                   | `true`                                                                               |
 | `IdTokenExpired`                | An id token expiry check found the token expired. Only when `triggerRefreshWhenIdTokenExpired` is `true` and `disableIdTokenValidation` is `false`.          | `true`                                                                               |
 | `SilentRenewStarted`            | A silent renew or refresh (periodic or forced) starts.                                                                                                       | none                                                                                 |
-| `SilentRenewFailed`             | That silent renew or refresh failed.                                                                                                                         | the error                                                                            |
+| `SilentRenewFailed`             | A silent renew or refresh failed, including an iframe renew rejected by the identity provider.                                                               | `Error`, see [below](#silentrenewfailed)                                             |
+
+### SilentRenewFailed
+
+The `value` of `SilentRenewFailed` is always an `Error` instance, so you can read `message` without checking the type first. Values that are not an `Error`, for example the `HttpErrorResponse` of a failed well-known request, are wrapped in an `Error` with the original value in `cause`.
+
+The event is fired:
+
+- by the periodic silent renew and by `forceRefreshSession()`, when the well-known request, the refresh token request or starting the iframe renew fails. A refresh token request that runs longer than [`silentRenewTimeoutInSeconds`](./configuration#silentrenewtimeoutinseconds) fails with the RxJS `TimeoutError`.
+- when an iframe silent renew callback fails. If the identity provider returned an error (e.g. `login_required`), the value is a `SilentRenewCallbackError`, whose `message` is the `error` and whose `errorDescription` is the `error_description` of the identity provider.
+
+An iframe renew that never answers does not fire the event, `forceRefreshSession()` errors with a timeout instead.
+
+```ts
+import { inject } from '@angular/core';
+import { filter } from 'rxjs/operators';
+import { EventTypes, PublicEventsService, SilentRenewCallbackError } from 'angular-auth-oidc-client';
+
+inject(PublicEventsService)
+  .registerForEvents()
+  .pipe(filter((notification) => notification.type === EventTypes.SilentRenewFailed))
+  .subscribe(({ value }) => {
+    const error = value as Error;
+
+    if (error instanceof SilentRenewCallbackError) {
+      console.log('Identity provider error', error.message, error.errorDescription);
+    } else {
+      console.log('Silent renew failed', error.message, error.cause);
+    }
+  });
+```
