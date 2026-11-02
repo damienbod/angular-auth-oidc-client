@@ -35,7 +35,11 @@ export class ImplicitFlowCallbackHandlerService {
       .reduce((resultData: any, item: string) => {
         const parts = item.split('=');
 
-        resultData[parts.shift() as string] = parts.join('=');
+        // decode like UrlService.getUrlParameter does for the code flow,
+        // otherwise e.g. a state of "d|1" arrives as "d%7C1"
+        resultData[parts.shift() as string] = decodeURIComponent(
+          parts.join('=')
+        );
 
         return resultData;
       }, {} as AuthResult);

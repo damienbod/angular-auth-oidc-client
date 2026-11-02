@@ -110,6 +110,30 @@ describe('ImplicitFlowCallbackHandlerService', () => {
       expect(callbackContext).toEqual(expectedCallbackContext);
     });
 
+    it('should url-decode the values of the hash parameters', async () => {
+      // Arrange
+      vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(true);
+      const allconfigs = [
+        {
+          configId: 'configId1',
+        },
+      ];
+      const hash =
+        'access_token=at&state=d%7C1%20with%20space&session_state=abc%3D%3D&id_token=a.b=c';
+      // Act
+      const callbackContext = await firstValueFrom(
+        service.implicitFlowCallback(allconfigs[0], allconfigs, hash)
+      );
+
+      // Assert
+      expect(callbackContext.authResult).toEqual({
+        access_token: 'at',
+        state: 'd|1 with space',
+        session_state: 'abc==',
+        id_token: 'a.b=c',
+      });
+    });
+
     it('should use window location hash if no hash is passed', async () => {
       vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(true);
       const expectedCallbackContext = {
