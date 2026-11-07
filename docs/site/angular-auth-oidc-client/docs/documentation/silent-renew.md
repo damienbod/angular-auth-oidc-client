@@ -105,6 +105,8 @@ The `renewTimeBeforeTokenExpiresInSeconds` property can be used to start the ren
 
 Every `tokenRefreshInSeconds` (default 4) the library checks whether the access token (if it has an expiry) or the id_token (only if `triggerRefreshWhenIdTokenExpired` is `true`) has expired, and if so starts a renew. A renew is only started if an id_token and user data are in the storage, and no other renew or code flow is running. This applies to iframes and refresh tokens alike.
 
+The periodic check only runs while the user is authenticated. With `silentRenew` and `useRefreshToken` enabled, `checkAuth()` therefore also renews tokens that have expired while the application was closed, as long as a refresh token is stored and no other renew is running. `checkAuth()` waits for the renew, up to [`silentRenewTimeoutInSeconds`](./configuration#silentrenewtimeoutinseconds). If the renew fails, the `SilentRenewFailed` [event](./public-events) is fired and `checkAuth()` returns `isAuthenticated: false`.
+
 Pushed authorization requests (`usePushedAuthorisationRequests`) cannot be combined with the iframe renew. Use refresh tokens instead.
 
 ### Silent Renew Code Flow with PKCE (iframe)
