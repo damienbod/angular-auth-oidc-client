@@ -1,11 +1,12 @@
 import { inject, Injectable } from '@angular/core';
 import { forkJoin, Observable, of, throwError } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
+import { catchError, exhaustMap, switchMap, timeout } from 'rxjs/operators';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { ConfigurationService } from '../config/config.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
+import { isTransientRefreshError } from '../flows/callback-handling/error-helper';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
 import { LoggerService } from '../logging/services/logger.service';
@@ -59,7 +60,9 @@ export class PeriodicallyTokenCheckService {
     const periodicallyCheck$ = this.intervalService
       .startPeriodicTokenCheck(refreshTimeInSeconds)
       .pipe(
-        switchMap(() => {
+        // A tick must not cancel a refresh that is still running: the token
+        // endpoint may already have rotated the refresh token by then.
+        exhaustMap(() => {
           const objectWithConfigIdsAndRefreshEvent: {
             [id: string]: Observable<boolean | CallbackContext | null>;
           } = {};
@@ -122,10 +125,16 @@ export class PeriodicallyTokenCheckService {
     this.publicEventsService.fireEvent(EventTypes.SilentRenewStarted);
 
     return refreshEvent$.pipe(
+      timeout((config.silentRenewTimeoutInSeconds ?? 20) * 1000),
       catchError((error) => {
         this.loggerService.logError(config, 'silent renew failed!', error);
         this.publicEventsService.fireEvent(EventTypes.SilentRenewFailed, error);
         this.flowsDataService.resetSilentRenewRunning(config);
+
+        // The tokens are still stored, so the next tick can try again.
+        if (isTransientRefreshError(error)) {
+          return of(null);
+        }
 
         return throwError(() => new Error(error));
       })
