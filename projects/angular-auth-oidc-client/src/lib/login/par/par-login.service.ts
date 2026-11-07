@@ -147,7 +147,22 @@ export class ParLoginService {
             return throwError(() => new Error(errorMessage));
           }
 
-          this.popupService.openPopUp(url, popupOptions, configuration);
+          const popupOpened = this.popupService.openPopUp(
+            url,
+            popupOptions,
+            configuration
+          );
+
+          if (!popupOpened) {
+            return of({
+              isAuthenticated: false,
+              errorMessage: 'Could not open popup',
+              userData: null,
+              idToken: '',
+              accessToken: '',
+              configId,
+            });
+          }
 
           return this.popupService.result$.pipe(
             take(1),

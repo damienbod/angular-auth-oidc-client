@@ -82,7 +82,7 @@ loginWithPopup() {
 }
 ```
 
-If the user closes the popup, the observable emits `isAuthenticated: false` with `errorMessage: 'User closed popup'`. If a popup is already open, `errorMessage` is `'There is already a popup open.'`.
+If the user closes the popup, the observable emits `isAuthenticated: false` with `errorMessage: 'User closed popup'`. If a popup is already open, `errorMessage` is `'There is already a popup open.'`. If the popup could not be opened, for example because the browser blocked it, `errorMessage` is `'Could not open popup'`.
 
 Any message posted to the window that is not a string closes the popup. Set `disableCleaningPopupOnInvalidMessage: true` in the configuration if other scripts post messages to your window.
 

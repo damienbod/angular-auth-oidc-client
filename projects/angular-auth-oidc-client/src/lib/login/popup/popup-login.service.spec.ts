@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CommonModule } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
-import { firstValueFrom, of } from 'rxjs';
+import { firstValueFrom, NEVER, of } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
 import { CheckAuthService } from '../../auth-state/check-auth.service';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
@@ -97,6 +97,7 @@ describe('PopUpLoginService', () => {
       vi.spyOn(popupService, 'result$', 'get').mockReturnValue(
         of({} as PopupResult)
       );
+      vi.spyOn(popupService, 'openPopUp').mockReturnValue(true);
       vi.spyOn(urlService, 'getAuthorizeUrl').mockReturnValue(of('someUrl'));
       vi.spyOn(checkAuthService, 'checkAuth').mockReturnValue(
         of({} as LoginResponse)
@@ -135,7 +136,7 @@ describe('PopUpLoginService', () => {
       );
       const popupSpy = vi
         .spyOn(popupService, 'openPopUp')
-        .mockReturnValue(undefined);
+        .mockReturnValue(true);
 
       // act
       await firstValueFrom(
@@ -162,7 +163,7 @@ describe('PopUpLoginService', () => {
         'queryAndStoreAuthWellKnownEndPoints'
       ).mockReturnValue(of({}));
       vi.spyOn(urlService, 'getAuthorizeUrl').mockReturnValue(of('someUrl'));
-      vi.spyOn(popupService, 'openPopUp').mockReturnValue(undefined);
+      vi.spyOn(popupService, 'openPopUp').mockReturnValue(true);
       const checkAuthSpy = vi
         .spyOn(checkAuthService, 'checkAuth')
         .mockReturnValue(
@@ -217,7 +218,7 @@ describe('PopUpLoginService', () => {
         'queryAndStoreAuthWellKnownEndPoints'
       ).mockReturnValue(of({}));
       vi.spyOn(urlService, 'getAuthorizeUrl').mockReturnValue(of('someUrl'));
-      vi.spyOn(popupService, 'openPopUp').mockReturnValue(undefined);
+      vi.spyOn(popupService, 'openPopUp').mockReturnValue(true);
       const checkAuthSpy = vi
         .spyOn(checkAuthService, 'checkAuth')
         .mockReturnValue(of({} as LoginResponse));
@@ -235,6 +236,43 @@ describe('PopUpLoginService', () => {
       expect(result).toEqual({
         isAuthenticated: false,
         errorMessage: 'User closed popup',
+        configId: 'configId1',
+        idToken: '',
+        userData: null,
+        accessToken: '',
+      });
+    });
+
+    it('should emit a failed response without waiting for a popup result when the popup could not be opened', async () => {
+      // Arrange
+      const config = {
+        authWellknownEndpointUrl: 'authWellknownEndpoint',
+        responseType: 'stubValue',
+        configId: 'configId1',
+      };
+
+      vi.spyOn(
+        responseTypValidationService,
+        'hasConfigValidResponseType'
+      ).mockReturnValue(true);
+      vi.spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      ).mockReturnValue(of({}));
+      vi.spyOn(urlService, 'getAuthorizeUrl').mockReturnValue(of('someUrl'));
+      vi.spyOn(popupService, 'openPopUp').mockReturnValue(false);
+      vi.spyOn(popupService, 'result$', 'get').mockReturnValue(NEVER);
+      const checkAuthSpy = vi.spyOn(checkAuthService, 'checkAuth');
+      // Act
+      const result = await firstValueFrom(
+        popUpLoginService.loginWithPopUpStandard(config, [config])
+      );
+
+      // Assert
+      expect(checkAuthSpy).not.toHaveBeenCalled();
+      expect(result).toEqual({
+        isAuthenticated: false,
+        errorMessage: 'Could not open popup',
         configId: 'configId1',
         idToken: '',
         userData: null,

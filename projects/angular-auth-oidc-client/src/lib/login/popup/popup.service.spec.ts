@@ -157,11 +157,15 @@ describe('PopUpService', () => {
             close: () => undefined,
           }) as Window
       );
-
       // act
-      popUpService.openPopUp('url', {}, { configId: 'configId1' });
+      const popupOpened = popUpService.openPopUp(
+        'url',
+        {},
+        { configId: 'configId1' }
+      );
 
       // assert
+      expect(popupOpened).toBe(true);
       expect(popupSpy).toHaveBeenCalledTimes(1);
 
       // assert
@@ -262,11 +266,15 @@ describe('PopUpService', () => {
       const loggerSpy = vi
         .spyOn(loggerService, 'logError')
         .mockReturnValue(undefined);
-
       // act
-      popUpService.openPopUp('url', { width: 100 }, { configId: 'configId1' });
+      const popupOpened = popUpService.openPopUp(
+        'url',
+        { width: 100 },
+        { configId: 'configId1' }
+      );
 
       // assert
+      expect(popupOpened).toBe(false);
       expect(loggerSpy).toHaveBeenCalledTimes(1);
 
       // assert
@@ -287,11 +295,15 @@ describe('PopUpService', () => {
       const writeSpy = vi
         .spyOn(storagePersistenceService, 'write')
         .mockReturnValue(undefined as any);
-
       // act
-      popUpService.openPopUp('', {}, { configId: 'configId1' });
+      const popupOpened = popUpService.openPopUp(
+        '',
+        {},
+        { configId: 'configId1' }
+      );
 
       // assert
+      expect(popupOpened).toBe(false);
       expect(loggerSpy).toHaveBeenCalledTimes(1);
 
       // assert
@@ -309,11 +321,15 @@ describe('PopUpService', () => {
       const writeSpy = vi
         .spyOn(storagePersistenceService, 'write')
         .mockReturnValue(undefined as any);
-
       // act
-      popUpService.openPopUp('url', {}, { configId: 'configId1' });
+      const popupOpened = popUpService.openPopUp(
+        'url',
+        {},
+        { configId: 'configId1' }
+      );
 
       // assert
+      expect(popupOpened).toBe(false);
       expect(writeSpy).not.toHaveBeenCalled();
     });
 
