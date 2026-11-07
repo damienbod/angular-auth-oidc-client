@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
-import { switchMap, take, tap } from 'rxjs/operators';
+import { switchMap, take } from 'rxjs/operators';
 import { AuthOptions } from '../../auth-options';
 import { CheckAuthService } from '../../auth-state/check-auth.service';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
@@ -55,10 +55,26 @@ export class PopUpLoginService {
         switchMap(() =>
           this.urlService.getAuthorizeUrl(configuration, authOptions)
         ),
-        tap((authUrl) =>
-          this.popupService.openPopUp(authUrl, popupOptions, configuration)
-        ),
-        switchMap(() => {
+        switchMap((authUrl) => {
+          const popupOpened = this.popupService.openPopUp(
+            authUrl,
+            popupOptions,
+            configuration
+          );
+
+          if (!popupOpened) {
+            const response: LoginResponse = {
+              isAuthenticated: false,
+              errorMessage: 'Could not open popup',
+              userData: null,
+              idToken: '',
+              accessToken: '',
+              configId,
+            };
+
+            return of(response);
+          }
+
           return this.popupService.result$.pipe(
             take(1),
             switchMap((result: PopupResult) => {

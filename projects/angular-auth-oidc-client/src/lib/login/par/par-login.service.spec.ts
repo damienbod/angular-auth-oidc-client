@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
-import { firstValueFrom, of, throwError } from 'rxjs';
+import { firstValueFrom, NEVER, of, throwError } from 'rxjs';
 import { mockProvider } from '../../../test/auto-mock';
 import { CheckAuthService } from '../../auth-state/check-auth.service';
 import { AuthWellKnownService } from '../../config/auth-well-known/auth-well-known.service';
@@ -422,9 +422,7 @@ describe('ParLoginService', () => {
       vi.spyOn(popupService, 'result$', 'get').mockReturnValue(
         of({} as PopupResult)
       );
-      const spy = vi
-        .spyOn(popupService, 'openPopUp')
-        .mockReturnValue(undefined);
+      const spy = vi.spyOn(popupService, 'openPopUp').mockReturnValue(true);
 
       await firstValueFrom(service.loginWithPopUpPar(config, allConfigs));
 
@@ -455,6 +453,7 @@ describe('ParLoginService', () => {
       vi.spyOn(urlService, 'getAuthorizeParUrl').mockReturnValue(
         'some-par-url'
       );
+      vi.spyOn(popupService, 'openPopUp').mockReturnValue(true);
 
       const checkAuthSpy = vi
         .spyOn(checkAuthService, 'checkAuth')
@@ -490,6 +489,48 @@ describe('ParLoginService', () => {
       });
     });
 
+    it('should emit a failed response without waiting for a popup result when the popup could not be opened', async () => {
+      // Arrange
+      vi.spyOn(
+        responseTypeValidationService,
+        'hasConfigValidResponseType'
+      ).mockReturnValue(true);
+      const config = {
+        authWellknownEndpointUrl: 'authWellknownEndpoint',
+        responseType: 'stubValue',
+        configId: 'configId1',
+      };
+
+      vi.spyOn(
+        authWellKnownService,
+        'queryAndStoreAuthWellKnownEndPoints'
+      ).mockReturnValue(of({}));
+      vi.spyOn(parService, 'postParRequest').mockReturnValue(
+        of({ requestUri: 'requestUri' } as ParResponse)
+      );
+      vi.spyOn(urlService, 'getAuthorizeParUrl').mockReturnValue(
+        'some-par-url'
+      );
+      vi.spyOn(popupService, 'openPopUp').mockReturnValue(false);
+      vi.spyOn(popupService, 'result$', 'get').mockReturnValue(NEVER);
+      const checkAuthSpy = vi.spyOn(checkAuthService, 'checkAuth');
+      // Act
+      const result = await firstValueFrom(
+        service.loginWithPopUpPar(config, [config])
+      );
+
+      // Assert
+      expect(checkAuthSpy).not.toHaveBeenCalled();
+      expect(result).toEqual({
+        isAuthenticated: false,
+        errorMessage: 'Could not open popup',
+        configId: 'configId1',
+        idToken: '',
+        userData: null,
+        accessToken: '',
+      });
+    });
+
     it('should return correct properties if popup was closed by user', async () => {
       vi.spyOn(
         responseTypeValidationService,
@@ -513,6 +554,7 @@ describe('ParLoginService', () => {
       vi.spyOn(urlService, 'getAuthorizeParUrl').mockReturnValue(
         'some-par-url'
       );
+      vi.spyOn(popupService, 'openPopUp').mockReturnValue(true);
 
       const checkAuthSpy = vi
         .spyOn(checkAuthService, 'checkAuth')
