@@ -1,11 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { firstValueFrom, of, throwError } from 'rxjs';
+import { firstValueFrom, of, throwError, TimeoutError } from 'rxjs';
 import { mockAbstractProvider, mockProvider } from '../../test/auto-mock';
 import { AutoLoginService } from '../auto-login/auto-login.service';
 import { CallbackService } from '../callback/callback.service';
 import { PeriodicallyTokenCheckService } from '../callback/periodically-token-check.service';
+import { RefreshSessionRefreshTokenService } from '../callback/refresh-session-refresh-token.service';
 import { RefreshSessionService } from '../callback/refresh-session.service';
 import {
   StsConfigLoader,
@@ -13,6 +14,7 @@ import {
 } from '../config/loader/config-loader';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { CallbackContext } from '../flows/callback-context';
+import { FlowsDataService } from '../flows/flows-data.service';
 import { CheckSessionService } from '../iframe/check-session.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/services/logger.service';
@@ -41,6 +43,8 @@ describe('CheckAuthService', () => {
   let currentUrlService: CurrentUrlService;
   let publicEventsService: PublicEventsService;
   let loggerService: LoggerService;
+  let flowsDataService: FlowsDataService;
+  let refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -53,6 +57,8 @@ describe('CheckAuthService', () => {
         mockProvider(AuthStateService),
         mockProvider(CallbackService),
         mockProvider(RefreshSessionService),
+        mockProvider(RefreshSessionRefreshTokenService),
+        mockProvider(FlowsDataService),
         mockProvider(PeriodicallyTokenCheckService),
         mockProvider(PopUpService),
         mockProvider(CurrentUrlService),
@@ -81,6 +87,10 @@ describe('CheckAuthService', () => {
     currentUrlService = TestBed.inject(CurrentUrlService);
     publicEventsService = TestBed.inject(PublicEventsService);
     loggerService = TestBed.inject(LoggerService);
+    flowsDataService = TestBed.inject(FlowsDataService);
+    refreshSessionRefreshTokenService = TestBed.inject(
+      RefreshSessionRefreshTokenService
+    );
   });
 
   afterEach(() => {
@@ -707,6 +717,230 @@ describe('CheckAuthService', () => {
         [EventTypes.CheckingAuth],
         [EventTypes.CheckingAuthFinished],
       ]);
+    });
+  });
+
+  describe('checkAuth with expired tokens and a refresh token', () => {
+    const config: OpenIdConfiguration = {
+      configId: 'configId1',
+      authority: 'some-authority',
+      responseType: 'code',
+      silentRenew: true,
+      useRefreshToken: true,
+    };
+    const allConfigs = [config];
+
+    function arrangeExpiredTokens(): {
+      refreshSpy: ReturnType<typeof vi.spyOn>;
+      tokensValidSpy: ReturnType<typeof vi.spyOn>;
+    } {
+      vi.spyOn(popUpService, 'isCurrentlyInPopup').mockReturnValue(false);
+      vi.spyOn(currentUrlService, 'getCurrentUrl').mockReturnValue(
+        'http://localhost:4200'
+      );
+      vi.spyOn(callBackService, 'isCallback').mockReturnValue(false);
+      vi.spyOn(authStateService, 'getRefreshToken').mockReturnValue(
+        'refresh-token'
+      );
+      vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(false);
+      vi.spyOn(
+        periodicallyTokenCheckService,
+        'startTokenValidationPeriodically'
+      ).mockReturnValue(undefined);
+
+      return {
+        tokensValidSpy: vi
+          .spyOn(authStateService, 'areAuthStorageTokensValid')
+          .mockReturnValue(false),
+        refreshSpy: vi
+          .spyOn(refreshSessionService, 'userForceRefreshSession')
+          .mockReturnValue(of({ isAuthenticated: true } as LoginResponse)),
+      };
+    }
+
+    it('should renew the tokens and return an authenticated result when the renew succeeds', async () => {
+      // Arrange
+      const { refreshSpy, tokensValidSpy } = arrangeExpiredTokens();
+      const startPeriodicCheckSpy = vi.spyOn(
+        periodicallyTokenCheckService,
+        'startTokenValidationPeriodically'
+      );
+
+      tokensValidSpy.mockReturnValueOnce(false).mockReturnValue(true);
+
+      // Act
+      const result = await firstValueFrom(
+        checkAuthService.checkAuth(config, allConfigs)
+      );
+
+      // Assert
+      expect(refreshSpy).toHaveBeenCalledExactlyOnceWith(
+        config,
+        allConfigs,
+        undefined
+      );
+      expect(result.isAuthenticated).toBe(true);
+      expect(startPeriodicCheckSpy).toHaveBeenCalledExactlyOnceWith(
+        allConfigs,
+        config
+      );
+    });
+
+    it('should renew the tokens with the persisted custom refresh params', async () => {
+      // Arrange
+      const { refreshSpy } = arrangeExpiredTokens();
+
+      vi.spyOn(storagePersistenceService, 'read').mockReturnValue({
+        custom: 'param',
+      });
+
+      // Act
+      await firstValueFrom(checkAuthService.checkAuth(config, allConfigs));
+
+      // Assert
+      expect(refreshSpy).toHaveBeenCalledExactlyOnceWith(config, allConfigs, {
+        custom: 'param',
+      });
+    });
+
+    it('should return an unauthenticated result without an error when the renew fails', async () => {
+      // Arrange
+      const { refreshSpy } = arrangeExpiredTokens();
+      const fireEventSpy = vi.spyOn(publicEventsService, 'fireEvent');
+      const logWarningSpy = vi.spyOn(loggerService, 'logWarning');
+
+      refreshSpy.mockReturnValue(throwError(() => new Error('invalid_grant')));
+
+      // Act
+      const result = await firstValueFrom(
+        checkAuthService.checkAuth(config, allConfigs)
+      );
+
+      // Assert
+      expect(result.isAuthenticated).toBe(false);
+      expect(result.errorMessage).toBeUndefined();
+      expect(logWarningSpy).toHaveBeenCalledWith(
+        config,
+        'could not renew the expired tokens',
+        expect.any(Error)
+      );
+      expect(fireEventSpy).toHaveBeenCalledWith(
+        EventTypes.CheckingAuthFinished
+      );
+    });
+
+    it('should fire SilentRenewFailed when the renew times out', async () => {
+      // Arrange
+      const { refreshSpy } = arrangeExpiredTokens();
+      const fireEventSpy = vi.spyOn(publicEventsService, 'fireEvent');
+      const timeoutError = new TimeoutError();
+
+      refreshSpy.mockReturnValue(throwError(() => timeoutError));
+
+      // Act
+      const result = await firstValueFrom(
+        checkAuthService.checkAuth(config, allConfigs)
+      );
+
+      // Assert
+      expect(result.isAuthenticated).toBe(false);
+      expect(fireEventSpy).toHaveBeenCalledWith(
+        EventTypes.SilentRenewFailed,
+        timeoutError
+      );
+    });
+
+    it.each<[string, OpenIdConfiguration]>([
+      ['silent renew is disabled', { ...config, silentRenew: false }],
+      ['refresh tokens are not used', { ...config, useRefreshToken: false }],
+      ['the flow is not code flow', { ...config, responseType: 'id_token' }],
+    ])('should not renew the tokens when %s', async (_, passedConfig) => {
+      // Arrange
+      const { refreshSpy } = arrangeExpiredTokens();
+      // Act
+      const result = await firstValueFrom(
+        checkAuthService.checkAuth(passedConfig, [passedConfig])
+      );
+
+      // Assert
+      expect(refreshSpy).not.toHaveBeenCalled();
+      expect(result.isAuthenticated).toBe(false);
+    });
+
+    it('should not renew the tokens when there is no refresh token', async () => {
+      // Arrange
+      const { refreshSpy } = arrangeExpiredTokens();
+
+      vi.spyOn(authStateService, 'getRefreshToken').mockReturnValue('');
+
+      // Act
+      await firstValueFrom(checkAuthService.checkAuth(config, allConfigs));
+
+      // Assert
+      expect(refreshSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not renew the tokens when they are still valid', async () => {
+      // Arrange
+      const { refreshSpy, tokensValidSpy } = arrangeExpiredTokens();
+
+      tokensValidSpy.mockReturnValue(true);
+
+      // Act
+      await firstValueFrom(checkAuthService.checkAuth(config, allConfigs));
+
+      // Assert
+      expect(refreshSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not renew the tokens when the url is a callback', async () => {
+      // Arrange
+      const { refreshSpy } = arrangeExpiredTokens();
+
+      vi.spyOn(callBackService, 'isCallback').mockReturnValue(true);
+      vi.spyOn(callBackService, 'handleCallbackAndFireEvents').mockReturnValue(
+        of({} as CallbackContext)
+      );
+
+      // Act
+      await firstValueFrom(checkAuthService.checkAuth(config, allConfigs));
+
+      // Assert
+      expect(refreshSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not renew the tokens when a renew is running and the refresh token lock is not used', async () => {
+      // Arrange
+      const { refreshSpy } = arrangeExpiredTokens();
+
+      vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(true);
+      vi.spyOn(
+        refreshSessionRefreshTokenService,
+        'usesRefreshTokenLock'
+      ).mockReturnValue(false);
+
+      // Act
+      await firstValueFrom(checkAuthService.checkAuth(config, allConfigs));
+
+      // Assert
+      expect(refreshSpy).not.toHaveBeenCalled();
+    });
+
+    it('should renew the tokens when a renew is running and the refresh token lock is used', async () => {
+      // Arrange
+      const { refreshSpy } = arrangeExpiredTokens();
+
+      vi.spyOn(flowsDataService, 'isSilentRenewRunning').mockReturnValue(true);
+      vi.spyOn(
+        refreshSessionRefreshTokenService,
+        'usesRefreshTokenLock'
+      ).mockReturnValue(true);
+
+      // Act
+      await firstValueFrom(checkAuthService.checkAuth(config, allConfigs));
+
+      // Assert
+      expect(refreshSpy).toHaveBeenCalledOnce();
     });
   });
 
