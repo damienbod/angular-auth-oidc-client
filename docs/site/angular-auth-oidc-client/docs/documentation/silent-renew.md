@@ -169,7 +169,7 @@ Every failure fires the `SilentRenewFailed` [event](./public-events). If an ifra
 
 ## Security Token Service CSP and CORS
 
-`checkAuth()` only reads the stored tokens. Use `checkAuthIncludingServer()` to also try a silent renew when the user is not authenticated locally.
+`checkAuth()` reads the stored tokens and, with `silentRenew` and `useRefreshToken` enabled, renews expired tokens with the stored refresh token. This request to the token endpoint needs CORS as well. Use `checkAuthIncludingServer()` to also try an iframe silent renew when the user is not authenticated locally.
 This allows the application to authorize a user, that is already authenticated on the Security Token Service, without performing redirects.
 
 Silent renew requires CSP configuration on the server to allow iframes and also CORS.

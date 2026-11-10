@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { firstValueFrom, of, throwError } from 'rxjs';
+import { firstValueFrom, of, throwError, TimeoutError } from 'rxjs';
 import { mockAbstractProvider, mockProvider } from '../../test/auto-mock';
 import { AutoLoginService } from '../auto-login/auto-login.service';
 import { CallbackService } from '../callback/callback.service';
@@ -826,6 +826,27 @@ describe('CheckAuthService', () => {
       );
       expect(fireEventSpy).toHaveBeenCalledWith(
         EventTypes.CheckingAuthFinished
+      );
+    });
+
+    it('should fire SilentRenewFailed when the renew times out', async () => {
+      // Arrange
+      const { refreshSpy } = arrangeExpiredTokens();
+      const fireEventSpy = vi.spyOn(publicEventsService, 'fireEvent');
+      const timeoutError = new TimeoutError();
+
+      refreshSpy.mockReturnValue(throwError(() => timeoutError));
+
+      // Act
+      const result = await firstValueFrom(
+        checkAuthService.checkAuth(config, allConfigs)
+      );
+
+      // Assert
+      expect(result.isAuthenticated).toBe(false);
+      expect(fireEventSpy).toHaveBeenCalledWith(
+        EventTypes.SilentRenewFailed,
+        timeoutError
       );
     });
 

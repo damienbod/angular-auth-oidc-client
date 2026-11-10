@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { forkJoin, Observable, of, throwError } from 'rxjs';
+import { forkJoin, Observable, of, throwError, TimeoutError } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { AutoLoginService } from '../auto-login/auto-login.service';
 import { CallbackService } from '../callback/callback.service';
@@ -316,6 +316,15 @@ export class CheckAuthService {
         // The failure is reported with the SilentRenewFailed event. For the
         // check it only means that the user is not authenticated.
         catchError((error) => {
+          // The timeout of forceRefreshSession is applied outside of the renew
+          // that fires the event, so a timeout is not reported by it.
+          if (error instanceof TimeoutError) {
+            this.publicEventsService.fireEvent(
+              EventTypes.SilentRenewFailed,
+              error
+            );
+          }
+
           this.loggerService.logWarning(
             config,
             'could not renew the expired tokens',
