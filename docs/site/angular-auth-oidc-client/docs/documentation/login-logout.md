@@ -68,6 +68,8 @@ This saves the current Angular Router URL, including query parameters and fragme
 
 The option works with both standard redirects and PAR. It does not change the OIDC callback URL (`redirectUrl`). Omit it or set it to `false` to keep the existing behavior.
 
+A new manual `authorize()` call without `restoreRoute: true` discards any previously saved destination, including one left by a cancelled or failed login. Auto-login guards continue to save and restore their requested route independently.
+
 The [restore-route sample](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-restore-route) demonstrates two routes that remain accessible both before and after authentication. Clicking login on either route returns to that route, without an auto-login guard.
 
 ### Pushed Authorization Requests (PAR)

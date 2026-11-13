@@ -83,3 +83,37 @@ for (const route of ['one', 'two']) {
     expect(authorizeRequests).toHaveLength(1);
   });
 }
+
+test('should discard the saved route from a cancelled login before a later plain login', async ({
+  page,
+}) => {
+  // Arrange
+  await page.goto('/two?tab=cancelled#items');
+  await page.route(
+    'http://localhost:8081/idp1/authorize?**',
+    (route) =>
+      route.fulfill({
+        contentType: 'text/html',
+        body: '<h1>Login cancelled</h1>',
+      }),
+    { times: 1 }
+  );
+  await page.getByRole('button', { name: 'Login and return here' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Login cancelled' })
+  ).toBeVisible();
+  await page.goto('/two?tab=retry');
+  await expect(page.getByText('Is Authenticated: false')).toBeVisible();
+
+  // Act
+  await page
+    .getByRole('button', { name: 'Login without restoring route' })
+    .click();
+
+  // Assert
+  await expect(page.getByText('Is Authenticated: true')).toBeVisible();
+  await expect(page).toHaveURL(/\/one$/);
+  await expect(
+    page.getByRole('heading', { name: 'Route one', exact: true })
+  ).toBeVisible();
+});

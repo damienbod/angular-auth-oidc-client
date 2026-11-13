@@ -16,6 +16,9 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
     <p>Is Authenticated: {{ authenticated().isAuthenticated }}</p>
     @if (!authenticated().isAuthenticated) {
       <button (click)="login()">Login and return here</button>
+      <button (click)="loginWithoutRestoringRoute()">
+        Login without restoring route
+      </button>
     } @else {
       <button (click)="logout()">Logout</button>
       <pre>{{ userData() | json }}</pre>
@@ -30,6 +33,10 @@ export class AppComponent {
 
   login(): void {
     this.oidcSecurityService.authorize(undefined, { restoreRoute: true });
+  }
+
+  loginWithoutRestoringRoute(): void {
+    this.oidcSecurityService.authorize();
   }
 
   logout(): void {

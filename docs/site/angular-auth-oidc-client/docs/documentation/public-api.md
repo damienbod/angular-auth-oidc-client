@@ -509,6 +509,8 @@ This method takes a `configId` if you want to target a specific config and an `a
 
 Set `restoreRoute: true` to save the current Angular Router URL, including query parameters and fragment, and return to it after a successful `checkAuth()` or `checkAuthMultiple()`. This reuses the auto-login guards' saved-route mechanism and also works with `withAppInitializerAuthCheck()`. It defaults to `false`, supports standard and PAR login, and does not apply to popup login.
 
+A new manual `authorize()` call with the option omitted or set to `false` clears any previously saved destination, so a cancelled or failed login cannot redirect a later plain login to a stale route.
+
 If no configuration is found for the `configId`, an error is thrown and reported as an unhandled error.
 
 See also: [Custom parameters](custom-parameters.md).

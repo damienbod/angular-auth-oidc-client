@@ -95,6 +95,31 @@ describe('AutoLoginService ', () => {
     });
   });
 
+  describe('deleteStoredRedirectRoute', () => {
+    it('should remove the destination only for the selected configuration', () => {
+      // Arrange
+      const config = { configId: 'configId1' };
+      const removeSpy = vi.spyOn(storagePersistenceService, 'remove');
+
+      // Act
+      autoLoginService.deleteStoredRedirectRoute(config);
+
+      // Assert
+      expect(removeSpy).toHaveBeenCalledExactlyOnceWith('redirect', config);
+    });
+
+    it('should not remove a destination without a configuration', () => {
+      // Arrange
+      const removeSpy = vi.spyOn(storagePersistenceService, 'remove');
+
+      // Act
+      autoLoginService.deleteStoredRedirectRoute(null);
+
+      // Assert
+      expect(removeSpy).not.toHaveBeenCalled();
+    });
+  });
+
   describe('saveRedirectRoute', () => {
     it.each(['/', '/orders/42?tab=details#items'])(
       'should save the current Angular Router URL when no redirect URL is provided (%s)',

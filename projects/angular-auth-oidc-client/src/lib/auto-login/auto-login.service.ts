@@ -37,16 +37,20 @@ export class AutoLoginService {
   }
 
   /**
+   * Removes the redirect URL from storage.
+   */
+  deleteStoredRedirectRoute(config: OpenIdConfiguration | null): void {
+    if (!config) {
+      return;
+    }
+
+    this.storageService.remove(STORAGE_KEY, config);
+  }
+
+  /**
    * Gets the stored redirect URL from storage.
    */
   private getStoredRedirectRoute(config: OpenIdConfiguration): string {
     return this.storageService.read(STORAGE_KEY, config);
-  }
-
-  /**
-   * Removes the redirect URL from storage.
-   */
-  private deleteStoredRedirectRoute(config: OpenIdConfiguration): void {
-    this.storageService.remove(STORAGE_KEY, config);
   }
 }
