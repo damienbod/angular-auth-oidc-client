@@ -270,7 +270,7 @@ It returns an `Observable<LoginResponse>` describing the result:
 }
 ```
 
-> `checkAuth()` does **not** redirect the user anywhere. To start a *new* sign-in (e.g. on a "Login" button click), call [`authorize()`](#authorizeconfigid-string-authoptions-authoptions) instead.
+> `checkAuth()` does **not** start a new sign-in. It can navigate within the application after authentication, including to a route saved by an auto-login guard or `authorize(undefined, { restoreRoute: true })`. To start a *new* sign-in (e.g. on a "Login" button click), call [`authorize()`](#authorizeconfigid-string-authoptions-authoptions) instead.
 
 ```ts
 this.oidcSecurityService.checkAuth().subscribe(({ isAuthenticated, userData, accessToken, idToken, configId }) => {
@@ -507,6 +507,8 @@ this.oidcSecurityService.getState('configId').subscribe(/*...*/);
 
 This method takes a `configId` if you want to target a specific config and an `authOptions` object with `customParams` or `redirectUrl` for per-call customization. It also accepts a `urlHandler` that is called instead of the redirect (useful if you need to construct the navigation yourself).
 
+Set `restoreRoute: true` to save the current Angular Router URL, including query parameters and fragment, and return to it after a successful `checkAuth()` or `checkAuthMultiple()`. This reuses the auto-login guards' saved-route mechanism and also works with `withAppInitializerAuthCheck()`. It defaults to `false`, supports standard and PAR login, and does not apply to popup login.
+
 If no configuration is found for the `configId`, an error is thrown and reported as an unhandled error.
 
 See also: [Custom parameters](custom-parameters.md).
@@ -516,6 +518,7 @@ export interface AuthOptions {
   customParams?: { [key: string]: string | number | boolean };
   urlHandler?(url: string): void;
   redirectUrl?: string;
+  restoreRoute?: boolean;
 }
 ```
 
@@ -570,6 +573,8 @@ export interface AuthOptions {
   customParams?: { [key: string]: string | number | boolean };
   urlHandler?(url: string): void;
   redirectUrl?: string;
+  /** Only used by authorize(), not popup login. */
+  restoreRoute?: boolean;
 }
 ```
 

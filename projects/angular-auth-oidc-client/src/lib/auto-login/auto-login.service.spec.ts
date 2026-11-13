@@ -96,6 +96,27 @@ describe('AutoLoginService ', () => {
   });
 
   describe('saveRedirectRoute', () => {
+    it.each(['/', '/orders/42?tab=details#items'])(
+      'should save the current Angular Router URL when no redirect URL is provided (%s)',
+      (url) => {
+        // Arrange
+        const config = { configId: 'configId1' };
+
+        vi.spyOn(router, 'url', 'get').mockReturnValue(url);
+        const writeSpy = vi.spyOn(storagePersistenceService, 'write');
+
+        // Act
+        autoLoginService.saveRedirectRoute(config);
+
+        // Assert
+        expect(writeSpy).toHaveBeenCalledExactlyOnceWith(
+          'redirect',
+          url,
+          config
+        );
+      }
+    );
+
     it('should do nothing if config is null', () => {
       const writeSpy = vi
         .spyOn(storagePersistenceService, 'write')
@@ -106,18 +127,21 @@ describe('AutoLoginService ', () => {
       expect(writeSpy).not.toHaveBeenCalled();
     });
 
-    it('should call storageService with correct params', () => {
+    it('should save an explicit redirect URL instead of the current router URL', () => {
+      // Arrange
+      vi.spyOn(router, 'url', 'get').mockReturnValue('/current-route');
       const writeSpy = vi
         .spyOn(storagePersistenceService, 'write')
-        .mockReturnValue(undefined as any);
+        .mockReturnValue(true);
 
+      // Act
       autoLoginService.saveRedirectRoute(
         { configId: 'configId1' },
         'some-route'
       );
 
+      // Assert
       expect(writeSpy).toHaveBeenCalledTimes(1);
-
       expect(writeSpy).toHaveBeenCalledWith('redirect', 'some-route', {
         configId: 'configId1',
       });

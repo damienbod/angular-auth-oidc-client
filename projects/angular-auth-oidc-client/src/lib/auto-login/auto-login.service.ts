@@ -26,14 +26,14 @@ export class AutoLoginService {
    * Saves the redirect URL to storage.
    *
    * @param config The OpenId configuration.
-   * @param url The redirect URL to save.
+   * @param url The redirect URL to save. Defaults to the current Angular Router URL.
    */
-  saveRedirectRoute(config: OpenIdConfiguration | null, url: string): void {
+  saveRedirectRoute(config: OpenIdConfiguration | null, url?: string): void {
     if (!config) {
       return;
     }
 
-    this.storageService.write(STORAGE_KEY, url, config);
+    this.storageService.write(STORAGE_KEY, url ?? this.router.url, config);
   }
 
   /**

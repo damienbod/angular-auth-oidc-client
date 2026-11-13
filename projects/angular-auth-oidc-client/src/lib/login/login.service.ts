@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { AuthOptions } from '../auth-options';
+import { AutoLoginService } from '../auto-login/auto-login.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { LoginResponse } from './login-response';
@@ -12,6 +13,7 @@ import { StandardLoginService } from './standard/standard-login.service';
 
 @Injectable({ providedIn: 'root' })
 export class LoginService {
+  private readonly autoLoginService = inject(AutoLoginService);
   private readonly parLoginService = inject(ParLoginService);
   private readonly popUpLoginService = inject(PopUpLoginService);
   private readonly standardLoginService = inject(StandardLoginService);
@@ -31,6 +33,10 @@ export class LoginService {
     }
 
     const { usePushedAuthorisationRequests } = configuration;
+
+    if (authOptions?.restoreRoute) {
+      this.autoLoginService.saveRedirectRoute(configuration);
+    }
 
     if (authOptions?.customParams) {
       this.storagePersistenceService.write(
