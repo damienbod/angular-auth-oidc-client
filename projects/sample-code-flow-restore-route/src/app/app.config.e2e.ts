@@ -2,6 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { ApplicationConfig } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import {
+  LogLevel,
   provideAuth,
   withAppInitializerAuthCheck,
 } from 'angular-auth-oidc-client';
@@ -14,6 +15,8 @@ export const appConfig: ApplicationConfig = {
     provideAuth(
       {
         config: {
+          postLoginRoute: '/one',
+          logLevel: LogLevel.Debug,
           authority: 'http://localhost:8081/idp1',
           clientId: 'client-idp1',
           redirectUrl: window.location.origin,

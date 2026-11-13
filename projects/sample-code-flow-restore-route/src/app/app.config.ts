@@ -15,10 +15,8 @@ export const appConfig: ApplicationConfig = {
     provideAuth(
       {
         config: {
-          triggerAuthorizationResultEvent: true,
           postLoginRoute: '/one',
           logLevel: LogLevel.Debug,
-          historyCleanupOff: true,
           authority: 'https://offeringsolutions-sts.azurewebsites.net',
           clientId: 'angularCodeRefreshTokens',
           redirectUrl: window.location.origin,
