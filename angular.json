@@ -44,6 +44,9 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "port": 4204
+          },
           "configurations": {
             "production": {
               "buildTarget": "sample-code-flow-restore-route:build:production"

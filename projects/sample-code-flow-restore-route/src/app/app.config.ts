@@ -2,6 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { ApplicationConfig } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import {
+  LogLevel,
   provideAuth,
   withAppInitializerAuthCheck,
 } from 'angular-auth-oidc-client';
@@ -14,6 +15,10 @@ export const appConfig: ApplicationConfig = {
     provideAuth(
       {
         config: {
+          triggerAuthorizationResultEvent: true,
+          postLoginRoute: '/one',
+          logLevel: LogLevel.Debug,
+          historyCleanupOff: true,
           authority: 'https://offeringsolutions-sts.azurewebsites.net',
           clientId: 'angularCodeRefreshTokens',
           redirectUrl: window.location.origin,
