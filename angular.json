@@ -3,6 +3,75 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
+    "sample-code-flow-restore-route": {
+      "projectType": "application",
+      "root": "projects/sample-code-flow-restore-route",
+      "sourceRoot": "projects/sample-code-flow-restore-route/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": {
+              "base": "dist/sample-code-flow-restore-route"
+            },
+            "index": "projects/sample-code-flow-restore-route/src/index.html",
+            "browser": "projects/sample-code-flow-restore-route/src/main.ts",
+            "tsConfig": "projects/sample-code-flow-restore-route/tsconfig.app.json"
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            },
+            "e2e": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/sample-code-flow-restore-route/src/app/app.config.ts",
+                  "with": "projects/sample-code-flow-restore-route/src/app/app.config.e2e.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "options": {
+            "port": 4204
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "sample-code-flow-restore-route:build:production"
+            },
+            "development": {
+              "buildTarget": "sample-code-flow-restore-route:build:development"
+            },
+            "e2e": {
+              "buildTarget": "sample-code-flow-restore-route:build:e2e"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/sample-code-flow-restore-route/**/*.ts",
+              "projects/sample-code-flow-restore-route/**/*.html"
+            ],
+            "eslintConfig": "projects/sample-code-flow-restore-route/eslint.config.js"
+          }
+        }
+      }
+    },
     "angular-auth-oidc-client": {
       "projectType": "library",
       "root": "projects/angular-auth-oidc-client",

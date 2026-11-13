@@ -27,6 +27,7 @@ npx playwright install chromium   # once
 npm run build-lib                 # the samples import the library from dist/
 npm run e2e                       # all samples
 E2E_SAMPLES=sample-code-flow-popup npm run e2e   # one or more (comma separated)
+E2E_SAMPLES=sample-code-flow-restore-route npm run e2e # manual login and public-route restoration
 ```
 
 Playwright starts the test IDP server on port 8081 and serves each selected

@@ -37,6 +37,7 @@ You can pass in AuthOptions following optional parameters:
 - `urlHandler` - to manipulate the behavior of the login with a custom `urlHandler`
 - `customParams` - to send custom parameters to OIDC Provider
 - `redirectUrl` - to override the redirectUrl defined in the configuration
+- `restoreRoute` - opt in to saving the current route before `authorize()` and restoring it after a successful authentication check (default: `false`; ignored by popup login)
 
 ```ts
 login() {
@@ -56,6 +57,20 @@ login() {
 }
 
 ```
+
+### Return to the current route after login
+
+```ts
+this.oidcSecurityService.authorize(undefined, { restoreRoute: true });
+```
+
+This saves the current Angular Router URL, including query parameters and fragment, for the selected configuration using the same storage as the auto-login guards. After returning from the identity provider, a successful `checkAuth()` or `checkAuthMultiple()` navigates to the saved route and removes it from storage. This also works when authentication is checked by `withAppInitializerAuthCheck()`, without an auto-login guard.
+
+The option works with both standard redirects and PAR. It does not change the OIDC callback URL (`redirectUrl`). Omit it or set it to `false` to keep the existing behavior.
+
+A new manual `authorize()` call without `restoreRoute: true` discards any previously saved destination, including one left by a cancelled or failed login. Auto-login guards continue to save and restore their requested route independently.
+
+The [restore-route sample](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-restore-route) demonstrates two routes that remain accessible both before and after authentication. Clicking login on either route returns to that route, without an auto-login guard.
 
 ### Pushed Authorization Requests (PAR)
 
