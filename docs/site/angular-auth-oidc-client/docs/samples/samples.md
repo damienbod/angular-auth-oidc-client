@@ -14,6 +14,14 @@ The properties used in this example are just for demo purposes, you can used any
 
 [Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-http-config)
 
+## Code flow PKCE with manual login and route restoration
+
+Two public routes remain accessible before and after authentication. Manual login uses `authorize(undefined, { restoreRoute: true })` to return to the current route, including query parameters and fragment, after `withAppInitializerAuthCheck()` completes. No auto-login guards are required.
+
+Run `npm run start-sample-code-flow-restore-route` to open the sample at `https://localhost:4204`.
+
+[Code](https://github.com/damienbod/angular-auth-oidc-client/tree/main/projects/sample-code-flow-restore-route)
+
 ## Code flow PKCE auto-login
 
 The example logins the user in directly without a login click using the code flow with PKCE and an auth-guard.

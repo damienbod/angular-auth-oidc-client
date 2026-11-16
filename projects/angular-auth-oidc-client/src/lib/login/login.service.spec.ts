@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, of } from 'rxjs';
 import { mockProvider } from '../../test/auto-mock';
+import { AutoLoginService } from '../auto-login/auto-login.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { LoginResponse } from './login-response';
 import { LoginService } from './login.service';
@@ -18,12 +19,14 @@ describe('LoginService', () => {
   let standardLoginService: StandardLoginService;
   let storagePersistenceService: StoragePersistenceService;
   let popUpService: PopUpService;
+  let autoLoginService: AutoLoginService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [CommonModule],
       providers: [
         LoginService,
+        mockProvider(AutoLoginService),
         mockProvider(ParLoginService),
         mockProvider(PopUpLoginService),
         mockProvider(StandardLoginService),
@@ -40,6 +43,7 @@ describe('LoginService', () => {
     standardLoginService = TestBed.inject(StandardLoginService);
     storagePersistenceService = TestBed.inject(StoragePersistenceService);
     popUpService = TestBed.inject(PopUpService);
+    autoLoginService = TestBed.inject(AutoLoginService);
   });
 
   it('should create', () => {
@@ -47,6 +51,58 @@ describe('LoginService', () => {
   });
 
   describe('login', () => {
+    it.each([false, true])(
+      'should save the current route before login when restoreRoute is enabled and PAR is %s',
+      (usePushedAuthorisationRequests) => {
+        // Arrange
+        const config = {
+          configId: 'configId1',
+          usePushedAuthorisationRequests,
+        };
+        const authOptions = { restoreRoute: true };
+        const saveSpy = vi.spyOn(autoLoginService, 'saveRedirectRoute');
+        const loginSpy = usePushedAuthorisationRequests
+          ? vi.spyOn(parLoginService, 'loginPar')
+          : vi.spyOn(standardLoginService, 'loginStandard');
+
+        // Act
+        service.login(config, authOptions);
+
+        // Assert
+        expect(saveSpy).toHaveBeenCalledTimes(1);
+        expect(saveSpy).toHaveBeenCalledWith(config);
+        expect(saveSpy.mock.invocationCallOrder[0]).toBeLessThan(
+          loginSpy.mock.invocationCallOrder[0]
+        );
+        expect(loginSpy).toHaveBeenCalledWith(config, authOptions);
+      }
+    );
+
+    it.each([undefined, false])(
+      'should not change the saved route when restoreRoute is %s',
+      (restoreRoute) => {
+        // Arrange
+        const saveSpy = vi.spyOn(autoLoginService, 'saveRedirectRoute');
+
+        // Act
+        service.login({ configId: 'configId1' }, { restoreRoute });
+
+        // Assert
+        expect(saveSpy).not.toHaveBeenCalled();
+      }
+    );
+
+    it('should not save a route when the configuration is missing', () => {
+      // Arrange
+      const saveSpy = vi.spyOn(autoLoginService, 'saveRedirectRoute');
+
+      // Act & Assert
+      expect(() => service.login(null, { restoreRoute: true })).toThrow(
+        'Please provide a configuration before setting up the module'
+      );
+      expect(saveSpy).not.toHaveBeenCalled();
+    });
+
     it('should call parLoginService loginPar if usePushedAuthorisationRequests is true', () => {
       const config = { usePushedAuthorisationRequests: true };
       const loginParSpy = vi
@@ -119,6 +175,33 @@ describe('LoginService', () => {
   });
 
   describe('loginWithPopUp', () => {
+    it.each([false, true])(
+      'should not save the current route for popup login when PAR is %s',
+      async (usePushedAuthorisationRequests) => {
+        // Arrange
+        const config = {
+          configId: 'configId1',
+          usePushedAuthorisationRequests,
+        };
+        const saveSpy = vi.spyOn(autoLoginService, 'saveRedirectRoute');
+
+        vi.spyOn(parLoginService, 'loginWithPopUpPar').mockReturnValue(
+          of({} as LoginResponse)
+        );
+        vi.spyOn(popUpLoginService, 'loginWithPopUpStandard').mockReturnValue(
+          of({} as LoginResponse)
+        );
+
+        // Act
+        await firstValueFrom(
+          service.loginWithPopUp(config, [config], { restoreRoute: true })
+        );
+
+        // Assert
+        expect(saveSpy).not.toHaveBeenCalled();
+      }
+    );
+
     it('should call parLoginService loginWithPopUpPar if usePushedAuthorisationRequests is true', async () => {
       // arrange
       const config = { usePushedAuthorisationRequests: true };

@@ -5,6 +5,7 @@ import { AuthOptions, LogoutAuthOptions } from './auth-options';
 import { AuthenticatedResult } from './auth-state/auth-result';
 import { AuthStateService } from './auth-state/auth-state.service';
 import { CheckAuthService } from './auth-state/check-auth.service';
+import { AutoLoginService } from './auto-login/auto-login.service';
 import { CallbackService } from './callback/callback.service';
 import { RefreshSessionService } from './callback/refresh-session.service';
 import { AuthWellKnownEndpoints } from './config/auth-well-known/auth-well-known-endpoints';
@@ -36,6 +37,7 @@ export class OidcSecurityService {
   private readonly callbackService = inject(CallbackService);
   private readonly logoffRevocationService = inject(LogoffRevocationService);
   private readonly loginService = inject(LoginService);
+  private readonly autoLoginService = inject(AutoLoginService);
   private readonly refreshSessionService = inject(RefreshSessionService);
   private readonly urlService = inject(UrlService);
   private readonly authWellKnownService = inject(AuthWellKnownService);
@@ -346,7 +348,14 @@ export class OidcSecurityService {
   authorize(configId?: string, authOptions?: AuthOptions): void {
     this.configurationService
       .getOpenIDConfiguration(configId)
-      .subscribe((config) => this.loginService.login(config, authOptions));
+      .subscribe((config) => {
+        // Guards save their destination before calling LoginService directly.
+        if (!authOptions?.restoreRoute) {
+          this.autoLoginService.deleteStoredRedirectRoute(config);
+        }
+
+        this.loginService.login(config, authOptions);
+      });
   }
 
   /**

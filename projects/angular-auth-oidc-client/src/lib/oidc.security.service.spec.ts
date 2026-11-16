@@ -13,6 +13,7 @@ import { FlowsDataService } from './flows/flows-data.service';
 import { CheckSessionService } from './iframe/check-session.service';
 import { LoginResponse } from './login/login-response';
 import { LoginService } from './login/login.service';
+import { AutoLoginService } from './auto-login/auto-login.service';
 import { LogoffRevocationService } from './logoff-revoke/logoff-revocation.service';
 import { OidcSecurityService } from './oidc.security.service';
 import { UserService } from './user-data/user.service';
@@ -52,6 +53,7 @@ describe('OidcSecurityService', () => {
         mockProvider(CallbackService),
         mockProvider(LogoffRevocationService),
         mockProvider(LoginService),
+        mockProvider(AutoLoginService),
         mockProvider(RefreshSessionService),
         mockProvider(UrlService),
         mockProvider(AuthWellKnownService),
@@ -553,6 +555,58 @@ describe('OidcSecurityService', () => {
   });
 
   describe('authorize', () => {
+    it.each([undefined, false])(
+      'should discard a previous destination before a manual login when restoreRoute is %s',
+      (restoreRoute) => {
+        // Arrange
+        const config = { configId: 'configId1' };
+        const options =
+          restoreRoute === undefined ? undefined : { restoreRoute };
+
+        vi.spyOn(
+          configurationService,
+          'getOpenIDConfiguration'
+        ).mockReturnValue(of(config));
+        const deleteSpy = vi.spyOn(
+          TestBed.inject(AutoLoginService),
+          'deleteStoredRedirectRoute'
+        );
+        const loginSpy = vi.spyOn(loginService, 'login');
+
+        // Act
+        oidcSecurityService.authorize(config.configId, options);
+
+        // Assert
+        expect(deleteSpy).toHaveBeenCalledExactlyOnceWith(config);
+        expect(deleteSpy.mock.invocationCallOrder[0]).toBeLessThan(
+          loginSpy.mock.invocationCallOrder[0]
+        );
+        expect(loginSpy).toHaveBeenCalledExactlyOnceWith(config, options);
+      }
+    );
+
+    it('should pass route restoration to login without clearing the destination first', () => {
+      // Arrange
+      const config = { configId: 'configId1' };
+      const options = { restoreRoute: true };
+
+      vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
+        of(config)
+      );
+      const deleteSpy = vi.spyOn(
+        TestBed.inject(AutoLoginService),
+        'deleteStoredRedirectRoute'
+      );
+      const loginSpy = vi.spyOn(loginService, 'login');
+
+      // Act
+      oidcSecurityService.authorize(config.configId, options);
+
+      // Assert
+      expect(deleteSpy).not.toHaveBeenCalled();
+      expect(loginSpy).toHaveBeenCalledExactlyOnceWith(config, options);
+    });
+
     it('should call login service login', () => {
       const config = { configId: 'configId1' };
 

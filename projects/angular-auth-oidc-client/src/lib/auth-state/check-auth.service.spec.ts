@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { firstValueFrom, of, throwError } from 'rxjs';
 import { mockAbstractProvider, mockProvider } from '../../test/auto-mock';
@@ -92,6 +93,48 @@ describe('CheckAuthService', () => {
   });
 
   describe('checkAuth', () => {
+    it.each([true, false])(
+      'should restore and consume the saved route only after successful authentication when isAuthenticated is %s',
+      async (isAuthenticated) => {
+        // Arrange
+        const config = { configId: 'configId1' };
+        const savedRoute = '/orders/42?tab=details#items';
+
+        vi.spyOn(currentUrlService, 'getCurrentUrl').mockReturnValue(
+          'http://localhost:4200/callback'
+        );
+        vi.spyOn(callBackService, 'isCallback').mockReturnValue(true);
+        vi.spyOn(
+          callBackService,
+          'handleCallbackAndFireEvents'
+        ).mockReturnValue(of({} as CallbackContext));
+        vi.spyOn(authStateService, 'areAuthStorageTokensValid').mockReturnValue(
+          isAuthenticated
+        );
+        vi.spyOn(storagePersistenceService, 'read').mockImplementation((key) =>
+          key === 'redirect' ? savedRoute : undefined
+        );
+        const removeSpy = vi.spyOn(storagePersistenceService, 'remove');
+        const navigateSpy = vi
+          .spyOn(TestBed.inject(Router), 'navigateByUrl')
+          .mockResolvedValue(true);
+        // Act
+        const result = await firstValueFrom(
+          checkAuthService.checkAuth(config, [config])
+        );
+
+        // Assert
+        expect(result.isAuthenticated).toBe(isAuthenticated);
+        if (isAuthenticated) {
+          expect(navigateSpy).toHaveBeenCalledExactlyOnceWith(savedRoute);
+          expect(removeSpy).toHaveBeenCalledExactlyOnceWith('redirect', config);
+        } else {
+          expect(navigateSpy).not.toHaveBeenCalled();
+          expect(removeSpy).not.toHaveBeenCalled();
+        }
+      }
+    );
+
     it('should error with a missing configuration message and not fire CheckingAuth when config is null', async () => {
       const fireEventSpy = vi.spyOn(publicEventsService, 'fireEvent');
 
