@@ -251,7 +251,7 @@ this.oidcSecurityService.getUserData('configId').subscribe((data)=> ... );
 Specifically, `checkAuth()` does three things:
 
 1. **Processes the callback** if the current URL contains an auth response from the identity provider (after the redirect back from sign-in).
-2. **Restores an existing session** from storage if one is present, so a page refresh keeps the user signed in.
+2. **Restores an existing session** from storage if one is present, so a page refresh keeps the user signed in. With `silentRenew` and `useRefreshToken` enabled, stored tokens that have expired are renewed with the stored refresh token first (see [Silent Renew](./silent-renew)).
 3. **Starts silent token renewal** and the periodic token-validity check, if configured.
 
 Step 3 only happens when the user is authenticated afterwards. If no configuration matches the passed `configId`, or the `state` in the URL, the returned observable errors (`Please provide a configuration before setting up the module` / `could not find matching config for state ...`). Failures while processing the callback do not error: they resolve with `isAuthenticated: false` and the reason in `errorMessage`.

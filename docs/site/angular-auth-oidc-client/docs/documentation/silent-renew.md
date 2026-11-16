@@ -105,6 +105,8 @@ The `renewTimeBeforeTokenExpiresInSeconds` property can be used to start the ren
 
 Every `tokenRefreshInSeconds` (default 4) the library checks whether the access token (if it has an expiry) or the id_token (only if `triggerRefreshWhenIdTokenExpired` is `true`) has expired, and if so starts a renew. A renew is only started if an id_token and user data are in the storage, and no other renew or code flow is running. This applies to iframes and refresh tokens alike.
 
+The periodic check only runs while the user is authenticated. With `silentRenew` and `useRefreshToken` enabled, `checkAuth()` therefore also renews tokens that have expired while the application was closed, as long as a refresh token is stored and no other renew is running. `checkAuth()` waits for the renew, up to [`silentRenewTimeoutInSeconds`](./configuration#silentrenewtimeoutinseconds). If the renew fails, the `SilentRenewFailed` [event](./public-events) is fired and `checkAuth()` returns `isAuthenticated: false`.
+
 Pushed authorization requests (`usePushedAuthorisationRequests`) cannot be combined with the iframe renew. Use refresh tokens instead.
 
 ### Silent Renew Code Flow with PKCE (iframe)
@@ -167,7 +169,7 @@ Every failure fires the `SilentRenewFailed` [event](./public-events). If an ifra
 
 ## Security Token Service CSP and CORS
 
-`checkAuth()` only reads the stored tokens. Use `checkAuthIncludingServer()` to also try a silent renew when the user is not authenticated locally.
+`checkAuth()` reads the stored tokens and, with `silentRenew` and `useRefreshToken` enabled, renews expired tokens with the stored refresh token. This request to the token endpoint needs CORS as well. Use `checkAuthIncludingServer()` to also try an iframe silent renew when the user is not authenticated locally.
 This allows the application to authorize a user, that is already authenticated on the Security Token Service, without performing redirects.
 
 Silent renew requires CSP configuration on the server to allow iframes and also CORS.

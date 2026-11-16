@@ -1,11 +1,13 @@
 import { inject, Injectable } from '@angular/core';
-import { forkJoin, Observable, of, throwError } from 'rxjs';
+import { forkJoin, Observable, of, throwError, TimeoutError } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { AutoLoginService } from '../auto-login/auto-login.service';
 import { CallbackService } from '../callback/callback.service';
 import { PeriodicallyTokenCheckService } from '../callback/periodically-token-check.service';
+import { RefreshSessionRefreshTokenService } from '../callback/refresh-session-refresh-token.service';
 import { RefreshSessionService } from '../callback/refresh-session.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
+import { FlowsDataService } from '../flows/flows-data.service';
 import { CheckSessionService } from '../iframe/check-session.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
 import { LoggerService } from '../logging/services/logger.service';
@@ -15,6 +17,7 @@ import { EventTypes } from '../public-events/event-types';
 import { PublicEventsService } from '../public-events/public-events.service';
 import { StoragePersistenceService } from '../storage/storage-persistence.service';
 import { UserService } from '../user-data/user.service';
+import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { CurrentUrlService } from '../utils/url/current-url.service';
 import { AuthStateService } from './auth-state.service';
 
@@ -37,6 +40,11 @@ export class CheckAuthService {
     StoragePersistenceService
   );
   private readonly publicEventsService = inject(PublicEventsService);
+  private readonly flowHelper = inject(FlowHelper);
+  private readonly flowsDataService = inject(FlowsDataService);
+  private readonly refreshSessionRefreshTokenService = inject(
+    RefreshSessionRefreshTokenService
+  );
 
   checkAuth(
     configuration: OpenIdConfiguration | null,
@@ -220,13 +228,13 @@ export class CheckAuthService {
       `currentUrl to check auth with: '${currentUrl}'`
     );
 
-    const callback$ = isCallback
+    const callback$: Observable<unknown> = isCallback
       ? this.callbackService.handleCallbackAndFireEvents(
           currentUrl,
           config,
           allConfigs
         )
-      : of({});
+      : this.renewExpiredTokensIfPossible(config, allConfigs);
 
     return callback$.pipe(
       map(() => {
@@ -281,6 +289,68 @@ export class CheckAuthService {
 
         return of(result);
       })
+    );
+  }
+
+  private renewExpiredTokensIfPossible(
+    config: OpenIdConfiguration,
+    allConfigs: OpenIdConfiguration[]
+  ): Observable<unknown> {
+    if (!this.canRenewExpiredTokens(config)) {
+      return of(null);
+    }
+
+    this.loggerService.logDebug(
+      config,
+      'stored tokens are expired, renewing them with the refresh token'
+    );
+
+    const customParamsRefresh = this.storagePersistenceService.read(
+      'storageCustomParamsRefresh',
+      config
+    );
+
+    return this.refreshSessionService
+      .userForceRefreshSession(config, allConfigs, customParamsRefresh)
+      .pipe(
+        // The failure is reported with the SilentRenewFailed event. For the
+        // check it only means that the user is not authenticated.
+        catchError((error) => {
+          // The timeout of forceRefreshSession is applied outside of the renew
+          // that fires the event, so a timeout is not reported by it.
+          if (error instanceof TimeoutError) {
+            this.publicEventsService.fireEvent(
+              EventTypes.SilentRenewFailed,
+              error
+            );
+          }
+
+          this.loggerService.logWarning(
+            config,
+            'could not renew the expired tokens',
+            error
+          );
+
+          return of(null);
+        })
+      );
+  }
+
+  private canRenewExpiredTokens(config: OpenIdConfiguration): boolean {
+    if (
+      !config.silentRenew ||
+      !this.flowHelper.isCurrentFlowCodeFlowWithRefreshTokens(config) ||
+      !this.authStateService.getRefreshToken(config) ||
+      this.authStateService.areAuthStorageTokensValid(config)
+    ) {
+      return false;
+    }
+
+    // Without the lock a running renew may belong to another tab, or to a page
+    // that has been reloaded. Waiting for its result would block the check.
+    return (
+      this.refreshSessionRefreshTokenService.usesRefreshTokenLock(config) ||
+      !this.flowsDataService.isSilentRenewRunning(config)
     );
   }
 
