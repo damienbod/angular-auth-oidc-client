@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { HttpErrorResponse } from '@angular/common/http';
-import { isNetworkError } from './error-helper';
+import { TimeoutError } from 'rxjs';
+import { isNetworkError, isTransientRefreshError } from './error-helper';
 
 describe('error helper', () => {
   describe('isNetworkError ', () => {
@@ -50,6 +51,41 @@ describe('error helper', () => {
 
     it('should return false on empty http error', () => {
       expect(isNetworkError(HTTP_ERROR)).toBe(false);
+    });
+  });
+
+  describe('isTransientRefreshError', () => {
+    it('should return true for a network error', () => {
+      // Arrange
+      const error = new HttpErrorResponse({
+        error: new ProgressEvent('error'),
+        status: 0,
+      });
+      // Act
+      const result = isTransientRefreshError(error);
+
+      // Assert
+      expect(result).toBe(true);
+    });
+
+    it('should return true for a timeout', () => {
+      // Act
+      const result = isTransientRefreshError(new TimeoutError());
+
+      // Assert
+      expect(result).toBe(true);
+    });
+
+    it.each([
+      ['a http error response', new HttpErrorResponse({ status: 400 })],
+      ['a plain error', new Error('invalid_grant')],
+      ['no error', undefined],
+    ])('should return false for %s', (_, error) => {
+      // Act
+      const result = isTransientRefreshError(error);
+
+      // Assert
+      expect(result).toBe(false);
     });
   });
 });

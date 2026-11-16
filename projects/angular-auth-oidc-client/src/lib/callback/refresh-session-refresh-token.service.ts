@@ -1,12 +1,12 @@
 import { DOCUMENT, inject, Injectable } from '@angular/core';
-import { defer, Observable, throwError, TimeoutError } from 'rxjs';
+import { defer, Observable, throwError } from 'rxjs';
 import { catchError, finalize, timeout } from 'rxjs/operators';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { CallbackContext } from '../flows/callback-context';
 import { createRenewCallbackContext } from '../flows/callback-context.helper';
 import { FlowsService } from '../flows/flows.service';
-import { isNetworkError } from '../flows/callback-handling/error-helper';
+import { isTransientRefreshError } from '../flows/callback-handling/error-helper';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { LoggerService } from '../logging/services/logger.service';
 import { ValidationResult } from '../validation/validation-result';
@@ -35,7 +35,7 @@ export class RefreshSessionRefreshTokenService {
 
     return refresh$.pipe(
       catchError((error) => {
-        if (isNetworkError(error) || error instanceof TimeoutError) {
+        if (isTransientRefreshError(error)) {
           return throwError(() => error);
         }
 

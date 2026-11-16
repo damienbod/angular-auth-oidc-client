@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
+import { NEVER, of, Subject, throwError, TimeoutError } from 'rxjs';
 import { mockProvider } from '../../test/auto-mock';
 import { AuthStateService } from '../auth-state/auth-state.service';
 import { ConfigurationService } from '../config/config.service';
@@ -684,6 +685,192 @@ describe('PeriodicallyTokenCheckService', () => {
       expect(logDebugSpy).not.toHaveBeenCalledWith(
         expect.anything(),
         'silent renew, periodic check finished!'
+      );
+    });
+  });
+
+  describe('startTokenValidationPeriodically failure handling', () => {
+    const configs = [
+      { silentRenew: true, configId: 'configId1', tokenRefreshInSeconds: 1 },
+    ];
+    let ticks$: Subject<void>;
+
+    beforeEach(() => {
+      ticks$ = new Subject<void>();
+      arrangeTokenCheckDue(true);
+      vi.spyOn(intervalService, 'startPeriodicTokenCheck').mockReturnValue(
+        ticks$
+      );
+      vi.spyOn(
+        flowHelper,
+        'isCurrentFlowCodeFlowWithRefreshTokens'
+      ).mockReturnValue(true);
+      vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
+        of(configs[0])
+      );
+    });
+
+    it('should not cancel a running refresh nor start another one when the next tick fires', () => {
+      // Arrange
+      const refreshResponse$ = new Subject<CallbackContext>();
+      const refreshSpy = vi
+        .spyOn(
+          refreshSessionRefreshTokenService,
+          'refreshSessionWithRefreshTokens'
+        )
+        .mockReturnValue(refreshResponse$);
+
+      periodicallyTokenCheckService.startTokenValidationPeriodically(
+        configs,
+        configs[0]
+      );
+
+      // Act
+      ticks$.next();
+      ticks$.next();
+      ticks$.next();
+
+      // Assert
+      expect(refreshSpy).toHaveBeenCalledTimes(1);
+      expect(refreshResponse$.observed).toBe(true);
+    });
+
+    it('should refresh again on the next tick after a refresh has finished', () => {
+      // Arrange
+      const refreshResponse$ = new Subject<CallbackContext>();
+      const refreshSpy = vi
+        .spyOn(
+          refreshSessionRefreshTokenService,
+          'refreshSessionWithRefreshTokens'
+        )
+        .mockReturnValue(refreshResponse$);
+
+      periodicallyTokenCheckService.startTokenValidationPeriodically(
+        configs,
+        configs[0]
+      );
+      ticks$.next();
+      refreshResponse$.next({} as CallbackContext);
+      refreshResponse$.complete();
+
+      // Act
+      ticks$.next();
+
+      // Assert
+      expect(refreshSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it.each([
+      ['a timeout', new TimeoutError()],
+      [
+        'a network error',
+        new HttpErrorResponse({
+          error: new ProgressEvent('error'),
+          status: 0,
+        }),
+      ],
+    ])(
+      'should fire SilentRenewFailed and refresh again on the next tick after %s',
+      (_, error) => {
+        // Arrange
+        const refreshSpy = vi
+          .spyOn(
+            refreshSessionRefreshTokenService,
+            'refreshSessionWithRefreshTokens'
+          )
+          .mockReturnValueOnce(throwError(() => error))
+          .mockReturnValue(of({} as CallbackContext));
+        const fireEventSpy = vi.spyOn(publicEventsService, 'fireEvent');
+        const resetSilentRenewRunningSpy = vi.spyOn(
+          flowsDataService,
+          'resetSilentRenewRunning'
+        );
+
+        periodicallyTokenCheckService.startTokenValidationPeriodically(
+          configs,
+          configs[0]
+        );
+
+        // Act
+        ticks$.next();
+        ticks$.next();
+
+        // Assert
+        expect(fireEventSpy).toHaveBeenCalledWith(
+          EventTypes.SilentRenewFailed,
+          error
+        );
+        expect(resetSilentRenewRunningSpy).toHaveBeenCalledWith(configs[0]);
+        expect(refreshSpy).toHaveBeenCalledTimes(2);
+      }
+    );
+
+    it('should give up on a refresh that never answers after silentRenewTimeoutInSeconds and refresh again', async () => {
+      // Arrange
+      const configsWithTimeout = [
+        { ...configs[0], silentRenewTimeoutInSeconds: 5 },
+      ];
+
+      vi.spyOn(configurationService, 'getOpenIDConfiguration').mockReturnValue(
+        of(configsWithTimeout[0])
+      );
+      vi.spyOn(
+        flowHelper,
+        'isCurrentFlowCodeFlowWithRefreshTokens'
+      ).mockReturnValue(false);
+      const refreshSpy = vi
+        .spyOn(refreshSessionIframeService, 'refreshSessionWithIframe')
+        .mockReturnValue(NEVER);
+      const fireEventSpy = vi.spyOn(publicEventsService, 'fireEvent');
+
+      periodicallyTokenCheckService.startTokenValidationPeriodically(
+        configsWithTimeout,
+        configsWithTimeout[0]
+      );
+      ticks$.next();
+
+      // Act
+      await vi.advanceTimersByTimeAsync(4000);
+      ticks$.next();
+      const callsBeforeTimeout = refreshSpy.mock.calls.length;
+
+      await vi.advanceTimersByTimeAsync(1000);
+      ticks$.next();
+
+      // Assert
+      expect(callsBeforeTimeout).toBe(1);
+      expect(fireEventSpy).toHaveBeenCalledWith(
+        EventTypes.SilentRenewFailed,
+        expect.any(TimeoutError)
+      );
+      expect(refreshSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('should stop refreshing after any other failure', () => {
+      // Arrange
+      const refreshSpy = vi
+        .spyOn(
+          refreshSessionRefreshTokenService,
+          'refreshSessionWithRefreshTokens'
+        )
+        .mockReturnValue(throwError(() => new Error('invalid_grant')));
+      const logErrorSpy = vi.spyOn(loggerService, 'logError');
+
+      periodicallyTokenCheckService.startTokenValidationPeriodically(
+        configs,
+        configs[0]
+      );
+
+      // Act
+      ticks$.next();
+      ticks$.next();
+
+      // Assert
+      expect(refreshSpy).toHaveBeenCalledTimes(1);
+      expect(logErrorSpy).toHaveBeenCalledWith(
+        configs[0],
+        'silent renew failed!',
+        expect.any(Error)
       );
     });
   });

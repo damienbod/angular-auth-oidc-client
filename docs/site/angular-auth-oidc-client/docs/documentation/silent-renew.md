@@ -161,7 +161,7 @@ window.onload = function () {
 
 A renew is aborted after [`silentRenewTimeoutInSeconds`](./configuration#silentrenewtimeoutinseconds) (default 20). If a refresh token request fails because of a network error, it is retried every [`refreshTokenRetryInSeconds`](./configuration#refreshtokenretryinseconds) (default 3).
 
-With refresh tokens, network errors and timeouts keep the current session. Any other error (e.g. `invalid_grant`) clears the local session and stops the periodic renew. With iframes, an error returned by the identity provider (e.g. `login_required`) clears the local session, publishes the auth state with `ValidationResult.LoginRequired` and stops the periodic renew.
+With refresh tokens, network errors and timeouts keep the current session, and the periodic check starts a new renew on its next run. While a renew is running, the periodic check does not start another one. Any other error (e.g. `invalid_grant`) clears the local session and stops the periodic renew. With iframes, an error returned by the identity provider (e.g. `login_required`) clears the local session, publishes the auth state with `ValidationResult.LoginRequired` and stops the periodic renew.
 
 Every failure fires the `SilentRenewFailed` [event](./public-events). If an iframe renew started with [`forceRefreshSession()`](./public-api) fails, the method returns `isAuthenticated: false` with the `error` of the identity provider in `errorMessage` and, if one was sent, its `error_description` in `errorDescription`. With refresh tokens, a failed `forceRefreshSession()` errors the returned observable.
 
