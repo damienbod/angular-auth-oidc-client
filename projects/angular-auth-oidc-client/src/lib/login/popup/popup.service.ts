@@ -54,18 +54,18 @@ export class PopUpService {
     url: string | null,
     popupOptions: PopupOptions | undefined,
     config: OpenIdConfiguration
-  ): void {
+  ): boolean {
     const optionsToPass = this.getOptions(popupOptions);
     const windowIdentifier = this.windowInternal;
 
     if (!windowIdentifier) {
-      return;
+      return false;
     }
 
     if (!url) {
       this.loggerService.logError(config, 'Could not open popup, url is empty');
 
-      return;
+      return false;
     }
 
     this.storagePersistenceService.write(
@@ -80,7 +80,7 @@ export class PopUpService {
       this.storagePersistenceService.remove(this.STORAGE_IDENTIFIER, config);
       this.loggerService.logError(config, 'Could not open popup');
 
-      return;
+      return false;
     }
 
     this.loggerService.logDebug(config, 'Opened popup with url ' + url);
@@ -114,6 +114,8 @@ export class PopUpService {
         this.cleanUp(listener, config);
       }
     }, 200);
+
+    return true;
   }
 
   sendMessageToMainWindow(url: string, config: OpenIdConfiguration): void {
