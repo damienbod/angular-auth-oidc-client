@@ -84,6 +84,7 @@
     "@vitest/browser-playwright": "^5.0.1",
     "@vitest/coverage-v8": "^5.0.1",
     "angular-eslint": "^22.7.0",
+    "baseline-browser-mapping": "^2.11.37",
     "eslint": "^9.28.0",
     "fs-extra": "^10.0.0",
     "jsdom": "^30.0.1",
