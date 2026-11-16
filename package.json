@@ -73,7 +73,7 @@
   "devDependencies": {
     "@angular-devkit/core": "^22.2.7",
     "@angular-devkit/schematics": "^22.2.7",
-    "@angular-eslint/builder": "^22.5.0",
+    "@angular-eslint/builder": "^22.7.0",
     "@angular/build": "^22.2.7",
     "@angular/cli": "^22.2.7",
     "@angular/compiler-cli": "^22.2.6",
@@ -83,7 +83,7 @@
     "@typescript-eslint/parser": "^8.66.0",
     "@vitest/browser-playwright": "^5.0.1",
     "@vitest/coverage-v8": "^5.0.1",
-    "angular-eslint": "^22.5.0",
+    "angular-eslint": "^22.7.0",
     "eslint": "^9.28.0",
     "fs-extra": "^10.0.0",
     "jsdom": "^30.0.1",
