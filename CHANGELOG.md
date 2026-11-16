@@ -1,5 +1,8 @@
 ## Angular Lib for OpenID Connect/OAuth2 Changelog
 
+### 2026-11-16 22.0.3
+- Updated packages
+
 ### 2026-10-18 22.0.2
 - feat:  canMatch use of autoLoginPartialRoutesGuard and implicit flow callbacks
   - [PR](https://github.com/damienbod/angular-auth-oidc-client/pull/2330)
