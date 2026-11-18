@@ -1,10 +1,12 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { concatMap, map } from 'rxjs/operators';
+import { concatMap, filter, map } from 'rxjs/operators';
 import { AuthOptions, LogoutAuthOptions } from './auth-options';
 import { AuthenticatedResult } from './auth-state/auth-result';
+import { AuthStateResult } from './auth-state/auth-state';
 import { AuthStateService } from './auth-state/auth-state.service';
 import { CheckAuthService } from './auth-state/check-auth.service';
+import { TokensResult } from './auth-state/tokens-result';
 import { CallbackService } from './callback/callback.service';
 import { RefreshSessionService } from './callback/refresh-session.service';
 import { AuthWellKnownEndpoints } from './config/auth-well-known/auth-well-known-endpoints';
@@ -18,6 +20,8 @@ import { LoginResponse } from './login/login-response';
 import { LoginService } from './login/login.service';
 import { PopupOptions } from './login/popup/popup-options';
 import { LogoffRevocationService } from './logoff-revoke/logoff-revocation.service';
+import { EventTypes } from './public-events/event-types';
+import { PublicEventsService } from './public-events/public-events.service';
 import { UserService } from './user-data/user.service';
 import { UserDataResult } from './user-data/userdata-result';
 import { TokenHelperService } from './utils/tokenHelper/token-helper.service';
@@ -39,6 +43,7 @@ export class OidcSecurityService {
   private readonly refreshSessionService = inject(RefreshSessionService);
   private readonly urlService = inject(UrlService);
   private readonly authWellKnownService = inject(AuthWellKnownService);
+  private readonly publicEventsService = inject(PublicEventsService);
 
   /**
    * Provides information about the user after they have logged in.
@@ -81,6 +86,41 @@ export class OidcSecurityService {
    * The `allConfigsAuthenticated` property contains the auth information _per config_.
    */
   authenticated = toSignal(this.isAuthenticated$, { requireSync: true });
+
+  /**
+   * Emits the tokens and the user data each time the library has validated a new, valid authentication result:
+   * after a login, after the callback of the security token service and after every renewal of the tokens,
+   * including the silent ones (iframe and refresh token).
+   *
+   * In contrast to `getAccessToken()` and `getAuthenticationResult()`, which return the stored value once and complete,
+   * this observable keeps emitting for the lifetime of the application. It never completes and does not emit for failed results.
+   * It does not emit when an existing session is restored from the storage by `checkAuth()`, use the `LoginResponse` of `checkAuth()` for that.
+   *
+   * @returns Returns an object containing the access token, the ID token, the user data, if the result comes from
+   * a renewal and the `configId` of the config it belongs to. Filter by `configId` when running with multiple configs.
+   */
+  get tokens$(): Observable<TokensResult> {
+    return this.publicEventsService.registerForEvents().pipe(
+      filter(
+        (notification) =>
+          notification.type === EventTypes.NewAuthenticationResult &&
+          !!notification.value?.isAuthenticated
+      ),
+      map(({ value }) => value as AuthStateResult),
+      concatMap((value) =>
+        this.configurationService.getOpenIDConfiguration(value.configId).pipe(
+          filter((config): config is OpenIdConfiguration => !!config),
+          map((config) => ({
+            accessToken: this.authStateService.getAccessToken(config),
+            idToken: this.authStateService.getIdToken(config),
+            userData: this.userService.getUserDataFromStore(config),
+            isRenewProcess: value.isRenewProcess,
+            configId: value.configId,
+          }))
+        )
+      )
+    );
+  }
 
   /**
    * Emits each time the server sends a CheckSession event and the value changed. This property will always return

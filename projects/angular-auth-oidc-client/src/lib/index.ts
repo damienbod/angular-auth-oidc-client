@@ -4,6 +4,7 @@ export { PassedInitialConfig } from './auth-config';
 export * from './auth-options';
 export * from './auth-state/auth-result';
 export * from './auth-state/auth-state';
+export * from './auth-state/tokens-result';
 export * from './auth.module';
 export * from './auto-login/auto-login-all-routes.guard';
 export * from './auto-login/auto-login-partial-routes.guard';

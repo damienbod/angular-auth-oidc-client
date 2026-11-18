@@ -78,3 +78,5 @@ export interface OidcClientNotification<T> {
 | `IdTokenExpired`                | An id token expiry check found the token expired. Only when `triggerRefreshWhenIdTokenExpired` is `true` and `disableIdTokenValidation` is `false`.          | `true`                                                                               |
 | `SilentRenewStarted`            | A silent renew or refresh (periodic or forced) starts.                                                                                                       | none                                                                                 |
 | `SilentRenewFailed`             | That silent renew or refresh failed.                                                                                                                         | the error                                                                            |
+
+> The `NewAuthenticationResult` event only tells you that a new result was validated, it does not carry the tokens. If you need the tokens of every new result, use [`tokens$`](public-api.md#tokens) of the `OidcSecurityService`, which is built on this event.

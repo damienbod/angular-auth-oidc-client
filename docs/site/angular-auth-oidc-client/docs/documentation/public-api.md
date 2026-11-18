@@ -179,6 +179,41 @@ console.log(authenticated().isAuthenticated);
 console.log(authenticated().allConfigsAuthenticated);
 ```
 
+## tokens$
+
+The `tokens$` property returns an `Observable<TokensResult>` which emits the tokens and the user data each time the library has validated a new, valid authentication result: after a login, after the callback of the security token service and after every renewal of the tokens, including the silent ones (iframe and refresh token).
+
+In contrast to `getAccessToken()`, `getIdToken()` and `getAuthenticationResult()`, which return the stored value once and complete, `tokens$` never completes and keeps emitting for every renewal. This is useful if the application has to hand the current access token to something else, for example a WebSocket connection, a service worker or another library.
+
+```ts
+export interface TokensResult {
+  accessToken: string; // empty if the flow does not return an access token
+  idToken: string;
+  userData: any; // the user data of the config, null if there are none
+  isRenewProcess: boolean; // true if the tokens come from a renewal, false for a login
+  configId?: string;
+}
+```
+
+- It does not emit for failed results, for example a failed silent renew. Use the `SilentRenewFailed` event of the [Public Events](public-events.md) for that.
+- It does not emit when `checkAuth()` finds a valid session in the storage, because no new authentication result is produced. Use the `LoginResponse` of `checkAuth()` for the initial tokens.
+- When running with multiple configs, it emits for all configs. Filter by `configId` to get a single one.
+- Like `registerForEvents()` it is built on the [Public Events](public-events.md) and does not replay old results. Subscribe early, for example in an `APP_INITIALIZER` or the constructor of a root service.
+
+### Example
+
+```ts
+this.oidcSecurityService.tokens$.subscribe(({ accessToken, userData, isRenewProcess }) => {
+  this.socket.setToken(accessToken);
+});
+```
+
+```ts
+this.oidcSecurityService.tokens$
+  .pipe(filter(({ configId }) => configId === 'configId1'))
+  .subscribe(({ accessToken }) => console.log(accessToken));
+```
+
 ## checkSessionChanged$
 
 The `checkSessionChanged$` observable starts with `false` and emits `true` when the check session iframe reports `changed`, or when the session cannot be checked because `session_state` or the `check_session_iframe` endpoint is missing. To get every check session answer (`changed` and `unchanged`), use the `CheckSessionReceived` [public event](public-events.md).
