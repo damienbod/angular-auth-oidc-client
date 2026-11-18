@@ -361,6 +361,67 @@ describe('SilentRenewService  ', () => {
     });
   });
 
+  describe('codeFlowCallbackSilentRenewIframe error identity', () => {
+    it('should rethrow an Error from processing the callback unchanged', async () => {
+      // Arrange
+      const config = { configId: 'configId1' };
+      const processingError = new SilentRenewCallbackError(
+        'login_required',
+        'user must sign in'
+      );
+
+      vi.spyOn(
+        flowsService,
+        'processSilentRenewCodeFlowCallback'
+      ).mockReturnValue(throwError(() => processingError));
+
+      // Act
+      const result = firstValueFrom(
+        silentRenewService.codeFlowCallbackSilentRenewIframe(
+          ['url-part-1', 'code=some-code&state=some-state'],
+          config,
+          [config]
+        )
+      );
+
+      // Assert
+      await expect(result).rejects.toBe(processingError);
+    });
+
+    it('should publish the original error message instead of a doubled "Error: " prefix', async () => {
+      // Arrange
+      const config = { configId: 'configId1' };
+      const published: unknown[] = [];
+
+      vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
+      vi.spyOn(
+        flowsService,
+        'processSilentRenewCodeFlowCallback'
+      ).mockReturnValue(throwError(() => new Error('state mismatch')));
+      silentRenewService.refreshSessionWithIFrameCompleted$.subscribe(
+        (result) => published.push(result)
+      );
+
+      // Act
+      silentRenewService.silentRenewEventHandler(
+        new CustomEvent('message', {
+          detail: 'https://app.example.com?code=some-code&state=some-state',
+        }),
+        config,
+        [config]
+      );
+
+      // Assert
+      expect(published).toEqual([
+        {
+          configId: 'configId1',
+          success: false,
+          errorMessage: 'state mismatch',
+        },
+      ]);
+    });
+  });
+
   describe('silentRenewEventHandler', () => {
     it('should return if no details is given', async () => {
       const isCurrentFlowCodeFlowSpy = vi

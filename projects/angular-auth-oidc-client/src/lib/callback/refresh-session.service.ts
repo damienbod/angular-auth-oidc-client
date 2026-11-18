@@ -33,6 +33,7 @@ import { StoragePersistenceService } from '../storage/storage-persistence.servic
 import { UserService } from '../user-data/user.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { RefreshSessionRefreshTokenService } from './refresh-session-refresh-token.service';
+import { asError } from '../utils/error/as-error';
 
 export const MAX_RETRY_ATTEMPTS = 3;
 
@@ -168,7 +169,7 @@ export class RefreshSessionService {
               !(error instanceof TimeoutError) ||
               currentAttempt > MAX_RETRY_ATTEMPTS
             ) {
-              return throwError(() => new Error(error));
+              return throwError(() => asError(error));
             }
 
             this.loggerService.logDebug(

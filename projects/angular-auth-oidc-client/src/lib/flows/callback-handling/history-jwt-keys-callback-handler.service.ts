@@ -11,6 +11,7 @@ import { CallbackContext } from '../callback-context';
 import { FlowsDataService } from '../flows-data.service';
 import { ResetAuthDataService } from '../reset-auth-data.service';
 import { SigninKeyDataService } from '../signin-key-data.service';
+import { asError } from '../../utils/error/as-error';
 
 const JWT_KEYS = 'jwtKeys';
 
@@ -101,7 +102,7 @@ export class HistoryJwtKeysCallbackHandlerService {
           return of(storedJwtKeys);
         }
 
-        return throwError(() => new Error(err));
+        return throwError(() => asError(err));
       }),
       switchMap((jwtKeys) => {
         if (jwtKeys) {
@@ -117,7 +118,7 @@ export class HistoryJwtKeysCallbackHandlerService {
         return throwError(() => new Error(errorMessage));
       }),
       catchError((err) => {
-        const errorMessage = `Failed to retrieve signing key with error: ${err}`;
+        const errorMessage = `Failed to retrieve signing key with error: ${asError(err).message}`;
 
         this.loggerService.logWarning(config, errorMessage);
 

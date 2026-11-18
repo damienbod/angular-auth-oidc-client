@@ -7,6 +7,7 @@ import { CallbackContext } from '../flows/callback-context';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
 import { IntervalService } from './interval.service';
+import { asError } from '../utils/error/as-error';
 
 @Injectable({ providedIn: 'root' })
 export class CodeFlowCallbackService {
@@ -45,7 +46,7 @@ export class CodeFlowCallbackService {
             this.router.navigateByUrl(unauthorizedRoute);
           }
 
-          return throwError(() => new Error(error));
+          return throwError(() => asError(error));
         })
       );
   }

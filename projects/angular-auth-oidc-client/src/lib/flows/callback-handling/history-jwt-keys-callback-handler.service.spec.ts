@@ -247,6 +247,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     });
 
     it('should return error if no jwtKeys have been in the call --> keys are null', async () => {
+      // Arrange
       const DUMMY_AUTH_RESULT = {
         id_token: 'some-id-token',
       };
@@ -265,23 +266,23 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         of(null as unknown as JwtKeys)
       );
 
-      try {
-        await firstValueFrom(
+      // Act & Assert
+      await expect(
+        firstValueFrom(
           service.callbackHistoryAndResetJwtKeys(
             callbackContext,
             allconfigs[0],
             allconfigs
           )
-        );
-        expect.fail('expected an error');
-      } catch (err: any) {
-        expect(err.message).toEqual(
-          `Failed to retrieve signing key with error: Error: Failed to retrieve signing key`
-        );
-      }
+        )
+      ).rejects.toMatchObject({
+        message:
+          'Failed to retrieve signing key with error: Failed to retrieve signing key',
+      });
     });
 
     it('should return error if no jwtKeys have been in the call --> keys throw an error', async () => {
+      // Arrange
       const DUMMY_AUTH_RESULT = {
         id_token: 'some-id-token',
       };
@@ -300,20 +301,18 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         throwError(() => new Error('error'))
       );
 
-      try {
-        await firstValueFrom(
+      // Act & Assert
+      await expect(
+        firstValueFrom(
           service.callbackHistoryAndResetJwtKeys(
             callbackContext,
             allconfigs[0],
             allconfigs
           )
-        );
-        expect.fail('expected an error');
-      } catch (err: any) {
-        expect(err.message).toEqual(
-          `Failed to retrieve signing key with error: Error: Error: error`
-        );
-      }
+        )
+      ).rejects.toMatchObject({
+        message: 'Failed to retrieve signing key with error: error',
+      });
     });
 
     it('should return error if callbackContext.authresult has an error property filled', async () => {
@@ -466,6 +465,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
     });
 
     it('should not store jwtKeys on error', async () => {
+      // Arrange
       const authResult = {
         id_token: 'some-id-token',
         access_token: 'some-access-token',
@@ -487,6 +487,7 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
         throwError(() => new Error('Error'))
       );
 
+      // Act & Assert
       await expect(
         firstValueFrom(
           service.callbackHistoryAndResetJwtKeys(
@@ -495,13 +496,11 @@ describe('HistoryJwtKeysCallbackHandlerService', () => {
             allconfigs
           )
         )
-      ).rejects.toThrow(
-        'Failed to retrieve signing key with error: Error: Error: Error'
-      );
+      ).rejects.toMatchObject({
+        message: 'Failed to retrieve signing key with error: Error',
+      });
       // storagePersistenceService.write() should not have been called with jwtKeys
       expect(storagePersistenceServiceSpy).toHaveBeenCalledTimes(1);
-
-      // storagePersistenceService.write() should not have been called with jwtKeys
       expect(storagePersistenceServiceSpy).toHaveBeenCalledWith(
         'authnResult',
         authResult,
