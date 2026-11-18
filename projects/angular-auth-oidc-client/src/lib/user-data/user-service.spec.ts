@@ -446,6 +446,92 @@ describe('User Service', () => {
       ]);
     });
 
+    it('should publish the passed user data for a current config without configId among multiple configs', () => {
+      // Arrange
+      const currentConfig = {};
+      const otherConfig = { configId: 'configId2' };
+      const emissions = recordUserDataEmissions();
+
+      vi.spyOn(storagePersistenceService, 'read').mockReturnValue(
+        'staleUserData'
+      );
+
+      // Act
+      userService.setUserDataToStore('userData', currentConfig, [
+        currentConfig,
+        otherConfig,
+      ]);
+
+      // Assert
+      expect(emissions).toEqual([
+        {
+          userData: null,
+          allUserData: [
+            { configId: '', userData: 'userData' },
+            { configId: 'configId2', userData: 'staleUserData' },
+          ],
+        },
+      ]);
+    });
+
+    it('should not publish the passed user data for another config that also has no configId', () => {
+      // Arrange
+      const currentConfig = {};
+      const otherConfigWithoutId = {};
+      const emissions = recordUserDataEmissions();
+
+      vi.spyOn(storagePersistenceService, 'read').mockImplementation(
+        (key: string, config: any) =>
+          key === 'userData' && config === otherConfigWithoutId
+            ? 'otherUserData'
+            : undefined
+      );
+
+      // Act
+      userService.setUserDataToStore('userData', currentConfig, [
+        currentConfig,
+        otherConfigWithoutId,
+      ]);
+
+      // Assert
+      expect(emissions).toEqual([
+        {
+          userData: null,
+          allUserData: [
+            { configId: '', userData: 'userData' },
+            { configId: '', userData: 'otherUserData' },
+          ],
+        },
+      ]);
+    });
+
+    it('should publish the passed user data for a copy of the current config with the same configId', () => {
+      // Arrange
+      const currentConfig = { configId: 'configId1' };
+      const emissions = recordUserDataEmissions();
+
+      vi.spyOn(storagePersistenceService, 'read').mockReturnValue(
+        'staleUserData'
+      );
+
+      // Act
+      userService.setUserDataToStore('userData', currentConfig, [
+        { ...currentConfig },
+        { configId: 'configId2' },
+      ]);
+
+      // Assert
+      expect(emissions).toEqual([
+        {
+          userData: null,
+          allUserData: [
+            { configId: 'configId1', userData: 'userData' },
+            { configId: 'configId2', userData: 'staleUserData' },
+          ],
+        },
+      ]);
+    });
+
     it('should set userData in storagePersistenceService', () => {
       const config = { configId: 'configId1' };
       const spy = vi
