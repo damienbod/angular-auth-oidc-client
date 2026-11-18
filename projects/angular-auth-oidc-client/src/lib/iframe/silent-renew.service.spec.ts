@@ -10,6 +10,8 @@ import { FlowsDataService } from '../flows/flows-data.service';
 import { FlowsService } from '../flows/flows.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { LoggerService } from '../logging/services/logger.service';
+import { EventTypes } from '../public-events/event-types';
+import { PublicEventsService } from '../public-events/public-events.service';
 import { FlowHelper } from '../utils/flowHelper/flow-helper.service';
 import { ValidationResult } from '../validation/validation-result';
 import { IFrameService } from './existing-iframe.service';
@@ -35,6 +37,7 @@ describe('SilentRenewService  ', () => {
   let authStateService: AuthStateService;
   let resetAuthDataService: ResetAuthDataService;
   let intervalService: IntervalService;
+  let publicEventsService: PublicEventsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -64,6 +67,7 @@ describe('SilentRenewService  ', () => {
     authStateService = TestBed.inject(AuthStateService);
     resetAuthDataService = TestBed.inject(ResetAuthDataService);
     intervalService = TestBed.inject(IntervalService);
+    publicEventsService = TestBed.inject(PublicEventsService);
   });
 
   it('should create', () => {
@@ -589,6 +593,95 @@ describe('SilentRenewService  ', () => {
         errorMessage: 'login_required',
         errorDescription: 'session_expired',
       });
+    });
+
+    it('should fire SilentRenewFailed with a SilentRenewCallbackError when the silent renew callback url has an error', async () => {
+      // Arrange
+      vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
+      const fireEventSpy = vi
+        .spyOn(publicEventsService, 'fireEvent')
+        .mockReturnValue(undefined);
+      const eventData = {
+        detail:
+          'https://localhost/silent-renew?error=login_required&error_description=session_expired&state=state',
+      } as CustomEvent;
+      const allConfigs = [{ configId: 'configId1' }];
+
+      // Act
+      silentRenewService.silentRenewEventHandler(
+        eventData,
+        allConfigs[0],
+        allConfigs
+      );
+      await vi.advanceTimersByTimeAsync(1000);
+
+      // Assert
+      expect(fireEventSpy).toHaveBeenCalledExactlyOnceWith(
+        EventTypes.SilentRenewFailed,
+        expect.any(SilentRenewCallbackError)
+      );
+      const error = fireEventSpy.mock.calls[0][1] as SilentRenewCallbackError;
+
+      expect(error.message).toBe('login_required');
+      expect(error.errorDescription).toBe('session_expired');
+    });
+
+    it('should fire SilentRenewFailed with an Error when the silent renew callback fails with a non error value', async () => {
+      // Arrange
+      vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(false);
+      vi.spyOn(
+        implicitFlowCallbackService,
+        'authenticatedImplicitFlowCallback'
+      ).mockReturnValue(throwError(() => 'some error'));
+      const fireEventSpy = vi
+        .spyOn(publicEventsService, 'fireEvent')
+        .mockReturnValue(undefined);
+      const eventData = { detail: 'detail' } as CustomEvent;
+      const allConfigs = [{ configId: 'configId1' }];
+
+      // Act
+      silentRenewService.silentRenewEventHandler(
+        eventData,
+        allConfigs[0],
+        allConfigs
+      );
+      await vi.advanceTimersByTimeAsync(1000);
+
+      // Assert
+      const failedEventValue = fireEventSpy.mock.calls.find(
+        ([type]) => type === EventTypes.SilentRenewFailed
+      )?.[1];
+
+      expect(failedEventValue).toBeInstanceOf(Error);
+      expect((failedEventValue as Error).message).toBe('some error');
+    });
+
+    it('should not fire SilentRenewFailed when the silent renew callback succeeds', async () => {
+      // Arrange
+      vi.spyOn(flowHelper, 'isCurrentFlowCodeFlow').mockReturnValue(true);
+      vi.spyOn(
+        silentRenewService,
+        'codeFlowCallbackSilentRenewIframe'
+      ).mockReturnValue(of({ authResult: null } as CallbackContext));
+      const fireEventSpy = vi
+        .spyOn(publicEventsService, 'fireEvent')
+        .mockReturnValue(undefined);
+      const eventData = { detail: 'detail?detail2' } as CustomEvent;
+      const allConfigs = [{ configId: 'configId1' }];
+
+      // Act
+      silentRenewService.silentRenewEventHandler(
+        eventData,
+        allConfigs[0],
+        allConfigs
+      );
+      await vi.advanceTimersByTimeAsync(1000);
+
+      // Assert
+      expect(fireEventSpy).not.toHaveBeenCalledWith(
+        EventTypes.SilentRenewFailed,
+        expect.anything()
+      );
     });
 
     it('should emit a non error rejection as error message on refreshSessionWithIFrameCompleted', async () => {

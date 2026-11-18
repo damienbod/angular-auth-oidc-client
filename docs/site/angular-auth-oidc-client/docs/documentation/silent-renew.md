@@ -163,7 +163,7 @@ A renew is aborted after [`silentRenewTimeoutInSeconds`](./configuration#silentr
 
 With refresh tokens, network errors and timeouts keep the current session. Any other error (e.g. `invalid_grant`) clears the local session and stops the periodic renew. With iframes, an error returned by the identity provider (e.g. `login_required`) clears the local session, publishes the auth state with `ValidationResult.LoginRequired` and stops the periodic renew.
 
-Every failure fires the `SilentRenewFailed` [event](./public-events). If an iframe renew started with [`forceRefreshSession()`](./public-api) fails, the method returns `isAuthenticated: false` with the `error` of the identity provider in `errorMessage` and, if one was sent, its `error_description` in `errorDescription`. With refresh tokens, a failed `forceRefreshSession()` errors the returned observable.
+A failed renew fires the `SilentRenewFailed` [event](./public-events#silentrenewfailed) with an `Error` as value; see the event details for the cases and the value. If an iframe renew started with [`forceRefreshSession()`](./public-api) fails, the method returns `isAuthenticated: false` with the `error` of the identity provider in `errorMessage` and, if one was sent, its `error_description` in `errorDescription`. With refresh tokens, a failed `forceRefreshSession()` errors the returned observable.
 
 ## Security Token Service CSP and CORS
 

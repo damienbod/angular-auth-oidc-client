@@ -5,6 +5,7 @@ import { AuthStateService } from '../auth-state/auth-state.service';
 import { ConfigurationService } from '../config/config.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { CallbackContext } from '../flows/callback-context';
+import { toError } from '../flows/callback-handling/error-helper';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { ResetAuthDataService } from '../flows/reset-auth-data.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
@@ -124,7 +125,10 @@ export class PeriodicallyTokenCheckService {
     return refreshEvent$.pipe(
       catchError((error) => {
         this.loggerService.logError(config, 'silent renew failed!', error);
-        this.publicEventsService.fireEvent(EventTypes.SilentRenewFailed, error);
+        this.publicEventsService.fireEvent(
+          EventTypes.SilentRenewFailed,
+          toError(error)
+        );
         this.flowsDataService.resetSilentRenewRunning(config);
 
         return throwError(() => new Error(error));

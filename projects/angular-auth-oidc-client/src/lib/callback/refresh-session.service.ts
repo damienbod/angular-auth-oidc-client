@@ -22,6 +22,7 @@ import { AuthStateService } from '../auth-state/auth-state.service';
 import { AuthWellKnownService } from '../config/auth-well-known/auth-well-known.service';
 import { OpenIdConfiguration } from '../config/openid-configuration';
 import { CallbackContext } from '../flows/callback-context';
+import { toError } from '../flows/callback-handling/error-helper';
 import { FlowsDataService } from '../flows/flows-data.service';
 import { RefreshSessionIframeService } from '../iframe/refresh-session-iframe.service';
 import { SilentRenewService } from '../iframe/silent-renew.service';
@@ -287,7 +288,7 @@ export class RefreshSessionService {
         catchError((error) => {
           this.publicEventsService.fireEvent(
             EventTypes.SilentRenewFailed,
-            error
+            toError(error)
           );
           this.flowsDataService.resetSilentRenewRunning(config);
 
@@ -334,13 +335,9 @@ export class RefreshSessionService {
       take(1),
       switchMap((notification) => {
         if (notification.type === EventTypes.SilentRenewFailed) {
-          const error = notification.value;
+          const error = notification.value ?? 'Silent renew failed';
 
-          return throwError(() =>
-            error instanceof Error
-              ? error
-              : new Error(String(error ?? 'Silent renew failed'))
-          );
+          return throwError(() => toError(error));
         }
 
         return of(true);
