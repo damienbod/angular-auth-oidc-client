@@ -23,10 +23,10 @@ jobs:
       # Needed to push the coverage badge to the 'badges' branch on main.
       contents: write
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -92,7 +92,7 @@ jobs:
         run: ./stop.sh
 
       - name: Upload Artefact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: angular_auth_oidc_client_artefact
           path: dist/angular-auth-oidc-client
@@ -103,7 +103,7 @@ jobs:
     outputs:
       samples: ${{ steps.list.outputs.samples }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - id: list
         run: echo "samples=$(jq -c '[.[].name]' e2e/samples.json)" >> "$GITHUB_OUTPUT"
@@ -121,10 +121,10 @@ jobs:
     env:
       E2E_SAMPLES: ${{ matrix.sample }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -147,7 +147,7 @@ jobs:
 
       - name: Upload Playwright Report
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-report-${{ matrix.sample }}
           path: |
@@ -206,13 +206,13 @@ jobs:
             test_args: '-- --watch=false --browsers=ChromeHeadless'
     steps:
       # This job doesn't build the repo, so fetch just the .nvmrc.
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           sparse-checkout: .nvmrc
           sparse-checkout-cone-mode: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v7
         with:
           # Node 24 (.nvmrc) for its npm 11. The npm 10 of Node 22 crashes
           # while installing the packages of the scaffolded app, when it
@@ -222,7 +222,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Download Artefact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: angular_auth_oidc_client_artefact
           path: angular-auth-oidc-client-artefact
