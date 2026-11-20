@@ -88,7 +88,7 @@
     "eslint": "^9.28.0",
     "fs-extra": "^10.0.0",
     "jsdom": "^30.0.1",
-    "ng-packagr": "^22.2.1",
+    "ng-packagr": "^22.2.6",
     "playwright": "^1.62.1",
     "prettier": "^3.9.9",
     "rfc4648": "^1.5.0",
